@@ -1,0 +1,16 @@
+{
+  "name": "innovatio",
+  "version": "1.0.0",
+  "description": "MVP",
+  "scripts": {
+    "install": "concurrently \"cd backend && npm install\" \"cd frontend && npm install\"",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "test":"concurrently \"cd backend && npm run test\" \"cd frontend && npm run test\""
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2",
+    "next": "^14.2.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
