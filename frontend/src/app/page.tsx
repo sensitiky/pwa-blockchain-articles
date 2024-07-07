@@ -1,6 +1,11 @@
+"use client";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import React from "react";
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-white to-blue-50 text-center">
       <div className="absolute top-4 left-4 text-lg font-semibold">
@@ -42,7 +47,10 @@ export default function Home() {
           your Google account or connect wallet
         </h1>
         <div className="flex space-x-4">
-          <button className="flex items-center px-6 py-2 bg-white border border-gray-300 rounded hover:bg-gray-100">
+          <button
+            onClick={() => router.push("/login")}
+            className="flex items-center px-6 py-2 bg-white border border-gray-300 rounded hover:bg-gray-100"
+          >
             <Image
               src="/google-icon.png"
               alt="Google"
@@ -58,5 +66,5 @@ export default function Home() {
         </div>
       </main>
     </div>
-  )
+  );
 }
