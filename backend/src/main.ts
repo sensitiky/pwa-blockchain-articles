@@ -6,12 +6,17 @@ import { DatabaseService } from './database.service';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const dbService = app.get(DatabaseService);
-  app.use(cors({
-    origin: ['http://localhost:3000','https://web.postman.co/'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  }));
+
+  app.use(
+    cors({
+      origin: 'http://localhost:3000',
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    }),
+  );
+
   await dbService.initialize();
   await app.listen(4000);
 }
+
 bootstrap();

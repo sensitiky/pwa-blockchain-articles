@@ -17,14 +17,14 @@ export default function Login() {
                   The complete platform for building the Web
                 </h1>
                 <p className="mx-auto max-w-[700px] text-muted-foreground text-xl md:text-xl flex justify-center content-center">
-                  Beautifully designed components that you can copy and paste
-                  into your apps. Accessible. Customizable. Open Source.
+                  In order to continue with the creation process you must
+                  register with your Google account or connect wallet
                 </p>
                 <div className="flex flex-col gap-4 mt-6 sm:flex-row">
                   <Link href="/test">
-                  <Button className="rounded-full px-6 py-3 text-sm font-medium">
-                    Sign Up
-                  </Button>
+                    <Button className="rounded-full px-6 py-3 text-sm font-medium">
+                      Sign Up
+                    </Button>
                   </Link>
                   <Button
                     variant="outline"
