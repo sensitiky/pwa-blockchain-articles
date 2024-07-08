@@ -7,7 +7,6 @@ export class DatabaseService {
   private db: Database;
 
   constructor() {}
-
   async initialize() {
     this.db = await open({
       filename: 'database.sqlite',
@@ -19,6 +18,10 @@ export class DatabaseService {
 
   async findUserByEmail(email: string): Promise<User> {
     return this.db.get('SELECT * FROM users WHERE email = ?', email);
+  }
+
+  async findUserByUsername(username: string): Promise<User> {
+    return this.db.get('SELECT * FROM users WHERE username = ?', username);
   }
 
   async createUser(userData: User): Promise<void> {
