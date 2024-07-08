@@ -1,22 +1,19 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { Database } from 'sqlite';
+import openDatabase  from './database/database'; 
 
-describe('AppController', () => {
-  let appController: AppController;
+describe('Database Tests', () => {
+  let db: Database;
 
-  beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
-      controllers: [AppController],
-      providers: [AppService],
-    }).compile();
-
-    appController = app.get<AppController>(AppController);
+  beforeAll(async () => {
+    db = await openDatabase();
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
-    });
+  afterAll(async () => {
+    await db.close(); 
   });
+
+  it('should open the SQLite database', async () => {
+    expect(db).toBeDefined();
+  });
+
 });
