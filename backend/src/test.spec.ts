@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import {CreateUserDto, LoginUserDto} from './dto/user.dto'
+import { CreateUserDto, LoginUserDto } from './dto/user.dto';
 describe('Full Application Test', () => {
   let app: INestApplication;
   let dbService: DatabaseService;
@@ -17,7 +17,7 @@ describe('Full Application Test', () => {
           provide: DatabaseService,
           useValue: new DatabaseService(), // Asegúrate de que la base de datos se inicializa aquí o usa un mock
         },
-        JwtService,  // Asume que JwtService está correctamente configurado o también usa un mock si necesario
+        JwtService, // Asume que JwtService está correctamente configurado o también usa un mock si necesario
       ],
     }).compile();
 
@@ -35,7 +35,11 @@ describe('Full Application Test', () => {
   describe('DatabaseService', () => {
     // Aquí se añaden los tests para DatabaseService
     it('should create user and find by username', async () => {
-      const userData = { username: 'testuser', email: 'test@example.com', password: 'password123' };
+      const userData = {
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'password123',
+      };
       const createdUser = await dbService.createUser(userData);
       const foundUser = await dbService.findUserByUsername('testuser');
       expect(foundUser).toEqual(createdUser);
@@ -45,7 +49,11 @@ describe('Full Application Test', () => {
   describe('UsersController', () => {
     // Aquí se añaden los tests para UsersController
     it('should register and authenticate a user', async () => {
-      const userData: CreateUserDto = { username: 'newuser', email: 'new@example.com', password: 'newpass123' };
+      const userData: CreateUserDto = {
+        username: 'newuser',
+        email: 'new@example.com',
+        password: 'newpass123',
+      };
       await request(app.getHttpServer())
         .post('/users/register')
         .send(userData)
@@ -55,7 +63,10 @@ describe('Full Application Test', () => {
           expect(res.body.user.username).toEqual('newuser');
         });
 
-      const loginData: LoginUserDto = { username: 'newuser', password: 'newpass123' };
+      const loginData: LoginUserDto = {
+        username: 'newuser',
+        password: 'newpass123',
+      };
       await request(app.getHttpServer())
         .post('/users/login')
         .send(loginData)

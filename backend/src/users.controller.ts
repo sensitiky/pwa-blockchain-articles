@@ -6,9 +6,8 @@ import {
   UnauthorizedException,
   Req,
   Get,
-  HttpStatus,
   UsePipes,
-  ValidationPipe
+  ValidationPipe,
 } from '@nestjs/common';
 import { DatabaseService } from './database.service';
 import { CreateUserDto, LoginUserDto } from './dto/user.dto';
@@ -25,9 +24,11 @@ export class UsersController {
 
   @Post('register')
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
-  async createUser(@Body() userData: CreateUserDto): Promise<{ message: string; user: User }> {
+  async createUser(
+    @Body() userData: CreateUserDto,
+  ): Promise<{ message: string; user: User }> {
     console.log('Register attempt:', userData);
-    
+
     const existingUser = await this.dbService.findUserByEmail(userData.email);
     if (existingUser) {
       console.log('User already exists');
@@ -41,7 +42,9 @@ export class UsersController {
 
   @Post('login')
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
-  async loginUser(@Body() loginData: LoginUserDto): Promise<{ message: string; user: User; token: string }> {
+  async loginUser(
+    @Body() loginData: LoginUserDto,
+  ): Promise<{ message: string; user: User; token: string }> {
     console.log('Login attempt:', loginData);
 
     const user = await this.dbService.findUserByUsername(loginData.username);
@@ -61,9 +64,8 @@ export class UsersController {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    
     const token = this.jwtService.sign({ username: user.username });
-    console.log('Passwords match, generating token',token);
+    console.log('Passwords match, generating token', token);
     return { message: 'Usuario autenticado exitosamente', user, token };
   }
 
