@@ -20,7 +20,7 @@ const Footer = () => {
           </p>
         </div>
         <div>
-          <h3 className="font-bold text-lg mb-4">More Info</h3>
+          <h3 className="font-bold text-black text-lg mb-4">More Info</h3>
           <ul>
             <li>
               <Link href="#" className="hover:underline">
@@ -45,7 +45,7 @@ const Footer = () => {
           </ul>
         </div>
         <div>
-          <h3 className="font-bold text-lg mb-4">Know us</h3>
+          <h3 className="font-bold text-lg text-black mb-4">Know us</h3>
           <ul>
             <li>
               <Link href="#" className="hover:underline">
@@ -70,7 +70,7 @@ const Footer = () => {
           </ul>
         </div>
         <div>
-          <h3 className="font-bold text-lg mb-4">Help with the Campaigns</h3>
+          <h3 className="font-bold text-lg text-black mb-4">Help with the Campaigns</h3>
           <ul>
             <li>
               <Link href="#" className="hover:underline">

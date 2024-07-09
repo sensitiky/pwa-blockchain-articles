@@ -20,7 +20,7 @@ const config = {
     extend: {
       colors: {
         customColor: {
-          innovatio: '#f2f7ff',
+          innovatio: '#e6eeff',
           innovatio2: '#d8e6fe',
           innovatio3: '#292929',
         },

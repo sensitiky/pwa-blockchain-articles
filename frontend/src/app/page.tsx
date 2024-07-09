@@ -60,11 +60,11 @@ const HomePage: React.FC = () => {
         <Button className="rounded-full">Signup</Button>
       </Link>
       <Image
-        src="/Assets.png"
+        src="/Saly-1.png"
         alt="personas"
         height={500}
         width={500}
-        className="mx-auto justify-between items-end flex-col rounded-full"
+        className="mx-auto justify-between items-end flex-col rounded-sm"
       />
       <Footer />
     </div>
