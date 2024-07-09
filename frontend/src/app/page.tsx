@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Cookie from "universal-cookie";
-import Footer from "@/assets/footer";
 import Header from "@/assets/header";
 import Image from "next/image";
+import Draft from "@/assets/draft";
 
 const cookies = new Cookie();
 
@@ -64,9 +64,9 @@ const HomePage: React.FC = () => {
         alt="personas"
         height={500}
         width={500}
-        className="mx-auto justify-between items-end flex-col rounded-sm"
+        className="mx-auto justify-between items-end flex-col mb-8 mr-8 rounded-sm"
       />
-      <Footer />
+      <Draft/>
     </div>
   );
 };
