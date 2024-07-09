@@ -17,5 +17,5 @@ Instalacion de blogchain:
   npm run build
 ```
 ```bash
-  npm run start
+  npm run dev
 ```
