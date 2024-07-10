@@ -153,7 +153,7 @@ const HomePage: React.FC = () => {
           <h2 className="text-3xl md:text-5xl font-bold mt-4">
             A place where we write <br />
             articles about blockchain
-            <br /> are to discuss
+            <br />to discuss
           </h2>
           <div className="mt-8 flex justify-center">
             <Image
