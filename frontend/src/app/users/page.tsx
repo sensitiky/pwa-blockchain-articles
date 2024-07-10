@@ -3,6 +3,7 @@
 import Header from "@/assets/header";
 import React from "react";
 import Image from "next/image";
+import Footer  from "@/assets/footer";
 const articles = [
   {
     id: 1,
@@ -33,12 +34,12 @@ export default function Test1() {
               height={150}
               className="rounded-full mx-auto"
             />
-            <h2 className="text-2xl font-semibold mt-4">Nevermind</h2>
+            <h2 className="text-2xl font-semibold mt-4 text-white">Nevermind</h2>
             <p className="text-customColor-innovatio mt-2">520 Followers</p>
-            <button className="mt-2 px-4 py-2 border-2 rounded-full text-customColor-innovatio3 border-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-white">
+            <button className="mt-2 px-4 py-2 border-2 rounded-full text-white border-white hover:bg-customColor-innovatio3 hover:text-white">
               Follow
             </button>
-            <p className="mt-4 text-customColor-innovatio3  ">
+            <p className="mt-4 text-white  ">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </p>
@@ -60,7 +61,7 @@ export default function Test1() {
         </div>
 
         <div className="w-full md:w-2/3 lg:w-3/4 p-4">
-          <h3 className="text-2xl font-semibold mb-4">Articles</h3>
+          <h3 className="text-2xl font-semibold mb-4 text-white">Articles</h3>
           {articles.map((article) => (
             <div key={article.id} className="mb-8 border-b border-customColor-innovatio3 pb-4">
               <div className="flex flex-col md:flex-row">
@@ -82,14 +83,14 @@ export default function Test1() {
                         className="rounded-full"
                       />
                       <div className="ml-2">
-                        <p className="text-lg font-semibold">
+                        <p className="text-lg font-semibold text-white">
                           {article.author}
                         </p>
                         <div className="flex space-x-2">
                           {article.tags.map((tag, index) => (
                             <span
                               key={index}
-                              className="text-sm text-customColor-innovatio3 border px-2 py-1 rounded-full"
+                              className="text-sm text-white border px-2 py-1 rounded-full"
                             >
                               {tag}
                             </span>
@@ -97,7 +98,7 @@ export default function Test1() {
                         </div>
                       </div>
                     </div>
-                    <h4 className="text-xl font-bold mb-2">{article.title}</h4>
+                    <h4 className="text-xl font-bold mb-2 text-white">{article.title}</h4>
                     <p className="text-gray-700">{article.readTime}</p>
                   </div>
                   <div className="flex items-center mt-4 text-gray-500">
@@ -125,6 +126,7 @@ export default function Test1() {
         </div>
 
       </div>
+      <Footer/>
     </div>
   );
 }

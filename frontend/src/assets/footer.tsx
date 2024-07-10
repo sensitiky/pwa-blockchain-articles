@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="py-6 border-t border-gray-300">
+    <footer className="py-6 border-t border-gray-300 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
@@ -15,7 +15,7 @@ const Footer = () => {
               height={24}
               className=" mb-4"
             />
-            <p className="text-gray-300 text-sm">
+            <p className="text-gradient text-sm">
               Help different crowdfunding <br />
               campaigns become a reality
               <br />
@@ -30,22 +30,22 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#" className="hover:underline text-gray-300">
+                <Link href="#" className="hover:underline text-gradient">
                   Campaign Flow
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-300">
+                <Link href="#" className="hover:underline text-gradient">
                   Investment Flow
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-300">
+                <Link href="#" className="hover:underline text-gradient">
                   Milestones & Control
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-300">
+                <Link href="#" className="hover:underline text-gradient">
                   Q & A
                 </Link>
               </li>
@@ -57,22 +57,22 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#" className="hover:underline text-gray-300">
+                <Link href="#" className="hover:underline text-gradient">
                   Introduction
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-300">
+                <Link href="#" className="hover:underline text-gradient">
                   Team & Members
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-300">
+                <Link href="#" className="hover:underline text-gradient">
                   Discord Community
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-300">
+                <Link href="#" className="hover:underline text-gradient">
                   Social Media
                 </Link>
               </li>
@@ -84,22 +84,22 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#" className="hover:underline text-gray-300">
+                <Link href="#" className="hover:underline text-gradient">
                   Ideas of Campaign
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-300">
+                <Link href="#" className="hover:underline text-gradient">
                   Tokenomics
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-300">
+                <Link href="#" className="hover:underline text-gradient">
                   Digital Marketing Strategy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-300">
+                <Link href="#" className="hover:underline text-gradient">
                   Contact our team
                 </Link>
               </li>
@@ -125,7 +125,7 @@ const Footer = () => {
             <Image src="/facebook.svg" alt="facebook" width={24} height={24} />
           </Link>
         </div>
-        <div className="mt-8 border-t border-gray-200 pt-4 flex justify-center text-customColor-innovatio text-sm">
+        <div className="mt-8 border-t border-gray-200 pt-4 flex justify-center text-gray-900 text-sm">
           <p>&copy; 2024 Innovatio. All rights reserved.</p>
         </div>
       </div>
