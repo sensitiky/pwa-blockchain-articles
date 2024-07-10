@@ -128,7 +128,7 @@ const HomePage: React.FC = () => {
       avatar: "/shadcn.jpg",
       image: "/profit.png",
       description:
-        "The fastest way to learn how Blockchains work is to build one – Youre here because, like me, youre psyched about the rise of Cryptocurrencies. And you want to know how Blockchains work – the fundamental ...",
+        "The fastest way to learn how Blockchains work is to build one &ndash; You&apos;re here because, like me, you&apos;re psyched about the rise of Cryptocurrencies. And you want to know how Blockchains work &ndash; the fundamental ...",
     },
     {
       author: "Emmie Chang",
@@ -137,7 +137,7 @@ const HomePage: React.FC = () => {
       avatar: "/shadcn.jpg",
       image: "/Saly-1.png",
       description:
-        "It wasnt too long ago that Silicon Valley scoffed at cryptocurrencies. All over coffee shops in Mountain View and Menlo Park, you heard the same conversation: Sure, its cool technology, but when are we going...",
+        "It wasn&apos;t too long ago that Silicon Valley scoffed at cryptocurrencies. All over coffee shops in Mountain View and Menlo Park, you heard the same conversation: &quot;Sure, it&apos;s cool technology, but when are we going...",
     },
   ];
 
