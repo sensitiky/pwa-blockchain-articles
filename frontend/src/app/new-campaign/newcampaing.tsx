@@ -80,12 +80,12 @@ const Step2: React.FC<{ onNext: () => void }> = ({ onNext }) => (
         <input
           type="text"
           placeholder="Detail 1"
-          className="border border-gray-300 p-2 w-1/2 rounded-full"
+          className="border border-gray-300 p-2 w-1/2 rounded-xl"
         />
         <input
           type="text"
           placeholder="Detail 2"
-          className="border border-gray-300 rounded-full p-2 w-1/2"
+          className="border border-gray-300 rounded-xl p-2 w-1/2"
         />
       </div>
       <textarea
@@ -110,27 +110,31 @@ const Step3: React.FC<{ onNext: () => void }> = ({ onNext }) => (
       <input
         type="text"
         placeholder="Website"
-        className="border border-gray-300 p-2 w-full rounded-full"
+        className="border border-gray-300 p-2 w-full rounded-lg"
       />
+      <Label>Facebook</Label>
       <input
         type="text"
         placeholder="Facebook"
-        className="border border-gray-300 p-2 w-full rounded-full"
+        className="border border-gray-300 p-2 w-full rounded-lg"
       />
+      <Label>Instagram</Label>
       <input
         type="text"
         placeholder="Instagram"
-        className="border border-gray-300 p-2 w-full rounded-full"
+        className="border border-gray-300 p-2 w-full rounded-lg"
       />
+      <Label>Discord</Label>
       <input
         type="text"
         placeholder="Discord"
-        className="border border-gray-300 p-2 w-full rounded-full"
+        className="border border-gray-300 p-2 w-full rounded-lg"
       />
+      <Label>X</Label>
       <input
         type="text"
         placeholder="X"
-        className="border border-gray-300 p-2 w-full rounded-full"
+        className="border border-gray-300 p-2 w-full rounded-lg"
       />
       <Button
         className="flex flex-col h-[45px] w-[200px] justify-between items-center mx-auto text-white bg-customColor-innovatio3 rounded-full px-4 py-2 border-customColor-innovatio3 border-2 hover:bg-customColor-innovatio hover:text-customColor-innovatio3"
@@ -150,96 +154,12 @@ const Step4: React.FC<{ onNext: () => void }> = ({ onNext }) => {
     { name: "Albert Bergman", role: "Director" },
   ];
 
-  return (
-    <div className="flex min-h-screen">
-      <div className="w-1/3 bg-customColor-innovatio3 text-white p-10 flex flex-col justify-center">
-        <h1 className="text-4xl font-bold mb-10">
-          Present your team members :)
-        </h1>
-        <div className="flex flex-col space-y-4">
-          {teamMembers.map((member, index) => (
-            <div key={index} className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gray-400 rounded-full"></div>
-              <div>
-                <h3 className="text-xl font-semibold">{member.name}</h3>
-                <p>{member.role}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="w-2/3 bg-gray-100 p-10">
-        <div className="flex justify-end">
-          <Link href="/">
-            <Button className="bg-gray-200 rounded-full px-4 py-2">Exit</Button>
-          </Link>
-        </div>
-        <Link href="/">
-          <button>
-            <Image src="/back.png" width={18} height={18} alt="chevron" />
-          </button>
-        </Link>
-
-        <div className="mt-10">
-          <h2 className="text-2xl font-bold mb-4">Add Members</h2>
-          <form className="space-y-4 flex flex-col">
-            <input
-              type="text"
-              placeholder="Name"
-              className="border border-gray-300 p-2 w-full rounded-full"
-            />
-            <input
-              type="text"
-              placeholder="Role"
-              className="border border-gray-300 p-2 w-full rounded-full"
-            />
-            <textarea
-              placeholder="Tell it as a description. Maximum 650 characters."
-              className="border border-gray-300 p-2 w-full rounded-md"
-            />
-            <div className="flex space-x-4">
-              <button className="w-10 h-10 bg-gray-400 rounded-full"></button>
-              <button className="w-10 h-10 bg-gray-400 rounded-full"></button>
-              <button className="w-10 h-10 bg-gray-400 rounded-full"></button>
-              <button className="w-10 h-10 bg-gray-400 rounded-full"></button>
-            </div>
-            <div className="flex space-x-4">
-              <input
-                type="text"
-                placeholder="Permissions"
-                className="border border-gray-300 p-2 w-full rounded-full"
-              />
-              <input
-                type="text"
-                placeholder="Email"
-                className="border border-gray-300 p-2 w-full rounded-full"
-              />
-            </div>
-            <div className="flex justify-between">
-              <Button
-                className="flex h-[45px] w-[200px] justify-center items-center text-white bg-customColor-innovatio3 rounded-full px-4 py-2 border-customColor-innovatio3 border-2 hover:bg-customColor-innovatio hover:text-customColor-innovatio3"
-                onClick={onNext}
-              >
-                Continue creating
-              </Button>
-              <Button
-                className="flex h-[45px] w-[200px] justify-center items-center text-white bg-black rounded-full px-4 py-2 border-black border-2 hover:bg-gray-700 hover:text-white"
-                onClick={onNext}
-              >
-                Add member
-              </Button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
+  return <div className="flex min-h-screen"></div>;
 };
 const CreateCampaignScreen: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const users = [
     { id: 1, wallet: "0xba1234567890abcdef1234567890abcdef123456" },
-   
   ];
   const handleStepChange = (step: number) => {
     setCurrentStep(step);

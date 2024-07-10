@@ -83,7 +83,7 @@ export default function Header({ isAuthenticated }: HeaderProps) {
               </Link>
               <Button
                 variant="outline"
-                className="bg-customColor-innovatio2 rounded-full px-4 py-2 text-sm font-medium hover:bg-white"
+                className="bg-customColor-innovatio2 rounded-full px-4 py-2 text-sm font-medium hover:bg-customColor-innovatio3"
                 onClick={handleStartNewCampaign}
               >
                 Start New Campaign
@@ -134,7 +134,7 @@ export default function Header({ isAuthenticated }: HeaderProps) {
           <DatePicker />
           <Button
             variant="outline"
-            className="bg-customColor-innovatio2 rounded-full px-4 py-2 text-sm font-medium border-2 border-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio2"
+            className="bg-customColor-innovatio rounded-full px-4 py-2 text-sm font-medium border-2 border-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio"
             onClick={handleStartNewCampaign}
           >
             Start New Campaign
