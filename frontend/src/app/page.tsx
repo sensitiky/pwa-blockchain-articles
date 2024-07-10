@@ -137,7 +137,7 @@ const HomePage: React.FC = () => {
       avatar: "/shadcn.jpg",
       image: "/Saly-1.png",
       description:
-        'It wasnt too long ago that Silicon Valley scoffed at cryptocurrencies. All over coffee shops in Mountain View and Menlo Park, you heard the same conversation: "Sure, its cool technology, but when are we going...',
+        "It wasnt too long ago that Silicon Valley scoffed at cryptocurrencies. All over coffee shops in Mountain View and Menlo Park, you heard the same conversation: Sure, its cool technology, but when are we going...",
     },
   ];
 
