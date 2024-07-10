@@ -128,16 +128,16 @@ const HomePage: React.FC = () => {
       avatar: "/shadcn.jpg",
       image: "/profit.png",
       description:
-        "The fastest way to learn how Blockchains work is to build one – You're here because, like me, you're psyched about the rise of Cryptocurrencies. And you want to know how Blockchains work – the fundamental ...",
+        "The fastest way to learn how Blockchains work is to build one – Youre here because, like me, youre psyched about the rise of Cryptocurrencies. And you want to know how Blockchains work – the fundamental ...",
     },
     {
       author: "Emmie Chang",
-      title: "We already know blockchain's killer apps",
+      title: "We already know blockchains killer apps",
       date: "Mar 28, 2019",
       avatar: "/shadcn.jpg",
       image: "/Saly-1.png",
       description:
-        "It wasn't too long ago that Silicon Valley scoffed at cryptocurrencies. All over coffee shops in Mountain View and Menlo Park, you heard the same conversation: \"Sure, it's cool technology, but when are we going...",
+        'It wasnt too long ago that Silicon Valley scoffed at cryptocurrencies. All over coffee shops in Mountain View and Menlo Park, you heard the same conversation: "Sure, its cool technology, but when are we going...',
     },
   ];
 
@@ -181,9 +181,8 @@ const HomePage: React.FC = () => {
                 <Image
                   src="/Medium.png"
                   alt="medium"
-                  width={150}  
+                  width={150}
                   height={150}
-                 
                 />
               </div>
             </div>
@@ -399,7 +398,10 @@ const HomePage: React.FC = () => {
           </div>
           <div className="grid md:grid-cols-2 gap-8">
             {articles2.map((article, index) => (
-              <div key={index} className="flex flex-col border-b border-customColor-innovatio3 pb-4 mb-4">
+              <div
+                key={index}
+                className="flex flex-col border-b border-customColor-innovatio3 pb-4 mb-4"
+              >
                 <div className="flex items-start mb-4">
                   <Image
                     src={article.avatar}
