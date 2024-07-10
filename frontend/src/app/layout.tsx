@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 const inter = Inter({ subsets: ["latin"] });
+
+const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+if (!clientId) {
+  throw new Error('NEXT_PUBLIC_GOOGLE_CLIENT_ID is not defined');
+}
 
 export const metadata: Metadata = {
   title: "Innovatio | Blogchain",
@@ -16,7 +23,9 @@ export default function RootLayout({
   return (
     <html className="bg-customColor-innovatio" lang="en">
       <body className={`flex bg-gradient flex-col min-h-screen ${inter.className}`}>
-        <main className="flex-grow">{children}</main>
+        <GoogleOAuthProvider clientId={clientId as string}>
+          <main className="flex-grow">{children}</main>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

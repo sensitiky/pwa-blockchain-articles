@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import Cookie from "universal-cookie";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import axios, { isCancel, AxiosError } from "axios";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -18,6 +20,34 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const router = useRouter();
   const cookies = new Cookie();
+
+  const handleGoogleLoginSuccess = async (response: CredentialResponse) => {
+    const { credential } = response;
+    try {
+      const result = await axios.post("/api/users/google-login", {
+        token: credential,
+      });
+      console.log("Google Login Success:", result.data);
+      const { jwtToken } = result.data;
+
+      // Guardar el token JWT en el almacenamiento local
+      localStorage.setItem("jwt", jwtToken);
+
+      // Obtener la sesión del usuario
+      const sessionResponse = await axios.get("/api/users/session", {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      });
+      console.log("User session:", sessionResponse.data);
+
+      // Redirigir o actualizar el estado de autenticación de la aplicación
+      // Por ejemplo, redirigir a la página de inicio
+      window.location.href = "/dashboard"; // Redirigir a una página protegida
+    } catch (error) {
+      console.error("Google Login Error:", error);
+    }
+  };
 
   const handleRegister = async (
     username: string,
@@ -118,13 +148,10 @@ const Login: React.FC = () => {
                         </TabsList>
                         <TabsContent value="login">
                           <div className="space-y-4">
-                            <Button
-                              variant="outline"
-                              className="w-full hover:bg-customColor-innovatio2"
-                            >
-                              <ChromeIcon className="mr-2 h-4 w-4" />
-                              Sign in with Google
-                            </Button>
+                            <GoogleLogin
+                              onSuccess={handleGoogleLoginSuccess}
+                              onError={() => console.log("Login Failed")}
+                            />
                             <div className="relative">
                               <div className="absolute inset-0 flex items-center">
                                 <span className="w-full border-t" />
@@ -135,7 +162,10 @@ const Login: React.FC = () => {
                                 </span>
                               </div>
                             </div>
-                            <form className="space-y-2">
+                            <form
+                              className="space-y-2"
+                              onSubmit={handleLoginSubmit}
+                            >
                               <div className="space-y-1">
                                 <Label htmlFor="username">Username</Label>
                                 <Input
@@ -155,7 +185,6 @@ const Login: React.FC = () => {
                                 />
                               </div>
                               <Button
-                                onClick={handleLoginSubmit}
                                 type="submit"
                                 className="w-full bg-customColor-innovatio3 hover:bg-customColor-innovatio2 hover:text-customColor-innovatio3"
                               >
@@ -166,10 +195,10 @@ const Login: React.FC = () => {
                         </TabsContent>
                         <TabsContent value="register">
                           <div className="space-y-4">
-                            <Button variant="outline" className="w-full">
-                              <ChromeIcon className="mr-2 h-4 w-4" />
-                              Sign up with Google
-                            </Button>
+                            <GoogleLogin
+                              onSuccess={handleGoogleLoginSuccess}
+                              onError={() => console.log("Login Failed")}
+                            />
                             <div className="relative">
                               <div className="absolute inset-0 flex items-center">
                                 <span className="w-full border-t" />
@@ -180,7 +209,10 @@ const Login: React.FC = () => {
                                 </span>
                               </div>
                             </div>
-                            <form className="space-y-2">
+                            <form
+                              className="space-y-2"
+                              onSubmit={handleRegisterSubmit}
+                            >
                               <div className="space-y-1">
                                 <Label htmlFor="username">Username</Label>
                                 <Input
@@ -210,7 +242,6 @@ const Login: React.FC = () => {
                                 />
                               </div>
                               <Button
-                                onClick={handleRegisterSubmit}
                                 type="submit"
                                 className="w-full bg-customColor-innovatio3 hover:bg-customColor-innovatio2 hover:text-customColor-innovatio3"
                               >

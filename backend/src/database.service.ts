@@ -8,7 +8,9 @@ import * as bcrypt from 'bcrypt';
 export class DatabaseService {
   private db: Database | null = null;
 
-  constructor() {}
+  constructor() {
+    this.initialize();
+  }
 
   async initialize(): Promise<void> {
     this.db = await openDatabase();
@@ -19,14 +21,16 @@ export class DatabaseService {
     if (!this.db) {
       throw new Error('Database not initialized');
     }
-    return this.db.get('SELECT * FROM users WHERE email = ?', email);
+    const user = await this.db.get<User>('SELECT * FROM users WHERE email = ?', email);
+    return user || undefined;
   }
 
   async findUserByUsername(username: string): Promise<User | undefined> {
     if (!this.db) {
       throw new Error('Database not initialized');
     }
-    return this.db.get('SELECT * FROM users WHERE username = ?', username);
+    const user = await this.db.get<User>('SELECT * FROM users WHERE username = ?', username);
+    return user || undefined;
   }
 
   async createUser(userData: User): Promise<User> {
@@ -41,10 +45,14 @@ export class DatabaseService {
       email,
       hashedPassword,
     );
-    return this.findUserByUsername(username);
+    const user = await this.findUserByUsername(username);
+    if (!user) {
+      throw new Error('User creation failed');
+    }
+    return user;
   }
 
-  private async createUsersTable() {
+  private async createUsersTable(): Promise<void> {
     if (!this.db) {
       throw new Error('Database not initialized');
     }
