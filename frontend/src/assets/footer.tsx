@@ -15,10 +15,13 @@ const Footer = () => {
               height={24}
               className=" mb-4"
             />
-            <p className="text-gray-600 text-sm">
-              Help different crowdfunding campaigns become a reality thanks to
-              your contributions, invest in projects, fund purposes and get
-              rewards.
+            <p className="text-gray-300 text-sm">
+              Help different crowdfunding <br />
+              campaigns become a reality
+              <br />
+              thanks to your contributions,
+              <br /> invest in projects,
+              <br /> fund purposes and get rewards.
             </p>
           </div>
           <div>
@@ -27,22 +30,22 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#" className="hover:underline text-gray-600">
+                <Link href="#" className="hover:underline text-gray-300">
                   Campaign Flow
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-600">
+                <Link href="#" className="hover:underline text-gray-300">
                   Investment Flow
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-600">
+                <Link href="#" className="hover:underline text-gray-300">
                   Milestones & Control
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-600">
+                <Link href="#" className="hover:underline text-gray-300">
                   Q & A
                 </Link>
               </li>
@@ -54,22 +57,22 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#" className="hover:underline text-gray-600">
+                <Link href="#" className="hover:underline text-gray-300">
                   Introduction
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-600">
+                <Link href="#" className="hover:underline text-gray-300">
                   Team & Members
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-600">
+                <Link href="#" className="hover:underline text-gray-300">
                   Discord Community
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-600">
+                <Link href="#" className="hover:underline text-gray-300">
                   Social Media
                 </Link>
               </li>
@@ -81,22 +84,22 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#" className="hover:underline text-gray-600">
+                <Link href="#" className="hover:underline text-gray-300">
                   Ideas of Campaign
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-600">
+                <Link href="#" className="hover:underline text-gray-300">
                   Tokenomics
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-600">
+                <Link href="#" className="hover:underline text-gray-300">
                   Digital Marketing Strategy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:underline text-gray-600">
+                <Link href="#" className="hover:underline text-gray-300">
                   Contact our team
                 </Link>
               </li>
@@ -122,7 +125,7 @@ const Footer = () => {
             <Image src="/facebook.svg" alt="facebook" width={24} height={24} />
           </Link>
         </div>
-        <div className="mt-8 border-t border-gray-200 pt-4 flex justify-center text-gray-500 text-sm">
+        <div className="mt-8 border-t border-gray-200 pt-4 flex justify-center text-customColor-innovatio text-sm">
           <p>&copy; 2024 Innovatio. All rights reserved.</p>
         </div>
       </div>

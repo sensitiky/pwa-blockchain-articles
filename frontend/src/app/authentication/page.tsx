@@ -13,6 +13,7 @@ import Cookie from "universal-cookie";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import axios, { isCancel, AxiosError } from "axios";
+import Footer from "@/assets/footer";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -115,15 +116,15 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div>
-      <Header isAuthenticated={false} />
-      <main className="flex-1 mt-40 h-screen">
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-1 mt-12 md:mt-16 lg:mt-20">
         <section className="w-full pt-12 md:pt-24 lg:pt-32 border-b">
           <div className="flex justify-center container space-y-10 xl:space-y-16 px-4 md:px-6">
             <div className="grid gap-4 grid-rows-2 md:gap-16">
               <div>
                 <div className="grid-1 items-center">
-                  <h1 className="cursor-none text-center flex-col mx-auto justify-between text-customColor-innovatio3 lg:leading-tighter text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl xl:text-[3.4rem] 2xl:text-[3.75rem]">
+                  <h1 className="text-center text-customColor-innovatio3 lg:leading-tighter text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl xl:text-[3.4rem] 2xl:text-[3.75rem]">
                     In order to continue with the creation
                     <br /> process you must register with your <br />
                     Google account or connect wallet
@@ -137,7 +138,7 @@ const Login: React.FC = () => {
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
-                      <DialogTitle className="font-bold text-center flex-col mx-auto justify-between text-2xl text-customColor-innovatio3">
+                      <DialogTitle className="font-bold text-center text-2xl text-customColor-innovatio3">
                         WELCOME
                       </DialogTitle>
                       <DialogDescription />
@@ -256,7 +257,7 @@ const Login: React.FC = () => {
 
                   <Button
                     variant="outline"
-                    className=" bg-customColor-innovatio3 rounded-full px-6 py-3 text-sm text-customColor-innovatio font-medium border-2 hover:bg-customColor-innovatio2 hover:border-customColor-innovatio3"
+                    className="bg-customColor-innovatio3 rounded-full px-6 py-3 text-sm text-customColor-innovatio font-medium border-2 hover:bg-customColor-innovatio2 hover:border-customColor-innovatio3"
                   >
                     Connect Wallet
                   </Button>
@@ -266,6 +267,7 @@ const Login: React.FC = () => {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 };

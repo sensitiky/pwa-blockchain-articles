@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   Sheet,
@@ -11,19 +10,26 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useState } from "react";
-import { DatePicker } from "./calendar";
+import { useEffect, useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
 
-interface HeaderProps {
-  isAuthenticated: boolean;
-}
-
-export default function Header({ isAuthenticated }: HeaderProps) {
+const Header = () => {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
-  const handleStepChange = (landing: number) => {
-    setCurrentStep(landing);
-  };
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState({ name: "", profilePicture: "" });
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      setIsAuthenticated(true);
+      // Simulando la obtención de datos del usuario
+      setUser({
+        name: "John Doe", // Aquí deberías obtener el nombre real del usuario desde el backend
+        profilePicture: "/Saly-1.png", // Aquí deberías obtener la URL real del avatar del usuario
+      });
+    }
+  }, []);
 
   const handleStartNewCampaign = () => {
     if (!isAuthenticated) {
@@ -35,115 +41,134 @@ export default function Header({ isAuthenticated }: HeaderProps) {
 
   return (
     <div>
-      <div className="lg:hidden flex items-center justify-between px-4 lg:px-6 h-14 border-b">
-        <Link href="/" className="flex items-center" prefetch={false}>
-          <Image
-            src="/Logo.svg"
-            alt="logo"
-            width={150}
-            height={24}
-            className="h-auto w-[150px]"
-          />
-          <span className="sr-only">Acme Inc</span>
-        </Link>
-        <Sheet>
-          <SheetTrigger>
-            <Button className="bg-customColor-innovatio3 rounded-full px-4 py-2 text-sm font-medium">
-              Menu
-            </Button>
-          </SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle>Navigation</SheetTitle>
-              <SheetDescription>
-                This is the mobile navigation menu.
-              </SheetDescription>
-            </SheetHeader>
-            <nav className="flex flex-col gap-4">
-              <Link
-                href="#"
-                className="text-sm font-medium hover:underline underline-offset-4"
-                prefetch={false}
-              >
-                How it works
-              </Link>
-              <Link
-                href="#"
-                className="text-sm font-medium hover:underline underline-offset-4"
-                prefetch={false}
-              >
-                About us
-              </Link>
-              <Link
-                href="#"
-                className="text-sm font-medium hover:underline underline-offset-4"
-                prefetch={false}
-              >
-                Help with the Campaign
-              </Link>
-              <Button
-                variant="outline"
-                className="bg-customColor-innovatio2 rounded-full px-4 py-2 text-sm font-medium hover:bg-customColor-innovatio3"
-                onClick={handleStartNewCampaign}
-              >
-                Start New Campaign
-              </Button>
-              <Button className="bg-customColor-innovatio3 rounded-full px-4 py-2 text-sm font-medium">
-                Connect Wallet
-              </Button>
-            </nav>
-          </SheetContent>
-        </Sheet>
+      <div className="lg:hidden flex items-center justify-between px-4 lg:px-6 h-14 border-b bg-header ">
+        <div className="flex items-center">
+          <Sheet>
+            <SheetTrigger>
+              <button className="focus:outline-none">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="white"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 6h16M4 12h16m-7 6h7"
+                  ></path>
+                </svg>
+              </button>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Navigation</SheetTitle>
+                <SheetDescription>
+                  This is the mobile navigation menu.
+                </SheetDescription>
+              </SheetHeader>
+              <nav className="flex flex-col gap-4">
+                <Link
+                  href="#"
+                  className="text-sm font-medium hover:underline underline-offset-4"
+                  prefetch={false}
+                >
+                  How it works
+                </Link>
+                <Link
+                  href="#"
+                  className="text-sm font-medium hover:underline underline-offset-4"
+                  prefetch={false}
+                >
+                  About us
+                </Link>
+                <Link
+                  href="#"
+                  className="text-sm font-medium hover:underline underline-offset-4"
+                  prefetch={false}
+                >
+                  Help with the Campaign
+                </Link>
+                <Button
+                  variant="outline"
+                  className="bg-customColor-innovatio2 rounded-full px-4 py-2 text-sm font-medium hover:bg-customColor-innovatio3"
+                >
+                  Start New Campaign
+                </Button>
+                <Button className="bg-customColor-innovatio3 rounded-full px-4 py-2 text-sm font-medium">
+                  Connect Wallet
+                </Button>
+              </nav>
+            </SheetContent>
+          </Sheet>
+        </div>
+        <div>
+          <img src="/Logo.svg" alt="Logo" className="h-8 filter invert"/>
+        </div>
       </div>
 
-      <header className="hidden lg:flex items-center justify-between px-4 lg:px-6 h-14 border-b">
-        <Link href="/" className="flex items-center" prefetch={false}>
-          <Image
-            src="/Logo.svg"
-            alt="logo"
-            width={150}
-            height={24}
-            className="h-auto w-[150px]"
-          />
-          <span className="sr-only">Acme Inc</span>
-        </Link>
-        <nav className="flex items-center mx-auto ml-10 gap-6">
-          <Link
-            href="#"
-            className="text-sm font-medium hover:underline underline-offset-4"
-            prefetch={false}
-          >
-            How it works
-          </Link>
-          <Link
-            href="#"
-            className="text-sm font-medium hover:underline underline-offset-4"
-            prefetch={false}
-          >
-            About us
-          </Link>
-          <Link
-            href="#"
-            className="text-sm font-medium hover:underline underline-offset-4"
-            prefetch={false}
-          >
-            Help with the Campaign
-          </Link>
-        </nav>
-        <div className="flex items-center gap-4">
-          <DatePicker />
-          <Button
-            variant="outline"
-            className="bg-customColor-innovatio rounded-full px-4 py-2 text-sm font-medium border-2 border-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio"
-            onClick={handleStartNewCampaign}
-          >
-            Start New Campaign
-          </Button>
-          <Button className="bg-customColor-innovatio3 rounded-full px-4 py-2 border-2 border-customColor-innovatio2 text-sm font-medium hover:border-customColor-innovatio3 hover:bg-customColor-innovatio hover:text-customColor-innovatio3">
-            Connect Wallet
-          </Button>
+      <header className="bg-customColor-header p-4 hidden lg:block">
+        <div className="container mx-auto flex justify-between items-center">
+          <div className="text-white text-lg font-semibold">
+            <Link href="/">Blogchain</Link>
+          </div>
+          <div className="relative text-gray-400 focus-within:text-gray-600">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-2">
+              <svg className="h-5 w-5 fill-current" viewBox="0 0 20 20">
+                <path d="M12.9 14.32l4.1 4.1-1.4 1.4-4.1-4.1c-1 .7-2.2 1.1-3.5 1.1C4.9 16.82 2 13.92 2 10.42S4.9 4 8.4 4s6.4 2.9 6.4 6.4c0 1.3-.4 2.5-1.1 3.5zM8.4 14c2 0 3.6-1.6 3.6-3.6S10.4 6.8 8.4 6.8 4.8 8.4 4.8 10.4s1.6 3.6 3.6 3.6z" />
+              </svg>
+            </span>
+            <Input
+              type="search"
+              className="py-2 text-sm text-customColor-innovatio3 bg-dark-blue rounded-full pl-10 focus:outline-none focus:bg-white focus:text-gray-900"
+              placeholder="Search..."
+            />
+          </div>
+          <nav className="space-x-4 flex items-center">
+            <Link
+              href="/about-us"
+              className="text-white hover:text-customColor-innovatio3"
+            >
+              About Us
+            </Link>
+            <Link
+              href="/support-us"
+              className="text-white hover:text-customColor-innovatio3"
+            >
+              Support Us
+            </Link>
+            <Link
+              href="/articles"
+              className="text-white hover:text-customColor-innovatio3"
+            >
+              Articles
+            </Link>
+            <Link
+              href="/tops"
+              className="text-white hover:text-customColor-innovatio3"
+            >
+              Tops
+            </Link>
+            {isAuthenticated ? (
+              <Avatar className="rounded-full">
+                {" "}
+                <AvatarImage src={user.profilePicture} />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            ) : (
+              <Button
+                className="rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio"
+                onClick={handleStartNewCampaign}
+              >
+                Get Started
+              </Button>
+            )}
+          </nav>
         </div>
       </header>
     </div>
   );
-}
+};
+export default Header;

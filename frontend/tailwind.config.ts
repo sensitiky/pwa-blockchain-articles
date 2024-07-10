@@ -1,13 +1,13 @@
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
 
 const config = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -20,11 +20,11 @@ const config = {
     extend: {
       colors: {
         customColor: {
-          innovatio: '#e6eeff',
-          innovatio2: '#d8e6fe',
-          innovatio3: '#292929',
-          innovatio4:'#eef4ff',
-          
+          innovatio: "#e6eeff",
+          innovatio2: "#d8e6fe",
+          innovatio3: "#000000",
+          innovatio4: "#eef4ff",
+          letras: "#fec116",
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -61,9 +61,11 @@ const config = {
         },
       },
       backgroundImage: {
-        gradient: 'linear-gradient(to left, #e6eeff, #f7faff)',
+        gradient:
+          "radial-gradient(circle,#ffffff,#ECF0F7,#D8E1EB,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#1A5285, #103253,#061D34)",
+        header: "linear-gradient(to top, ##000916, #c8e4ff",
       },
-      borderRadius: {
+      borderRadius: { 
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
@@ -85,6 +87,6 @@ const config = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config
+} satisfies Config;
 
-export default config
+export default config;
