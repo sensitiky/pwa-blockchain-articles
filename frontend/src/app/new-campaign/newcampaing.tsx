@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AvatarWallet from "@/assets/avwallet";
+import { Combobox } from "@/components/ui/combobox";
 
 const Step1: React.FC<{ onNext: () => void }> = ({ onNext }) => (
   <form className="space-y-4 mt-10">
@@ -154,7 +155,21 @@ const Step4: React.FC<{ onNext: () => void }> = ({ onNext }) => {
     { name: "Albert Bergman", role: "Director" },
   ];
 
-  return <div className="flex min-h-screen"></div>;
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="grid grid-cols-2 gap-4">
+        <Input
+          className="col-span-1"
+          alt="Title"
+          placeholder="Title"
+          type="text"
+        />
+        <div className="col-span-2">
+          <Combobox />
+        </div>
+      </div>
+    </div>
+  );
 };
 const CreateCampaignScreen: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);

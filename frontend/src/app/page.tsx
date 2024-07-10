@@ -7,15 +7,21 @@ import { useRouter } from "next/navigation";
 import Cookie from "universal-cookie";
 import Header from "@/assets/header";
 import Image from "next/image";
-import ProjectCard from "@/assets/draft";
-import Footer from "@/assets/footer";
-import Info from "@/assets/card";
 
 const cookies = new Cookie();
+type image={
+  url:string;
+  alt:string;
+};
+
+type Avatar ={
+  avatar:image;
+};
 
 const HomePage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<{ username: string } | null>(null);
+  const [avatar, setAvatar]=useState<Avatar | null>(null);
   const router = useRouter();
 
   useEffect(() => {
