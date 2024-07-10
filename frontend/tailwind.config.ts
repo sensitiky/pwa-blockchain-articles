@@ -24,6 +24,7 @@ const config = {
           innovatio2: '#d8e6fe',
           innovatio3: '#292929',
           innovatio4:'#eef4ff',
+          
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -58,6 +59,9 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      backgroundImage: {
+        gradient: 'linear-gradient(to left, #e6eeff, #f7faff)',
       },
       borderRadius: {
         lg: "var(--radius)",

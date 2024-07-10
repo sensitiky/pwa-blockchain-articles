@@ -4,25 +4,65 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import AvatarWallet from "@/assets/avwallet";
 
 const Step1: React.FC<{ onNext: () => void }> = ({ onNext }) => (
   <form className="space-y-4 mt-10">
-    <div className="flex space-x-4">
-      <input
+    <div className="space-y-2">
+      <Label htmlFor="title" className="block text-2xl ">
+        Title
+      </Label>
+      <Input
+        id="title"
         type="text"
         placeholder="Title of project"
-        className="border border-gray-300 p-2 w-1/2 rounded-full"
-      />
-      <input
-        type="text"
-        placeholder="Category"
-        className="border border-gray-300 rounded-full p-2 w-1/2"
+        className="border border-gray-300 p-2 w-1/2 rounded-xl h-16"
       />
     </div>
-    <textarea
-      placeholder="Talk a bit about description. Minimum 200 characters."
-      className="border border-gray-300 rounded-md p-2 w-full h-[350px]"
-    />
+    <div className="space-y-2">
+      <Label htmlFor="category" className="block">
+        Category
+      </Label>
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <Input
+            id="category"
+            type="text"
+            placeholder="Category"
+            className="border border-gray-300 rounded-xl p-2 w-96 h-16"
+          />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>Profile</DropdownMenuItem>
+          <DropdownMenuItem>Billing</DropdownMenuItem>
+          <DropdownMenuItem>Team</DropdownMenuItem>
+          <DropdownMenuItem>Subscription</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+    <div className="space-y-2">
+      <Label htmlFor="description" className="block">
+        Description
+      </Label>
+      <textarea
+        id="description"
+        placeholder="Talk a bit about description. Minimum 200 characters."
+        className="border border-gray-300 rounded-md p-2 w-full h-[350px]"
+      />
+    </div>
     <Button
       className="flex flex-col h-[45px] w-[200px] justify-between items-center mx-auto text-white bg-customColor-innovatio3 rounded-full px-4 py-2 border-customColor-innovatio3 border-2 hover:bg-customColor-innovatio hover:text-customColor-innovatio3"
       onClick={onNext}
@@ -113,7 +153,9 @@ const Step4: React.FC<{ onNext: () => void }> = ({ onNext }) => {
   return (
     <div className="flex min-h-screen">
       <div className="w-1/3 bg-customColor-innovatio3 text-white p-10 flex flex-col justify-center">
-        <h1 className="text-4xl font-bold mb-10">Present your team members :)</h1>
+        <h1 className="text-4xl font-bold mb-10">
+          Present your team members :)
+        </h1>
         <div className="flex flex-col space-y-4">
           {teamMembers.map((member, index) => (
             <div key={index} className="flex items-center space-x-4">
@@ -195,7 +237,10 @@ const Step4: React.FC<{ onNext: () => void }> = ({ onNext }) => {
 };
 const CreateCampaignScreen: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
-
+  const users = [
+    { id: 1, wallet: "0xba1234567890abcdef1234567890abcdef123456" },
+   
+  ];
   const handleStepChange = (step: number) => {
     setCurrentStep(step);
   };
@@ -203,10 +248,13 @@ const CreateCampaignScreen: React.FC = () => {
   return (
     <div className="flex min-h-screen">
       <div className="w-1/3 bg-customColor-innovatio3 text-white p-10 flex flex-col justify-center items-center">
-        <h1 className="text-5xl border-separate text-pretty font-bold mb-10">Lets Start with <br/> the inicial<br/> description</h1>
-        <div className="flex flex-col space-y-4">
+        <h1 className="text-5xl border-separate text-pretty font-bold mb-10">
+          Lets Start with <br /> the inicial
+          <br /> description
+        </h1>
+        <div className="relative flex flex-col space-y-4">
           <Button
-            className="text-white bg-customColor-innovatio3 rounded-full px-4 py-2 border-customColor-innovatio border-2 hover:bg-customColor-innovatio hover:text-customColor-innovatio3"
+            className=" text-white bg-customColor-innovatio3 rounded-full px-4 py-2 border-customColor-innovatio border-2 hover:bg-customColor-innovatio hover:text-customColor-innovatio3"
             onClick={() => handleStepChange(1)}
           >
             Step 1
@@ -234,9 +282,13 @@ const CreateCampaignScreen: React.FC = () => {
       </div>
       <div className="w-2/3 bg-gray-100 p-10">
         <div className="flex justify-end">
-          <Link href="/">
-            <Button className="bg-gray-200 rounded-full px-4 py-2">Exit</Button>
-          </Link>
+          <Avatar className="mx-auto flex flex-col mt-2.5 mr-4">
+            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+          {users.map((user) => (
+            <AvatarWallet key={user.id} wallet={user.wallet} />
+          ))}
         </div>
         <Link href="/">
           <button>

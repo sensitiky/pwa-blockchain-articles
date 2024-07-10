@@ -100,141 +100,129 @@ const Login: React.FC = () => {
                   </h1>
                 </div>
                 <div className="justify-center gap-4 items-center mx-auto grid-1 flex flex-col mt-6 grid-2 sm:flex-row">
-                  <Link href="">
-                    <Dialog defaultOpen>
-                      <DialogTrigger asChild>
-                        <Button className="hover:bg-customColor-innovatio3 hover:text-customColor-innovatio bg-customColor-innovatio2 border-customColor-innovatio3 border-2 rounded-full px-6 py-3 text-sm text-customColor-innovatio3 font-medium">
-                          Sign Up
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px]">
-                        <DialogTitle className="font-bold text-center flex-col mx-auto justify-between text-2xl text-customColor-innovatio3">
-                          WELCOME
-                        </DialogTitle>
-                        <DialogDescription />
-                        <Tabs defaultValue="login" className="w-full">
-                          <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="login">Login</TabsTrigger>
-                            <TabsTrigger value="register">Register</TabsTrigger>
-                          </TabsList>
-                          <TabsContent value="login">
-                            <div className="space-y-4">
+                  <Dialog defaultOpen>
+                    <DialogTrigger asChild>
+                      <Button className="hover:bg-customColor-innovatio3 hover:text-customColor-innovatio bg-customColor-innovatio2 border-customColor-innovatio3 border-2 rounded-full px-6 py-3 text-sm text-customColor-innovatio3 font-medium">
+                        Sign Up
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogTitle className="font-bold text-center flex-col mx-auto justify-between text-2xl text-customColor-innovatio3">
+                        WELCOME
+                      </DialogTitle>
+                      <DialogDescription />
+                      <Tabs defaultValue="login" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                          <TabsTrigger value="login">Login</TabsTrigger>
+                          <TabsTrigger value="register">Register</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="login">
+                          <div className="space-y-4">
+                            <Button
+                              variant="outline"
+                              className="w-full hover:bg-customColor-innovatio2"
+                            >
+                              <ChromeIcon className="mr-2 h-4 w-4" />
+                              Sign in with Google
+                            </Button>
+                            <div className="relative">
+                              <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t" />
+                              </div>
+                              <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-background px-2 text-muted-foreground">
+                                  Or continue with
+                                </span>
+                              </div>
+                            </div>
+                            <form className="space-y-2">
+                              <div className="space-y-1">
+                                <Label htmlFor="username">Username</Label>
+                                <Input
+                                  id="username"
+                                  placeholder="Your username"
+                                  value={username}
+                                  onChange={(e) => setUsername(e.target.value)}
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label htmlFor="password">Password</Label>
+                                <Input
+                                  id="password"
+                                  type="password"
+                                  value={password}
+                                  onChange={(e) => setPassword(e.target.value)}
+                                />
+                              </div>
                               <Button
-                                variant="outline"
-                                className="w-full hover:bg-customColor-innovatio2"
+                                onClick={handleLoginSubmit}
+                                type="submit"
+                                className="w-full bg-customColor-innovatio3 hover:bg-customColor-innovatio2 hover:text-customColor-innovatio3"
                               >
-                                <ChromeIcon className="mr-2 h-4 w-4" />
-                                Sign in with Google
+                                Login
                               </Button>
-                              <div className="relative">
-                                <div className="absolute inset-0 flex items-center">
-                                  <span className="w-full border-t" />
-                                </div>
-                                <div className="relative flex justify-center text-xs uppercase">
-                                  <span className="bg-background px-2 text-muted-foreground">
-                                    Or continue with
-                                  </span>
-                                </div>
+                            </form>
+                          </div>
+                        </TabsContent>
+                        <TabsContent value="register">
+                          <div className="space-y-4">
+                            <Button variant="outline" className="w-full">
+                              <ChromeIcon className="mr-2 h-4 w-4" />
+                              Sign up with Google
+                            </Button>
+                            <div className="relative">
+                              <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t" />
                               </div>
-                              <form className="space-y-2">
-                                <div className="space-y-1">
-                                  <Label htmlFor="username">Username</Label>
-                                  <Input
-                                    id="username"
-                                    placeholder="Your username"
-                                    value={username}
-                                    onChange={(e) =>
-                                      setUsername(e.target.value)
-                                    }
-                                  />
-                                </div>
-                                <div className="space-y-1">
-                                  <Label htmlFor="password">Password</Label>
-                                  <Input
-                                    id="password"
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) =>
-                                      setPassword(e.target.value)
-                                    }
-                                  />
-                                </div>
-                                <Button
-                                  onClick={handleLoginSubmit}
-                                  type="submit"
-                                  className="w-full bg-customColor-innovatio3 hover:bg-customColor-innovatio2 hover:text-customColor-innovatio3"
-                                >
-                                  Login
-                                </Button>
-                              </form>
+                              <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-background px-2 text-muted-foreground">
+                                  Or continue with
+                                </span>
+                              </div>
                             </div>
-                          </TabsContent>
-                          <TabsContent value="register">
-                            <div className="space-y-4">
-                              <Button variant="outline" className="w-full">
-                                <ChromeIcon className="mr-2 h-4 w-4" />
-                                Sign up with Google
-                              </Button>
-                              <div className="relative">
-                                <div className="absolute inset-0 flex items-center">
-                                  <span className="w-full border-t" />
-                                </div>
-                                <div className="relative flex justify-center text-xs uppercase">
-                                  <span className="bg-background px-2 text-muted-foreground">
-                                    Or continue with
-                                  </span>
-                                </div>
+                            <form className="space-y-2">
+                              <div className="space-y-1">
+                                <Label htmlFor="username">Username</Label>
+                                <Input
+                                  id="username"
+                                  placeholder="Your username"
+                                  value={username}
+                                  onChange={(e) => setUsername(e.target.value)}
+                                />
                               </div>
-                              <form
-                                
-                                className="space-y-2"
-                              >
-                                <div className="space-y-1">
-                                  <Label htmlFor="username">Username</Label>
-                                  <Input
-                                    id="username"
-                                    placeholder="Your username"
-                                    value={username}
-                                    onChange={(e) =>
-                                      setUsername(e.target.value)
-                                    }
-                                  />
-                                </div>
-                                <div className="space-y-1">
-                                  <Label htmlFor="email">Email</Label>
-                                  <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="youremail@example.com"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                  />
-                                </div>
-                                <div className="space-y-1">
-                                  <Label htmlFor="password">Password</Label>
-                                  <Input
-                                    id="password"
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) =>
-                                      setPassword(e.target.value)
-                                    }
-                                  />
-                                </div>
-                                <Button
+                              <div className="space-y-1">
+                                <Label htmlFor="email">Email</Label>
+                                <Input
+                                  id="email"
+                                  type="email"
+                                  placeholder="youremail@example.com"
+                                  value={email}
+                                  onChange={(e) => setEmail(e.target.value)}
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label htmlFor="password">Password</Label>
+                                <Input
+                                  id="password"
+                                  type="password"
+                                  value={password}
+                                  onChange={(e) => setPassword(e.target.value)}
+                                />
+                              </div>
+                              <Button
                                 onClick={handleRegisterSubmit}
-                                  type="submit"
-                                  className="w-full bg-customColor-innovatio3 hover:bg-customColor-innovatio2 hover:text-customColor-innovatio3"
-                                >
-                                  Sign Up
-                                </Button>
-                              </form>
-                            </div>
-                          </TabsContent>
-                        </Tabs>
-                      </DialogContent>
-                    </Dialog>
-                  </Link>
+                                type="submit"
+                                className="w-full bg-customColor-innovatio3 hover:bg-customColor-innovatio2 hover:text-customColor-innovatio3"
+                              >
+                                Sign Up
+                              </Button>
+                            </form>
+                          </div>
+                        </TabsContent>
+                      </Tabs>
+                    </DialogContent>
+                  </Dialog>
+
                   <Button
                     variant="outline"
                     className=" bg-customColor-innovatio3 rounded-full px-6 py-3 text-sm text-customColor-innovatio font-medium border-2 hover:bg-customColor-innovatio2 hover:border-customColor-innovatio3"

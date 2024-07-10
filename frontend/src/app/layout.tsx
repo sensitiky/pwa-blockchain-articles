@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html className="bg-customColor-innovatio" lang="en">
-      <body className={`flex bg-customColor-innovatio flex-col min-h-screen ${inter.className}`}>
+      <body className={`flex bg-gradient flex-col min-h-screen ${inter.className}`}>
         <main className="flex-grow">{children}</main>
       </body>
     </html>

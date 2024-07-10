@@ -17,7 +17,7 @@ const HomePage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<{ username: string } | null>(null);
   const router = useRouter();
-  
+
   useEffect(() => {
     const token = cookies.get("token");
     if (token) {
@@ -53,20 +53,14 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="bg-customColor-innovatio">
+    <div className="bg-gradient">
       <Header isAuthenticated={isAuthenticated} />
-      <h1>
-        {isAuthenticated ? `Logged in as ${user?.username}` : "Not logged in"}
-      </h1>
-      <Button onClick={logout}>Logout</Button>
-      <Link href="/test">
-        <Button className="rounded-full">Signup</Button>
-      </Link>
+      
       <section>
-        <h1 className="font-bold text-customColor-innovatio3 text-7xl flex-col mx-auto justify-between w-[600px]">
-          Invest and found
+        <h1 className="mt-32 cursor-none text-center flex-col mx-auto justify-between text-customColor-innovatio3 lg:leading-tighter text-7xl font-bold tracking-tighter">
+          Invest & Found
         </h1>
-        <p className="text-gray-500 text-xl flex-col mx-auto justify-between w-[600px]">
+        <p className="text-gray-500 text-xl flex-col mx-auto justify-between w-[600px]  text-center">
           Help different crowdfunding campaigns become a <br />
           reality thanks to your contributions, invest in projects,
           <br /> fund purposes and get rewards.
@@ -79,20 +73,7 @@ const HomePage: React.FC = () => {
         width={500}
         className="mx-auto justify-between items-end flex-col mb-8 mr-8 rounded-sm"
       />
-      <Info
-        onNext={function (): void {
-          throw new Error("Function not implemented.");
-        }}
-      />
-      <ProjectCard
-        status={""}
-        category={""}
-        title={""}
-        description={""}
-        raised={0}
-        target={0}
-        milestones={0}
-      />
+
       <Footer />
     </div>
   );
