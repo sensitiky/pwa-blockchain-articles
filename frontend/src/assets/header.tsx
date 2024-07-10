@@ -43,7 +43,7 @@ const Header = () => {
     <div>
       <div className="lg:hidden flex items-center justify-between px-4 lg:px-6 h-14 border-b bg-header ">
         <div className="flex items-center">
-          <Sheet className="bg-gradient">
+          <Sheet>
             <SheetTrigger>
               <button className="focus:outline-none">
                 <svg
