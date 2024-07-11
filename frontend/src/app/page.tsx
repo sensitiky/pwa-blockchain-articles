@@ -157,7 +157,8 @@ const HomePage: React.FC = () => {
   ];
 
   return (
-    <div className="bg-gradient3">
+    <div className="bg-gradient5 md:bg-gradient">
+      {" "}
       <Header />
       <div
         className="relative h-screen flex items-center justify-center"
@@ -188,7 +189,6 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </div>
-
       <section
         className="py-16 px-4 md:px-8 mb-52"
         data-aos="fade-in"
@@ -260,7 +260,6 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
-
       <section
         className="py-16 px-4 md:px-8"
         data-aos="fade-in"
@@ -403,7 +402,6 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
-
       <section
         className="py-16 px-4 md:px-8 mb-40"
         data-aos="fade-in"
@@ -474,14 +472,13 @@ const HomePage: React.FC = () => {
           </div>
           <div className="text-center mt-8">
             <Link href="/articles">
-            <Button className="px-6 py-2 border-2 text-customColor-innovatio3 bg-inherit border-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio rounded-full">
-              View More
-            </Button>
+              <Button className="px-6 py-2 border-2 text-customColor-innovatio3 bg-inherit border-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio rounded-full">
+                View More
+              </Button>
             </Link>
           </div>
         </div>
       </section>
-
       <footer className="py-6 border-t border-gray-300 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">

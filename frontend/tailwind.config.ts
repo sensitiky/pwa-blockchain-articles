@@ -63,11 +63,13 @@ const config = {
       },
       backgroundImage: {
         gradient:
-          "linear-gradient(to top,#ffffff,#ECF0F7,#D8E1EB,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#1A5285, #103253,#061D34)",
+          "linear-gradient(to top,#061D34, #103253,#CDD4E1,#D8E1EB,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#CDD4E1, #103253,#061D34)",
+          gradient5:
+          "linear-gradient(to top,#061D34, #103253,#CDD4E1,#D8E1EB,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#CDD4E1, #061D34)",
           gradient3:
           "radial-gradient(circle,#ffffff,#ECF0F7,#D8E1EB,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#1A5285, #103253,#061D34)",
           gradient2:
-          "linear-gradient(to bottom,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#1A5285)",
+          "linear-gradient(to bottom #061D34, #103253,#CDD4E1,#D8E1EB,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#CDD4E1, #103253,#061D34)",
           gradient4:
           "linear-gradient(to bottom,#FFFFFF,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#1A5285)",
         header: "linear-gradient(to top, ##000916, #c8e4ff",
