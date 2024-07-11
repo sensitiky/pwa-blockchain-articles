@@ -9,6 +9,7 @@ import Header from "@/assets/header";
 import Image from "next/image";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import ArticleCarousel from "@/assets/carousel";
 
 const cookies = new Cookie();
 type image = {
@@ -261,148 +262,7 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <section
-        className="py-16 px-4 md:px-8"
-        data-aos="fade-in"
-        data-aos-once="true"
-        data-aos-anchor-placement="top-bottom"
-        data-aos-offset="200"
-      >
-        <div className="container mx-auto">
-          <div className="grid md:grid-cols-3 gap-8 mb-6">
-            <div className="col-span-1">
-              <h2 className="text-2xl md:text-2xl font-bold mb-4 text-customColor-innovatio3">
-                Users with Most Contributions
-              </h2>
-              <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4">
-                <ul>
-                  {users
-                    .slice(0, Math.ceil(users.length / 2))
-                    .map((user, index) => (
-                      <li key={index} className="flex items-center mb-2">
-                        <Image
-                          src={user.avatar}
-                          alt={user.name}
-                          width={40}
-                          height={40}
-                          className="rounded-full"
-                        />
-                        <div className="ml-2">
-                          <p className="text-lg font-semibold">{user.name}</p>
-                          <p className="text-sm text-gray-500">
-                            {user.reads} reads
-                          </p>
-                        </div>
-                      </li>
-                    ))}
-                </ul>
-                <ul>
-                  {users
-                    .slice(Math.ceil(users.length / 2))
-                    .map((user, index) => (
-                      <li key={index} className="flex items-center mb-2">
-                        <Image
-                          src={user.avatar}
-                          alt={user.name}
-                          width={40}
-                          height={40}
-                          className="rounded-full"
-                        />
-                        <div className="ml-2">
-                          <p className="text-lg font-semibold">{user.name}</p>
-                          <p className="text-sm text-gray-500">
-                            {user.reads} reads
-                          </p>
-                        </div>
-                      </li>
-                    ))}
-                </ul>
-              </div>
-              <div className="text-center">
-                <Button className="mt-4 px-4 py-2 border-2 rounded-full bg-inherit text-customColor-innovatio3 border-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio">
-                  View All
-                </Button>
-              </div>
-            </div>
-
-            <div className="w-0 border-r-[1px] border-customColor-innovatio3"></div>
-            <div className="col-span-1">
-              <h2 className="text-2xl md:text-2xl font-bold mb-4 text-customColor-innovatio3">
-                Most Liked Articles
-              </h2>
-              <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
-                <ul>
-                  {articles
-                    .slice(0, Math.ceil(articles.length / 2))
-                    .map((article, index) => (
-                      <li key={index} className="flex items-center mb-2">
-                        <Image
-                          src={article.avatar}
-                          alt={article.author}
-                          width={40}
-                          height={40}
-                          className="rounded-full"
-                        />
-                        <div className="ml-2">
-                          <p className="text-lg font-semibold">
-                            {article.title}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {article.time}
-                          </p>
-                        </div>
-                      </li>
-                    ))}
-                </ul>
-                <ul>
-                  {articles
-                    .slice(Math.ceil(articles.length / 2))
-                    .map((article, index) => (
-                      <li key={index} className="flex items-center mb-2">
-                        <Image
-                          src={article.avatar}
-                          alt={article.author}
-                          width={40}
-                          height={40}
-                          className="rounded-full"
-                        />
-                        <div className="ml-2">
-                          <p className="text-lg font-semibold">
-                            {article.title}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {article.time}
-                          </p>
-                        </div>
-                      </li>
-                    ))}
-                </ul>
-              </div>
-              <div className="text-center">
-                <Button className="mt-4 px-4 py-2 border-2 rounded-full bg-inherit text-customColor-innovatio3 border-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio">
-                  View All
-                </Button>
-              </div>
-            </div>
-          </div>
-          <div className="border-t my-8 border-customColor-innovatio3"></div>
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold mb-4 text-customColor-innovatio3">
-              Categories
-            </h2>
-            <div className="flex flex-wrap">
-              {categories.map((category, index) => (
-                <div key={index} className="mr-4 mb-4">
-                  <Button className="px-4 py-2 border-2 rounded-full bg-inherit border-customColor-innovatio3 text-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio">
-                    {category.name}{" "}
-                    <span className="ml-2 text-gray-500">{category.count}</span>
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      <ArticleCarousel/>
 
       <section
         className="py-16 px-4 md:px-8 mb-40"
