@@ -261,9 +261,7 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
-
-      <ArticleCarousel/>
-
+      <ArticleCarousel />
       <section
         className="py-16 px-4 md:px-8 mb-40"
         data-aos="fade-in"

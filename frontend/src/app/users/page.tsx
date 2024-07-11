@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Footer from "@/assets/footer";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton"
 
 const articles = [
   {

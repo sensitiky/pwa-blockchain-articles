@@ -14,6 +14,7 @@ import Header from "@/assets/header";
 import Footer from "@/assets/footer";
 import { Separator } from "@/components/ui/separator";
 import { FaRegHeart, FaRegComment } from "react-icons/fa";
+import Link from "next/link";
 
 interface Article {
   id: number;
@@ -289,9 +290,11 @@ const Articles: React.FC = () => {
                   <span className="text-sm text-gray-500">
                     {article.reads} reads
                   </span>
+                  <Link href="/draft">
                   <button className="bg-customColor-innovatio3 text-white px-4 py-2 rounded-full hover:bg-customColor-innovatio hover:text-customColor-innovatio3 mt-2 md:mt-0">
                     Read More
                   </button>
+                  </Link>
                 </div>
 
                 <div className="flex items-center justify-start mt-4 space-x-4">

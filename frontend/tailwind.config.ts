@@ -72,7 +72,6 @@ const config = {
           "linear-gradient(to bottom #061D34, #103253,#CDD4E1,#D8E1EB,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#CDD4E1, #103253,#061D34)",
           gradient4:
           "linear-gradient(to bottom,#FFFFFF,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#1A5285)",
-        header: "linear-gradient(to top, ##000916, #c8e4ff",
       },
       borderRadius: { 
         lg: "var(--radius)",

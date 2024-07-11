@@ -1,4 +1,6 @@
 "use client";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import {
   Card,
@@ -7,12 +9,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { AvatarImage } from "@radix-ui/react-avatar";
+import { Button } from "@/components/ui/button";
+import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css";
+import { FaCheck } from 'react-icons/fa';
 import {
   Sheet,
   SheetContent,
@@ -21,8 +21,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import Link from 'next/link';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from 'next/image';
+import { Separator } from "@/components/ui/separator";
+import ImageUpload from "@/assets/imageupload";
+import Upload from "@/assets/upload";
 
 const categories = [
   "Educational",
@@ -33,19 +37,25 @@ const categories = [
   "Journalist Interview",
 ];
 
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+
 const NewArticles: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [isBlockchainSpecific, setIsBlockchainSpecific] = useState<
-    boolean | null
-  >(null);
+  const [isBlockchainSpecific, setIsBlockchainSpecific] = useState<boolean | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [title, setTitle] = useState("");
   const [story, setStory] = useState("");
   const [inputTag, setInputTag] = useState("");
-  const [user, setUser] = useState({ name: "", profilePicture: "" });
+  const [user, setUser] = useState({
+    name: "Pepito",
+    profilePicture: "https://via.placeholder.com/150",
+  });
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
+  const [bannerImage, setBannerImage] = useState<string | null>(null);
+  const [socialLinks, setSocialLinks] = useState<{ platform: string; url: string; icon: string; checked: boolean; displayIcon: boolean }[]>([]);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -53,7 +63,6 @@ const NewArticles: React.FC = () => {
       const token = localStorage.getItem("token");
       if (token) {
         setIsAuthenticated(true);
-        // Opcional: Hacer una solicitud para obtener los datos del usuario con el token
         try {
           const response = await fetch("http://localhost:4000/users/session", {
             method: "GET",
@@ -64,17 +73,19 @@ const NewArticles: React.FC = () => {
           });
           if (response.ok) {
             const userData = await response.json();
-            setUser(userData.user); // Ajusta esto según la estructura de la respuesta
+            setUser(userData.user);
           } else {
             console.error("Failed to fetch user data");
-            localStorage.removeItem("token"); // Remover el token si la sesión no es válida
+            localStorage.removeItem("token");
+            setIsAuthenticated(false);
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
-          localStorage.removeItem("token"); // Remover el token si hay un error
+          localStorage.removeItem("token");
+          setIsAuthenticated(false);
         }
       }
-      setAuthChecked(true); // Marcar que la autenticación ha sido verificada
+      setAuthChecked(true);
     };
 
     verifyAuth();
@@ -98,12 +109,7 @@ const NewArticles: React.FC = () => {
   };
 
   const handlePublish = async () => {
-    if (
-      !selectedCategory ||
-      isBlockchainSpecific === null ||
-      !title ||
-      !story
-    ) {
+    if (!selectedCategory || isBlockchainSpecific === null || !title || !story) {
       setFeedbackMessage("Please fill in all fields.");
       return;
     }
@@ -113,7 +119,7 @@ const NewArticles: React.FC = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // Asegúrate de que el token JWT esté guardado en el localStorage
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
           category: selectedCategory,
@@ -121,6 +127,8 @@ const NewArticles: React.FC = () => {
           tags,
           title,
           story,
+          bannerImage,
+          socialLinks,
         }),
       });
 
@@ -132,6 +140,8 @@ const NewArticles: React.FC = () => {
         setTags([]);
         setTitle("");
         setStory("");
+        setBannerImage(null);
+        setSocialLinks([]);
       } else {
         setFeedbackMessage("Failed to publish article. Please try again.");
       }
@@ -148,9 +158,45 @@ const NewArticles: React.FC = () => {
     }
   };
 
-  // Verifica si la autenticación ha sido comprobada antes de renderizar
-if (!authChecked) {
-    return null; // Redirige inmediatamente si no se ha comprobado la autenticación
+  const handleAddSocialLink = () => {
+    setSocialLinks([...socialLinks, { platform: "", url: "", icon: "", checked: false, displayIcon: false }]);
+  };
+
+  const handleRemoveSocialLink = (index: number) => {
+    const newLinks = [...socialLinks];
+    newLinks.splice(index, 1);
+    setSocialLinks(newLinks);
+  };
+
+  const handleIconFetch = async (url: string): Promise<string> => {
+    try {
+      const domain = new URL(url).hostname;
+      return `https://www.google.com/s2/favicons?domain=${domain}`;
+    } catch (error) {
+      console.error("Invalid URL:", error);
+      return 'https://via.placeholder.com/16';
+    }
+  };
+
+  const handleInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === 'Enter') {
+      const newLinks = [...socialLinks];
+      newLinks[index].displayIcon = true;
+      setSocialLinks(newLinks);
+    }
+  };
+
+  const handleCheckboxChange = async (index: number) => {
+    const newLinks = [...socialLinks];
+    newLinks[index].displayIcon = !newLinks[index].displayIcon;
+    if (newLinks[index].displayIcon && !newLinks[index].icon) {
+      newLinks[index].icon = await handleIconFetch(newLinks[index].url);
+    }
+    setSocialLinks(newLinks);
+  };
+
+  if (!authChecked) {
+    return null;
   }
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -277,6 +323,7 @@ if (!authChecked) {
           </div>
         </header>
       </div>
+
       <div className="flex flex-col md:flex-row items-start justify-center px-6 py-8 space-y-8 md:space-x-8">
         <div className="flex flex-col space-y-6 w-full md:w-1/3">
           <Card className="p-4 shadow-none border-0">
@@ -334,7 +381,7 @@ if (!authChecked) {
             </CardContent>
             <CardFooter>
               <button
-                className="px-6 py-2 bg-customColor-innovatio3 text-white rounded-md hover:bg-green-600 transition"
+                className="px-6 py-2 bg-customColor-innovatio3 text-white rounded-full hover:bg-green-600 transition"
                 onClick={handlePublish}
               >
                 Continue
@@ -430,6 +477,35 @@ if (!authChecked) {
         />
 
         <div className="flex flex-col space-y-6 w-full md:w-2/3">
+          {bannerImage && (
+            <div className="w-full h-64 relative">
+              <Image
+                src={bannerImage}
+                alt="Banner Image"
+                layout="fill"
+                objectFit="cover"
+                className="rounded-lg"
+              />
+              <button
+                className="absolute top-2 right-2 p-1 bg-transparent text-white rounded-full"
+                onClick={() => setBannerImage(null)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-6 h-6 cursor-pointer text-red-500"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M6.225 5.225a.75.75 0 011.06 0L12 9.94l4.715-4.715a.75.75 0 111.06 1.06L13.06 11l4.715 4.715a.75.75 0 11-1.06 1.06L12 12.06l-4.715 4.715a.75.75 0 01-1.06-1.06L10.94 11 6.225 6.285a.75.75 0 010-1.06z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
+
           <Card className="p-4 border-0 shadow-none">
             <CardHeader>
               <CardTitle>Title</CardTitle>
@@ -445,17 +521,16 @@ if (!authChecked) {
               />
             </CardContent>
           </Card>
+
+          <ImageUpload setImage={setBannerImage} />
+
           <Card className="p-4 shadow-none border-0">
             <CardHeader>
-              <CardTitle>Introduce your story...</CardTitle>
+              <CardTitle>Introduce your description</CardTitle>
             </CardHeader>
             <CardContent>
-              <textarea
-                placeholder="Introduce your story..."
-                className="border border-gray-300 p-4 w-full rounded-xl h-48"
-                value={story}
-                onChange={(e) => setStory(e.target.value)}
-              />
+              <ReactQuill value={story} onChange={setStory} />
+              <Upload />
             </CardContent>
             <CardFooter>
               <button
@@ -465,6 +540,86 @@ if (!authChecked) {
                 Publish
               </button>
             </CardFooter>
+          </Card>
+
+          <Card className="p-4 shadow-none border-0">
+            <CardHeader>
+              <CardTitle>Social Links</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-wrap gap-2">
+              {socialLinks.map((link, index: number) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-2 mb-2 flex-wrap"
+                >
+                  {link.displayIcon ? (
+                    <img
+                      src={link.icon || "https://via.placeholder.com/16"}
+                      alt="icon"
+                      className="w-4 h-4"
+                    />
+                  ) : (
+                    <input
+                      type="checkbox"
+                      checked={link.checked}
+                      onChange={() => handleCheckboxChange(index)}
+                      className="mr-2"
+                    />
+                  )}
+                  {link.displayIcon ? (
+                    <>
+                      <span>{link.platform}</span>
+                      <span>{link.url}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Input
+                        type="text"
+                        placeholder="Platform"
+                        value={link.platform}
+                        onChange={(e) => {
+                          const newLinks = [...socialLinks];
+                          newLinks[index].platform = e.target.value;
+                          setSocialLinks(newLinks);
+                        }}
+                        className="flex-1"
+                        onKeyPress={(e) => handleInputKeyPress(e, index)}
+                      />
+                      <Input
+                        type="text"
+                        placeholder="URL"
+                        value={link.url}
+                        onChange={async (e) => {
+                          const newLinks = [...socialLinks];
+                          newLinks[index].url = e.target.value;
+                          if (link.displayIcon) {
+                            newLinks[index].icon = await handleIconFetch(
+                              e.target.value
+                            );
+                          }
+                          setSocialLinks(newLinks);
+                        }}
+                        className="flex-1"
+                        onKeyPress={(e) => handleInputKeyPress(e, index)}
+                      />
+                    </>
+                  )}
+                  <button
+                    className="p-1 bg-white text-red-600 rounded-full"
+                    onClick={() => handleRemoveSocialLink(index)}
+                  >
+                    X
+                  </button>
+                  <FaCheck className="w-4 h-4 text-green-500 ml-2" />
+                </div>
+              ))}
+              <button
+                className="px-4 py-2 bg-customColor-innovatio3 text-white rounded-md hover:bg-green-600 transition"
+                onClick={handleAddSocialLink}
+              >
+                Add Social Link
+              </button>
+            </CardContent>
           </Card>
         </div>
       </div>
