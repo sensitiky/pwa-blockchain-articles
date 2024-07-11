@@ -35,7 +35,7 @@ const Header = () => {
     if (!isAuthenticated) {
       router.push("/authentication");
     } else {
-      router.push("/new-campaign");
+      router.push("/newarticles");
     }
   };
 
