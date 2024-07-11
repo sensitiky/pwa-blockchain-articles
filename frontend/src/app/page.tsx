@@ -419,17 +419,17 @@ const HomePage: React.FC = () => {
           </div>
           <div className="flex flex-wrap justify-between mb-8">
             <div className="flex flex-col w-full md:w-auto mb-4 md:mb-0">
-              <select className="border-b-2 border-t-2 border-l-0 bg-inherit border-r-0 focus:ring-0 border-customColor-innovatio3 focus:border-customColor-innovatio3 text-lg">
+              <select className="py-2 border-b-2 border-t-2 border-l-0 bg-inherit border-r-0 focus:ring-0 border-customColor-innovatio3 focus:border-customColor-innovatio3 text-lg">
                 <option>Category</option>
               </select>
             </div>
             <div className="flex flex-col w-full md:w-auto mb-4 md:mb-0">
-              <select className="border-b-2 border-t-2 bg-inherit border-l-0 border-r-0 focus:ring-0 border-customColor-innovatio3 focus:border-customColor-innovatio3 text-lg">
+              <select className="py-2 border-b-2 border-t-2 bg-inherit border-l-0 border-r-0 focus:ring-0 border-customColor-innovatio3 focus:border-customColor-innovatio3 text-lg">
                 <option>Labels most used</option>
               </select>
             </div>
             <div className="flex flex-col w-full md:w-auto mb-4 md:mb-0">
-              <select className="border-b-2 border-t-2 bg-inherit border-l-0 border-r-0 border-customColor-innovatio3 focus:ring-0 focus:border-customColor-innovatio3 text-lg">
+              <select className="py-2 border-b-2 border-t-2 bg-inherit border-l-0 border-r-0 border-customColor-innovatio3 focus:ring-0 focus:border-customColor-innovatio3 text-lg">
                 <option>Date</option>
               </select>
             </div>
@@ -473,9 +473,11 @@ const HomePage: React.FC = () => {
             ))}
           </div>
           <div className="text-center mt-8">
+            <Link href="/articles">
             <Button className="px-6 py-2 border-2 text-customColor-innovatio3 bg-inherit border-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio rounded-full">
               View More
             </Button>
+            </Link>
           </div>
         </div>
       </section>

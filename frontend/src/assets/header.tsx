@@ -100,16 +100,18 @@ const Header = () => {
                   </Link>
                 </div>
                 <div className="flex justify-center">
-                <Button className="bg-customColor-innovatio3 rounded-full px-4 py-2 text-sm font-medium">
-                  Connect Wallet
-                </Button>
+                  <Button className="bg-customColor-innovatio3 rounded-full px-4 py-2 text-sm font-medium">
+                    Connect Wallet
+                  </Button>
                 </div>
               </nav>
             </SheetContent>
           </Sheet>
         </div>
         <div>
-          <img src="/Logo.svg" alt="Logo" className="h-8 filter invert" />
+          <Link href="/">
+            <img src="/Logo.svg" alt="Logo" className="h-8 filter invert" />
+          </Link>
         </div>
       </div>
 
