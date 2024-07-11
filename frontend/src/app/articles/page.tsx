@@ -209,7 +209,7 @@ const Articles: React.FC = () => {
   );
 
   return (
-    <div className="bg-gradient px-4 min-h-screen">
+    <div className="bg-gradient5 md:bg-gradient px-4 min-h-screen">
       <Header />
       <div className="container py-8 mx-auto">
         <h1 className="text-4xl font-bold text-center mb-8 text-customColor-letras">

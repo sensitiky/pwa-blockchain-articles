@@ -131,10 +131,10 @@ const Login: React.FC = () => {
     handleRegister(username, email, password);
   };
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gradient2 ">
       <Header />
       <main
-        className="flex-1 mt-12 md:mt-16 lg:mt-20"
+        className="flex-1 mt-12 md:mt-16 lg:mt-20 "
         data-aos="fade-in"
         data-aos-once="true"
         data-aos-anchor-placement="top-bottom"
@@ -294,7 +294,6 @@ const Login: React.FC = () => {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   );
 };
