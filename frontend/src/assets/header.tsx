@@ -41,7 +41,7 @@ const Header = () => {
 
   return (
     <div>
-      <div className="lg:hidden flex items-center justify-between px-4 lg:px-6 h-14 border-b bg-header ">
+      <div className="lg:hidden flex items-center justify-between px-4 lg:px-6 h-14 border-b">
         <div className="flex items-center">
           <Sheet>
             <SheetTrigger>
@@ -115,7 +115,7 @@ const Header = () => {
         </div>
       </div>
 
-      <header className="bg-customColor-header p-4 hidden lg:block">
+      <header className="p-4 hidden lg:block">
         <div className="container mx-auto flex justify-between items-center">
           <div className="text-white text-lg font-semibold">
             <Link href="/">Blogchain</Link>

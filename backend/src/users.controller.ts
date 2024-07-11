@@ -10,7 +10,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { DatabaseService } from './database.service';
-import { CreateUserDto, LoginUserDto } from './dto/user.dto';
+import { CreateUserDto, LoginUserDto, CreateArticleDto  } from './dto/user.dto';
 import { User } from './user.interface';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
@@ -115,6 +115,28 @@ export class UsersController {
       }
 
       return { user };
+    } catch (error) {
+      throw new UnauthorizedException('Token inválido o expirado');
+    }
+  }
+
+  @Post('publish')
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  async publishArticle(@Body() articleData: CreateArticleDto, @Req() req): Promise<{ message: string }> {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      throw new UnauthorizedException('Token no proporcionado');
+    }
+
+    try {
+      const decoded = this.jwtService.verify(token);
+      const user = await this.dbService.findUserByUsername(decoded.username);
+      if (!user) {
+        throw new UnauthorizedException('Usuario no encontrado');
+      }
+
+      await this.dbService.createArticle({ ...articleData, author: user.username });
+      return { message: 'Artículo publicado exitosamente' };
     } catch (error) {
       throw new UnauthorizedException('Token inválido o expirado');
     }

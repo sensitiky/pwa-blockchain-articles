@@ -36,25 +36,30 @@ const Login: React.FC = () => {
   const handleGoogleLoginSuccess = async (response: CredentialResponse) => {
     const { credential } = response;
     try {
-      const result = await axios.post("/api/users/google-login", {
-        token: credential,
-      });
+      const result = await axios.post(
+        "http://localhost:4000/users/google-login",
+        {
+          token: credential,
+        }
+      );
       console.log("Google Login Success:", result.data);
       const { jwtToken } = result.data;
 
       // Guardar el token JWT en el almacenamiento local
-      localStorage.setItem("jwt", jwtToken);
+      localStorage.setItem("token", jwtToken);
 
       // Obtener la sesión del usuario
-      const sessionResponse = await axios.get("/api/users/session", {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      });
+      const sessionResponse = await axios.get(
+        "http://localhost:4000/users/session",
+        {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        }
+      );
       console.log("User session:", sessionResponse.data);
 
       // Redirigir o actualizar el estado de autenticación de la aplicación
-      // Por ejemplo, redirigir a la página de inicio
       window.location.href = "/dashboard"; // Redirigir a una página protegida
     } catch (error) {
       console.error("Google Login Error:", error);
@@ -105,7 +110,7 @@ const Login: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         console.log("Login successful:", data);
-        cookies.set("token", data.token, { path: "/" });
+        localStorage.setItem("token", data.token);
         router.push("/users");
       } else {
         const errorData = await response.json();
@@ -125,7 +130,6 @@ const Login: React.FC = () => {
     e.preventDefault();
     handleRegister(username, email, password);
   };
-
   return (
     <div className="flex flex-col min-h-screen">
       <Header />

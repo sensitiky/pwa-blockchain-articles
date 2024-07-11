@@ -3,6 +3,7 @@ import { Database } from 'sqlite';
 import openDatabase from './database/database';
 import { User } from './user.interface';
 import * as bcrypt from 'bcrypt';
+import { CreateArticleDto } from './dto/user.dto';
 
 @Injectable()
 export class DatabaseService {
@@ -15,6 +16,7 @@ export class DatabaseService {
   async initialize(): Promise<void> {
     this.db = await openDatabase();
     await this.createUsersTable();
+    await this.createArticlesTable();
   }
 
   async findUserByEmail(email: string): Promise<User | undefined> {
@@ -52,6 +54,22 @@ export class DatabaseService {
     return user;
   }
 
+  async createArticle(articleData: CreateArticleDto & { author: string }): Promise<void> {
+    if (!this.db) {
+      throw new Error('Database not initialized');
+    }
+    const { category, isBlockchainSpecific, tags, title, story, author } = articleData;
+    await this.db.run(
+      'INSERT INTO articles (category, isBlockchainSpecific, tags, title, story, author) VALUES (?, ?, ?, ?, ?, ?)',
+      category,
+      isBlockchainSpecific,
+      JSON.stringify(tags),
+      title,
+      story,
+      author,
+    );
+  }
+
   private async createUsersTable(): Promise<void> {
     if (!this.db) {
       throw new Error('Database not initialized');
@@ -62,6 +80,23 @@ export class DatabaseService {
         username TEXT NOT NULL,
         email TEXT NOT NULL,
         password TEXT NOT NULL
+      )
+    `);
+  }
+
+  private async createArticlesTable(): Promise<void> {
+    if (!this.db) {
+      throw new Error('Database not initialized');
+    }
+    await this.db.run(`
+      CREATE TABLE IF NOT EXISTS articles (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        category TEXT NOT NULL,
+        isBlockchainSpecific BOOLEAN NOT NULL,
+        tags TEXT NOT NULL,
+        title TEXT NOT NULL,
+        story TEXT NOT NULL,
+        author TEXT NOT NULL
       )
     `);
   }

@@ -25,6 +25,7 @@ const config = {
           innovatio3: "#000000",
           innovatio4: "#eef4ff",
           letras: "#fec116",
+          header:'#000916',
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -68,7 +69,7 @@ const config = {
           gradient2:
           "linear-gradient(to bottom,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#1A5285)",
           gradient4:
-          "linear-gradient(to bottom,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#1A5285)",
+          "linear-gradient(to bottom,#FFFFFF,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#1A5285)",
         header: "linear-gradient(to top, ##000916, #c8e4ff",
       },
       borderRadius: { 

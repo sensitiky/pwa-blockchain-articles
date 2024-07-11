@@ -1,9 +1,11 @@
 //Seccion de usuarios
-
+"use client";
 import Header from "@/assets/header";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import Footer  from "@/assets/footer";
+import Footer from "@/assets/footer";
+import { useRouter } from "next/navigation";
+
 const articles = [
   {
     id: 1,
@@ -21,6 +23,59 @@ const articles = [
 ];
 
 export default function Test1() {
+  const [authChecked, setAuthChecked] = useState(false);
+  const [user, setUser] = useState({ name: "", profilePicture: "" });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const verifyAuth = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        setIsAuthenticated(true);
+        // Opcional: Hacer una solicitud para obtener los datos del usuario con el token
+        try {
+          const response = await fetch("http://localhost:4000/users/session", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (response.ok) {
+            const userData = await response.json();
+            setUser(userData.user); // Ajusta esto según la estructura de la respuesta
+          } else {
+            console.error("Failed to fetch user data");
+            localStorage.removeItem("token"); // Remover el token si la sesión no es válida
+            router.push("/authentication");
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          localStorage.removeItem("token"); // Remover el token si hay un error
+          router.push("/authentication");
+        }
+      } else {
+        router.push("/authentication");
+      }
+      setAuthChecked(true); // Marcar que la autenticación ha sido verificada
+    };
+
+    verifyAuth();
+  }, []);
+
+  const router = useRouter();
+
+  const handleNewArticle = () => {
+    if (isAuthenticated) {
+      router.push("/newarticles");
+    } else {
+      router.push("/authentication");
+    }
+  };
+  // Verifica si la autenticación ha sido comprobada antes de renderizar
+  if (!authChecked) {
+    return <div>Loading...</div>; // Muestra un indicador de carga o spinner
+  }
   return (
     <div className="container mx-auto px-4 md:px-8 py-2">
       <Header />
@@ -34,11 +89,14 @@ export default function Test1() {
               height={150}
               className="rounded-full mx-auto"
             />
-            <h2 className="text-2xl font-semibold mt-4 text-white">Nevermind</h2>
+            <h2 className="text-2xl font-semibold mt-4 text-white">
+              Nevermind
+            </h2>
             <p className="text-customColor-innovatio mt-2">520 Followers</p>
             <button className="mt-2 px-4 py-2 border-2 rounded-full text-white border-white hover:bg-customColor-innovatio3 hover:text-white">
               Follow
             </button>
+            <button onClick={handleNewArticle}>Nuevos articulos test</button>
             <p className="mt-4 text-white  ">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -63,7 +121,10 @@ export default function Test1() {
         <div className="w-full md:w-2/3 lg:w-3/4 p-4">
           <h3 className="text-2xl font-semibold mb-4 text-white">Articles</h3>
           {articles.map((article) => (
-            <div key={article.id} className="mb-8 border-b border-customColor-innovatio3 pb-4">
+            <div
+              key={article.id}
+              className="mb-8 border-b border-customColor-innovatio3 pb-4"
+            >
               <div className="flex flex-col md:flex-row">
                 <Image
                   src={article.image}
@@ -98,7 +159,9 @@ export default function Test1() {
                         </div>
                       </div>
                     </div>
-                    <h4 className="text-xl font-bold mb-2 text-white">{article.title}</h4>
+                    <h4 className="text-xl font-bold mb-2 text-white">
+                      {article.title}
+                    </h4>
                     <p className="text-gray-700">{article.readTime}</p>
                   </div>
                   <div className="flex items-center mt-4 text-gray-500">
@@ -124,9 +187,8 @@ export default function Test1() {
             </div>
           ))}
         </div>
-
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
