@@ -74,7 +74,7 @@ export default function Test1() {
   };
   // Verifica si la autenticación ha sido comprobada antes de renderizar
   if (!authChecked) {
-    return <div>Loading...</div>; // Muestra un indicador de carga o spinner
+    return null; // Muestra un indicador de carga o spinner
   }
   return (
     <div className="container mx-auto px-4 md:px-8 py-2">

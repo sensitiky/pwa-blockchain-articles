@@ -149,8 +149,8 @@ const NewArticles: React.FC = () => {
   };
 
   // Verifica si la autenticación ha sido comprobada antes de renderizar
-  if (!authChecked) {
-    return <div>Loading...</div>; // Muestra un indicador de carga o spinner
+if (!authChecked) {
+    return null; // Redirige inmediatamente si no se ha comprobado la autenticación
   }
   return (
     <div className="min-h-screen flex flex-col bg-white">
