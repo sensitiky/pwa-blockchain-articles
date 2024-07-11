@@ -64,12 +64,10 @@ const Header = () => {
             </SheetTrigger>
             <SheetContent>
               <SheetHeader>
-                <SheetTitle>Navigation</SheetTitle>
-                <SheetDescription>
-                  This is the mobile navigation menu.
-                </SheetDescription>
+                <SheetTitle>Blogchain</SheetTitle>
+                <SheetDescription>Welcome to Blogchain!</SheetDescription>
               </SheetHeader>
-              <nav className="flex flex-col gap-4">
+              <nav className="flex flex-col gap-8">
                 <Link
                   href="#"
                   className="text-sm font-medium hover:underline underline-offset-4"
@@ -91,21 +89,27 @@ const Header = () => {
                 >
                   Help with the Campaign
                 </Link>
-                <Button
-                  variant="outline"
-                  className="bg-customColor-innovatio2 rounded-full px-4 py-2 text-sm font-medium hover:bg-customColor-innovatio3"
-                >
-                  Start New Campaign
-                </Button>
+                <div className="flex justify-center">
+                  <Link href="/authentication">
+                    <Button
+                      variant="outline"
+                      className="bg-customColor-innovatio2 rounded-full px-4 py-2 text-sm font-medium hover:bg-customColor-innovatio3"
+                    >
+                      Get Started
+                    </Button>
+                  </Link>
+                </div>
+                <div className="flex justify-center">
                 <Button className="bg-customColor-innovatio3 rounded-full px-4 py-2 text-sm font-medium">
                   Connect Wallet
                 </Button>
+                </div>
               </nav>
             </SheetContent>
           </Sheet>
         </div>
         <div>
-          <img src="/Logo.svg" alt="Logo" className="h-8 filter invert"/>
+          <img src="/Logo.svg" alt="Logo" className="h-8 filter invert" />
         </div>
       </div>
 

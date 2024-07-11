@@ -7,21 +7,23 @@ import { useRouter } from "next/navigation";
 import Cookie from "universal-cookie";
 import Header from "@/assets/header";
 import Image from "next/image";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const cookies = new Cookie();
-type image={
-  url:string;
-  alt:string;
+type image = {
+  url: string;
+  alt: string;
 };
 
-type Avatar ={
-  avatar:image;
+type Avatar = {
+  avatar: image;
 };
 
 const HomePage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<{ username: string } | null>(null);
-  const [avatar, setAvatar]=useState<Avatar | null>(null);
+  const [avatar, setAvatar] = useState<Avatar | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -29,6 +31,13 @@ const HomePage: React.FC = () => {
     if (token) {
       fetchUserSession(token);
     }
+
+    AOS.init({
+      duration: 1000,
+      easing: "ease-in-out",
+      once: true,
+      mirror: false,
+    });
   }, []);
 
   const fetchUserSession = async (token: string) => {
@@ -150,7 +159,13 @@ const HomePage: React.FC = () => {
   return (
     <div className="bg-gradient3">
       <Header />
-      <div className="relative h-screen flex items-center justify-center">
+      <div
+        className="relative h-screen flex items-center justify-center"
+        data-aos="fade-in"
+        data-aos-once="true"
+        data-aos-anchor-placement="top-bottom"
+        data-aos-offset="200"
+      >
         <div className="absolute top-0 left-0 w-full h-full opacity-75"></div>
         <div className="relative z-10 text-center text-white p-8">
           <h1 className="text-yellow-400 text-xl md:text-2xl">
@@ -159,7 +174,8 @@ const HomePage: React.FC = () => {
           <h2 className="text-3xl md:text-5xl font-bold mt-4">
             A place where we write <br />
             articles about blockchain
-            <br />to discuss
+            <br />
+            to discuss
           </h2>
           <div className="mt-8 flex justify-center">
             <Image
@@ -173,7 +189,13 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      <section className="py-16 px-4 md:px-8 mb-52">
+      <section
+        className="py-16 px-4 md:px-8 mb-52"
+        data-aos="fade-in"
+        data-aos-once="true"
+        data-aos-anchor-placement="top-bottom"
+        data-aos-offset="200"
+      >
         <div className="container mx-auto text-center">
           <div className="grid md:grid-cols-2 gap-8 mb-48">
             <div className="md:col-span-1 text-left flex flex-col justify-center">
@@ -239,14 +261,20 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <section className="py-16 px-4 md:px-8">
+      <section
+        className="py-16 px-4 md:px-8"
+        data-aos="fade-in"
+        data-aos-once="true"
+        data-aos-anchor-placement="top-bottom"
+        data-aos-offset="200"
+      >
         <div className="container mx-auto">
           <div className="grid md:grid-cols-3 gap-8 mb-6">
             <div className="col-span-1">
               <h2 className="text-2xl md:text-2xl font-bold mb-4 text-customColor-innovatio3">
                 Users with Most Contributions
               </h2>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4">
                 <ul>
                   {users
                     .slice(0, Math.ceil(users.length / 2))
@@ -296,12 +324,13 @@ const HomePage: React.FC = () => {
                 </Button>
               </div>
             </div>
-            <div className="w-0 border-r-2 border-customColor-innovatio3"></div>
+
+            <div className="w-0 border-r-[1px] border-customColor-innovatio3"></div>
             <div className="col-span-1">
               <h2 className="text-2xl md:text-2xl font-bold mb-4 text-customColor-innovatio3">
                 Most Liked Articles
               </h2>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
                 <ul>
                   {articles
                     .slice(0, Math.ceil(articles.length / 2))
@@ -375,7 +404,13 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <section className="py-16 px-4 md:px-8 mb-40">
+      <section
+        className="py-16 px-4 md:px-8 mb-40"
+        data-aos="fade-in"
+        data-aos-once="true"
+        data-aos-anchor-placement="top-bottom"
+        data-aos-offset="200"
+      >
         <div className="container mx-auto">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-customColor-innovatio3">
@@ -446,131 +481,136 @@ const HomePage: React.FC = () => {
       </section>
 
       <footer className="py-6 border-t border-gray-300 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <Image
-              src="/Logo.svg"
-              alt="Innovatio logo"
-              width={200}
-              height={24}
-              className=" mb-4"
-            />
-            <p className="text-gray-400 text-sm">
-              Help different crowdfunding <br />
-              campaigns become a reality
-              <br />
-              thanks to your contributions,
-              <br /> invest in projects,
-              <br /> fund purposes and get rewards.
-            </p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <Image
+                src="/Logo.svg"
+                alt="Innovatio logo"
+                width={200}
+                height={24}
+                className=" mb-4"
+              />
+              <p className="text-gray-400 text-sm">
+                Help different crowdfunding <br />
+                campaigns become a reality
+                <br />
+                thanks to your contributions,
+                <br /> invest in projects,
+                <br /> fund purposes and get rewards.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-950 text-lg mb-4">
+                How it works
+              </h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="#" className="hover:underline text-gray-400">
+                    Campaign Flow
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:underline text-gray-400">
+                    Investment Flow
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:underline text-gray-400">
+                    Milestones & Control
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:underline text-gray-400">
+                    Q & A
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-950 text-lg mb-4">
+                About us
+              </h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="#" className="hover:underline text-gray-400">
+                    Introduction
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:underline text-gray-400">
+                    Team & Members
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:underline text-gray-400">
+                    Discord Community
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:underline text-gray-400">
+                    Social Media
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-950 text-lg mb-4">
+                Help with the Campaigns
+              </h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="#" className="hover:underline text-gray-400">
+                    Ideas of Campaign
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:underline text-gray-400">
+                    Tokenomics
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:underline text-gray-400">
+                    Digital Marketing Strategy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:underline text-gray-400">
+                    Contact our team
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
-          <div>
-            <h3 className="font-semibold text-gray-950 text-lg mb-4">
-              How it works
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="#" className="hover:underline text-gray-400">
-                  Campaign Flow
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gray-400">
-                  Investment Flow
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gray-400">
-                  Milestones & Control
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gray-400">
-                  Q & A
-                </Link>
-              </li>
-            </ul>
+          <div className="mt-8 flex justify-center space-x-6">
+            <Link href="#" className="text-gray-500 hover:text-gray-900">
+              <Image src="/discord.svg" alt="discord" width={24} height={24} />
+            </Link>
+            <Link href="#" className="text-gray-500 hover:text-gray-900">
+              <Image src="/twitter.svg" alt="twitter" width={24} height={24} />
+            </Link>
+            <Link href="#" className="text-gray-500 hover:text-gray-900">
+              <Image
+                src="/instagram.svg"
+                alt="instagram"
+                width={24}
+                height={24}
+              />
+            </Link>
+            <Link href="#" className="text-gray-500 hover:text-gray-900">
+              <Image
+                src="/facebook.svg"
+                alt="facebook"
+                width={24}
+                height={24}
+              />
+            </Link>
           </div>
-          <div>
-            <h3 className="font-semibold text-gray-950 text-lg mb-4">
-              About us
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="#" className="hover:underline text-gray-400">
-                  Introduction
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gray-400">
-                  Team & Members
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gray-400">
-                  Discord Community
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gray-400">
-                  Social Media
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-950 text-lg mb-4">
-              Help with the Campaigns
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="#" className="hover:underline text-gray-400">
-                  Ideas of Campaign
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gray-400">
-                  Tokenomics
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gray-400">
-                  Digital Marketing Strategy
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gray-400">
-                  Contact our team
-                </Link>
-              </li>
-            </ul>
+          <div className="mt-8 border-t border-gray-200 pt-4 flex justify-center text-gray-400 text-sm">
+            <p>&copy; 2024 Innovatio. All rights reserved.</p>
           </div>
         </div>
-        <div className="mt-8 flex justify-center space-x-6">
-          <Link href="#" className="text-gray-500 hover:text-gray-900">
-            <Image src="/discord.svg" alt="discord" width={24} height={24} />
-          </Link>
-          <Link href="#" className="text-gray-500 hover:text-gray-900">
-            <Image src="/twitter.svg" alt="twitter" width={24} height={24} />
-          </Link>
-          <Link href="#" className="text-gray-500 hover:text-gray-900">
-            <Image
-              src="/instagram.svg"
-              alt="instagram"
-              width={24}
-              height={24}
-            />
-          </Link>
-          <Link href="#" className="text-gray-500 hover:text-gray-900">
-            <Image src="/facebook.svg" alt="facebook" width={24} height={24} />
-          </Link>
-        </div>
-        <div className="mt-8 border-t border-gray-200 pt-4 flex justify-center text-gray-400 text-sm">
-          <p>&copy; 2024 Innovatio. All rights reserved.</p>
-        </div>
-      </div>
-    </footer>
+      </footer>
     </div>
   );
 };

@@ -2,7 +2,7 @@
 "use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import React, { SVGProps, useState } from "react";
+import React, { SVGProps, useEffect, useState } from "react";
 import Header from "@/assets/header";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -14,6 +14,8 @@ import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import axios, { isCancel, AxiosError } from "axios";
 import Footer from "@/assets/footer";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -21,6 +23,15 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const router = useRouter();
   const cookies = new Cookie();
+
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      easing: "ease-in-out",
+      once: true,
+      mirror: false,
+    });
+  }, []);
 
   const handleGoogleLoginSuccess = async (response: CredentialResponse) => {
     const { credential } = response;
@@ -95,7 +106,7 @@ const Login: React.FC = () => {
         const data = await response.json();
         console.log("Login successful:", data);
         cookies.set("token", data.token, { path: "/" });
-        router.push("/");
+        router.push("/users");
       } else {
         const errorData = await response.json();
         console.error("Failed to login user:", errorData);
@@ -118,7 +129,13 @@ const Login: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-1 mt-12 md:mt-16 lg:mt-20">
+      <main
+        className="flex-1 mt-12 md:mt-16 lg:mt-20"
+        data-aos="fade-in"
+        data-aos-once="true"
+        data-aos-anchor-placement="top-bottom"
+        data-aos-offset="200"
+      >
         <section className="w-full pt-12 md:pt-24 lg:pt-32 border-b">
           <div className="flex justify-center container space-y-10 xl:space-y-16 px-4 md:px-6">
             <div className="grid gap-4 grid-rows-2 md:gap-16">
@@ -127,7 +144,7 @@ const Login: React.FC = () => {
                   <h1 className="text-center text-customColor-innovatio3 lg:leading-tighter text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl xl:text-[3.4rem] 2xl:text-[3.75rem]">
                     In order to continue with the creation
                     <br /> process you must register with your <br />
-                    Google account or connect wallet
+                    Google account
                   </h1>
                 </div>
                 <div className="justify-center gap-4 items-center mx-auto grid-1 flex flex-col mt-6 grid-2 sm:flex-row">
@@ -149,10 +166,12 @@ const Login: React.FC = () => {
                         </TabsList>
                         <TabsContent value="login">
                           <div className="space-y-4">
-                            <GoogleLogin
-                              onSuccess={handleGoogleLoginSuccess}
-                              onError={() => console.log("Login Failed")}
-                            />
+                            <div className="flex justify-center">
+                              <GoogleLogin
+                                onSuccess={handleGoogleLoginSuccess}
+                                onError={() => console.log("Login Failed")}
+                              />
+                            </div>
                             <div className="relative">
                               <div className="absolute inset-0 flex items-center">
                                 <span className="w-full border-t" />
@@ -181,6 +200,7 @@ const Login: React.FC = () => {
                                 <Input
                                   id="password"
                                   type="password"
+                                  placeholder="********"
                                   value={password}
                                   onChange={(e) => setPassword(e.target.value)}
                                 />
@@ -196,10 +216,12 @@ const Login: React.FC = () => {
                         </TabsContent>
                         <TabsContent value="register">
                           <div className="space-y-4">
-                            <GoogleLogin
-                              onSuccess={handleGoogleLoginSuccess}
-                              onError={() => console.log("Login Failed")}
-                            />
+                            <div className="flex justify-center">
+                              <GoogleLogin
+                                onSuccess={handleGoogleLoginSuccess}
+                                onError={() => console.log("Login Failed")}
+                              />
+                            </div>
                             <div className="relative">
                               <div className="absolute inset-0 flex items-center">
                                 <span className="w-full border-t" />
@@ -238,6 +260,7 @@ const Login: React.FC = () => {
                                 <Input
                                   id="password"
                                   type="password"
+                                  placeholder="********"
                                   value={password}
                                   onChange={(e) => setPassword(e.target.value)}
                                 />
