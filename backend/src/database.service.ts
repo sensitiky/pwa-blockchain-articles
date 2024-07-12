@@ -23,7 +23,10 @@ export class DatabaseService {
     if (!this.db) {
       throw new Error('Database not initialized');
     }
-    const user = await this.db.get<User>('SELECT * FROM users WHERE email = ?', email);
+    const user = await this.db.get<User>(
+      'SELECT * FROM users WHERE email = ?',
+      email,
+    );
     return user || undefined;
   }
 
@@ -31,7 +34,10 @@ export class DatabaseService {
     if (!this.db) {
       throw new Error('Database not initialized');
     }
-    const user = await this.db.get<User>('SELECT * FROM users WHERE username = ?', username);
+    const user = await this.db.get<User>(
+      'SELECT * FROM users WHERE username = ?',
+      username,
+    );
     return user || undefined;
   }
 
@@ -54,18 +60,21 @@ export class DatabaseService {
     return user;
   }
 
-  async createArticle(articleData: CreateArticleDto & { author: string }): Promise<void> {
+  async createArticle(
+    articleData: CreateArticleDto & { author: string },
+  ): Promise<void> {
     if (!this.db) {
       throw new Error('Database not initialized');
     }
-    const { category, isBlockchainSpecific, tags, title, story, author } = articleData;
+    const { category, isBlockchainSpecific, tags, title, description, author } =
+      articleData;
     await this.db.run(
-      'INSERT INTO articles (category, isBlockchainSpecific, tags, title, story, author) VALUES (?, ?, ?, ?, ?, ?)',
+      'INSERT INTO articles (category, isBlockchainSpecific, tags, title, description, author) VALUES (?, ?, ?, ?, ?, ?)',
       category,
       isBlockchainSpecific,
       JSON.stringify(tags),
       title,
-      story,
+      description,
       author,
     );
   }
@@ -95,7 +104,7 @@ export class DatabaseService {
         isBlockchainSpecific BOOLEAN NOT NULL,
         tags TEXT NOT NULL,
         title TEXT NOT NULL,
-        story TEXT NOT NULL,
+        description TEXT NOT NULL,
         author TEXT NOT NULL
       )
     `);

@@ -41,5 +41,5 @@ export class CreateArticleDto {
 
   @IsNotEmpty()
   @IsString()
-  story: string;
+  description: string;
 }
