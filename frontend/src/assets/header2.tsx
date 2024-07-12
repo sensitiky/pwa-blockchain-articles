@@ -23,10 +23,9 @@ const Header2 = () => {
     const token = localStorage.getItem("jwt");
     if (token) {
       setIsAuthenticated(true);
-      // Simulando la obtención de datos del usuario
       setUser({
-        name: "John Doe", // Aquí deberías obtener el nombre real del usuario desde el backend
-        profilePicture: "/Saly-1.png", // Aquí deberías obtener la URL real del avatar del usuario
+        name: "John Doe",
+        profilePicture: "/Saly-1.png",
       });
     }
   }, []);
@@ -41,7 +40,8 @@ const Header2 = () => {
 
   return (
     <div>
-      <div className="lg:hidden flex items-center justify-between px-4 lg:px-6 h-14 border-b bg-customColor-header">
+      {/* Mobile Header */}
+      <div className="lg:hidden flex items-center justify-between px-4 lg:px-6 h-14 border-b bg-customColor-header w-full">
         <div className="flex items-center">
           <Sheet>
             <SheetTrigger>
@@ -70,21 +70,21 @@ const Header2 = () => {
               <nav className="flex flex-col gap-8">
                 <Link
                   href="#"
-                  className="text-sm font-medium hover:underline underline-offset-4"
+                  className="text-sm font-medium hover:text-customColor-hueso4"
                   prefetch={false}
                 >
                   How it works
                 </Link>
                 <Link
                   href="#"
-                  className="text-sm font-medium hover:underline underline-offset-4"
+                  className="text-sm font-medium hover:text-customColor-hueso4"
                   prefetch={false}
                 >
                   About us
                 </Link>
                 <Link
                   href="#"
-                  className="text-sm font-medium hover:underline underline-offset-4"
+                  className="text-sm font-medium hover:text-customColor-hueso4"
                   prefetch={false}
                 >
                   Help with the Campaign
@@ -93,7 +93,7 @@ const Header2 = () => {
                   <Link href="/authentication">
                     <Button
                       variant="outline"
-                      className="bg-customColor-innovatio2 rounded-full px-4 py-2 text-sm font-medium hover:bg-customColor-innovatio3"
+                      className="bg-customColor-innovatio2 rounded-full px-4 py-2 text-sm font-medium hover:text-customColor-hueso"
                     >
                       Get Started
                     </Button>
@@ -115,6 +115,7 @@ const Header2 = () => {
         </div>
       </div>
 
+      {/* Desktop Header */}
       <header className="p-4 hidden lg:block bg-customColor-header">
         <div className="container mx-auto flex justify-between items-center">
           <div className="text-white text-lg font-semibold">
@@ -135,37 +136,36 @@ const Header2 = () => {
           <nav className="space-x-4 flex items-center">
             <Link
               href="/about-us"
-              className="text-white hover:text-customColor-innovatio3"
+              className="text-white hover:text-customColor-hueso"
             >
               About Us
             </Link>
             <Link
               href="/support-us"
-              className="text-white hover:text-customColor-innovatio3"
+              className="text-white hover:text-customColor-hueso"
             >
               Support Us
             </Link>
             <Link
               href="/articles"
-              className="text-white hover:text-customColor-innovatio3"
+              className="text-white hover:text-customColor-hueso"
             >
               Articles
             </Link>
             <Link
               href="/tops"
-              className="text-white hover:text-customColor-innovatio3"
+              className="text-white hover:text-customColor-hueso"
             >
               Tops
             </Link>
             {isAuthenticated ? (
               <Avatar className="rounded-full">
-                {" "}
                 <AvatarImage src={user.profilePicture} />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             ) : (
               <Button
-                className="rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio"
+                className="rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:text-customColor-hueso"
                 onClick={handleStartNewCampaign}
               >
                 Get Started
@@ -177,4 +177,5 @@ const Header2 = () => {
     </div>
   );
 };
+
 export default Header2;

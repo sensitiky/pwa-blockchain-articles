@@ -26,6 +26,7 @@ const config = {
           innovatio4: "#eef4ff",
           letras: "#fec116",
           header:'#000916',
+          hueso: '#CDCDCD',
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

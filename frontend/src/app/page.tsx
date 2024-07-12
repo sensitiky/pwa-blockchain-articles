@@ -199,12 +199,12 @@ const HomePage: React.FC = () => {
       >
         <div className="container mx-auto text-center">
           <div className="grid md:grid-cols-2 gap-8 mb-24">
-            <div className="md:col-span-1 text-left flex flex-col justify-center">
+            <div className="md:col-span-1 text-center flex flex-col justify-center">
               <h1 className="text-3xl md:text-5xl font-semibold mb-4 text-customColor-innovatio3">
                 Read, write, share, and discuss blockchain
               </h1>
             </div>
-            <div className="md:col-span-1 text-left">
+            <div className="md:col-span-1 text-center">
               <p className="text-xl mb-12 text-customColor-innovatio3">
                 Blogchain is an educational space to connect web3 content
                 writers and readers interested in blockchain technology and its
@@ -215,7 +215,7 @@ const HomePage: React.FC = () => {
               </p>
             </div>
           </div>
-          <div className="grid md:grid-cols-3 gap-8 text-left mt-14">
+          <div className="grid md:grid-cols-3 gap-8 text-center mt-14">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-customColor-letras">
                 Blogchain Redactor

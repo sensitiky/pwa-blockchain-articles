@@ -4,8 +4,8 @@ import Link from "next/link";
 
 const Footer2 = () => {
   return (
-    <footer className="py-6 border-t border-gray-300 backdrop-blur-sm bg-customColor-header">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <footer className="min-w-full -py-6 border-t border-gray-300 backdrop-blur-sm bg-customColor-header">
+      <div className="min-w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 filter invert">
           <div>
             <Image

@@ -336,7 +336,7 @@ const NewArticles: React.FC = () => {
             <CardContent>
               <div className="flex flex-wrap gap-2">
                 {categories.map((category) => (
-                  <button
+                  <Button
                     key={category}
                     className={`px-6 py-2 border rounded-full transition ${
                       selectedCategory === category
@@ -346,7 +346,7 @@ const NewArticles: React.FC = () => {
                     onClick={() => setSelectedCategory(category)}
                   >
                     {category}
-                  </button>
+                  </Button>
                 ))}
               </div>
               {selectedCategory && (
