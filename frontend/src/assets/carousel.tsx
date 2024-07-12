@@ -102,7 +102,7 @@ const settings = {
 const ArticleCarousel = () => {
   return (
     <div
-      className="py-16 px-4 md:px-8 mb-40"
+      className="py-16 px-4 md:px-8 mb24"
       data-aos="fade-in"
       data-aos-once="true"
       data-aos-anchor-placement="top-bottom"

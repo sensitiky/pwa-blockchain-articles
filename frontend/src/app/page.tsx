@@ -162,13 +162,12 @@ const HomePage: React.FC = () => {
       {" "}
       <Header />
       <div
-        className="relative h-screen flex items-center justify-center"
+        className="relative h-screen flex items-center justify-center mb-52"
         data-aos="fade-in"
         data-aos-once="true"
         data-aos-anchor-placement="top-bottom"
         data-aos-offset="200"
       >
-        <div className="absolute top-0 left-0 w-full h-full opacity-75"></div>
         <div className="relative z-10 text-center text-white p-8">
           <h1 className="text-yellow-400 text-xl md:text-2xl">
             Welcome to Blogchain
@@ -190,30 +189,20 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </div>
+
       <section
-        className="py-16 px-4 md:px-8 mb-52"
+        className="py-4 px-4 md:px-8 mb-28 max-h-screen"
         data-aos="fade-in"
         data-aos-once="true"
         data-aos-anchor-placement="top-bottom"
         data-aos-offset="200"
       >
         <div className="container mx-auto text-center">
-          <div className="grid md:grid-cols-2 gap-8 mb-48">
+          <div className="grid md:grid-cols-2 gap-8 mb-24">
             <div className="md:col-span-1 text-left flex flex-col justify-center">
               <h1 className="text-3xl md:text-5xl font-semibold mb-4 text-customColor-innovatio3">
                 Read, write, share, and discuss blockchain
               </h1>
-              <div className="flex justify-start items-center mb-6">
-                <p className="text-xl mr-2 text-customColor-innovatio3">
-                  Powered by
-                </p>
-                <Image
-                  src="/Medium.png"
-                  alt="medium"
-                  width={150}
-                  height={150}
-                />
-              </div>
             </div>
             <div className="md:col-span-1 text-left">
               <p className="text-xl mb-12 text-customColor-innovatio3">
@@ -226,7 +215,7 @@ const HomePage: React.FC = () => {
               </p>
             </div>
           </div>
-          <div className="grid md:grid-cols-3 gap-8 text-left mt-20">
+          <div className="grid md:grid-cols-3 gap-8 text-left mt-14">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-customColor-letras">
                 Blogchain Redactor
@@ -261,9 +250,11 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
+      
       <ArticleCarousel />
+
       <section
-        className="py-16 px-4 md:px-8 mb-40"
+        className="py-16 px-4 md:px-8 mb-32"
         data-aos="fade-in"
         data-aos-once="true"
         data-aos-anchor-placement="top-bottom"
