@@ -179,7 +179,7 @@ const Login: React.FC = () => {
                               />
                             </div>
                             <div className="flex justify-center">
-                              <FacebookLogin />
+                              <FacebookLogin appId={""} />
                             </div>
                             <div className="relative">
                               <div className="absolute inset-0 flex items-center">
@@ -232,7 +232,7 @@ const Login: React.FC = () => {
                               />
                             </div>
                             <div className="flex justify-center">
-                              <FacebookLogin />
+                              <FacebookLogin appId={""} />
                             </div>
                             <div className="relative">
                               <div className="absolute inset-0 flex items-center">
