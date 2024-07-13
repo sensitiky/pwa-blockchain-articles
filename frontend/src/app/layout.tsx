@@ -21,10 +21,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className="bg-gradient" lang="en">
-      <body className={`flex bg-gradient flex-col min-h-screen ${inter.className}`}>
+    <html lang="en">
+      <body className={`${inter.className}`}>
         <GoogleOAuthProvider clientId={clientId as string}>
-          <main className="flex-grow">{children}</main>
+          <main className="flex-grow-0">{children}</main>
         </GoogleOAuthProvider>
       </body>
     </html>

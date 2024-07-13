@@ -11,8 +11,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useEffect, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import { DropdownMenuAvatar } from "@/assets/dropdownav";
 
 const Header2 = () => {
   const router = useRouter();
@@ -41,7 +41,7 @@ const Header2 = () => {
   return (
     <div>
       {/* Mobile Header */}
-      <div className="lg:hidden flex items-center justify-between px-4 lg:px-6 h-14 border-b bg-customColor-header w-full">
+      <div className="lg:hidden flex items-center justify-between px-4 lg:px-6 h-14 border-b overflow-x-visible">
         <div className="flex items-center">
           <Sheet>
             <SheetTrigger>
@@ -70,7 +70,7 @@ const Header2 = () => {
               <nav className="flex flex-col gap-8">
                 <Link
                   href="#"
-                  className="text-sm font-medium hover:text-customColor-hueso4"
+                  className="text-black text-sm font-medium hover:text-customColor-hueso4"
                   prefetch={false}
                 >
                   How it works
@@ -90,14 +90,18 @@ const Header2 = () => {
                   Help with the Campaign
                 </Link>
                 <div className="flex justify-center">
-                  <Link href="/authentication">
-                    <Button
-                      variant="outline"
-                      className="bg-customColor-innovatio2 rounded-full px-4 py-2 text-sm font-medium hover:text-customColor-hueso"
-                    >
-                      Get Started
-                    </Button>
-                  </Link>
+                  {isAuthenticated ? (
+                    <DropdownMenuAvatar user={user} />
+                  ) : (
+                    <Link href="/authentication">
+                      <Button
+                        variant="outline"
+                        className="bg-customColor-innovatio3 rounded-full px-4 py-2 text-sm font-medium hover:text-customColor-hueso"
+                      >
+                        Log In / Sign Up
+                      </Button>
+                    </Link>
+                  )}
                 </div>
                 <div className="flex justify-center">
                   <Button className="bg-customColor-innovatio3 rounded-full px-4 py-2 text-sm font-medium">
@@ -116,7 +120,7 @@ const Header2 = () => {
       </div>
 
       {/* Desktop Header */}
-      <header className="p-4 hidden lg:block bg-customColor-header">
+      <header className="overflow-x-hidden p-4 hidden lg:block mb-16">
         <div className="container mx-auto flex justify-between items-center">
           <div className="text-white text-lg font-semibold">
             <Link href="/">Blogchain</Link>
@@ -136,39 +140,35 @@ const Header2 = () => {
           <nav className="space-x-4 flex items-center">
             <Link
               href="/about-us"
-              className="text-white hover:text-customColor-hueso"
+              className="text-white hover:text-gray-600"
             >
               About Us
             </Link>
             <Link
               href="/support-us"
-              className="text-white hover:text-customColor-hueso"
+              className="text-white hover:text-gray-600"
             >
               Support Us
             </Link>
             <Link
               href="/articles"
-              className="text-white hover:text-customColor-hueso"
+              className="text-white hover:text-gray-600"
             >
               Articles
             </Link>
             <Link
               href="/tops"
-              className="text-white hover:text-customColor-hueso"
+              className="text-white hover:text-gray-600"
             >
               Tops
             </Link>
             {isAuthenticated ? (
-              <Avatar className="rounded-full">
-                <AvatarImage src={user.profilePicture} />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
+              <DropdownMenuAvatar user={user} />
             ) : (
               <Button
-                className="rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:text-customColor-hueso"
-                onClick={handleStartNewCampaign}
+                className="rounded-full bg-customColor-innovatio3 hover:text-customColor-hueso"
               >
-                Get Started
+                Log In / Sign Up
               </Button>
             )}
           </nav>

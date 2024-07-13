@@ -1,391 +1,445 @@
-"use client";
-import { useState } from "react";
-import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import Link from "next/link";
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
   PaginationPrevious,
   PaginationLink,
-  PaginationEllipsis,
   PaginationNext,
 } from "@/components/ui/pagination";
-import { Separator } from "@/components/ui/separator";
-import { FaRegHeart, FaRegComment } from "react-icons/fa";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import Footer2 from "@/assets/footer2";
+import { JSX, SVGProps } from "react";
 import Header2 from "@/assets/header2";
+import Footer from "@/assets/footer";
+import Image from "next/image";
 
-interface Article {
-  id: number;
-  title: string;
-  description: string;
-  author: string;
-  date: string;
-  tags: string[];
-  image: string;
-  reads: number;
-}
-
-const articles: Article[] = [
-  {
-    author: "Nevermind",
-    title: "Why Blockchain is Hard",
-    date: "Jan 17, 2021",
-    image: "/reunion.png",
-    reads: 230,
-    description:
-      "The hype around blockchain is massive. To hear the blockchain hype train tell it, blockchain will now: Solve income inequality, Make all data secure forever, Make everything much more efficient and trustless, Save dying.",
-    id: 0,
-    tags: [],
-  },
-  {
-    author: "Nevermind",
-    title: "Why Blockchain is Hard",
-    date: "Jan 17, 2021",
-    image: "/reunion.png",
-    reads: 230,
-    description:
-      "The hype around blockchain is massive. To hear the blockchain hype train tell it, blockchain will now: Solve income inequality, Make all data secure forever, Make everything much more efficient and trustless, Save dying.",
-    id: 0,
-    tags: [],
-  },
-  {
-    author: "Nevermind",
-    title: "Why Blockchain is Hard",
-    date: "Jan 17, 2021",
-    image: "/reunion.png",
-    reads: 230,
-    description:
-      "The hype around blockchain is massive. To hear the blockchain hype train tell it, blockchain will now: Solve income inequality, Make all data secure forever, Make everything much more efficient and trustless, Save dying.",
-    id: 0,
-    tags: [],
-  },
-  {
-    author: "Nevermind",
-    title: "Why Blockchain is Hard",
-    date: "Jan 17, 2021",
-    image: "/reunion.png",
-    reads: 230,
-    description:
-      "The hype around blockchain is massive. To hear the blockchain hype train tell it, blockchain will now: Solve income inequality, Make all data secure forever, Make everything much more efficient and trustless, Save dying.",
-    id: 0,
-    tags: [],
-  },
-  {
-    author: "Nevermind",
-    title: "Why Blockchain is Hard",
-    date: "Jan 17, 2021",
-    image: "/reunion.png",
-    reads: 230,
-    description:
-      "The hype around blockchain is massive. To hear the blockchain hype train tell it, blockchain will now: Solve income inequality, Make all data secure forever, Make everything much more efficient and trustless, Save dying.",
-    id: 0,
-    tags: [],
-  },
-  {
-    author: "Nevermind",
-    title: "Why Blockchain is Hard",
-    date: "Jan 17, 2021",
-    image: "/reunion.png",
-    reads: 230,
-    description:
-      "The hype around blockchain is massive. To hear the blockchain hype train tell it, blockchain will now: Solve income inequality, Make all data secure forever, Make everything much more efficient and trustless, Save dying.",
-    id: 0,
-    tags: [],
-  },
-  {
-    author: "Nevermind",
-    title: "Why Blockchain is Hard",
-    date: "Jan 17, 2021",
-    image: "/reunion.png",
-    reads: 230,
-    description:
-      "The hype around blockchain is massive. To hear the blockchain hype train tell it, blockchain will now: Solve income inequality, Make all data secure forever, Make everything much more efficient and trustless, Save dying.",
-    id: 0,
-    tags: [],
-  },
-  {
-    author: "Nevermind",
-    title: "Why Blockchain is Hard",
-    date: "Jan 17, 2021",
-    image: "/reunion.png",
-    reads: 230,
-    description:
-      "The hype around blockchain is massive. To hear the blockchain hype train tell it, blockchain will now: Solve income inequality, Make all data secure forever, Make everything much more efficient and trustless, Save dying.",
-    id: 0,
-    tags: [],
-  },
-  {
-    author: "Nevermind",
-    title: "Why Blockchain is Hard",
-    date: "Jan 17, 2021",
-    image: "/reunion.png",
-    reads: 230,
-    description:
-      "The hype around blockchain is massive. To hear the blockchain hype train tell it, blockchain will now: Solve income inequality, Make all data secure forever, Make everything much more efficient and trustless, Save dying.",
-    id: 0,
-    tags: [],
-  },
-  {
-    author: "Nevermind",
-    title: "Why Blockchain is Hard",
-    date: "Jan 17, 2021",
-    image: "/reunion.png",
-    reads: 230,
-    description:
-      "The hype around blockchain is massive. To hear the blockchain hype train tell it, blockchain will now: Solve income inequality, Make all data secure forever, Make everything much more efficient and trustless, Save dying.",
-    id: 0,
-    tags: [],
-  },
-  {
-    author: "Nevermind",
-    title: "Why Blockchain is Hard",
-    date: "Jan 17, 2021",
-    image: "/reunion.png",
-    reads: 230,
-    description:
-      "The hype around blockchain is massive. To hear the blockchain hype train tell it, blockchain will now: Solve income inequality, Make all data secure forever, Make everything much more efficient and trustless, Save dying.",
-    id: 0,
-    tags: [],
-  },
-  {
-    author: "Nevermind",
-    title: "Why Blockchain is Hard",
-    date: "Jan 17, 2021",
-    image: "/reunion.png",
-    reads: 230,
-    description:
-      "The hype around blockchain is massive. To hear the blockchain hype train tell it, blockchain will now: Solve income inequality, Make all data secure forever, Make everything much more efficient and trustless, Save dying.",
-    id: 0,
-    tags: [],
-  },
-  {
-    author: "Nevermind",
-    title: "Why Blockchain is Hard",
-    date: "Jan 17, 2021",
-    image: "/reunion.png",
-    reads: 230,
-    description:
-      "The hype around blockchain is massive. To hear the blockchain hype train tell it, blockchain will now: Solve income inequality, Make all data secure forever, Make everything much more efficient and trustless, Save dying.",
-    id: 0,
-    tags: [],
-  },
-  {
-    author: "Nevermind",
-    title: "Why Blockchain is Hard",
-    date: "Jan 17, 2021",
-    image: "/reunion.png",
-    reads: 230,
-    description:
-      "The hype around blockchain is massive. To hear the blockchain hype train tell it, blockchain will now: Solve income inequality, Make all data secure forever, Make everything much more efficient and trustless, Save dying.",
-    id: 0,
-    tags: [],
-  },
-  {
-    author: "Nevermind",
-    title: "Why Blockchain is Hard",
-    date: "Jan 17, 2021",
-    image: "/reunion.png",
-    reads: 230,
-    description:
-      "The hype around blockchain is massive. To hear the blockchain hype train tell it, blockchain will now: Solve income inequality, Make all data secure forever, Make everything much more efficient and trustless, Save dying.",
-    id: 0,
-    tags: [],
-  },
-];
-
-const Articles: React.FC = () => {
-  const [selectedbutton, setSelectedButton] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const articlesPerPage = 5;
-  const totalPages = Math.ceil(articles.length / articlesPerPage);
-  const [postLikes, setPostLikes] = useState(0);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const handleButtonClick = (category: string) => {
-    if (selectedbutton === category) {
-      setSelectedButton(null);
-    } else {
-      setSelectedButton(category);
-    }
-  };
-
-
-  const currentArticles = articles.slice(
-    (currentPage - 1) * articlesPerPage,
-    currentPage * articlesPerPage
-  );
-
+export default function Component() {
   return (
-    <div className="bg-customColor-hueso md:bg-customColor-hueso px-4 min-w-fit">
-      <Header2/>
-        <h1 className="w-full bg-customColor-header text-4xl font-bold text-center mb-8 text-customColor-hueso">
-          Articles
-        </h1>
-        <p className="bg-customColor-header text-center text-customColor-letras mb-4">
-          Choose your favorite categories
-        </p>
-        <div className="flex flex-wrap justify-center mb-8 space-x-2">
-          {[
-            "Education (1120)",
-            "Tutorial (963)",
-            "Reviews (31)",
-            "Case Study (567)",
-            "Experience (439)",
-            "Journalist Interview (49)",
-          ].map((category) => (
-            <button
-              key={category}
-              className={`border-2 px-4 py-1 rounded-full ${
-                selectedbutton === category
-                  ? "border-back text-white bg-black"
-                  : "border-black text-black bg-inherit"
-              }`}
-              onClick={() => handleButtonClick(category)}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex flex-col md:flex-row justify-center mb-8 space-y-4 md:space-y-0 md:space-x-4">
-          <select className="text-black border-b-2 border-t-2 border-l-0 bg-inherit border-r-0 focus:ring-inherit border-black hover:border-black text-lg px-2 py-2">
-            <option>Order</option>
-            <option className="bg-inherit">Most - Less Likes</option>
-            <option>Most - Less Comments</option>
-            <option>Most - Less Saved</option>
-            <option>Most Recents</option>
-          </select>
-          <select className="text-black border-b-2 border-t-2 border-l-0 bg-inherit border-r-0 focus:ring-0 border-black hover:border-black text-lg px-2 py-2">
-            <option>Read Time</option>
-            <option>Less than 10 min</option>
-            <option>More than 10 min</option>
-            <option>Less than 20 min</option>
-            <option>More than 20+ min</option>
-          </select>
-          <select className="text-black border-b-2 border-t-2 border-l-0 bg-inherit border-r-0 focus:ring-0 border-black hover:border-black text-lg px-2 py-2">
-            <option>Users</option>
-            <option>Most read users</option>
-            <option>Most saved users</option>
-            <option>User with most contribution</option>
-            <option>All Users</option>
-          </select>
-          <select className="text-black border-b-2 border-t-2 border-l-0 bg-inherit border-r-0 focus:ring-0 border-black hover:border-black text-lg px-2 py-2">
-            <option>Date</option>
-            <option>Last 24 hours</option>
-            <option>Last 30 days</option>
-            <option>Last 3 months</option>
-            <option>Last 6 months</option>
-          </select>
-        </div>
-        <div className="flex flex-wrap justify-center mb-8">
-          <div className="grid grid-cols-1 gap-4 w-full md:w-3/4 lg:w-2/3">
-            {currentArticles.map((article) => (
-              <div
-                key={article.id}
-                className="bg-inherit p-6 border-b-2 border-t-2 filter border-black"
-              >
-                <div className="flex flex-col md:flex-row items-start md:items-center">
-                  <Image
-                    src={article.image}
-                    alt={article.title}
-                    width={100}
-                    height={100}
-                    className="rounded-lg"
-                  />
-                  <div className="md:ml-4 mt-4 md:mt-0">
-                    <h2 className="text-2xl font-semibold">{article.title}</h2>
-                    <p className="text-sm text-gray-900 ">
-                      {article.description}
-                    </p>
-                    <div className="flex items-center mt-2">
-                      <span className="text-sm text-gray-700">
-                        {article.author}
-                      </span>
-                      <span className="text-sm text-gray-700 ml-2">
-                        {article.date}
-                      </span>
-                    </div>
-                    <div className="flex mt-2 space-x-2">
-                      {article.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-4">
-                  <span className="text-sm text-gray-500">
-                    {article.reads} reads
-                  </span>
-                  <Link href="/draft">
-                    <Button className="bg-customColor-innovatio3 text-white px-4 py-2 rounded-full hover:bg-customColor-innovatio hover:text-customColor-innovatio3 border-2 hover:border-customColor-innovatio3 mt-2 md:mt-0">
-                      Read More
-                    </Button>
-                  </Link>
-                </div>
-                <div className="flex items-center justify-start mt-4 space-x-4">
-                  <span className="text-gray-500">10 min read</span>
-                  <Separator
-                    orientation="vertical"
-                    className="bg-gray-500 w-px h-6"
-                  />
-                  <Button className="flex items-center space-x-1 -px-1 text-gray-500 hover:bg-inherit bg-inherit">
-                    <FaRegComment className="w-5 h-5" />
-                    <span>5</span>
-                  </Button>
-                  <Button className="flex items-center space-x-1 -px-1   text-gray-500 hover:bg-inherit bg-inherit">
-                    <FaRegHeart className="w-5 h-5" />
-                    <span>11</span>
-                  </Button>
-                </div>
+    <div className="w-full bg-gradient2">
+      <Header2 />
+      <div className="container mx-auto py-12 md:py-16 lg:py-20">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-12">
+          <div className="space-y-4 md:space-y-6">
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl text-center text-white">
+              Discover the Latest Articles
+            </h1>
+            <p className="text-muted-foreground md:text-xl lg:text-lg text-center text-yellow-300">
+              Choose your favourite categories and tags
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-2 md:justify-end">
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-black">
+                Categories
+              </h3>
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <Button variant="outline" size="sm" className="rounded-full">
+                  Lifestyle
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-full">
+                  Technology
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-full">
+                  Travel
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-full">
+                  Food
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-full">
+                  Fashion
+                </Button>
               </div>
-            ))}
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-black">
+                Tags
+              </h3>
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <Button variant="outline" size="sm" className="rounded-full">
+                  Lifestyle
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-full">
+                  Technology
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-full">
+                  Travel
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-full">
+                  Food
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-full">
+                  Fashion
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={() => handlePageChange(currentPage - 1)}
+        <div className="mt-12 md:mt-16 lg:mt-20">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-1md:grid-cols-1 lg:grid-cols-1">
+            <Card className="bg-inherit h-48 rounded-none shadow-none flex flex-row items-start gap-4 border-b-2 border-black border-r-0 border-l-0">
+              <Image
+                src="/Saly-1.png"
+                alt="Blog Post Image"
+                width={200}
+                height={150}
+                className="aspect-video w-40 mt-10 rounded-lg object-cover"
               />
-            </PaginationItem>
-            {[...Array(totalPages)].map((_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  href="#"
-                  onClick={() => handlePageChange(index + 1)}
-                >
-                  {index + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            {currentPage < totalPages - 1 && (
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-            )}
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={() => handlePageChange(currentPage + 1)}
+              <div className="mt-3 flex-1 space-y-2">
+                <div className="text-sm font-medium text-muted-foreground">
+                  June 15, 2023
+                </div>
+                <h3 className="text-lg font-semibold">
+                  Unlocking the Secrets of Successful Blogging
+                </h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div>
+                    <UserIcon className="w-4 h-4 mr-1" />
+                    John Doe
+                  </div>
+                  <div>
+                    <ClockIcon className="w-4 h-4 mr-1" />5 min read
+                  </div>
+                </div>
+                <p className="text-muted-foreground line-clamp-2">
+                  Discover the essential tips and strategies to take your blog
+                  to new heights and engage your audience.
+                </p>
+                <div className="flex items-center gap-2 text-sm">
+                  <Button variant="ghost" size="icon">
+                    <HeartIcon className="w-4 h-4" />
+                    <span className="sr-only">Like</span>
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <MessageCircleIcon className="w-4 h-4" />
+                    <span className="sr-only">Comment</span>
+                  </Button>
+                  <Link
+                    href="#"
+                    className="text-primary hover:underline"
+                    prefetch={false}
+                  >
+                    Read more
+                  </Link>
+                </div>
+              </div>
+            </Card>
+            <Card className="bg-inherit h-48 rounded-none shadow-none flex flex-row items-start gap-4 border-b-2 border-black border-r-0 border-l-0">
+              <Image
+                src="/Saly-1.png"
+                alt="Blog Post Image"
+                width={200}
+                height={150}
+                className="aspect-video w-40 mt-10 rounded-lg object-cover"
               />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      <Footer2/>
+              <div className="mt-3 flex-1 space-y-2">
+                <div className="text-sm font-medium text-muted-foreground">
+                  June 10, 2023
+                </div>
+                <h3 className="text-lg font-semibold">
+                  The Art of Crafting Captivating Blog Titles
+                </h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div>
+                    <UserIcon className="w-4 h-4 mr-1" />
+                    Jane Smith
+                  </div>
+                  <div>
+                    <ClockIcon className="w-4 h-4 mr-1" />7 min read
+                  </div>
+                </div>
+                <p className="text-muted-foreground line-clamp-2">
+                  Learn the secrets to creating blog titles that grab attention
+                  and drive more traffic to your content.
+                </p>
+                <div className="flex items-center gap-2 text-sm">
+                  <Button variant="ghost" size="icon">
+                    <HeartIcon className="w-4 h-4" />
+                    <span className="sr-only">Like</span>
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <MessageCircleIcon className="w-4 h-4" />
+                    <span className="sr-only">Comment</span>
+                  </Button>
+                  <Link
+                    href="#"
+                    className="text-primary hover:underline"
+                    prefetch={false}
+                  >
+                    Read more
+                  </Link>
+                </div>
+              </div>
+            </Card>
+            <Card className="bg-inherit h-48 rounded-none shadow-none flex flex-row items-start gap-4 border-b-2 border-black border-r-0 border-l-0">
+              <Image
+                src="/Saly-1.png"
+                alt="Blog Post Image"
+                width={200}
+                height={150}
+                className="mt-10 aspect-video w-40 rounded-lg object-cover"
+              />
+              <div className="mt-3 flex-1 space-y-2">
+                <div className="text-sm font-medium text-muted-foreground">
+                  June 5, 2023
+                </div>
+                <h3 className="text-lg font-semibold">
+                  Mastering the Art of Storytelling in Blogging
+                </h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div>
+                    <UserIcon className="w-4 h-4 mr-1" />
+                    Sarah Lee
+                  </div>
+                  <div>
+                    <ClockIcon className="w-4 h-4 mr-1" />
+                    10 min read
+                  </div>
+                </div>
+                <p className="text-muted-foreground line-clamp-2">
+                  Discover how to weave captivating stories into your blog posts
+                  and connect with your readers on a deeper level.
+                </p>
+                <div className="flex items-center gap-2 text-sm">
+                  <Button variant="ghost" size="icon">
+                    <HeartIcon className="w-4 h-4" />
+                    <span className="sr-only">Like</span>
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <MessageCircleIcon className="w-4 h-4" />
+                    <span className="sr-only">Comment</span>
+                  </Button>
+                  <Link
+                    href="#"
+                    className="text-primary hover:underline"
+                    prefetch={false}
+                  >
+                    Read more
+                  </Link>
+                </div>
+              </div>
+            </Card>
+            <Card className="bg-inherit h-48 rounded-none shadow-none flex flex-row items-start gap-4 border-b-2 border-black border-r-0 border-l-0">
+              <Image
+                src="/Saly-1.png"
+                alt="Blog Post Image"
+                width={200}
+                height={150}
+                className="mt-10 aspect-video w-40 rounded-lg object-cover"
+              />
+              <div className="mt-3 flex-1 space-y-2">
+                <div className="text-sm font-medium text-muted-foreground">
+                  June 1, 2023
+                </div>
+                <h3 className="text-lg font-semibold">
+                  Optimizing Your Blog for Maximum Visibility
+                </h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div>
+                    <UserIcon className="w-4 h-4 mr-1" />
+                    Michael Chen
+                  </div>
+                  <div>
+                    <ClockIcon className="w-4 h-4 mr-1" />8 min read
+                  </div>
+                </div>
+                <p className="text-muted-foreground line-clamp-2">
+                  Learn the latest SEO strategies to boost your blog's ranking
+                  and reach a wider audience.
+                </p>
+                <div className="flex items-center gap-2 text-sm">
+                  <Button variant="ghost" size="icon">
+                    <HeartIcon className="w-4 h-4" />
+                    <span className="sr-only">Like</span>
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <MessageCircleIcon className="w-4 h-4" />
+                    <span className="sr-only">Comment</span>
+                  </Button>
+                  <Link
+                    href="#"
+                    className="text-primary hover:underline"
+                    prefetch={false}
+                  >
+                    Read more
+                  </Link>
+                </div>
+              </div>
+            </Card>
+            <Card className="bg-inherit h-48 rounded-none shadow-none flex flex-row items-start gap-4 border-b-2 border-black border-r-0 border-l-0">
+              <Image
+                src="/Saly-1.png"
+                alt="Blog Post Image"
+                width={200}
+                height={150}
+                className="aspect-video w-40 mt-10 rounded-lg object-cover"
+              />
+              <div className="mt-3 flex-1 space-y-2">
+                <div className="text-sm font-medium text-muted-foreground">
+                  May 25, 2023
+                </div>
+                <h3 className="text-lg font-semibold">
+                  Unleashing the Power of Visuals in Blogging
+                </h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div>
+                    <UserIcon className="w-4 h-4 mr-1" />
+                    Emily Gonzalez
+                  </div>
+                  <div>
+                    <ClockIcon className="w-4 h-4 mr-1" />6 min read
+                  </div>
+                </div>
+                <p className="text-muted-foreground line-clamp-2">
+                  Discover how to use stunning visuals to enhance your blog
+                  posts and captivate your audience.
+                </p>
+                <div className="flex items-center gap-2 text-sm">
+                  <Button variant="ghost" size="icon">
+                    <HeartIcon className="w-4 h-4" />
+                    <span className="sr-only">Like</span>
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <MessageCircleIcon className="w-4 h-4" />
+                    <span className="sr-only">Comment</span>
+                  </Button>
+                  <Link
+                    href="#"
+                    className="text-primary hover:underline"
+                    prefetch={false}
+                  >
+                    Read more
+                  </Link>
+                </div>
+              </div>
+            </Card>
+          </div>
+          <div className="mt-8 flex justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious href="#" />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink href="#">1</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink href="#" isActive>
+                    2
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink href="#">3</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext href="#" />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        </div>
+      </div>
+      <Footer />
     </div>
   );
-};
+}
 
-export default Articles;
+function ClockIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  );
+}
+
+function HeartIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+    </svg>
+  );
+}
+
+function MessageCircleIcon(
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
+) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+    </svg>
+  );
+}
+
+function UserIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+}
+
+function XIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </svg>
+  );
+}

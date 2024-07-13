@@ -65,14 +65,18 @@ const config = {
       backgroundImage: {
         gradient:
           "linear-gradient(to top,#061D34, #103253,#CDD4E1,#D8E1EB,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#CDD4E1, #103253,#061D34)",
-          gradient5:
+        gradient5:
           "linear-gradient(to top,#061D34, #103253,#CDD4E1,#D8E1EB,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#CDD4E1, #061D34)",
-          gradient3:
+        gradient3:
           "radial-gradient(circle,#ffffff,#ECF0F7,#D8E1EB,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#1A5285, #103253,#061D34)",
-          gradient2:
-          "linear-gradient(to bottom #061D34, #103253,#CDD4E1,#D8E1EB,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#CDD4E1, #103253,#061D34)",
-          gradient4:
+        gradient2:
+          "linear-gradient(to top,#061D34, #103253,#CDD4E1,#CDD4E1,#FFFFFF, #FFFFFF,#CDD4E1, #103253,#061D34)",
+        gradient4:
           "linear-gradient(to bottom,#FFFFFF,#CDD4E1,#CCD9F1,#A5BCE7, #8AA6DA,#1A5285)",
+        blogchain:
+          "linear-gradient(0deg, #061d34 0%, #103253 19%, #ffffff 39%, #ffffff 60%, #103253 80%, #061d34 100%)",
+        gradient6:
+          "linear-gradient(0deg, #103253 0%, #ffffff 19%, #ffffff 39%, #ffffff 60%, #ffffff 80%, #103253 100%)",
       },
       borderRadius: { 
         lg: "var(--radius)",

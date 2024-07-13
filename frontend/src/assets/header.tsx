@@ -13,11 +13,13 @@ import {
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import { LoginCard } from "@/assets/login";
 
 const Header = () => {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState({ name: "", profilePicture: "" });
+  const [showLoginCard, setShowLoginCard] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("jwt");
@@ -33,9 +35,15 @@ const Header = () => {
 
   const handleStartNewCampaign = () => {
     if (!isAuthenticated) {
-      router.push("/authentication");
+      setShowLoginCard(true);
     } else {
       router.push("/newarticles");
+    }
+  };
+
+  const handleCloseModal = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      setShowLoginCard(false);
     }
   };
 
@@ -62,7 +70,7 @@ const Header = () => {
                 </svg>
               </button>
             </SheetTrigger>
-            <SheetContent>
+            <SheetContent side="left">
               <SheetHeader>
                 <SheetTitle>Blogchain</SheetTitle>
                 <SheetDescription>Welcome to Blogchain!</SheetDescription>
@@ -90,14 +98,13 @@ const Header = () => {
                   Help with the Campaign
                 </Link>
                 <div className="flex justify-center">
-                  <Link href="/authentication">
-                    <Button
-                      variant="outline"
-                      className="bg-customColor-innovatio2 rounded-full px-4 py-2 text-sm font-medium hover:bg-customColor-innovatio3"
-                    >
-                      Get Started
-                    </Button>
-                  </Link>
+                  <Button
+                    variant="outline"
+                    className="bg-customColor-innovatio2 rounded-full px-4 py-2 text-sm font-medium hover:bg-customColor-innovatio3"
+                    onClick={() => setShowLoginCard(true)}
+                  >
+                    Log In / Sign Up
+                  </Button>
                 </div>
                 <div className="flex justify-center">
                   <Button className="bg-customColor-innovatio3 rounded-full px-4 py-2 text-sm font-medium">
@@ -159,21 +166,31 @@ const Header = () => {
             </Link>
             {isAuthenticated ? (
               <Avatar className="rounded-full">
-                {" "}
                 <AvatarImage src={user.profilePicture} />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             ) : (
               <Button
                 className="rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio"
-                onClick={handleStartNewCampaign}
+                onClick={() => setShowLoginCard(true)}
               >
-                Get Started
+                Log In / Sign Up
               </Button>
             )}
           </nav>
         </div>
       </header>
+
+      {showLoginCard && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          onClick={handleCloseModal}
+        >
+          <div className="relative bg-white p-8 rounded-lg shadow-lg">
+            <LoginCard />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -16,6 +16,7 @@ import axios, { isCancel, AxiosError } from "axios";
 import Footer from "@/assets/footer";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import FacebookLogin from "@/components/FacebookLogin"; // Importar el componente de Facebook Login
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -130,6 +131,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     handleRegister(username, email, password);
   };
+
   return (
     <div className="flex flex-col min-h-screen bg-gradient2 ">
       <Header />
@@ -175,6 +177,9 @@ const Login: React.FC = () => {
                                 onSuccess={handleGoogleLoginSuccess}
                                 onError={() => console.log("Login Failed")}
                               />
+                            </div>
+                            <div className="flex justify-center">
+                              <FacebookLogin />
                             </div>
                             <div className="relative">
                               <div className="absolute inset-0 flex items-center">
@@ -225,6 +230,9 @@ const Login: React.FC = () => {
                                 onSuccess={handleGoogleLoginSuccess}
                                 onError={() => console.log("Login Failed")}
                               />
+                            </div>
+                            <div className="flex justify-center">
+                              <FacebookLogin />
                             </div>
                             <div className="relative">
                               <div className="absolute inset-0 flex items-center">

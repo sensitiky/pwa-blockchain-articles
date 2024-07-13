@@ -1,4 +1,3 @@
-//Landing page WIP
 "use client";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import Image from "next/image";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import ArticleCarousel from "@/assets/carousel";
+import { LoginCard } from "@/assets/login";
 
 const cookies = new Cookie();
 type image = {
@@ -25,6 +25,7 @@ const HomePage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<{ username: string } | null>(null);
   const [avatar, setAvatar] = useState<Avatar | null>(null);
+  const [showLoginCard, setShowLoginCard] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -66,6 +67,14 @@ const HomePage: React.FC = () => {
     setIsAuthenticated(false);
     setUser(null);
     cookies.remove("token");
+  };
+
+  const handleLoginSignUpClick = () => {
+    setShowLoginCard(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowLoginCard(false);
   };
 
   const users = [
@@ -159,7 +168,6 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="bg-gradient5 md:bg-gradient">
-      {" "}
       <Header />
       <div
         className="relative h-screen flex items-center justify-center mb-52"
@@ -201,7 +209,7 @@ const HomePage: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-8 mb-24">
             <div className="md:col-span-1 text-center flex flex-col justify-center">
               <h1 className="text-3xl md:text-5xl font-semibold mb-4 text-customColor-innovatio3">
-                Read, write, share, and discuss blockchain
+                Read, write, share <br />&<br /> discuss blockchain
               </h1>
             </div>
             <div className="md:col-span-1 text-center">
@@ -250,7 +258,7 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
-      
+
       <ArticleCarousel />
 
       <section
@@ -461,6 +469,20 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      {showLoginCard && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="relative bg-white p-8 rounded-lg shadow-lg">
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+            >
+              &times;
+            </button>
+            <LoginCard />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
