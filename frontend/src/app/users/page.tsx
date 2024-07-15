@@ -447,7 +447,7 @@ export default function Users() {
                 </DropdownMenu>
               </div>
             </div>
-            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
               <Card>
                 <CardHeader className="flex items-center justify-between">
                   <div className="space-y-1">
@@ -565,7 +565,7 @@ export default function Users() {
   return (
     <div className="bg-customColor-header">
       <Header />
-      <div className="grid min-h-screen grid-cols-[300px_1fr] bg-background text-foreground">
+      <div className="grid min-h-screen grid-cols-[400px_1fr] bg-background text-foreground">
         <aside className="border-r border-border bg-customColor-header px-6 py-8">
           <div className="flex flex-col gap-8">
             <div className="space-y-2">

@@ -4,8 +4,6 @@ import Image from "next/image";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { FaRegComment, FaRegHeart } from "react-icons/fa";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import Link from "next/link";
 
 interface Article {
@@ -101,7 +99,7 @@ const settings = {
 
 const ArticleCarousel = () => {
   return (
-    <div className="bg-gradientbg py-16 px-4 md:px-8">
+    <div className="bg-gradientbg py-16 px-4 md:px-8 z-10">
       <div
         data-aos="fade-in"
         data-aos-once="true"
@@ -118,7 +116,7 @@ const ArticleCarousel = () => {
                 className="bg-opacity-50 backdrop-blur-3xl bg-white p-6 rounded-xl flex flex-col justify-between border-[1px] border-black"
                 style={{ width: "100%", maxWidth: "560px", height: "100%" }}
               >
-                <div className="flex items-start overflow-hidden">
+                <div className="flex items-start">
                   <Image
                     src={article.image}
                     alt={article.title}

@@ -13,11 +13,17 @@ export class User {
 
   @Column()
   email: string;
+  
+  @Column({ nullable: true })
+  firstName?: string;
+
+  @Column({ nullable: true })
+  lastName?: string;
 
   @Column()
   contrasena: string;
 
-  @OneToMany(() => Post, post => post.author)
+  @OneToMany(() => Post, post => post.author) 
   posts: Post[];
 
   @OneToMany(() => Comment, comment => comment.author)

@@ -3,4 +3,7 @@ export class CreateUserDto {
   usuario: string;
   email: string;
   contrasena: string;
+  firstName?: string;
+  lastName?: string;
+  code:string;
 }

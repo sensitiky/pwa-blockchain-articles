@@ -25,10 +25,9 @@ const Header = () => {
     const token = localStorage.getItem("jwt");
     if (token) {
       setIsAuthenticated(true);
-      // Simulando la obtención de datos del usuario
       setUser({
-        name: "John Doe", // Aquí deberías obtener el nombre real del usuario desde el backend
-        profilePicture: "/Saly-1.png", // Aquí deberías obtener la URL real del avatar del usuario
+        name: "John Doe",
+        profilePicture: "/Saly-1.png",
       });
     }
   }, []);
@@ -73,7 +72,7 @@ const Header = () => {
             <SheetContent side="left">
               <SheetHeader>
                 <SheetTitle>Blogchain</SheetTitle>
-                <SheetDescription>Welcome to Blogchain!</SheetDescription>
+                <SheetDescription>Welcome to Blogchain</SheetDescription>
               </SheetHeader>
               <nav className="flex flex-col gap-8">
                 <Link
@@ -142,27 +141,21 @@ const Header = () => {
           <nav className="space-x-4 flex items-center">
             <Link
               href="/users"
-              className="text-white hover:text-customColor-innovatio3"
+              className="text-white hover:text-customColor-hueso"
             >
               Users
             </Link>
             <Link
               href="/newarticles"
-              className="text-white hover:text-customColor-innovatio3"
+              className="text-white hover:text-customColor-hueso"
             >
               Create Articles
             </Link>
             <Link
               href="/articles"
-              className="text-white hover:text-customColor-innovatio3"
+              className="text-white hover:text-customColor-hueso"
             >
               Articles
-            </Link>
-            <Link
-              href="/tops"
-              className="text-white hover:text-customColor-innovatio3"
-            >
-              Tops
             </Link>
             {isAuthenticated ? (
               <Avatar className="rounded-full">

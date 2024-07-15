@@ -21,7 +21,6 @@ type image = {
 type Avatar = {
   avatar: image;
 };
-
 const HomePage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<{ username: string } | null>(null);
@@ -42,91 +41,6 @@ const HomePage: React.FC = () => {
       mirror: false,
     });
   }, []);
-
-  const fetchUserSession = async (token: string) => {
-    try {
-      const response = await fetch("http://localhost:4000/users/session", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data.user);
-        setIsAuthenticated(true);
-      } else {
-        console.error("Failed to fetch user session");
-      }
-    } catch (error) {
-      console.error("Error fetching user session:", error);
-    }
-  };
-
-  const logout = () => {
-    setIsAuthenticated(false);
-    setUser(null);
-    cookies.remove("token");
-  };
-
-  const handleLoginSignUpClick = () => {
-    setShowLoginCard(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowLoginCard(false);
-  };
-
-  const users = [
-    { name: "Tom Cooper", reads: 7260, avatar: "/shadcn.jpg" },
-    { name: "Tim Denning", reads: 6920, avatar: "/shadcn.jpg" },
-    { name: "Blake Lemoine", reads: 6700, avatar: "/shadcn.jpg" },
-    { name: "Artur Hayes", reads: 6145, avatar: "/shadcn.jpg" },
-    { name: "Frank Andrade", reads: 5267, avatar: "/shadcn.jpg" },
-    { name: "Frank Andrade", reads: 5267, avatar: "/shadcn.jpg" },
-    { name: "Frank Andrade", reads: 5267, avatar: "/shadcn.jpg" },
-    { name: "Frank Andrade", reads: 5267, avatar: "/shadcn.jpg" },
-  ];
-
-  const articles = [
-    {
-      author: "Daisy Kirui",
-      title: "Is Web5, Web6 and Web7, a near future?",
-      time: "9 Hours Ago",
-      avatar: "/shadcn.jpg",
-    },
-    {
-      author: "Nevermind",
-      title:
-        "The new platform for the new internet: The trusted way to realize Web3 raises €3M",
-      time: "9 Hours Ago",
-      avatar: "/shadcn.jpg",
-    },
-    {
-      author: "Unique Network",
-      title:
-        "App Promotion Staking: A Uniquely Accessible Pathway for Developers",
-      time: "9 Hours Ago",
-      avatar: "/shadcn.jpg",
-    },
-    {
-      author: "Wire",
-      title: "Gamestop Launches New NFT Marketplace Integrated with Wyre",
-      time: "9 Hours Ago",
-      avatar: "/shadcn.jpg",
-    },
-  ];
-
-  const categories = [
-    { name: "Educational", count: 1120 },
-    { name: "Tutorial", count: 965 },
-    { name: "Reviews", count: 33 },
-    { name: "Case Study", count: 567 },
-    { name: "Experience", count: 439 },
-    { name: "Journalistic Interviews", count: 439 },
-  ];
-
   const articles2 = [
     {
       author: "Nevermind",
@@ -166,9 +80,43 @@ const HomePage: React.FC = () => {
         "It wasn&apos;t too long ago that Silicon Valley scoffed at cryptocurrencies. All over coffee shops in Mountain View and Menlo Park, you heard the same conversation: &quot;Sure, it&apos;s cool technology, but when are we going...",
     },
   ];
+  const fetchUserSession = async (token: string) => {
+    try {
+      const response = await fetch("http://localhost:4000/users/session", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+        setIsAuthenticated(true);
+      } else {
+        console.error("Failed to fetch user session");
+      }
+    } catch (error) {
+      console.error("Error fetching user session:", error);
+    }
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    setUser(null);
+    cookies.remove("token");
+  };
+
+  const handleLoginSignUpClick = () => {
+    setShowLoginCard(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowLoginCard(false);
+  };
 
   return (
-    <div>
+    <div className="min-w-screen">
       <Header />
 
       <div className="relative h-screen flex items-center justify-center bg-customColor-header">
@@ -201,7 +149,7 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      <section className="bg-gradientbg2 py-4 px-4 md:px-8 max-h-screen">
+      <section className="flex bg-gradientbg2 py-4 px-4 md:px-8 max-h-screen">
         <div
           className="container mx-auto text-center"
           data-aos="fade-in"
@@ -244,7 +192,7 @@ const HomePage: React.FC = () => {
                 alt="DraftHero"
                 height={1000}
                 width={1000}
-                className="w-full"
+                className="w-full relative"
               />
             </div>
             <div>
@@ -262,7 +210,7 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <ArticleCarousel />
+        <ArticleCarousel />
 
       <section className="bg-gradientbg2 py-16 px-4 md:px-8">
         <div
