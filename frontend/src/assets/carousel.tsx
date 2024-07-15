@@ -102,7 +102,7 @@ const settings = {
 const ArticleCarousel = () => {
   return (
     <div
-      className="py-16 px-4 md:px-8 mb24"
+      className="py-16 px-4 md:px-8 mb-24"
       data-aos="fade-in"
       data-aos-once="true"
       data-aos-anchor-placement="top-bottom"
@@ -116,7 +116,7 @@ const ArticleCarousel = () => {
           <div key={index} className="p-4 flex justify-center">
             <div
               className="bg-opacity-50 backdrop-blur-3xl bg-white p-6 rounded-lg shadow-xl flex flex-col justify-between"
-              style={{ width: "100%", maxWidth: "560px", height: "235px" }}
+              style={{ width: "100%", maxWidth: "560px", height: "100%" }}
             >
               <div className="flex items-start overflow-hidden">
                 <Image
@@ -154,9 +154,9 @@ const ArticleCarousel = () => {
                   {article.reads} reads
                 </span>
                 <Link href="/draft">
-                <button className="bg-customColor-innovatio3 text-white px-4 py-2 rounded-full hover:bg-customColor-innovatio hover:text-customColor-innovatio3">
-                  Read More
-                </button>
+                  <button className="bg-customColor-innovatio3 text-white px-4 py-2 rounded-full hover:bg-customColor-innovatio hover:text-customColor-innovatio3">
+                    Read More
+                  </button>
                 </Link>
               </div>
               <div className="flex items-center justify-start mt-4 space-x-4">

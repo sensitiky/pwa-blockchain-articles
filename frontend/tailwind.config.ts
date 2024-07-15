@@ -27,6 +27,7 @@ const config = {
           letras: "#fec116",
           header:'#000916',
           hueso: '#CDCDCD',
+          welcome:'#93a68d'
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

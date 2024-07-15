@@ -48,7 +48,7 @@ const Header = () => {
   };
 
   return (
-    <div>
+    <div className="bg-customColor-header">
       <div className="lg:hidden flex items-center justify-between px-4 lg:px-6 h-14 border-b">
         <div className="flex items-center">
           <Sheet>
