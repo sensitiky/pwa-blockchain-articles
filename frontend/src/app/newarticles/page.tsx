@@ -1,6 +1,6 @@
 "use client";
 
-import { SetStateAction, JSX, SVGProps, useState } from "react";
+import { SetStateAction, JSX, SVGProps, useState, ChangeEvent } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,13 +9,13 @@ import Footer from "@/assets/footer";
 import Header from "@/assets/header";
 
 export default function Newarticles() {
-  const [imageFile, setImageFile] = useState(null);
-  const handleImageUpload = (event: {
-    target: { files: SetStateAction<null>[] };
-  }) => {
-    setImageFile(event.target.files[0]);
-  };
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
+  const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setImageFile(event.target.files[0]);
+    }
+  };
   return (
     <div>
       <Header />
@@ -52,7 +52,10 @@ export default function Newarticles() {
               </div>
             </div>
             <div className="border-l border-muted pl-0 lg:pl-12">
-              <h1 className="text-3xl font-bold mb-8 text-center">Write Your<br/> Article</h1>
+              <h1 className="text-3xl font-bold mb-8 text-center">
+                Write Your
+                <br /> Article
+              </h1>
               <div>
                 <div className="mb-6">
                   <div className="mt-2">
