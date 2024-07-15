@@ -13,7 +13,7 @@ import {
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { LoginCard } from "@/assets/login";
+import LoginCard from "@/assets/login";
 
 const Header = () => {
   const router = useRouter();
@@ -141,16 +141,16 @@ const Header = () => {
           </div>
           <nav className="space-x-4 flex items-center">
             <Link
-              href="/about-us"
+              href="/users"
               className="text-white hover:text-customColor-innovatio3"
             >
-              About Us
+              Users
             </Link>
             <Link
-              href="/support-us"
+              href="/newarticles"
               className="text-white hover:text-customColor-innovatio3"
             >
-              Support Us
+              Create Articles
             </Link>
             <Link
               href="/articles"
@@ -171,10 +171,10 @@ const Header = () => {
               </Avatar>
             ) : (
               <Button
+                onClick={handleStartNewCampaign}
                 className="rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio"
-                onClick={() => setShowLoginCard(true)}
               >
-                Log In / Sign Up
+                Get Started
               </Button>
             )}
           </nav>

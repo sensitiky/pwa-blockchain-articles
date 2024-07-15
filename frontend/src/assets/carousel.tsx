@@ -101,80 +101,83 @@ const settings = {
 
 const ArticleCarousel = () => {
   return (
-    <div
-      className="py-16 px-4 md:px-8 mb-24"
-      data-aos="fade-in"
-      data-aos-once="true"
-      data-aos-anchor-placement="top-bottom"
-      data-aos-offset="200"
-    >
-      <h2 className="text-3xl font-bold text-center text-customColor-innovatio3 mb-8">
-        Last Articles Published
-      </h2>
-      <Slider {...settings}>
-        {articles.map((article, index) => (
-          <div key={index} className="p-4 flex justify-center">
-            <div
-              className="bg-opacity-50 backdrop-blur-3xl bg-white p-6 rounded-lg shadow-xl flex flex-col justify-between"
-              style={{ width: "100%", maxWidth: "560px", height: "100%" }}
-            >
-              <div className="flex items-start overflow-hidden">
-                <Image
-                  src={article.image}
-                  alt={article.title}
-                  width={100}
-                  height={100}
-                  className="rounded-lg object-cover"
-                />
-                <div className="ml-4 flex-1">
-                  <h2 className="text-xl font-semibold">{article.title}</h2>
-                  <p className="text-sm text-gray-900">{article.description}</p>
-                  <div className="flex items-center mt-2">
-                    <span className="text-sm text-gray-700">
-                      {article.author}
-                    </span>
-                    <span className="text-sm text-gray-700 ml-2">
-                      {article.time}
-                    </span>
-                  </div>
-                  <div className="flex mt-2 space-x-2">
-                    {article.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full"
-                      >
-                        {tag}
+    <div className="bg-gradientbg py-16 px-4 md:px-8">
+      <div
+        data-aos="fade-in"
+        data-aos-once="true"
+        data-aos-anchor-placement="top-bottom"
+        data-aos-offset="200"
+      >
+        <h2 className="text-3xl font-bold text-center text-customColor-innovatio3 mb-8">
+          Last Articles Published
+        </h2>
+        <Slider {...settings}>
+          {articles.map((article, index) => (
+            <div key={index} className="p-4 flex justify-center">
+              <div
+                className="bg-opacity-50 backdrop-blur-3xl bg-white p-6 rounded-xl flex flex-col justify-between border-[1px] border-black"
+                style={{ width: "100%", maxWidth: "560px", height: "100%" }}
+              >
+                <div className="flex items-start overflow-hidden">
+                  <Image
+                    src={article.image}
+                    alt={article.title}
+                    width={100}
+                    height={100}
+                    className="rounded-lg object-cover"
+                  />
+                  <div className="ml-4 flex-1">
+                    <h2 className="text-xl font-semibold">{article.title}</h2>
+                    <p className="text-sm text-gray-900">
+                      {article.description}
+                    </p>
+                    <div className="flex items-center mt-2">
+                      <span className="text-sm text-gray-700">
+                        {article.author}
                       </span>
-                    ))}
+                      <span className="text-sm text-gray-700 ml-2">
+                        {article.time}
+                      </span>
+                    </div>
+                    <div className="flex mt-2 space-x-2">
+                      {article.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="flex justify-between items-center mt-4">
-                <span className="text-sm text-gray-500">
-                  {article.reads} reads
-                </span>
-                <Link href="/draft">
-                  <button className="bg-customColor-innovatio3 text-white px-4 py-2 rounded-full hover:bg-customColor-innovatio hover:text-customColor-innovatio3">
-                    Read More
+                <div className="flex justify-between items-center mt-4">
+                  <span className="text-sm text-gray-500">
+                    {article.reads} reads
+                  </span>
+                  <Link href="/draft">
+                    <button className="bg-customColor-innovatio3 text-white px-4 py-2 rounded-full hover:bg-customColor-innovatio hover:text-customColor-innovatio3">
+                      Read More
+                    </button>
+                  </Link>
+                </div>
+                <div className="flex items-center justify-start mt-4 space-x-4">
+                  <span className="text-gray-500">10 min read</span>
+                  <span className="bg-gray-500 w-px h-6"></span>
+                  <button className="flex items-center space-x-1 text-gray-500">
+                    <FaRegComment className="w-5 h-5" />
+                    <span>{article.comments}</span>
                   </button>
-                </Link>
-              </div>
-              <div className="flex items-center justify-start mt-4 space-x-4">
-                <span className="text-gray-500">10 min read</span>
-                <span className="bg-gray-500 w-px h-6"></span>
-                <button className="flex items-center space-x-1 text-gray-500">
-                  <FaRegComment className="w-5 h-5" />
-                  <span>{article.comments}</span>
-                </button>
-                <button className="flex items-center space-x-1 text-gray-500">
-                  <FaRegHeart className="w-5 h-5" />
-                  <span>{article.likes}</span>
-                </button>
+                  <button className="flex items-center space-x-1 text-gray-500">
+                    <FaRegHeart className="w-5 h-5" />
+                    <span>{article.likes}</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </Slider>
+          ))}
+        </Slider>
+      </div>
     </div>
   );
 };

@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./globals.css";
-import { GoogleOAuthProvider } from '@react-oauth/google';
-
-const inter = Inter({ subsets: ["latin"] });
 
 const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 if (!clientId) {
-  throw new Error('NEXT_PUBLIC_GOOGLE_CLIENT_ID is not defined');
+  throw new Error("NEXT_PUBLIC_GOOGLE_CLIENT_ID is not defined");
 }
 
 export const metadata: Metadata = {
@@ -22,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className}`}>
+      <body className="font-gilroy">
         <GoogleOAuthProvider clientId={clientId as string}>
           <main className="flex-grow-0">{children}</main>
         </GoogleOAuthProvider>

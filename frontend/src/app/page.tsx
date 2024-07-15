@@ -9,7 +9,8 @@ import Image from "next/image";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import ArticleCarousel from "@/assets/carousel";
-import { LoginCard } from "@/assets/login";
+import LoginCard from "@/assets/login";
+import Footer from "@/assets/footer";
 
 const cookies = new Cookie();
 type image = {
@@ -167,53 +168,55 @@ const HomePage: React.FC = () => {
   ];
 
   return (
-    <div className="bg-gradient5 md:bg-gradient">
+    <div>
       <Header />
-      <div
-        className="relative h-screen flex items-center justify-center mb-52"
-        data-aos="fade-in"
-        data-aos-once="true"
-        data-aos-anchor-placement="top-bottom"
-        data-aos-offset="200"
-      >
-        <div className="relative z-10 text-center text-white p-8">
-          <h1 className="text-yellow-400 text-xl md:text-2xl">
+
+      <div className="relative h-screen flex items-center justify-center bg-customColor-header">
+        <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-white to-transparent z-0"></div>
+        <div
+          className="relative z-10"
+          data-aos="fade-in"
+          data-aos-once="true"
+          data-aos-anchor-placement="top-bottom"
+          data-aos-offset="200"
+        >
+          <h1 className="text-center text-yellow-400 text-2xl md:text-4xl">
             Welcome to Blogchain
           </h1>
-          <h2 className="text-3xl md:text-5xl font-bold mt-4">
+          <h2 className="text-4xl text-center text-white md:text-5xl font-bold mt-4">
             A place where we write <br />
             articles about blockchain
             <br />
             to discuss
           </h2>
-          <div className="mt-8 flex justify-center">
+          <div className="text-center mt-8 flex justify-center">
             <Image
               src="/Hero.png"
               alt="Hero Image"
-              height={500}
-              width={500}
-              className="w-full max-w-xs md:max-w-md"
+              height={1000}
+              width={1000}
+              className="w-full"
             />
           </div>
         </div>
       </div>
 
-      <section
-        className="py-4 px-4 md:px-8 mb-28 max-h-screen"
-        data-aos="fade-in"
-        data-aos-once="true"
-        data-aos-anchor-placement="top-bottom"
-        data-aos-offset="200"
-      >
-        <div className="container mx-auto text-center">
+      <section className="bg-gradientbg2 py-4 px-4 md:px-8 max-h-screen">
+        <div
+          className="container mx-auto text-center"
+          data-aos="fade-in"
+          data-aos-once="true"
+          data-aos-anchor-placement="top-bottom"
+          data-aos-offset="200"
+        >
           <div className="grid md:grid-cols-2 gap-8 mb-24">
             <div className="md:col-span-1 text-center flex flex-col justify-center">
-              <h1 className="text-3xl md:text-5xl font-semibold mb-4 text-customColor-innovatio3">
-                Read, write, share <br />&<br /> discuss blockchain
+              <h1 className="text-5xl md:text-5xl font-semibold gap-4 mb-4 text-customColor-innovatio3">
+                Read, write, share and discuss blockchain
               </h1>
             </div>
-            <div className="md:col-span-1 text-center">
-              <p className="text-xl mb-12 text-customColor-innovatio3">
+            <div className="md:col-span-1 text-left">
+              <p className="text-lg md:text-lg mb-12 text-customColor-innovatio3">
                 Blogchain is an educational space to connect web3 content
                 writers and readers interested in blockchain technology and its
                 adoption. We are looking to fill with educational, journalistic
@@ -223,12 +226,12 @@ const HomePage: React.FC = () => {
               </p>
             </div>
           </div>
-          <div className="grid md:grid-cols-3 gap-8 text-center mt-14">
+          <div className="grid md:grid-cols-3 gap-8 mt-14">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-customColor-letras">
-                Blogchain Redactor
+              <h2 className="text-right text-3xl md:text-4xl text-customColor-letras">
+                Blogchainer Redactor
               </h2>
-              <p className="mt-4 text-lg text-customColor-innovatio3">
+              <p className="text-right mt-4 text-lg md:text-lg text-customColor-innovatio3">
                 Are you a writer of educational, academic, informative, review,
                 tutorial content and want to expand your readership? Write or
                 import your articles in our blog, make yourself known and flood
@@ -239,16 +242,16 @@ const HomePage: React.FC = () => {
               <Image
                 src="/Drafthero.png"
                 alt="DraftHero"
-                height={500}
-                width={500}
-                className="w-full max-w-xs md:max-w-md"
+                height={1000}
+                width={1000}
+                className="w-full"
               />
             </div>
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-customColor-letras">
+              <h2 className="text-4xl md:text-4xl text-customColor-letras">
                 Web3 Lector
               </h2>
-              <p className="mt-4 text-lg text-customColor-innovatio3">
+              <p className="mt-4 text-lg md:text-lg text-customColor-innovatio3">
                 Are you a reader enthusiastic about blockchain technology and
                 Web3 applications? Soak up the knowledge of many content
                 creators, follow your influencers and stay tuned for all the
@@ -261,16 +264,16 @@ const HomePage: React.FC = () => {
 
       <ArticleCarousel />
 
-      <section
-        className="py-16 px-4 md:px-8 mb-32"
-        data-aos="fade-in"
-        data-aos-once="true"
-        data-aos-anchor-placement="top-bottom"
-        data-aos-offset="200"
-      >
-        <div className="container mx-auto">
+      <section className="bg-gradientbg2 py-16 px-4 md:px-8">
+        <div
+          className="container mx-auto"
+          data-aos="fade-in"
+          data-aos-once="true"
+          data-aos-anchor-placement="top-bottom"
+          data-aos-offset="200"
+        >
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-customColor-innovatio3">
+            <h2 className="text-4xl font-bold text-customColor-innovatio3 mb-14">
               Discover Articles
             </h2>
           </div>
@@ -290,9 +293,6 @@ const HomePage: React.FC = () => {
                 <option>Date</option>
               </select>
             </div>
-            <Button className="px-4 py-2 border-2 bg-inherit border-customColor-innovatio3 text-customColor-innovatio3 rounded-full hover:bg-customColor-innovatio3 hover:text-customColor-innovatio">
-              View All
-            </Button>
           </div>
           <div className="grid md:grid-cols-2 gap-8">
             {articles2.map((article, index) => (
@@ -331,144 +331,14 @@ const HomePage: React.FC = () => {
           </div>
           <div className="text-center mt-8">
             <Link href="/articles">
-              <Button className="px-6 py-2 border-2 text-customColor-innovatio3 bg-inherit border-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio rounded-full">
-                View More
+              <Button className="px-6 py-2 border-2 text-black bg-inherit border-black hover:bg-customColor-innovatio3 hover:text-customColor-innovatio rounded-full">
+                View All
               </Button>
             </Link>
           </div>
         </div>
       </section>
-      <footer className="py-6 border-t border-gray-300 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <Image
-                src="/Logo.svg"
-                alt="Innovatio logo"
-                width={200}
-                height={24}
-                className=" mb-4"
-              />
-              <p className="text-gray-400 text-sm">
-                Help different crowdfunding <br />
-                campaigns become a reality
-                <br />
-                thanks to your contributions,
-                <br /> invest in projects,
-                <br /> fund purposes and get rewards.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-950 text-lg mb-4">
-                How it works
-              </h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#" className="hover:underline text-gray-400">
-                    Campaign Flow
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:underline text-gray-400">
-                    Investment Flow
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:underline text-gray-400">
-                    Milestones & Control
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:underline text-gray-400">
-                    Q & A
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-950 text-lg mb-4">
-                About us
-              </h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#" className="hover:underline text-gray-400">
-                    Introduction
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:underline text-gray-400">
-                    Team & Members
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:underline text-gray-400">
-                    Discord Community
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:underline text-gray-400">
-                    Social Media
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-950 text-lg mb-4">
-                Help with the Campaigns
-              </h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#" className="hover:underline text-gray-400">
-                    Ideas of Campaign
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:underline text-gray-400">
-                    Tokenomics
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:underline text-gray-400">
-                    Digital Marketing Strategy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:underline text-gray-400">
-                    Contact our team
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 flex justify-center space-x-6">
-            <Link href="#" className="text-gray-500 hover:text-gray-900">
-              <Image src="/discord.svg" alt="discord" width={24} height={24} />
-            </Link>
-            <Link href="#" className="text-gray-500 hover:text-gray-900">
-              <Image src="/twitter.svg" alt="twitter" width={24} height={24} />
-            </Link>
-            <Link href="#" className="text-gray-500 hover:text-gray-900">
-              <Image
-                src="/instagram.svg"
-                alt="instagram"
-                width={24}
-                height={24}
-              />
-            </Link>
-            <Link href="#" className="text-gray-500 hover:text-gray-900">
-              <Image
-                src="/facebook.svg"
-                alt="facebook"
-                width={24}
-                height={24}
-              />
-            </Link>
-          </div>
-          <div className="mt-8 border-t border-gray-200 pt-4 flex justify-center text-gray-400 text-sm">
-            <p>&copy; 2024 Innovatio. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {showLoginCard && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

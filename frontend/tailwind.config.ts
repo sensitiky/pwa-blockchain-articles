@@ -18,6 +18,9 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        gilroy: ['Gilroy', 'sans-serif'],
+      },
       colors: {
         customColor: {
           innovatio: "#e6eeff",
@@ -78,6 +81,8 @@ const config = {
           "linear-gradient(0deg, #061d34 0%, #103253 19%, #ffffff 39%, #ffffff 60%, #103253 80%, #061d34 100%)",
         gradient6:
           "linear-gradient(0deg, #103253 0%, #ffffff 19%, #ffffff 39%, #ffffff 60%, #ffffff 80%, #103253 100%)",
+          gradientbg: 'linear-gradient(to bottom, #e0f7ff, #ffffff)',
+          gradientbg2: 'linear-gradient(to top, #e0f7ff, #ffffff)',
       },
       borderRadius: { 
         lg: "var(--radius)",

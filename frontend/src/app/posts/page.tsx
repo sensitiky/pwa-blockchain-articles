@@ -8,19 +8,20 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { JSX, SVGProps } from "react";
-import Header2 from "@/assets/header2";
-import Footer from "@/assets/footer";
+import Header from "@/assets/header";
 import Image from 'next/image';
+import Footer from "@/assets/footer";
 
 export default function Posts() {
   return (
-    <div className="bg-gradient6 px-4 py-2 md:px-6 lg:py-2">
-      <Header2 />
+    <div>
+      <Header />
+    <div className="px-4 py-2 md:px-6 lg:py-2">
       <div className="mx-auto max-w-4xl">
         <div className="flex items-center justify-between">
           <Link
             href="#"
-            className="bg-inherit inline-flex h-8 items-center justify-center rounded-md px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-inherit focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+            className="bg-inherit text-black inline-flex h-8 items-center justify-center rounded-md px-4 text-sm font-medium transition-colors hover:bg-inherit focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
             prefetch={false}
           >
             <ArrowLeftIcon className="mr-2 h-4 w-4" />
@@ -189,8 +190,10 @@ export default function Posts() {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
+    <Footer />
+    </div>
+
   );
 }
 

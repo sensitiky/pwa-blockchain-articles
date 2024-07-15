@@ -4,128 +4,59 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="py-6 border-t border-gray-300 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <Image
-              src="/Logo.svg"
-              alt="Innovatio logo"
-              width={200}
-              height={24}
-              className=" mb-4"
-            />
-            <p className="text-gradient text-sm">
-              Help different crowdfunding <br />
-              campaigns become a reality
-              <br />
-              thanks to your contributions,
-              <br /> invest in projects,
-              <br /> fund purposes and get rewards.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-900 text-lg mb-4">
-              How it works
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="#" className="hover:underline text-gradient">
-                  Campaign Flow
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gradient">
-                  Investment Flow
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gradient">
-                  Milestones & Control
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gradient">
-                  Q & A
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-900 text-lg mb-4">
-              About us
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="#" className="hover:underline text-gradient">
-                  Introduction
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gradient">
-                  Team & Members
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gradient">
-                  Discord Community
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gradient">
-                  Social Media
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-900 text-lg mb-4">
-              Help with the Campaigns
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="#" className="hover:underline text-gradient">
-                  Ideas of Campaign
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gradient">
-                  Tokenomics
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gradient">
-                  Digital Marketing Strategy
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:underline text-gradient">
-                  Contact our team
-                </Link>
-              </li>
-            </ul>
-          </div>
+    <footer className="bg-customColor-header min-w-full py-4 border-t border-gray-300 backdrop-blur-sm">
+      <div className="min-w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex justify-start items-center gap-4">
+          <span className="text-xl font-bold text-white flex items-center">
+            Blogchain <span className="font-light mx-2">By</span>
+          </span>
+          <Image
+            src="/footer.png"
+            alt="Innovatio logo"
+            width={100}
+            height={24}
+            className="text-customColor-letras"
+          />
         </div>
         <div className="mt-8 flex justify-center space-x-6">
-          <Link href="#" className="text-gray-500 hover:text-gray-900">
-            <Image src="/discord.svg" alt="discord" width={24} height={24} />
+          <Link href="#">
+            <Image
+              className="filter invert"
+              src="/discord.svg"
+              alt="discord"
+              width={24}
+              height={24}
+            />
           </Link>
-          <Link href="#" className="text-gray-500 hover:text-gray-900">
-            <Image src="/twitter.svg" alt="twitter" width={24} height={24} />
+          <Link href="#">
+            <Image
+              className="filter invert"
+              src="/twitter.svg"
+              alt="twitter"
+              width={24}
+              height={24}
+            />
           </Link>
-          <Link href="#" className="text-gray-500 hover:text-gray-900">
+          <Link href="#">
             <Image
               src="/instagram.svg"
               alt="instagram"
               width={24}
               height={24}
+              className="filter invert"
             />
           </Link>
-          <Link href="#" className="text-gray-500 hover:text-gray-900">
-            <Image src="/facebook.svg" alt="facebook" width={24} height={24} />
+          <Link href="#">
+            <Image
+              src="/facebook.svg"
+              alt="facebook"
+              width={24}
+              height={24}
+              className="filter invert"
+            />
           </Link>
         </div>
-        <div className="mt-8 border-t border-gray-200 pt-4 flex justify-center text-gray-900 text-sm">
+        <div className="mt-8 border-t border-white pt-4 flex justify-center text-gray-300">
           <p>&copy; 2024 Innovatio. All rights reserved.</p>
         </div>
       </div>

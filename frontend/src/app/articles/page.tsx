@@ -10,21 +10,21 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import { JSX, SVGProps } from "react";
-import Header2 from "@/assets/header2";
-import Footer from "@/assets/footer";
+import Header from "@/assets/header";
 import Image from "next/image";
+import Footer from "@/assets/footer";
 
-export default function Component() {
+export default function Articles() {
   return (
-    <div className="w-full bg-gradient2">
-      <Header2 />
+    <div className="bg-gradientbg2 w-full">
+      <Header />
       <div className="container mx-auto py-12 md:py-16 lg:py-20">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-12">
           <div className="space-y-4 md:space-y-6">
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl text-center text-white">
-              Discover the Latest Articles
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl text-center text-yellow-400">
+              Articles
             </h1>
-            <p className="text-muted-foreground md:text-xl lg:text-lg text-center text-yellow-300">
+            <p className="text-muted-foreground md:text-xl lg:text-lg text-center text-customColor-welcome">
               Choose your favourite categories and tags
             </p>
           </div>
@@ -324,7 +324,7 @@ export default function Component() {
                   <PaginationLink href="#">1</PaginationLink>
                 </PaginationItem>
                 <PaginationItem>
-                  <PaginationLink href="#" isActive>
+                  <PaginationLink href="#">
                     2
                   </PaginationLink>
                 </PaginationItem>
