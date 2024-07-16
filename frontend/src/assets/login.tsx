@@ -399,7 +399,7 @@ export default function LoginCard() {
               />
             </div>
             <div className="space-y-2 flex items-center">
-              <Checkbox id="terms" className="mr-4" />
+              <Checkbox id="terms" className="mr-4" required />
               <Label
                 htmlFor="terms"
                 className="text-sm text-gray-600 dark:text-gray-400"

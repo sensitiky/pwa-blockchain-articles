@@ -26,7 +26,7 @@ import Header from "@/assets/header";
 import Footer from "@/assets/footer";
 
 export default function Users() {
-  const [selectedSection, setSelectedSection] = useState("articles");
+  const [selectedSection, setSelectedSection] = useState("personal");
   const [editMode, setEditMode] = useState(false);
   const [bioEditMode, setBioEditMode] = useState(false);
   const [bio, setBio] = useState(
