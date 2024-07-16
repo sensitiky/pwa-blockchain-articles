@@ -88,6 +88,21 @@ export class AuthController {
     }
   }
 
+  @Post('verify-code')
+  async verifyCode(@Body() body: { email: string; code: string }, @Res() res: Response): Promise<void> {
+    try {
+      const isVerified = await this.authService.verifyCode(body.email, body.code);
+      if (isVerified) {
+        res.status(200).json({ message: 'Code verification successful' });
+      } else {
+        res.status(400).json({ message: 'Invalid verification code' });
+      }
+    } catch (error) {
+      this.logger.error(`Error verifying code: ${error.message}`);
+      res.status(500).json({ message: 'Failed to verify code' });
+    }
+  }
+
   @Post('google')
   async googleLogin(@Body() body: { token: string }, @Res() res: Response): Promise<void> {
     try {

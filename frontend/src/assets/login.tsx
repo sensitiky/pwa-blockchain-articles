@@ -24,6 +24,8 @@ export default function LoginCard() {
   const [forgotPassword, setForgotPassword] = useState(false);
   const [resetCode, setResetCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [codeSent, setCodeSent] = useState(false);
+  const [codeVerified, setCodeVerified] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -33,10 +35,13 @@ export default function LoginCard() {
     setError(null);
 
     try {
-      const response = await axios.post("https://blogchain.onrender.com/auth/login", {
-        usuario,
-        contrasena,
-      });
+      const response = await axios.post(
+        "https://blogchain.onrender.com/auth/login",
+        {
+          usuario,
+          contrasena,
+        }
+      );
 
       console.log("Login response:", response);
 
@@ -63,13 +68,26 @@ export default function LoginCard() {
     setLoading(true);
     setError(null);
 
+    // Validar contraseña
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+    if (!passwordRegex.test(contrasena)) {
+      setError(
+        "Password must be at least 8 characters long, contain one uppercase letter, and one special character."
+      );
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await axios.post("https://blogchain.onrender.com/auth/register", {
-        usuario,
-        contrasena,
-        email,
-        code: verificationCode,
-      });
+      const response = await axios.post(
+        "https://blogchain.onrender.com/auth/register",
+        {
+          usuario,
+          contrasena,
+          email,
+          code: verificationCode,
+        }
+      );
 
       console.log("Register response:", response);
 
@@ -98,7 +116,7 @@ export default function LoginCard() {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/auth/send-verification-code",
+        "https://blogchain.onrender.com/auth/send-verification-code",
         { email }
       );
 
@@ -106,6 +124,7 @@ export default function LoginCard() {
 
       if (response.status === 200) {
         console.log("Verification code sent", response.data);
+        setCodeSent(true);
         setError("Verification code sent to your email");
       } else {
         setError("Failed to send verification code");
@@ -125,14 +144,49 @@ export default function LoginCard() {
     }
   };
 
+  const handleVerifyCode = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.post(
+        "https://blogchain.onrender.com/auth/verify-code",
+        { email, code: verificationCode }
+      );
+
+      console.log("Verify code response:", response);
+
+      if (response.status === 200) {
+        console.log("Code verification successful", response.data);
+        setCodeVerified(true);
+        setError(null);
+      } else {
+        setError("Invalid verification code");
+      }
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        console.log("Axios error:", err.response);
+        setError(err.response?.data.message || "Invalid verification code");
+      } else {
+        console.log("General error:", err);
+        setError((err as Error).message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleForgotPassword = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await axios.post("https://blogchain.onrender.com/auth/forgot-password", {
-        email,
-      });
+      const response = await axios.post(
+        "https://blogchain.onrender.com/auth/forgot-password",
+        {
+          email,
+        }
+      );
 
       console.log("Forgot password response:", response);
 
@@ -161,12 +215,25 @@ export default function LoginCard() {
     setLoading(true);
     setError(null);
 
+    // Validar nueva contraseña
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      setError(
+        "Password must be at least 8 characters long, contain one uppercase letter, and one special character."
+      );
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await axios.post("https://blogchain.onrender.com/auth/reset-password", {
-        email,
-        code: resetCode,
-        newPassword,
-      });
+      const response = await axios.post(
+        "https://blogchain.onrender.com/auth/reset-password",
+        {
+          email,
+          code: resetCode,
+          newPassword,
+        }
+      );
 
       console.log("Reset password response:", response);
 
@@ -196,9 +263,12 @@ export default function LoginCard() {
     credentialResponse: CredentialResponse
   ) => {
     try {
-      const response = await axios.post("https://blogchain.onrender.com/auth/google", {
-        token: credentialResponse.credential,
-      });
+      const response = await axios.post(
+        "https://blogchain.onrender.com/auth/google",
+        {
+          token: credentialResponse.credential,
+        }
+      );
 
       console.log("Google login response:", response);
 
@@ -218,9 +288,12 @@ export default function LoginCard() {
     credentialResponse: CredentialResponse
   ) => {
     try {
-      const response = await axios.post("https://blogchain.onrender.com/auth/google", {
-        token: credentialResponse.credential,
-      });
+      const response = await axios.post(
+        "https://blogchain.onrender.com/auth/google",
+        {
+          token: credentialResponse.credential,
+        }
+      );
 
       console.log("Google register response:", response);
 
@@ -358,16 +431,32 @@ export default function LoginCard() {
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="verification-code">Verification Code</Label>
-              <Input
-                id="verification-code"
-                type="text"
-                placeholder="Enter verification code"
-                value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
-                required
-              />
+            {codeSent && !codeVerified && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="verification-code">Verification Code</Label>
+                  <Input
+                    id="verification-code"
+                    type="text"
+                    placeholder="Enter verification code"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                    required
+                  />
+                  <div className="flex justify-center">
+                    <Button
+                      type="button"
+                      className="mt-2 rounded-sm w-44 bg-customColor-header"
+                      onClick={handleVerifyCode}
+                      disabled={loading}
+                    >
+                      {loading ? "Verifying..." : "Verify Code"}
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+            {!codeSent && (
               <div className="flex justify-center">
                 <Button
                   type="button"
@@ -378,18 +467,22 @@ export default function LoginCard() {
                   {loading ? "Sending..." : "Send Verification Code"}
                 </Button>
               </div>
-            </div>
-            {error && <div className="text-red-500">{error}</div>}
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                className="rounded-sm w-44"
-                onClick={handleRegister}
-                disabled={loading}
-              >
-                {loading ? "Registering..." : "Register"}
-              </Button>
-            </div>
+            )}
+            {codeVerified && (
+              <>
+                {error && <div className="text-red-500">{error}</div>}
+                <div className="flex justify-center">
+                  <Button
+                    type="button"
+                    className="rounded-sm w-44"
+                    onClick={handleRegister}
+                    disabled={loading}
+                  >
+                    {loading ? "Registering..." : "Register"}
+                  </Button>
+                </div>
+              </>
+            )}
             <div className="space-y-2 flex flex-col items-center">
               <GoogleLogin
                 onSuccess={handleGoogleRegisterSuccess}
@@ -511,26 +604,5 @@ export default function LoginCard() {
         )}
       </div>
     </GoogleOAuthProvider>
-  );
-}
-
-function FacebookIcon(
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
-) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-    </svg>
   );
 }
