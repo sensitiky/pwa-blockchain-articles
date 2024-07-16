@@ -13,6 +13,11 @@ import {
   CredentialResponse,
 } from "@react-oauth/google";
 
+const API_URL =
+  process.env.NODE_ENV === "production"
+    ? process.env.NEXT_PUBLIC_API_URL_PROD
+    : process.env.NEXT_PUBLIC_API_URL_LOCAL;
+
 export default function LoginCard() {
   const [showRegister, setShowRegister] = useState(false);
   const [usuario, setUsuario] = useState("");
@@ -25,13 +30,13 @@ export default function LoginCard() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  
+
   const handleLogin = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await axios.post("http://localhost:4000/auth/login", {
+      const response = await axios.post(`${API_URL}/auth/login`, {
         usuario,
         contrasena,
       });
@@ -62,7 +67,7 @@ export default function LoginCard() {
     setError(null);
 
     try {
-      const response = await axios.post("http://localhost:4000/auth/register", {
+      const response = await axios.post(`${API_URL}/auth/register`, {
         usuario,
         contrasena,
         email,
@@ -96,7 +101,7 @@ export default function LoginCard() {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/send-verification-code",
+        `${API_URL}/auth/send-verification-code`,
         { email }
       );
 
@@ -128,10 +133,9 @@ export default function LoginCard() {
     setError(null);
 
     try {
-      const response = await axios.post(
-        "http://localhost:4000/auth/forgot-password",
-        { email }
-      );
+      const response = await axios.post(`${API_URL}/auth/forgot-password`, {
+        email,
+      });
 
       console.log("Forgot password response:", response);
 
@@ -161,14 +165,11 @@ export default function LoginCard() {
     setError(null);
 
     try {
-      const response = await axios.post(
-        "http://localhost:4000/auth/reset-password",
-        {
-          email,
-          code: resetCode,
-          newPassword,
-        }
-      );
+      const response = await axios.post(`${API_URL}/auth/reset-password`, {
+        email,
+        code: resetCode,
+        newPassword,
+      });
 
       console.log("Reset password response:", response);
 
@@ -198,7 +199,7 @@ export default function LoginCard() {
     credentialResponse: CredentialResponse
   ) => {
     try {
-      const response = await axios.post("http://localhost:4000/auth/google", {
+      const response = await axios.post(`${API_URL}/auth/google`, {
         token: credentialResponse.credential,
       });
 
@@ -220,7 +221,7 @@ export default function LoginCard() {
     credentialResponse: CredentialResponse
   ) => {
     try {
-      const response = await axios.post("http://localhost:4000/auth/google", {
+      const response = await axios.post(`${API_URL}/auth/google`, {
         token: credentialResponse.credential,
       });
 

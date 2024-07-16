@@ -12,6 +12,10 @@ import ArticleCarousel from "@/assets/carousel";
 import LoginCard from "@/assets/login";
 import Footer from "@/assets/footer";
 
+const API_URL =
+  process.env.NODE_ENV === "production"
+    ? process.env.NEXT_PUBLIC_API_URL_PROD
+    : process.env.NEXT_PUBLIC_API_URL_LOCAL;
 const cookies = new Cookie();
 type image = {
   url: string;
@@ -82,7 +86,7 @@ const HomePage: React.FC = () => {
   ];
   const fetchUserSession = async (token: string) => {
     try {
-      const response = await fetch("http://localhost:4000/users/session", {
+      const response = await fetch(`${API_URL}/users/session`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
