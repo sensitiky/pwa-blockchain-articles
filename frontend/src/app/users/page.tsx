@@ -2,6 +2,8 @@
 import Link from "next/link";
 import { SVGProps, useState } from "react";
 import { FaCamera } from "react-icons/fa";
+import Select from "react-select";
+import countryList from "react-select-country-list";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -23,7 +25,6 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Header from "@/assets/header";
-import Footer from "@/assets/footer";
 
 export default function Users() {
   const [selectedSection, setSelectedSection] = useState("personal");
@@ -36,9 +37,10 @@ export default function Users() {
     name: "Bolardo Nicolas",
     date: "April 28, 1989",
     email: "nicolasbolardo@gmail.com",
-    country: "Not provided",
+    country: ["Not provided"],
   });
   const [profileImage, setProfileImage] = useState<string>("/shadcn.jpg");
+  const options = countryList().getData();
 
   const handleEditToggle = () => {
     setEditMode(!editMode);
@@ -51,6 +53,10 @@ export default function Users() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUserInfo({ ...userInfo, [name]: value });
+  };
+
+  const handleCountryChange = (selectedOption: any) => {
+    setUserInfo({ ...userInfo, country: [selectedOption.label] });
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -141,21 +147,25 @@ export default function Users() {
                 <div className="grid gap-1">
                   <Label>Country</Label>
                   {editMode ? (
-                    <Input
-                      name="country"
-                      value={userInfo.country}
-                      onChange={handleInputChange}
+                    <Select
+                      options={options}
+                      value={{
+                        label: userInfo.country[0],
+                        value: userInfo.country[0],
+                      }}
+                      onChange={handleCountryChange}
+                      className="w-full"
                     />
                   ) : (
                     <div className="flex items-center justify-between">
                       <span
                         className={
-                          userInfo.country === "Not provided"
+                          userInfo.country.includes("Not provided")
                             ? "text-red-500"
                             : ""
                         }
                       >
-                        {userInfo.country}
+                        {userInfo.country.join(", ")}
                       </span>
                       <Separator className="flex-1 ml-4" />
                     </div>
@@ -587,7 +597,7 @@ export default function Users() {
                 className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white hover:underline hover:underline-offset-4 hover:decoration-yellow-500"
               >
                 <LockIcon className="h-5 w-5" />
-                Log In & Security
+                Security & Social Links
               </button>
               <button
                 onClick={() => setSelectedSection("saved")}
