@@ -1,19 +1,19 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
-import { DatabaseService } from './database.service';
-import { CreateUserDto } from './dto/user.dto';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { AuthService } from './auth/auth.service';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 import { User } from './database/entities/user.entity';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly authService: AuthService,
+  ) {}
 
-  @Post()
-  async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return await this.databaseService.createUser(createUserDto);
-  }
-
-  @Get(':id')
-  async getUser(@Param('id') id: number): Promise<User> {
-    return await this.databaseService.getUser(id);
+  @Get('me')
+  @UseGuards(AuthGuard('jwt'))
+  async getProfile(@Req() req: Request): Promise<User> {
+    const token = req.headers.authorization.split(' ')[1];
+    return await this.authService.validateToken(token);
   }
 }

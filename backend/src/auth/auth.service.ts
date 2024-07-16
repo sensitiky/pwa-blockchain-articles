@@ -144,4 +144,14 @@ export class AuthService {
     return this.verifyCode(email, code);
   }
 
+  // Método para validar el token JWT y obtener el usuario
+  async validateToken(token: string): Promise<User> {
+    try {
+      const decoded = this.jwtService.verify(token);
+      const user = await this.usersService.findOne(decoded.userId);
+      return user;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
 }

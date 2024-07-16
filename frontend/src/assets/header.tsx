@@ -14,22 +14,38 @@ import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import LoginCard from "@/assets/login";
+import axios from "axios";
 
 const Header = () => {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState({ name: "", profilePicture: "" });
+  const [user, setUser] = useState<{
+    name: string;
+    profilePicture: string;
+  } | null>(null);
   const [showLoginCard, setShowLoginCard] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("jwt");
-    if (token) {
-      setIsAuthenticated(true);
-      setUser({
-        name: "John Doe",
-        profilePicture: "/Saly-1.png",
-      });
-    }
+    const fetchUser = async () => {
+      const token = localStorage.getItem("jwt");
+      if (token) {
+        try {
+          const response = await axios.get(
+            "https://blogchain.onrender.com/users/me",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          setUser(response.data);
+          setIsAuthenticated(true);
+        } catch (error) {
+          console.error("Error fetching user data", error);
+        }
+      }
+    };
+    fetchUser();
   }, []);
 
   const handleStartNewCampaign = () => {
@@ -159,7 +175,7 @@ const Header = () => {
             </Link>
             {isAuthenticated ? (
               <Avatar className="rounded-full">
-                <AvatarImage src={user.profilePicture} />
+                <AvatarImage src={user?.profilePicture} />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             ) : (
