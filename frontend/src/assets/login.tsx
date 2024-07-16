@@ -13,10 +13,7 @@ import {
   CredentialResponse,
 } from "@react-oauth/google";
 
-const API_URL =
-  process.env.NODE_ENV === "production"
-    ? process.env.NEXT_PUBLIC_API_URL_PROD
-    : process.env.NEXT_PUBLIC_API_URL_LOCAL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_LOCAL;
 
 export default function LoginCard() {
   const [showRegister, setShowRegister] = useState(false);
@@ -36,7 +33,7 @@ export default function LoginCard() {
     setError(null);
 
     try {
-      const response = await axios.post(`${API_URL}/auth/login`, {
+      const response = await axios.post("https://blogchain.onrender.com/auth/login", {
         usuario,
         contrasena,
       });
@@ -67,7 +64,7 @@ export default function LoginCard() {
     setError(null);
 
     try {
-      const response = await axios.post(`${API_URL}/auth/register`, {
+      const response = await axios.post("https://blogchain.onrender.com/auth/register", {
         usuario,
         contrasena,
         email,
@@ -101,7 +98,7 @@ export default function LoginCard() {
 
     try {
       const response = await axios.post(
-        `${API_URL}/auth/send-verification-code`,
+        "https://blogchain.onrender.com/auth/auth/send-verification-code",
         { email }
       );
 
@@ -133,7 +130,7 @@ export default function LoginCard() {
     setError(null);
 
     try {
-      const response = await axios.post(`${API_URL}/auth/forgot-password`, {
+      const response = await axios.post("https://blogchain.onrender.com/auth/forgot-password", {
         email,
       });
 
@@ -165,7 +162,7 @@ export default function LoginCard() {
     setError(null);
 
     try {
-      const response = await axios.post(`${API_URL}/auth/reset-password`, {
+      const response = await axios.post("https://blogchain.onrender.com/auth/reset-password", {
         email,
         code: resetCode,
         newPassword,
@@ -199,7 +196,7 @@ export default function LoginCard() {
     credentialResponse: CredentialResponse
   ) => {
     try {
-      const response = await axios.post(`${API_URL}/auth/google`, {
+      const response = await axios.post("https://blogchain.onrender.com/auth/google", {
         token: credentialResponse.credential,
       });
 
@@ -221,7 +218,7 @@ export default function LoginCard() {
     credentialResponse: CredentialResponse
   ) => {
     try {
-      const response = await axios.post(`${API_URL}/auth/google`, {
+      const response = await axios.post("https://blogchain.onrender.com/auth/google", {
         token: credentialResponse.credential,
       });
 
