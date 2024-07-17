@@ -156,6 +156,18 @@ const Header = () => {
           </div>
           <nav className="space-x-4 flex items-center">
             <Link
+              href="/"
+              className="text-white hover:text-customColor-hueso"
+            >
+              Home
+            </Link>
+            <Link
+              href="/about"
+              className="text-white hover:text-customColor-hueso"
+            >
+              About Us
+            </Link>
+            <Link
               href="/users"
               className="text-white hover:text-customColor-hueso"
             >
@@ -196,9 +208,11 @@ const Header = () => {
           onClick={handleCloseModal}
         >
           <div className="relative bg-white p-8 rounded-lg shadow-lg">
-            <LoginCard onClose={function (): void {
-              throw new Error("Function not implemented.");
-            } } />
+            <LoginCard
+              onClose={function (): void {
+                throw new Error("Function not implemented.");
+              }}
+            />
           </div>
         </div>
       )}
