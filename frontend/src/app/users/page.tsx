@@ -565,8 +565,6 @@ export default function Users() {
             </div>
           </>
         );
-      case "delete":
-        return <div>Delete Account Content</div>;
       default:
         return null;
     }

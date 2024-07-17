@@ -1,3 +1,5 @@
+"use client";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
@@ -13,68 +15,165 @@ import { JSX, SVGProps } from "react";
 import Header from "@/assets/header";
 import Image from "next/image";
 import Footer from "@/assets/footer";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuCheckboxItem,
+} from "@/components/ui/dropdown-menu";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
 export default function Articles() {
+  const categoriesRef = useRef<HTMLDivElement>(null);
+
+  const scrollLeft = () => {
+    if (categoriesRef.current) {
+      categoriesRef.current.scrollBy({
+        left: -200,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const scrollRight = () => {
+    if (categoriesRef.current) {
+      categoriesRef.current.scrollBy({
+        left: 200,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <div className="bg-gradientbg2 w-full">
       <Header />
-      <div className="container mx-auto py-12 md:py-16 lg:py-20">
+      <div className=" container mx-auto py-12 md:py-16 lg:py-20">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-12">
           <div className="space-y-4 md:space-y-6">
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl text-center text-yellow-400">
               Articles
             </h1>
             <p className="text-muted-foreground md:text-xl lg:text-lg text-center text-customColor-welcome">
-              Choose your favourite categories and tags
+              Choose your favourite categories
             </p>
+            <div className="flex justify-center mt-4">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 border-t-[1px] border-b-[1px] border-r-0 border-l-0 border-black bg-inherit rounded-none hover:bg-inherit"
+                  >
+                    <ArrowUpDownIcon className="h-4 w-4" />
+                    Order
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Order by</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuCheckboxItem checked>
+                    Saved (Most first)
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem>
+                    Saved (Less first)
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem>
+                    Recents (Most first)
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem>
+                    Recents (Less first)
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem>
+                    More Relevants
+                  </DropdownMenuCheckboxItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-2 md:justify-end">
             <div className="space-y-2">
-              <h3 className="text-sm font-medium text-black">
+              <h3 className="text-center text-sm font-medium text-black">
                 Categories
               </h3>
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                <Button variant="outline" size="sm" className="rounded-full">
-                  Lifestyle
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={scrollLeft}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full bg-inherit hover:bg-inherit border-none"
+                >
+                  <ChevronLeftIcon className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="sm" className="rounded-full">
-                  Technology
-                </Button>
-                <Button variant="outline" size="sm" className="rounded-full">
-                  Travel
-                </Button>
-                <Button variant="outline" size="sm" className="rounded-full">
-                  Food
-                </Button>
-                <Button variant="outline" size="sm" className="rounded-full">
-                  Fashion
-                </Button>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium text-black">
-                Tags
-              </h3>
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                <Button variant="outline" size="sm" className="rounded-full">
-                  Lifestyle
-                </Button>
-                <Button variant="outline" size="sm" className="rounded-full">
-                  Technology
-                </Button>
-                <Button variant="outline" size="sm" className="rounded-full">
-                  Travel
-                </Button>
-                <Button variant="outline" size="sm" className="rounded-full">
-                  Food
-                </Button>
-                <Button variant="outline" size="sm" className="rounded-full">
-                  Fashion
+                <div
+                  ref={categoriesRef}
+                  className="flex overflow-hidden gap-4"
+                  style={{ width: "300px" }}
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full flex-shrink-0"
+                  >
+                    Lifestyle
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full flex-shrink-0"
+                  >
+                    Technology
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full flex-shrink-0"
+                  >
+                    Travel
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full flex-shrink-0"
+                  >
+                    Food
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full flex-shrink-0"
+                  >
+                    Fashion
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full flex-shrink-0"
+                  >
+                    Health
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full flex-shrink-0"
+                  >
+                    Business
+                  </Button>
+                </div>
+                <Button
+                  onClick={scrollRight}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full bg-inherit hover:bg-inherit border-none"
+                >
+                  <ChevronRightIcon className="h-4 w-4" />
                 </Button>
               </div>
             </div>
           </div>
         </div>
+
         <div className="mt-12 md:mt-16 lg:mt-20">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-1md:grid-cols-1 lg:grid-cols-1">
             <Card className="bg-inherit h-48 rounded-none shadow-none flex flex-row items-start gap-4 border-b-2 border-black border-r-0 border-l-0">
@@ -324,9 +423,7 @@ export default function Articles() {
                   <PaginationLink href="#">1</PaginationLink>
                 </PaginationItem>
                 <PaginationItem>
-                  <PaginationLink href="#">
-                    2
-                  </PaginationLink>
+                  <PaginationLink href="#">2</PaginationLink>
                 </PaginationItem>
                 <PaginationItem>
                   <PaginationLink href="#">3</PaginationLink>
@@ -440,6 +537,30 @@ function XIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
     >
       <path d="M18 6 6 18" />
       <path d="m6 6 12 12" />
+    </svg>
+  );
+}
+
+function ArrowUpDownIcon(
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
+) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m21 16-4 4-4-4" />
+      <path d="M17 20V4" />
+      <path d="m3 8 4-4 4 4" />
+      <path d="M7 4v16" />
     </svg>
   );
 }
