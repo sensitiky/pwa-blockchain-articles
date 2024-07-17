@@ -153,4 +153,9 @@ export class AuthService {
       throw new UnauthorizedException('Invalid token');
     }
   }
+
+  generateJwtToken(user: User): string {
+    const payload = { userId: user.id, email: user.email };
+    return this.jwtService.sign(payload);
+  }
 }

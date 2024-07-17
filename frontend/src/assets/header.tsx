@@ -196,7 +196,9 @@ const Header = () => {
           onClick={handleCloseModal}
         >
           <div className="relative bg-white p-8 rounded-lg shadow-lg">
-            <LoginCard />
+            <LoginCard onClose={function (): void {
+              throw new Error("Function not implemented.");
+            } } />
           </div>
         </div>
       )}

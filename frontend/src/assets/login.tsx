@@ -12,10 +12,9 @@ import {
   GoogleLogin,
   CredentialResponse,
 } from "@react-oauth/google";
+import { useAuth } from "../../context/authContext";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL_LOCAL;
-
-export default function LoginCard() {
+export default function LoginCard({ onClose }: { onClose: () => void }) {
   const [showRegister, setShowRegister] = useState(false);
   const [usuario, setUsuario] = useState("");
   const [contrasena, setContrasena] = useState("");
@@ -29,6 +28,7 @@ export default function LoginCard() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { setUser } = useAuth();
 
   const handleLogin = async () => {
     setLoading(true);
@@ -47,6 +47,7 @@ export default function LoginCard() {
 
       if (response.status === 200) {
         console.log("Login successful", response.data);
+        setUser(response.data.user); // Usa setUser para actualizar el contexto de autenticación
         router.push("/newarticles");
       } else {
         setError("Login failed");
@@ -68,7 +69,6 @@ export default function LoginCard() {
     setLoading(true);
     setError(null);
 
-    // Validar contraseña
     const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
     if (!passwordRegex.test(contrasena)) {
       setError(
@@ -89,20 +89,17 @@ export default function LoginCard() {
         }
       );
 
-      console.log("Register response:", response);
-
       if (response.status === 200) {
-        console.log("Registration successful", response.data);
+        setUser(response.data); // Guardar la información del usuario en el contexto
         router.push("/users");
+        onClose(); // Cerrar el modal
       } else {
         setError("Registration failed");
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        console.log("Axios error:", err.response);
         setError(err.response?.data.message || "Registration failed");
       } else {
-        console.log("General error:", err);
         setError((err as Error).message);
       }
     } finally {
@@ -120,10 +117,7 @@ export default function LoginCard() {
         { email }
       );
 
-      console.log("Send verification code response:", response);
-
       if (response.status === 200) {
-        console.log("Verification code sent", response.data);
         setCodeSent(true);
         setError("Verification code sent to your email");
       } else {
@@ -131,12 +125,10 @@ export default function LoginCard() {
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        console.log("Axios error:", err.response);
         setError(
           err.response?.data.message || "Failed to send verification code"
         );
       } else {
-        console.log("General error:", err);
         setError((err as Error).message);
       }
     } finally {
@@ -154,10 +146,7 @@ export default function LoginCard() {
         { email, code: verificationCode }
       );
 
-      console.log("Verify code response:", response);
-
       if (response.status === 200) {
-        console.log("Code verification successful", response.data);
         setCodeVerified(true);
         setError(null);
       } else {
@@ -165,10 +154,8 @@ export default function LoginCard() {
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        console.log("Axios error:", err.response);
         setError(err.response?.data.message || "Invalid verification code");
       } else {
-        console.log("General error:", err);
         setError((err as Error).message);
       }
     } finally {
@@ -183,27 +170,20 @@ export default function LoginCard() {
     try {
       const response = await axios.post(
         "https://blogchain.onrender.com/auth/forgot-password",
-        {
-          email,
-        }
+        { email }
       );
 
-      console.log("Forgot password response:", response);
-
       if (response.status === 200) {
-        console.log("Forgot password request successful");
         setError("Password reset code sent to your email");
       } else {
         setError("Failed to send password reset code");
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        console.log("Axios error:", err.response);
         setError(
           err.response?.data.message || "Failed to send password reset code"
         );
       } else {
-        console.log("General error:", err);
         setError((err as Error).message);
       }
     } finally {
@@ -215,7 +195,6 @@ export default function LoginCard() {
     setLoading(true);
     setError(null);
 
-    // Validar nueva contraseña
     const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
     if (!passwordRegex.test(newPassword)) {
       setError(
@@ -228,17 +207,10 @@ export default function LoginCard() {
     try {
       const response = await axios.post(
         "https://blogchain.onrender.com/auth/reset-password",
-        {
-          email,
-          code: resetCode,
-          newPassword,
-        }
+        { email, code: resetCode, newPassword }
       );
 
-      console.log("Reset password response:", response);
-
       if (response.status === 200) {
-        console.log("Password reset successful", response.data);
         setError(
           "Password reset successful, please login with your new password"
         );
@@ -248,10 +220,8 @@ export default function LoginCard() {
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        console.log("Axios error:", err.response);
         setError(err.response?.data.message || "Failed to reset password");
       } else {
-        console.log("General error:", err);
         setError((err as Error).message);
       }
     } finally {
@@ -265,21 +235,17 @@ export default function LoginCard() {
     try {
       const response = await axios.post(
         "https://blogchain.onrender.com/auth/google",
-        {
-          token: credentialResponse.credential,
-        }
+        { token: credentialResponse.credential }
       );
 
-      console.log("Google login response:", response);
-
       if (response.status === 200) {
-        console.log("Google login successful", response.data);
+        setUser(response.data); // Guardar la información del usuario en el contexto
         router.push("/newarticles");
+        onClose(); // Cerrar el modal
       } else {
         setError("Google login failed");
       }
     } catch (err) {
-      console.log("Google login error:", err);
       setError("Google login failed");
     }
   };
@@ -290,21 +256,17 @@ export default function LoginCard() {
     try {
       const response = await axios.post(
         "https://blogchain.onrender.com/auth/google",
-        {
-          token: credentialResponse.credential,
-        }
+        { token: credentialResponse.credential }
       );
 
-      console.log("Google register response:", response);
-
       if (response.status === 200) {
-        console.log("Google registration successful", response.data);
+        setUser(response.data); // Guardar la información del usuario en el contexto
         router.push("/users");
+        onClose(); // Cerrar el modal
       } else {
         setError("Google registration failed");
       }
     } catch (err) {
-      console.log("Google registration error:", err);
       setError("Google registration failed");
     }
   };
@@ -313,7 +275,6 @@ export default function LoginCard() {
     setForgotPassword(!forgotPassword);
     setError(null);
   };
-
   return (
     <GoogleOAuthProvider
       clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}

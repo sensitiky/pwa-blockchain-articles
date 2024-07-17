@@ -20,8 +20,9 @@ export class AuthController {
       loginDto.contrasena,
     );
     if (user) {
+      const token = this.authService.generateJwtToken(user);  // Genera el token JWT aquí
       this.logger.log(`Login successful for user: ${loginDto.usuario}`);
-      res.status(200).json({ message: 'Login successful' });
+      res.status(200).json({ message: 'Login successful', token });
     } else {
       this.logger.warn(`Login failed for user: ${loginDto.usuario}`);
       res.status(401).json({ message: 'Login failed' });
@@ -69,8 +70,9 @@ export class AuthController {
         res.status(400).json({ message: 'Invalid verification code' });
         return;
       }
-      await this.authService.registerUser(registerDto);
-      res.status(200).json({ message: 'Registration successful' });
+      const user = await this.authService.registerUser(registerDto);
+      const token = this.authService.generateJwtToken(user);  // Genera el token JWT aquí
+      res.status(200).json({ message: 'Registration successful', token });
     } catch (error) {
       this.logger.error(`Error registering user: ${error.message}`);
       res.status(500).json({ message: 'Failed to register user' });
@@ -107,7 +109,8 @@ export class AuthController {
   async googleLogin(@Body() body: { token: string }, @Res() res: Response): Promise<void> {
     try {
       const user = await this.authService.validateGoogleToken(body.token);
-      res.status(200).json({ message: 'Google login successful', user });
+      const jwtToken = this.authService.generateJwtToken(user);  // Genera el token JWT aquí
+      res.status(200).json({ message: 'Google login successful', token: jwtToken });
     } catch (error) {
       this.logger.error(`Error with Google login: ${error.message}`);
       res.status(401).json({ message: 'Google login failed' });
