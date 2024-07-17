@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (credentials: any) => {
     const response = await axios.post('https://blogchain.onrender.com/users/login', credentials);
     setUser(response.data.user);
-    router.push('/dashboard');
+    router.push('/users');
   };
 
   const logout = async () => {
