@@ -98,23 +98,8 @@ interface SecuritySettingsProps {
   editMode: boolean;
 }
 
-interface ProfileSettingsProps {
-  profileImage: string;
-  userInfo: UserInfo;
-  handleInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleCountryChange: (selectedOption: any) => void;
-  handleEditToggle: () => void;
-  handleBioEditToggle: () => void;
-  handleEditBio: (e: ChangeEvent<HTMLTextAreaElement>) => void;
-  handleDateChange: (date: Date | null) => void;
-  handleProfileSave: () => void;
-  editMode: boolean;
-  bioEditMode: boolean;
-  bio: string;
-}
-
 const ProfileSettings: React.FC<ProfileSettingsProps> = React.memo(
-  ({
+  function ProfileSettings({
     profileImage,
     userInfo,
     handleInputChange,
@@ -128,7 +113,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = React.memo(
     bioEditMode,
     bio,
     handleImageChange,
-  }) => {
+  }) {
     return (
       <div className="flex-1 flex flex-col items-center pt-12 md:pt-24 px-4 md:px-6">
         <div className="flex items-center gap-6">
@@ -290,113 +275,121 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = React.memo(
     );
   }
 );
-
-const SecuritySettings: React.FC<SecuritySettingsProps> = ({
-  profileImage,
-  userInfo,
-  handleInputChange,
-  handleEditToggle,
-  handleProfileSave,
-  editMode,
-}) => {
-  const [localUserInfo, setLocalUserInfo] = useState<UserInfo>(userInfo);
-  const [fieldsProvided, setFieldsProvided] = useState<{
-    [key: string]: boolean;
-  }>({
-    medium: !!userInfo.medium,
-    instagram: !!userInfo.instagram,
-    facebook: !!userInfo.facebook,
-    twitter: !!userInfo.twitter,
-    linkedin: !!userInfo.linkedin,
-  });
-
-  const handleLocalInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setLocalUserInfo({ ...localUserInfo, [name]: value });
-  };
-
-  const handleSaveChanges = () => {
-    handleProfileSave(localUserInfo);
-    setFieldsProvided({
-      medium: !!localUserInfo.medium,
-      instagram: !!localUserInfo.instagram,
-      facebook: !!localUserInfo.facebook,
-      twitter: !!localUserInfo.twitter,
-      linkedin: !!localUserInfo.linkedin,
+const SecuritySettings: React.FC<SecuritySettingsProps> =
+  function SecuritySettings({
+    profileImage,
+    userInfo,
+    handleInputChange,
+    handleEditToggle,
+    handleProfileSave,
+    editMode,
+  }) {
+    const [localUserInfo, setLocalUserInfo] = useState<UserInfo>(userInfo);
+    const [fieldsProvided, setFieldsProvided] = useState<{
+      [key: string]: boolean;
+    }>({
+      medium: !!userInfo.medium,
+      instagram: !!userInfo.instagram,
+      facebook: !!userInfo.facebook,
+      twitter: !!userInfo.twitter,
+      linkedin: !!userInfo.linkedin,
     });
-  };
 
-  return (
-    <div className="flex p-6 sm:p-10">
-      <div className="mx-auto min-w-3xl">
-        <div className="flex items-center gap-4">
-          <Avatar className="h-24 w-24">
-            <AvatarImage src={profileImage} />
-            <AvatarFallback>{userInfo.firstName}</AvatarFallback>
-          </Avatar>
-          <div>
-            <h1 className="text-4xl font-bold">Hi, {userInfo.firstName}</h1>
-            <p className="text-3xl text-muted-foreground">
-              Welcome to your profile settings.
-            </p>
+    const handleLocalInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setLocalUserInfo({ ...localUserInfo, [name]: value });
+    };
+
+    const handleSaveChanges = () => {
+      handleProfileSave(localUserInfo);
+      setFieldsProvided({
+        medium: !!localUserInfo.medium,
+        instagram: !!localUserInfo.instagram,
+        facebook: !!localUserInfo.facebook,
+        twitter: !!localUserInfo.twitter,
+        linkedin: !!localUserInfo.linkedin,
+      });
+    };
+
+    return (
+      <div className="flex p-6 sm:p-10">
+        <div className="mx-auto min-w-3xl">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-24 w-24">
+              <AvatarImage src={profileImage} />
+              <AvatarFallback>NC</AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-4xl font-bold">Hi, {userInfo.firstName}</h1>
+              <p className="text-3xl text-muted-foreground">
+                Welcome to your profile settings.
+              </p>
+            </div>
           </div>
-        </div>
-        <Separator className="my-6" />
-        <div className="grid gap-6">
-          <div className="grid gap-2">
-            {["medium", "instagram", "facebook", "twitter", "linkedin"].map(
-              (field, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between border-b-2"
-                >
-                  <div className="text-xl font-medium capitalize">{field}</div>
-                  {editMode ? (
-                    <Input
-                      name={field}
-                      value={String(localUserInfo[field as keyof UserInfo])}
-                      onChange={handleLocalInputChange}
-                      className="border-none rounded-none w-3/9 border-gray-400 cursor-text"
-                    />
-                  ) : (
-                    <div className="flex items-center gap-2 text-sm">
-                      <span
-                        className={`${
-                          fieldsProvided[field]
-                            ? "text-green-500"
-                            : "text-muted-foreground"
-                        }`}
-                      >
-                        {fieldsProvided[field] ? "Provided" : "Not Provided"}
-                      </span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleEditToggle}
-                        className="bg-inherit hover:bg-inherit"
-                      >
-                        <FontAwesomeIcon icon={faFilePen} className="h-4 w-4" />
-                      </Button>
+          <Separator className="my-6" />
+          <div className="grid gap-6">
+            <div className="grid gap-2">
+              {["medium", "instagram", "facebook", "twitter", "linkedin"].map(
+                (field, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between border-b-2"
+                  >
+                    <div className="text-xl font-medium capitalize">
+                      {field}
                     </div>
-                  )}
-                </div>
-              )
+                    {editMode ? (
+                      <Input
+                        name={field}
+                        value={String(localUserInfo[field as keyof UserInfo])}
+                        onChange={handleLocalInputChange}
+                        className="border-none rounded-none w-3/9 border-gray-400 cursor-text"
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm">
+                        <span
+                          className={`${
+                            fieldsProvided[field]
+                              ? "text-green-500"
+                              : "text-muted-foreground"
+                          }`}
+                        >
+                          {fieldsProvided[field] ? "Provided" : "Not Provided"}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleEditToggle}
+                          className="bg-inherit hover:bg-inherit"
+                        >
+                          <FontAwesomeIcon
+                            icon={faFilePen}
+                            className="h-4 w-4"
+                          />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )
+              )}
+            </div>
+            {editMode && (
+              <Button
+                className="text-lg w-full bg-inherit border-none hover:bg-inherit text-black hover:underline hover:underline-offset-4 hover:decoration-black"
+                onClick={handleSaveChanges}
+              >
+                Save Changes
+              </Button>
             )}
           </div>
-          {editMode && (
-            <Button
-              className="text-lg w-full bg-inherit border-none hover:bg-inherit text-black hover:underline hover:underline-offset-4 hover:decoration-black"
-              onClick={handleSaveChanges}
-            >
-              Save Changes
-            </Button>
-          )}
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
+{
+  /*Componente padre*/
+}
 export default function Users() {
   const [selectedSection, setSelectedSection] = useState("personal");
   const [editMode, setEditMode] = useState(false);
@@ -501,7 +494,7 @@ export default function Users() {
     setBioEditMode(false);
   };
 
-  const SavedItems = () => {
+  const SavedItems: React.FC = () => {
     const [liked, setLiked] = useState<boolean[]>(Array(3).fill(false));
 
     const toggleLike = (index: number) => {
@@ -762,7 +755,6 @@ export default function Users() {
     </div>
   );
 }
-
 function InstagramIcon(
   props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) {
