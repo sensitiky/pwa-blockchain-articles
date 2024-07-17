@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { SVGProps, useState } from "react";
+import { useState, useEffect, SVGProps } from "react";
 import { FaCamera } from "react-icons/fa";
 import Select from "react-select";
 import countryList from "react-select-country-list";
@@ -13,34 +13,68 @@ import {
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Header from "@/assets/header";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { getProfile, updateProfile } from "../../../services/authService";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function Users() {
   const [selectedSection, setSelectedSection] = useState("personal");
   const [editMode, setEditMode] = useState(false);
   const [bioEditMode, setBioEditMode] = useState(false);
-  const [bio, setBio] = useState(
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl nec ultricies lacinia, nisl nisl aliquam nisl, eget aliquam nisl nisl sit amet nisl."
-  );
+  const [bio, setBio] = useState("");
+
   const [userInfo, setUserInfo] = useState({
-    name: "Bolardo Nicolas",
-    date: "April 28, 1989",
-    email: "nicolasbolardo@gmail.com",
-    country: ["Not provided"],
+    firstName: "",
+    lastName: "",
+    date: new Date(),
+    email: "",
+    usuario: "",
+    country: "",
+    medium: "",
+    instagram: "",
+    facebook: "",
+    twitter: "",
+    linkedin: "",
   });
   const [profileImage, setProfileImage] = useState<string>("/shadcn.jpg");
   const options = countryList().getData();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const profile = await getProfile();
+      setUserInfo({
+        firstName: profile.firstName || "",
+        lastName: profile.lastName || "",
+        date: new Date(profile.date) || new Date(),
+        email: profile.email || "",
+        usuario: profile.usuario || "",
+        country: profile.country || "",
+        medium: profile.medium || "",
+        instagram: profile.instagram || "",
+        facebook: profile.facebook || "",
+        twitter: profile.twitter || "",
+        linkedin: profile.linkedin || "",
+      });
+      setProfileImage(profile.profileImage || "/shadcn.jpg");
+      setBio(profile.bio || "");
+    };
+
+    fetchProfile();
+  }, []);
 
   const handleEditToggle = () => {
     setEditMode(!editMode);
@@ -56,7 +90,7 @@ export default function Users() {
   };
 
   const handleCountryChange = (selectedOption: any) => {
-    setUserInfo({ ...userInfo, country: [selectedOption.label] });
+    setUserInfo({ ...userInfo, country: selectedOption.label });
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,6 +110,21 @@ export default function Users() {
     setBio(e.target.value);
   };
 
+  const handleDateChange = (date: Date | null) => {
+    if (date) {
+      setUserInfo({ ...userInfo, date });
+    }
+  };
+
+  const handleProfileSave = async () => {
+    await updateProfile(userInfo);
+    setEditMode(false);
+  };
+
+  const handleBioSave = async () => {
+    await updateProfile({ bio });
+    setBioEditMode(false);
+  };
   const renderContent = () => {
     switch (selectedSection) {
       case "personal":
@@ -103,13 +152,13 @@ export default function Users() {
                   <Label>Name</Label>
                   {editMode ? (
                     <Input
-                      name="name"
-                      value={userInfo.name}
+                      name="firstName"
+                      value={userInfo.firstName}
                       onChange={handleInputChange}
                     />
                   ) : (
                     <div className="flex items-center justify-between">
-                      <span>{userInfo.name}</span>
+                      <span>{userInfo.firstName}</span>
                       <Separator className="flex-1 ml-4" />
                     </div>
                   )}
@@ -117,14 +166,15 @@ export default function Users() {
                 <div className="grid gap-1">
                   <Label>Date</Label>
                   {editMode ? (
-                    <Input
-                      name="date"
-                      value={userInfo.date}
-                      onChange={handleInputChange}
+                    <DatePicker
+                      selected={userInfo.date}
+                      onChange={handleDateChange}
+                      dateFormat="MMMM d, yyyy"
+                      className="w-full p-2 border rounded"
                     />
                   ) : (
                     <div className="flex items-center justify-between">
-                      <span>{userInfo.date}</span>
+                      <span>{userInfo.date.toDateString()}</span>
                       <Separator className="flex-1 ml-4" />
                     </div>
                   )}
@@ -150,23 +200,15 @@ export default function Users() {
                     <Select
                       options={options}
                       value={{
-                        label: userInfo.country[0],
-                        value: userInfo.country[0],
+                        label: userInfo.country,
+                        value: userInfo.country,
                       }}
                       onChange={handleCountryChange}
                       className="w-full"
                     />
                   ) : (
                     <div className="flex items-center justify-between">
-                      <span
-                        className={
-                          userInfo.country.includes("Not provided")
-                            ? "text-red-500"
-                            : ""
-                        }
-                      >
-                        {userInfo.country.join(", ")}
-                      </span>
+                      <span>{userInfo.country}</span>
                       <Separator className="flex-1 ml-4" />
                     </div>
                   )}
@@ -181,7 +223,7 @@ export default function Users() {
               </div>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-bold">My Bio</h2>
+                  <h2 className="text-2xl font-bold">Bio</h2>
                   {bioEditMode ? (
                     <textarea
                       value={bio}
@@ -246,11 +288,13 @@ export default function Users() {
             <div className="mx-auto max-w-3xl">
               <div className="flex items-center gap-4">
                 <Avatar className="h-16 w-16">
-                  <AvatarImage src="/shadcn.jpg" />
+                  <AvatarImage src={profileImage} />
                   <AvatarFallback>NC</AvatarFallback>
                 </Avatar>
                 <div>
-                  <h1 className="text-2xl font-bold">Hi, Nicolas</h1>
+                  <h1 className="text-2xl font-bold">
+                    Hi, {userInfo.firstName}
+                  </h1>
                   <p className="text-muted-foreground">
                     Welcome to your profile settings.
                   </p>
@@ -260,63 +304,117 @@ export default function Users() {
               <div className="grid gap-6">
                 <div className="grid gap-2">
                   <div className="flex items-center justify-between">
-                    <div className="text-sm font-medium">Password</div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      Provided
-                      <Button variant="ghost" size="icon">
-                        <FilePenIcon className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
                     <div className="text-sm font-medium">Medium</div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      Not Provided
-                      <Button variant="ghost" size="icon">
-                        <FilePenIcon className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    {editMode ? (
+                      <Input
+                        name="medium"
+                        value={userInfo.medium}
+                        onChange={handleInputChange}
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        {userInfo.medium ? "Provided" : "Not Provided"}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleEditToggle}
+                        >
+                          <FilePenIcon className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="text-sm font-medium">Instagram</div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      Provided
-                      <Button variant="ghost" size="icon">
-                        <FilePenIcon className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    {editMode ? (
+                      <Input
+                        name="instagram"
+                        value={userInfo.instagram}
+                        onChange={handleInputChange}
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        {userInfo.instagram ? "Provided" : "Not Provided"}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleEditToggle}
+                        >
+                          <FilePenIcon className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="text-sm font-medium">Facebook</div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      Provided
-                      <Button variant="ghost" size="icon">
-                        <FilePenIcon className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    {editMode ? (
+                      <Input
+                        name="facebook"
+                        value={userInfo.facebook}
+                        onChange={handleInputChange}
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        {userInfo.facebook ? "Provided" : "Not Provided"}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleEditToggle}
+                        >
+                          <FilePenIcon className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="text-sm font-medium">Twitter</div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      Not Provided
-                      <Button variant="ghost" size="icon">
-                        <FilePenIcon className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    {editMode ? (
+                      <Input
+                        name="twitter"
+                        value={userInfo.twitter}
+                        onChange={handleInputChange}
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        {userInfo.twitter ? "Provided" : "Not Provided"}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleEditToggle}
+                        >
+                          <FilePenIcon className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="text-sm font-medium">LinkedIn</div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      Provided
-                      <Button variant="ghost" size="icon">
-                        <FilePenIcon className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    {editMode ? (
+                      <Input
+                        name="linkedin"
+                        value={userInfo.linkedin}
+                        onChange={handleInputChange}
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        {userInfo.linkedin ? "Provided" : "Not Provided"}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleEditToggle}
+                        >
+                          <FilePenIcon className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
-                <Button className="w-full bg-inherit border-none hover:bg-inherit text-black hover:underline hover:underline-offset-4 hover:decoration-black">
+                <Button
+                  className="w-full bg-inherit border-none hover:bg-inherit text-black hover:underline hover:underline-offset-4 hover:decoration-black"
+                  onClick={handleProfileSave}
+                >
                   Save Changes
-                </Button>{" "}
+                </Button>
               </div>
             </div>
           </div>

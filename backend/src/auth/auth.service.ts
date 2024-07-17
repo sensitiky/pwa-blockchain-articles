@@ -144,7 +144,6 @@ export class AuthService {
     return this.verifyCode(email, code);
   }
 
-  // Método para validar el token JWT y obtener el usuario
   async validateToken(token: string): Promise<User> {
     try {
       const decoded = this.jwtService.verify(token);

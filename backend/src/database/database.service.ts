@@ -2,8 +2,8 @@ import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-import { User } from './database/entities/user.entity';
-import { CreateUserDto } from './dto/user.dto';
+import { User } from './entities/user.entity';
+import { CreateUserDto } from '../dto/user.dto';
 
 @Injectable()
 export class DatabaseService {

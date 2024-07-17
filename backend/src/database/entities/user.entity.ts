@@ -23,6 +23,27 @@ export class User {
   @Column()
   contrasena: string;
 
+  @Column({ nullable: true })
+  date?: Date;
+
+  @Column({ nullable: true })
+  country?: string;
+
+  @Column({ nullable: true })
+  medium?: string;
+
+  @Column({ nullable: true })
+  instagram?: string;
+
+  @Column({ nullable: true })
+  facebook?: string;
+
+  @Column({ nullable: true })
+  twitter?: string;
+
+  @Column({ nullable: true })
+  linkedin?: string;
+
   @OneToMany(() => Post, post => post.author) 
   posts: Post[];
 

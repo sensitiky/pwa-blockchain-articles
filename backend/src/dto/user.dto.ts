@@ -7,3 +7,10 @@ export class CreateUserDto {
   lastName?: string;
   code:string;
 }
+
+export class UpdateUserDto {
+  readonly firstName?: string;
+  readonly lastName?: string;
+  readonly email?: string;
+  readonly usuario?: string;
+}

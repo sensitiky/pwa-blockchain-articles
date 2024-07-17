@@ -7,7 +7,7 @@ import { Comment } from './entities/comment.entity';
 import { Category } from './entities/category.entity';
 import { Tag } from './entities/tag.entity';
 import { Favorite } from './entities/favorite.entity';
-import { DatabaseService } from '../database.service';
+import { DatabaseService } from './database.service';
 
 @Module({
   imports: [
