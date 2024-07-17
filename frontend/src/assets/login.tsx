@@ -38,7 +38,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       const response = await axios.post(
         "https://blogchain.onrender.com/auth/login",
         {
-          usuario,
+          email,
           contrasena,
         }
       );
@@ -69,10 +69,10 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     setLoading(true);
     setError(null);
 
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+    const passwordRegex = /^(?=.*[A-Z]).{8,}$/;
     if (!passwordRegex.test(contrasena)) {
       setError(
-        "Password must be at least 8 characters long, contain one uppercase letter, and one special character."
+        "Password must be at least 8 characters long and contain one uppercase letter."
       );
       setLoading(false);
       return;
@@ -90,9 +90,9 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       );
 
       if (response.status === 200) {
-        setUser(response.data); // Guardar la información del usuario en el contexto
+        setUser(response.data);
         router.push("/users");
-        onClose(); // Cerrar el modal
+        onClose();
       } else {
         setError("Registration failed");
       }
@@ -307,12 +307,12 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
         {!showRegister && !forgotPassword && (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Email</Label>
               <Input
                 id="username"
-                placeholder="Enter your username"
+                placeholder="Enter your email"
                 value={usuario}
-                onChange={(e) => setUsuario(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
