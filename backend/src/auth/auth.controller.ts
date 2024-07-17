@@ -14,7 +14,7 @@ export class AuthController {
     @Body() loginDto: { email: string; contrasena: string },
     @Res() res: Response,
   ): Promise<void> {
-    this.logger.log(`Login attempt for user: ${loginDto.email}`);
+    this.logger.log(`Login attempt for email: ${loginDto.email}`);
     const user = await this.authService.validateUser(
       loginDto.email,
       loginDto.contrasena,

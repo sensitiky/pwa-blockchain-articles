@@ -126,6 +126,7 @@ export default function Users() {
     await updateProfile({ bio });
     setBioEditMode(false);
   };
+
   const renderContent = () => {
     switch (selectedSection) {
       case "personal":
@@ -283,6 +284,7 @@ export default function Users() {
             </div>
           </div>
         );
+        
       case "security":
         return (
           <div className="flex-1 p-6 sm:p-10">
@@ -420,6 +422,7 @@ export default function Users() {
             </div>
           </div>
         );
+
       case "saved":
         return (
           <section className="w-full py-12 md:py-24 lg:py-32">
@@ -471,6 +474,7 @@ export default function Users() {
             </div>
           </section>
         );
+
       case "articles":
         return (
           <>

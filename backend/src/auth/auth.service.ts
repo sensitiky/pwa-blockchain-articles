@@ -35,10 +35,10 @@ export class AuthService {
   }
 
   async validateUser(
-    usuario: string,
+    email: string,
     contrasena: string,
   ): Promise<User | null> {
-    const user = await this.usersService.findOne(usuario);
+    const user = await this.usersService.findOne(email);
     if (user && (await bcrypt.compare(contrasena, user.contrasena))) {
       return user;
     }
