@@ -28,29 +28,7 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
   return (
     <div className="text-foreground py-4">
       <header className="container mx-auto px-4 md:px-6 relative">
-        <div className="absolute top-8 right-4 flex gap-4">
-          <Button
-            variant="outline"
-            className="px-2 py-2 border-black hover:bg-yellow-500 text-md rounded-full border-[1px]"
-          >
-            Save Draft
-          </Button>
-          <Button
-            variant="outline"
-            className="px-2 py-2 text-md bg-customColor-innovatio2 border-black hover:bg-green-500 rounded-full border-[1px]"
-          >
-            Publish
-          </Button>
-        </div>
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-center">
-            Create an Article
-          </h1>
-          <p className="text-muted-foreground md:text-xl text-center">
-            Share your thoughts and ideas with the world.
-          </p>
-        </div>
-        <div className="absolute top-8 left-4 flex gap-4">
+        <div className="justify-start flex gap-4">
           <button
             onClick={onGoBack}
             className="hover:underline hover:underline-offset-4 hover:decoration-black bg-inherit text-black inline-flex h-8 items-center justify-center rounded-md px-4 text-sm font-medium transition-colors hover:bg-inherit focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
@@ -59,14 +37,22 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
             Go Back
           </button>
         </div>
+        <div className="space-y-2 py-4">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-center">
+            Create an Article
+          </h1>
+          <p className="text-muted-foreground md:text-xl text-center">
+            Share your thoughts and ideas with the world.
+          </p>
+        </div>
       </header>
       <main className="container mx-auto px-4 pb-12 md:px-6 md:pb-16">
-        <div className="grid gap-8 py-8">
+        <div className="grid gap-8">
           <div className="space-y-8">
             <div>
               <label
                 htmlFor="title"
-                className="mb-2 block text-2xl font-medium"
+                className="py-2 block text-2xl font-medium"
               >
                 Title
               </label>
@@ -157,6 +143,20 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
             </div>
           </div>
         </div>
+        <div className="justify-end py-4 flex gap-4">
+            <Button
+              variant="outline"
+              className="px-2 py-2 border-black hover:bg-yellow-500 text-md rounded-full border-[1px]"
+            >
+              Save Draft
+            </Button>
+            <Button
+              variant="outline"
+              className="px-2 py-2 text-md bg-customColor-innovatio2 border-black hover:bg-green-500 rounded-full border-[1px]"
+            >
+              Publish
+            </Button>
+          </div>
       </main>
     </div>
   );

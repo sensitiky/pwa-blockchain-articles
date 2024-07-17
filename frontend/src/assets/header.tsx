@@ -65,6 +65,9 @@ const Header = () => {
   return (
     <div className="bg-customColor-header">
       <div className="lg:hidden flex items-center justify-between px-4 lg:px-6 h-14 border-b">
+        <div className="text-white text-lg font-semibold">
+          <Link href="/">Blogchain</Link>
+        </div>
         <div className="flex items-center">
           <Sheet>
             <SheetTrigger>
@@ -85,29 +88,50 @@ const Header = () => {
                 </svg>
               </button>
             </SheetTrigger>
-            <SheetContent side="left">
+            <SheetContent side="right">
               <SheetHeader>
                 <SheetTitle>Blogchain</SheetTitle>
                 <SheetDescription>Welcome to Blogchain</SheetDescription>
               </SheetHeader>
-              <nav className="flex flex-col gap-8">
+              <nav className="flex flex-col gap-8 py-9">
                 <Link
-                  href="#"
-                  className="text-sm font-medium hover:underline underline-offset-4"
+                  href="/"
+                  className="w-fit border-b-[1px] border-gray-400 text-sm font-medium hover:underline underline-offset-4"
                   prefetch={false}
                 >
-                  How it works
+                  Home
+                </Link>
+                <Link
+                  href="/users"
+                  className="w-fit border-b-[1px] border-gray-400 text-sm font-medium hover:underline underline-offset-4"
+                  prefetch={false}
+                >
+                  Users
+                </Link>
+                <Link
+                  href="/articles"
+                  className="w-fit border-b-[1px] border-gray-400 text-sm font-medium hover:underline underline-offset-4"
+                  prefetch={false}
+                >
+                  Articles
+                </Link>
+                <Link
+                  href="/about"
+                  className="w-fit border-b-[1px] border-gray-400 text-sm font-medium hover:underline underline-offset-4"
+                  prefetch={false}
+                >
+                  About Us
+                </Link>
+                <Link
+                  href="/newarticles"
+                  className="w-fit border-b-[1px] border-gray-400 text-sm font-medium hover:underline underline-offset-4"
+                  prefetch={false}
+                >
+                  Create Articles
                 </Link>
                 <Link
                   href="#"
-                  className="text-sm font-medium hover:underline underline-offset-4"
-                  prefetch={false}
-                >
-                  About us
-                </Link>
-                <Link
-                  href="#"
-                  className="text-sm font-medium hover:underline underline-offset-4"
+                  className="w-fit border-b-[1px] border-gray-400 text-sm font-medium hover:underline underline-offset-4"
                   prefetch={false}
                 >
                   Help with the Campaign
@@ -118,22 +142,12 @@ const Header = () => {
                     className="bg-customColor-innovatio2 rounded-full px-4 py-2 text-sm font-medium hover:bg-customColor-innovatio3"
                     onClick={() => setShowLoginCard(true)}
                   >
-                    Log In / Sign Up
-                  </Button>
-                </div>
-                <div className="flex justify-center">
-                  <Button className="bg-customColor-innovatio3 rounded-full px-4 py-2 text-sm font-medium">
-                    Connect Wallet
+                    Get Started
                   </Button>
                 </div>
               </nav>
             </SheetContent>
           </Sheet>
-        </div>
-        <div>
-          <Link href="/">
-            <img src="/Logo.svg" alt="Logo" className="h-8 filter invert" />
-          </Link>
         </div>
       </div>
 
@@ -155,10 +169,7 @@ const Header = () => {
             />
           </div>
           <nav className="space-x-4 flex items-center">
-            <Link
-              href="/"
-              className="text-white hover:text-customColor-hueso"
-            >
+            <Link href="/" className="text-white hover:text-customColor-hueso">
               Home
             </Link>
             <Link

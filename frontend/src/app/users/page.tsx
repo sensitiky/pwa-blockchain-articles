@@ -30,6 +30,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getProfile, updateProfile } from "../../../services/authService";
 import React from "react";
+import Footer from "@/assets/footer";
 
 const articles = [
   {
@@ -544,24 +545,26 @@ export default function Users() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="mt-4 space-y-6">
+          <div className="mt-4">
             {Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}
                 className="border-t-[1px] border-b-[1px] border-r-0 border-l-0 flex flex-col md:flex-row items-center justify-between p-4 sm:p-6 bg-white shadow-none rounded-none"
               >
+                <img
+                  src="/test.jpg"
+                  alt="Placeholder"
+                  className="m-5 h-40 w-full md:w-auto md:h-44 rounded-lg border border-gray-300 mr-4"
+                />
                 <div className="flex items-center mb-4 md:mb-0">
-                  <div className="mr-4">
-                    <img
-                      src="/shadcn.jpg"
-                      alt="Avatar"
-                      className="w-36 h-28 md:w-36 md:h-28 rounded-lg border border-gray-300"
-                    />
-                  </div>
                   <div>
                     <h3 className="text-lg font-bold text-gray-900">
                       Why Blockchain is Hard
                     </h3>
+                    <div className="text-muted-foreground">
+                      <UserIcon className="w-4 h-4 mr-1" />
+                      Michael Chen
+                    </div>
                     <p className="text-gray-600">
                       The hype around blockchain is massive. To hear the
                       blockchain hype train tell it, blockchain will now: Solve
@@ -575,18 +578,12 @@ export default function Users() {
                     onClick={() => toggleLike(index)}
                     className="ml-2 p-2 focus:outline-none"
                   >
-                    <FontAwesomeIcon
-                      icon={faHeart}
+                    <BookmarkIcon
                       className={`h-5 w-5 ${
-                        liked[index] ? "text-red-500" : "text-gray-500"
+                        liked[index] ? "text-yellow-500" : "text-gray-500"
                       }`}
                     />
                   </button>
-                  <img
-                    src="/test.jpg"
-                    alt="Placeholder"
-                    className="m-5 h-40 w-full md:w-auto md:h-44 rounded-lg border border-gray-300 mr-4"
-                  />
                 </div>
               </div>
             ))}
@@ -766,6 +763,9 @@ export default function Users() {
           </div>
         </aside>
         <main className="p-6 md:p-8">{renderContent()}</main>
+      </div>
+      <div className="hidden lg:flex md:flex">
+      <Footer/>
       </div>
     </div>
   );
