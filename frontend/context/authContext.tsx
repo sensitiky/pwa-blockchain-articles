@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkUser = async () => {
       try {
-        const response = await axios.get('https://blogchain.onrender.com/auth/me');
+        const response = await axios.get('https://blogchain.onrender.com/users/me');
         setUser(response.data);
       } catch (error) {
         console.log('User not logged in');
@@ -29,13 +29,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (credentials: any) => {
-    const response = await axios.post('https://blogchain.onrender.com/auth/login', credentials);
+    const response = await axios.post('https://blogchain.onrender.com/users/login', credentials);
     setUser(response.data.user);
     router.push('/dashboard');
   };
 
   const logout = async () => {
-    await axios.post('https://blogchain.onrender.com/api/auth/logout');
+    await axios.post('https://blogchain.onrender.com/api/users/logout');
     setUser(null);
     router.push('/login');
   };
