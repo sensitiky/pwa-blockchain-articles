@@ -1,7 +1,7 @@
 import api from './api';
 
 export const login = async (usuario: string, contrasena: string) => {
-  const response = await api.post('/auth/login', { usuario, contrasena });
+  const response = await api.post('https://blogchain.onrender.com/auth/login', { usuario, contrasena });
   const { token } = response.data;
   if (token) {
     localStorage.setItem('token', token);
@@ -10,11 +10,11 @@ export const login = async (usuario: string, contrasena: string) => {
 };
 
 export const getProfile = async () => {
-  const response = await api.get('/users/me');
+  const response = await api.get('https://blogchain.onrender.com/users/me');
   return response.data;
 };
 
 export const updateProfile = async (profileData: any) => {
-  const response = await api.put('/users/me', profileData);
+  const response = await api.put('https://blogchain.onrender.com/users/me', profileData);
   return response.data;
 };

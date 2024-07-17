@@ -38,7 +38,7 @@ export class AuthService {
     email: string,
     contrasena: string,
   ): Promise<User | null> {
-    const user = await this.usersService.findOne(email);
+    const user = await this.usersService.findByEmail(email);
     if (user && (await bcrypt.compare(contrasena, user.contrasena))) {
       return user;
     }
@@ -139,7 +139,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(newPassword, salt);
     await this.usersService.updatePassword(email, hashedPassword);
   }
-  
+
   async verifyResetCode(email: string, code: string): Promise<boolean> {
     return this.verifyCode(email, code);
   }

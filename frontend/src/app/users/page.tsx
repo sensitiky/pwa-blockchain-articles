@@ -2,6 +2,8 @@
 import Link from "next/link";
 import { useState, useEffect, SVGProps } from "react";
 import { FaCamera } from "react-icons/fa";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import Select from "react-select";
 import countryList from "react-select-country-list";
 import {
@@ -30,7 +32,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Image from "next/image";
 
 export default function Users() {
   const [selectedSection, setSelectedSection] = useState("personal");
@@ -125,6 +126,73 @@ export default function Users() {
   const handleBioSave = async () => {
     await updateProfile({ bio });
     setBioEditMode(false);
+  };
+
+  const SavedItems = () => {
+    const [liked, setLiked] = useState<boolean[]>(Array(3).fill(false));
+
+    const toggleLike = (index: number) => {
+      const newLiked = [...liked];
+      newLiked[index] = !newLiked[index];
+      setLiked(newLiked);
+    };
+
+    return (
+      <section className="w-full py-12 md:py-24 lg:py-32">
+        <div className="container px-4 md:px-6">
+          <h2 className="text-center text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-gray-800">
+            Your favorite items
+          </h2>
+          <div className="mt-10 space-y-6">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={index}
+                className="border-t-[1px] border-b-[1px] border-r-0 border-l-0 flex items-center justify-between p-4 sm:p-6 bg-white shadow-none rounded-none"
+              >
+                <div className="flex items-center">
+                  <div className="mr-4">
+                    <img
+                      src="/shadcn.jpg"
+                      alt="Avatar"
+                      className="w-28 h-24 rounded-lg border border-gray-300"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">
+                      Why Blockchain is Hard
+                    </h3>
+                    <p className="text-gray-600">
+                      The hype around blockchain is massive. To hear the
+                      blockchain hype train tell it, blockchain will now: Solve
+                      income inequality. Make all data secure forever. Make
+                      everything much more efficient and trustless. Save dying.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <img
+                    src="/test.jpg"
+                    alt="Placeholder"
+                    className="h-40 rounded-lg border border-gray-300 mr-4"
+                  />
+                  <button
+                    onClick={() => toggleLike(index)}
+                    className="ml-4 p-2 focus:outline-none"
+                  >
+                    <FontAwesomeIcon
+                      icon={faHeart}
+                      className={`h-5 w-5 ${
+                        liked[index] ? "text-red-500" : "text-gray-500"
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
   };
 
   const renderContent = () => {
@@ -284,7 +352,7 @@ export default function Users() {
             </div>
           </div>
         );
-        
+
       case "security":
         return (
           <div className="flex-1 p-6 sm:p-10">
@@ -424,57 +492,7 @@ export default function Users() {
         );
 
       case "saved":
-        return (
-          <section className="w-full py-12 md:py-24 lg:py-32">
-            <div className="container px-4 md:px-6">
-              <h2 className="text-center text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                Your favorite items
-              </h2>
-              <div className="mt-10 space-y-6">
-                {Array.from({ length: 3 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center border-b-2 p-4 sm:p-6"
-                  >
-                    <div className="flex-shrink-0 mr-4">
-                      <Avatar>
-                        <AvatarImage src="/shadcn.jpg" />
-                        <AvatarFallback>NM</AvatarFallback>
-                      </Avatar>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold">
-                        Why Blockchain is Hard
-                      </h3>
-                      <p className="text-muted-foreground">
-                        The hype around blockchain is massive. To hear the
-                        blockchain hype train tell it, blockchain will now:
-                        Solve income inequality. Make all data secure forever.
-                        Make everything much more efficient and trustless. Save
-                        dying.
-                      </p>
-                    </div>
-                    <div className="flex-shrink-0 ml-4">
-                      <Image
-                        src="/test.jpg"
-                        width={80}
-                        height={80}
-                        alt="Placeholder"
-                        className="rounded-full"
-                      />
-                    </div>
-                    <div className="flex-shrink-0 ml-4">
-                      <Button variant="ghost">
-                        <HeartIcon className="h-5 w-5" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        );
-
+        return <SavedItems />;
       case "articles":
         return (
           <>
