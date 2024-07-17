@@ -195,10 +195,10 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     setLoading(true);
     setError(null);
 
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+    const passwordRegex = /^(?=.*[A-Z]).{8,}$/;
     if (!passwordRegex.test(newPassword)) {
       setError(
-        "Password must be at least 8 characters long, contain one uppercase letter, and one special character."
+        "Password must be at least 8 characters long and contain one uppercase letter."
       );
       setLoading(false);
       return;
@@ -275,6 +275,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     setForgotPassword(!forgotPassword);
     setError(null);
   };
+
   return (
     <GoogleOAuthProvider
       clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
@@ -284,7 +285,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
           <div className="space-y-2 text-center">
             <h1 className="text-3xl font-bold">Login</h1>
             <p className="text-muted-foreground">
-              Enter your username and password to access your account.
+              Enter your email and password to access your account.
             </p>
           </div>
         )}
@@ -304,14 +305,17 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
             </p>
           </div>
         )}
+
+        {/*Modal iniciar sesion*/}
+
         {!showRegister && !forgotPassword && (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Email</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="username"
+                id="email"
                 placeholder="Enter your email"
-                value={usuario}
+                value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
@@ -357,6 +361,8 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
             </div>
           </div>
         )}
+
+        {/*Modal registro*/}
 
         {showRegister && !forgotPassword && (
           <div className="space-y-4">
@@ -492,6 +498,8 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
             </div>
           </div>
         )}
+
+        {/*Modal recuperar password*/}
 
         {!showRegister && forgotPassword && (
           <div className="space-y-4">
