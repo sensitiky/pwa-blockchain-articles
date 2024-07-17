@@ -3,7 +3,12 @@ import Link from "next/link";
 import { useState, useEffect, SVGProps, ChangeEvent } from "react";
 import { FaCamera } from "react-icons/fa";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilePen, faHeart } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowsUpDown,
+  faFilePen,
+  faFilter,
+  faHeart,
+} from "@fortawesome/free-solid-svg-icons";
 import Select from "react-select";
 import countryList from "react-select-country-list";
 import {
@@ -24,7 +29,6 @@ import Header from "@/assets/header";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getProfile, updateProfile } from "../../../services/authService";
-import { faArrowsUpDown, faFilter } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 
 const articles = [
@@ -280,6 +284,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = React.memo(
     );
   }
 );
+
 const SecuritySettings: React.FC<SecuritySettingsProps> =
   function SecuritySettings({
     profileImage,
@@ -450,6 +455,7 @@ export default function Users() {
   const handleSectionChange = (section: string) => {
     setSelectedSection(section);
   };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (userInfo[name as keyof UserInfo] !== value) {
@@ -718,7 +724,7 @@ export default function Users() {
   return (
     <div className="bg-customColor-header">
       <Header />
-      <div className="grid min-h-screen grid-cols-[400px_1fr] bg-background text-foreground">
+      <div className="grid min-h-screen grid-cols-[1fr] md:grid-cols-[400px_1fr] bg-background text-foreground">
         <aside className="border-r border-border bg-customColor-header px-6 py-8">
           <div className="flex flex-col gap-8">
             <div className="space-y-2">
@@ -764,6 +770,7 @@ export default function Users() {
     </div>
   );
 }
+
 function InstagramIcon(
   props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
 ) {

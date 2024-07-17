@@ -49,7 +49,7 @@ export default function Articles() {
   return (
     <div className="bg-gradientbg2 w-full">
       <Header />
-      <div className=" container mx-auto py-12 md:py-16 lg:py-20">
+      <div className="container mx-auto py-8 md:py-12 lg:py-16">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-12">
           <div className="space-y-4 md:space-y-6">
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl text-center text-yellow-400">
@@ -175,14 +175,14 @@ export default function Articles() {
         </div>
 
         <div className="mt-12 md:mt-16 lg:mt-20">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-1md:grid-cols-1 lg:grid-cols-1">
-            <Card className="bg-inherit h-48 rounded-none shadow-none flex flex-row items-start gap-4 border-b-2 border-black border-r-0 border-l-0">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
+            <Card className="bg-inherit h-auto rounded-none shadow-none flex flex-col md:flex-row items-start gap-4 border-b-[1px] border-black border-r-0 border-l-0">
               <Image
                 src="/Saly-1.png"
                 alt="Blog Post Image"
                 width={200}
                 height={150}
-                className="aspect-video w-40 mt-10 rounded-lg object-cover"
+                className="aspect-video w-full md:w-40 mt-10 rounded-lg object-cover"
               />
               <div className="mt-3 flex-1 space-y-2">
                 <div className="text-sm font-medium text-muted-foreground">
@@ -223,13 +223,13 @@ export default function Articles() {
                 </div>
               </div>
             </Card>
-            <Card className="bg-inherit h-48 rounded-none shadow-none flex flex-row items-start gap-4 border-b-2 border-black border-r-0 border-l-0">
+            <Card className="bg-inherit h-auto rounded-none shadow-none flex flex-col md:flex-row items-start gap-4 border-b-[1px] border-black border-r-0 border-l-0">
               <Image
                 src="/Saly-1.png"
                 alt="Blog Post Image"
                 width={200}
                 height={150}
-                className="aspect-video w-40 mt-10 rounded-lg object-cover"
+                className="aspect-video w-full md:w-40 mt-10 rounded-lg object-cover"
               />
               <div className="mt-3 flex-1 space-y-2">
                 <div className="text-sm font-medium text-muted-foreground">
@@ -270,13 +270,13 @@ export default function Articles() {
                 </div>
               </div>
             </Card>
-            <Card className="bg-inherit h-48 rounded-none shadow-none flex flex-row items-start gap-4 border-b-2 border-black border-r-0 border-l-0">
+            <Card className="bg-inherit h-auto rounded-none shadow-none flex flex-col md:flex-row items-start gap-4 border-b-[1px] border-black border-r-0 border-l-0">
               <Image
                 src="/Saly-1.png"
                 alt="Blog Post Image"
                 width={200}
                 height={150}
-                className="mt-10 aspect-video w-40 rounded-lg object-cover"
+                className="aspect-video w-full md:w-40 mt-10 rounded-lg object-cover"
               />
               <div className="mt-3 flex-1 space-y-2">
                 <div className="text-sm font-medium text-muted-foreground">
@@ -318,13 +318,13 @@ export default function Articles() {
                 </div>
               </div>
             </Card>
-            <Card className="bg-inherit h-48 rounded-none shadow-none flex flex-row items-start gap-4 border-b-2 border-black border-r-0 border-l-0">
+            <Card className="bg-inherit h-auto rounded-none shadow-none flex flex-col md:flex-row items-start gap-4 border-b-[1px] border-black border-r-0 border-l-0">
               <Image
                 src="/Saly-1.png"
                 alt="Blog Post Image"
                 width={200}
                 height={150}
-                className="mt-10 aspect-video w-40 rounded-lg object-cover"
+                className="aspect-video w-full md:w-40 mt-10 rounded-lg object-cover"
               />
               <div className="mt-3 flex-1 space-y-2">
                 <div className="text-sm font-medium text-muted-foreground">
@@ -365,13 +365,13 @@ export default function Articles() {
                 </div>
               </div>
             </Card>
-            <Card className="bg-inherit h-48 rounded-none shadow-none flex flex-row items-start gap-4 border-b-2 border-black border-r-0 border-l-0">
+            <Card className="bg-inherit h-auto rounded-none shadow-none flex flex-col md:flex-row items-start gap-4 border-b-[1px] border-black border-r-0 border-l-0">
               <Image
                 src="/Saly-1.png"
                 alt="Blog Post Image"
                 width={200}
                 height={150}
-                className="aspect-video w-40 mt-10 rounded-lg object-cover"
+                className="aspect-video w-full md:w-40 mt-10 rounded-lg object-cover"
               />
               <div className="mt-3 flex-1 space-y-2">
                 <div className="text-sm font-medium text-muted-foreground">

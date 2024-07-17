@@ -2,8 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ChangeEvent, JSX, SVGProps, useState } from "react";
-import Link from "next/link";
+import { ChangeEvent, SVGProps, useState } from "react";
 import { ArrowLeftIcon } from "lucide-react";
 
 interface CreateArticlesProps {
@@ -61,7 +60,7 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
           </button>
         </div>
       </header>
-      <main className="items-center container mx-auto px-4 pb-12 md:px-6 md:pb-16">
+      <main className="container mx-auto px-4 pb-12 md:px-6 md:pb-16">
         <div className="grid gap-8 py-8">
           <div className="space-y-8">
             <div>
@@ -77,7 +76,7 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
                 className="w-full"
               />
             </div>
-            <div >
+            <div>
               <label
                 htmlFor="banner-image"
                 className="mb-2 block text-2xl font-medium"
@@ -92,20 +91,20 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
                     className="aspect-[16/9] w-full h-1/3 rounded-lg object-cover"
                   />
                 ) : (
-                  <div className="aspect-[16/9] w-full rounded-md flex items-center justify-center">
-                    <UploadIcon className="mr-2 h-4 w-4" />
-                    <span className="text-black">Upload</span>
+                  <div className="aspect-[16/9] w-full rounded-md flex items-center justify-center border-2 border-dashed border-gray-300 p-4">
+                    <UploadIcon className="mr-2 h-6 w-6" />
+                    <span className="text-gray-500">Upload</span>
                   </div>
                 )}
                 {!imageUrl && (
                   <label
                     htmlFor="image-upload"
-                    className="absolute inset-0 flex items-baseline justify-center bg-black bg-opacity-50 cursor-pointer"
+                    className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 cursor-pointer"
                   >
                     <input
                       id="image-upload"
                       type="file"
-                      className="hidden rounded-lg"
+                      className="hidden"
                       onChange={handleImageUpload}
                     />
                   </label>
@@ -122,7 +121,7 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
               <Textarea
                 id="description"
                 placeholder="Write a detailed description of your article"
-                rows={50}
+                rows={10}
                 className="h-40 w-full resize-none text-lg"
               />
             </div>
