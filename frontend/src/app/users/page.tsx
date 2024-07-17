@@ -30,6 +30,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Image from "next/image";
 
 export default function Users() {
   const [selectedSection, setSelectedSection] = useState("personal");
@@ -426,88 +427,46 @@ export default function Users() {
               <h2 className="text-center text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
                 Your favorite items
               </h2>
-              <div className="mt-10 grid gap-6">
-                <div className="flex items-center rounded-none border-b-2 bg-card p-4 sm:p-6">
-                  <Avatar className="mr-4">
-                    <AvatarImage src="/shadcn.jpg" />
-                    <AvatarFallback>NM</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold">
-                      Why Blockchain is Hard
-                    </h3>
-                    <p className="text-muted-foreground">
-                      The hype around blockchain is massive. To hear the
-                      blockchain hype train tell it, blockchain will now: Solve
-                      income inequality. Make all data secure forever. Make
-                      everything much more efficient and trustless. Save dying.
-                    </p>
+              <div className="mt-10 space-y-6">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center border-b-2 p-4 sm:p-6"
+                  >
+                    <div className="flex-shrink-0 mr-4">
+                      <Avatar>
+                        <AvatarImage src="/shadcn.jpg" />
+                        <AvatarFallback>NM</AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold">
+                        Why Blockchain is Hard
+                      </h3>
+                      <p className="text-muted-foreground">
+                        The hype around blockchain is massive. To hear the
+                        blockchain hype train tell it, blockchain will now:
+                        Solve income inequality. Make all data secure forever.
+                        Make everything much more efficient and trustless. Save
+                        dying.
+                      </p>
+                    </div>
+                    <div className="flex-shrink-0 ml-4">
+                      <Image
+                        src="/test.jpg"
+                        width={80}
+                        height={80}
+                        alt="Placeholder"
+                        className="rounded-full"
+                      />
+                    </div>
+                    <div className="flex-shrink-0 ml-4">
+                      <Button variant="ghost">
+                        <HeartIcon className="h-5 w-5" />
+                      </Button>
+                    </div>
                   </div>
-                  <img
-                    src="/test.jpg"
-                    width={80}
-                    height={80}
-                    alt="Placeholder"
-                    className="rounded-full"
-                  />
-                  <Button variant="ghost" className="ml-4">
-                    <HeartIcon className="h-5 w-5" />
-                  </Button>
-                </div>
-                <div className="flex items-center rounded-none border-b-2 bg-card p-4 sm:p-6">
-                  <Avatar className="mr-4">
-                    <AvatarImage src="/shadcn.jpg" />
-                    <AvatarFallback>NM</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold">
-                      Why Blockchain is Hard
-                    </h3>
-                    <p className="text-muted-foreground">
-                      The hype around blockchain is massive. To hear the
-                      blockchain hype train tell it, blockchain will now: Solve
-                      income inequality. Make all data secure forever. Make
-                      everything much more efficient and trustless. Save dying.
-                    </p>
-                  </div>
-                  <img
-                    src="/test.jpg"
-                    width={80}
-                    height={80}
-                    alt="Placeholder"
-                    className="rounded-full"
-                  />
-                  <Button variant="ghost" className="ml-4">
-                    <HeartIcon className="h-5 w-5" />
-                  </Button>
-                </div>
-                <div className="flex items-center rounded-none border-b-2 bg-card p-4 sm:p-6">
-                  <Avatar className="mr-4">
-                    <AvatarImage src="/shadcn.jpg" />
-                    <AvatarFallback>NM</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold">
-                      Why Blockchain is Hard
-                    </h3>
-                    <p className="text-muted-foreground">
-                      The hype around blockchain is massive. To hear the
-                      blockchain hype train tell it, blockchain will now: Solve
-                      income inequality. Make all data secure forever. Make
-                      everything much more efficient and trustless. Save dying.
-                    </p>
-                  </div>
-                  <img
-                    src="/test.jpg"
-                    width={80}
-                    height={80}
-                    alt="Placeholder"
-                    className="rounded-full"
-                  />
-                  <Button variant="ghost" className="ml-4">
-                    <HeartIcon className="h-5 w-5" />
-                  </Button>
-                </div>
+                ))}
               </div>
             </div>
           </section>

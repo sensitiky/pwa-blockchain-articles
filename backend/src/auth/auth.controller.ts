@@ -11,20 +11,20 @@ export class AuthController {
 
   @Post('login')
   async login(
-    @Body() loginDto: { usuario: string; contrasena: string },
+    @Body() loginDto: { email: string; contrasena: string },
     @Res() res: Response,
   ): Promise<void> {
-    this.logger.log(`Login attempt for user: ${loginDto.usuario}`);
+    this.logger.log(`Login attempt for user: ${loginDto.email}`);
     const user = await this.authService.validateUser(
-      loginDto.usuario,
+      loginDto.email,
       loginDto.contrasena,
     );
     if (user) {
-      const token = this.authService.generateJwtToken(user);  // Genera el token JWT aquí
-      this.logger.log(`Login successful for user: ${loginDto.usuario}`);
+      const token = this.authService.generateJwtToken(user);
+      this.logger.log(`Login successful for email: ${loginDto.email}`);
       res.status(200).json({ message: 'Login successful', token });
     } else {
-      this.logger.warn(`Login failed for user: ${loginDto.usuario}`);
+      this.logger.warn(`Login failed for email: ${loginDto.email}`);
       res.status(401).json({ message: 'Login failed' });
     }
   }
