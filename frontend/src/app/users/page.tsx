@@ -83,6 +83,7 @@ interface ProfileSettingsProps {
   handleEditBio: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleDateChange: (date: Date | null) => void;
   handleProfileSave: () => void;
+  handleSectionChange: (section: string) => void;
   editMode: boolean;
   bioEditMode: boolean;
   bio: string;
@@ -109,6 +110,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = React.memo(
     handleEditBio,
     handleDateChange,
     handleProfileSave,
+    handleSectionChange,
     editMode,
     bioEditMode,
     bio,
@@ -260,7 +262,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = React.memo(
                 <LinkedinIcon className="w-6 h-6" />
               </Link>
             </div>
-            <Button className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black">
+            <Button
+              className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black"
+              onClick={() => handleSectionChange("security")}
+            >
               Edit Social Links
             </Button>
           </div>
@@ -442,6 +447,9 @@ export default function Users() {
     setBioEditMode(!bioEditMode);
   };
 
+  const handleSectionChange = (section: string) => {
+    setSelectedSection(section);
+  };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (userInfo[name as keyof UserInfo] !== value) {
@@ -596,6 +604,7 @@ export default function Users() {
             handleEditBio={handleEditBio}
             handleDateChange={handleDateChange}
             handleProfileSave={handleProfileSave}
+            handleSectionChange={handleSectionChange}
             editMode={editMode}
             bioEditMode={bioEditMode}
             bio={bio}
