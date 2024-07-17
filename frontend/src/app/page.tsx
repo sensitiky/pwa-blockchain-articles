@@ -301,7 +301,9 @@ const HomePage: React.FC = () => {
             >
               &times;
             </button>
-            <LoginCard />
+            <LoginCard onClose={function (): void {
+              throw new Error("Function not implemented.");
+            } } />
           </div>
         </div>
       )}
