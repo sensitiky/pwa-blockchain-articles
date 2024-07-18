@@ -1,3 +1,4 @@
+"use client"
 import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { login as loginService, getProfile } from '../services/authService';
 
