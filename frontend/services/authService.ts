@@ -20,7 +20,7 @@ export const getProfile = async () => {
 };
 
 export const updateProfile = async (profileData: any) => {
-  const response = await api.put('http://localhost:4000/users/me', profileData);
+  const response = await api.put('https://blogchain.onrender.com/users/me', profileData);
   return response.data;
 };
 
