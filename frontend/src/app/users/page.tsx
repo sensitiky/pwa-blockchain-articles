@@ -9,7 +9,7 @@ import {
   faFilter,
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
-import Select from "react-select";
+import Select, { SingleValue } from "react-select";
 import countryList from "react-select-country-list";
 import {
   DropdownMenu,
@@ -82,7 +82,7 @@ interface ProfileSettingsProps {
   profileImage: string;
   userInfo: UserInfo;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleCountryChange: (selectedOption: any) => void;
+  handleCountryChange: (selectedOption: SingleValue<{ label: string; value: string }>) => void;
   handleEditToggle: () => void;
   handleBioEditToggle: () => void;
   handleEditBio: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
@@ -94,7 +94,6 @@ interface ProfileSettingsProps {
   bio: string;
   handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
-
 interface SecuritySettingsProps {
   profileImage: string;
   userInfo: UserInfo;
@@ -104,304 +103,265 @@ interface SecuritySettingsProps {
   editMode: boolean;
 }
 
-const ProfileSettings: React.FC<ProfileSettingsProps> = React.memo(
-  function ProfileSettings({
-    profileImage,
-    userInfo,
-    handleInputChange,
-    handleCountryChange,
-    handleEditToggle,
-    handleBioEditToggle,
-    handleEditBio,
-    handleDateChange,
-    handleProfileSave,
-    handleSectionChange,
-    editMode,
-    bioEditMode,
-    bio,
-    handleImageChange,
-  }) {
-    return (
-      <div className="flex-1 flex flex-col items-center pt-12 md:pt-24 px-4 md:px-6">
-        <div className="flex items-center gap-6">
-          <Avatar className="w-36 h-36 md:w-36 md:h-36">
-            <AvatarImage src={profileImage} />
-            <AvatarFallback>{userInfo.firstName}</AvatarFallback>
-          </Avatar>
-          <label htmlFor="profile-image-upload" className="cursor-pointer">
-            <FaCamera className="w-6 h-6 text-primary" />
-            <input
-              id="profile-image-upload"
-              type="file"
-              className="hidden"
-              onChange={handleImageChange}
-            />
-          </label>
-          <h1 className="text-5xl md:text-5xl font-bold">
-            Hi, {userInfo.firstName}
-          </h1>
-        </div>
-        <div className="flex-1 w-full max-w-2xl mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div className="grid gap-1">
-              <Label className="text-2xl">Name</Label>
-              {editMode ? (
-                <Input
-                  name="firstName"
-                  value={userInfo.firstName}
-                  onChange={handleInputChange}
-                  className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
-                />
-              ) : (
-                <div className="flex items-center border-b-[1px]">
-                  <span className="flex-grow">{userInfo.firstName}</span>
-                </div>
-              )}
-            </div>
-            <div className="grid gap-1">
-              <Label className="text-2xl">Date</Label>
-              {editMode ? (
-                <DatePicker
-                  selected={userInfo.date}
-                  onChange={handleDateChange}
-                  dateFormat="MMMM d, yyyy"
-                  className="w-full p-2 border rounded focus:ring focus:ring-opacity-50 focus:ring-blue-500"
-                />
-              ) : (
-                <div className="flex items-center border-b-[1px]">
-                  <span className="flex-grow">
-                    {userInfo.date.toDateString()}
-                  </span>
-                </div>
-              )}
-            </div>
-            <div className="grid gap-1">
-              <Label className="text-2xl">Email</Label>
-              {editMode ? (
-                <Input
-                  name="email"
-                  value={userInfo.email}
-                  onChange={handleInputChange}
-                  className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
-                />
-              ) : (
-                <div className="flex items-center border-b-[1px]">
-                  <span className="flex-grow">{userInfo.email}</span>
-                </div>
-              )}
-            </div>
-            <div className="grid gap-1">
-              <Label className="text-2xl">Country</Label>
-              {editMode ? (
-                <Select
-                  options={countryList().getData()}
-                  value={{
-                    label: userInfo.country,
-                    value: userInfo.country,
-                  }}
-                  onChange={handleCountryChange}
-                  className="w-full text-xl"
-                />
-              ) : (
-                <div className="flex items-center border-b-[1px]">
-                  <span className="flex-grow">{userInfo.country}</span>
-                </div>
-              )}
-            </div>
-            <Button
-              variant="outline"
-              className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black"
-              onClick={handleEditToggle}
-            >
-              {editMode ? "Save Changes" : "Edit Information"}
-            </Button>
-          </div>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold">Bio</h2>
-              {bioEditMode ? (
-                <textarea
-                  value={bio}
-                  onChange={handleEditBio}
-                  rows={10}
-                  className="w-full p-2 border rounded resize-none focus:ring focus:ring-opacity-50 focus:ring-blue-500"
-                />
-              ) : (
-                <p className="text-gray-500">{bio}</p>
-              )}
-            </div>
-            <Button
-              variant="outline"
-              className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black"
-              onClick={handleBioEditToggle}
-            >
-              {bioEditMode ? "Save Changes" : "Edit Bio"}
-            </Button>
-            <div className="flex gap-4">
-              <Link
-                href="#"
-                className="text-primary hover:underline"
-                prefetch={false}
-              >
-                <FacebookIcon className="w-6 h-6" />
-              </Link>
-              <Link
-                href="#"
-                className="text-primary hover:underline"
-                prefetch={false}
-              >
-                <InstagramIcon className="w-6 h-6" />
-              </Link>
-              <Link
-                href="#"
-                className="text-primary hover:underline"
-                prefetch={false}
-              >
-                <TwitterIcon className="w-6 h-6" />
-              </Link>
-              <Link
-                href="#"
-                className="text-primary hover:underline"
-                prefetch={false}
-              >
-                <LinkedinIcon className="w-6 h-6" />
-              </Link>
-            </div>
-            <Button
-              className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black"
-              onClick={() => handleSectionChange("security")}
-            >
-              Edit Social Links
-            </Button>
-          </div>
-        </div>
-        <div className="w-full max-w-2xl mt-8 flex items-center justify-between">
-          <Badge variant="secondary" className="flex items-center gap-2">
-            <PencilIcon className="w-4 h-4" />
-            Content Creator
-          </Badge>
-        </div>
+const ProfileSettings: React.FC<ProfileSettingsProps> = ({
+  profileImage,
+  userInfo,
+  handleInputChange,
+  handleCountryChange,
+  handleEditToggle,
+  handleBioEditToggle,
+  handleEditBio,
+  handleDateChange,
+  handleProfileSave,
+  handleSectionChange,
+  editMode,
+  bioEditMode,
+  bio,
+  handleImageChange,
+}) => {
+  return (
+    <div className="flex-1 flex flex-col items-center pt-12 md:pt-24 px-4 md:px-6">
+      <div className="flex items-center gap-6">
+        <Avatar className="w-36 h-36 md:w-36 md:h-36">
+          <AvatarImage src={profileImage} />
+          <AvatarFallback>{userInfo.firstName}</AvatarFallback>
+        </Avatar>
+        <label htmlFor="profile-image-upload" className="cursor-pointer">
+          <FaCamera className="w-6 h-6 text-primary" />
+          <input
+            id="profile-image-upload"
+            type="file"
+            className="hidden"
+            onChange={handleImageChange}
+          />
+        </label>
+        <h1 className="text-5xl md:text-5xl font-bold">Hi, {userInfo.firstName}</h1>
       </div>
-    );
-  }
-);
-
-const SecuritySettings: React.FC<SecuritySettingsProps> =
-  function SecuritySettings({
-    profileImage,
-    userInfo,
-    handleInputChange,
-    handleEditToggle,
-    handleProfileSave,
-    editMode,
-  }) {
-    const [localUserInfo, setLocalUserInfo] = useState<UserInfo>(userInfo);
-    const [fieldsProvided, setFieldsProvided] = useState<{
-      [key: string]: boolean;
-    }>({
-      medium: !!userInfo.medium,
-      instagram: !!userInfo.instagram,
-      facebook: !!userInfo.facebook,
-      twitter: !!userInfo.twitter,
-      linkedin: !!userInfo.linkedin,
-    });
-
-    const handleLocalInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = e.target;
-      setLocalUserInfo({ ...localUserInfo, [name]: value });
-    };
-
-    const handleSaveChanges = () => {
-      handleProfileSave(localUserInfo);
-      setFieldsProvided({
-        medium: !!localUserInfo.medium,
-        instagram: !!localUserInfo.instagram,
-        facebook: !!localUserInfo.facebook,
-        twitter: !!localUserInfo.twitter,
-        linkedin: !!localUserInfo.linkedin,
-      });
-    };
-
-    return (
-      <div className="flex p-6 sm:p-10">
-        <div className="mx-auto min-w-3xl">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-24 w-24">
-              <AvatarImage src={profileImage} />
-              <AvatarFallback>NC</AvatarFallback>
-            </Avatar>
-            <div>
-              <h1 className="text-4xl font-bold">Hi, {userInfo.firstName}</h1>
-              <p className="text-3xl text-muted-foreground">
-                Welcome to your profile settings.
-              </p>
-            </div>
-          </div>
-          <Separator className="my-6" />
-          <div className="grid gap-6">
-            <div className="grid gap-2">
-              {["medium", "instagram", "facebook", "twitter", "linkedin"].map(
-                (field, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between border-b-2"
-                  >
-                    <div className="text-xl font-medium capitalize">
-                      {field}
-                    </div>
-                    {editMode ? (
-                      <Input
-                        name={field}
-                        value={String(localUserInfo[field as keyof UserInfo])}
-                        onChange={handleLocalInputChange}
-                        className="border-none rounded-none w-3/9 border-gray-400 cursor-text"
-                      />
-                    ) : (
-                      <div className="flex items-center gap-2 text-sm">
-                        <span
-                          className={`${
-                            fieldsProvided[field]
-                              ? "text-green-500"
-                              : "text-muted-foreground"
-                          }`}
-                        >
-                          {fieldsProvided[field] ? "Provided" : "Not Provided"}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={handleEditToggle}
-                          className="bg-inherit hover:bg-inherit"
-                        >
-                          <FontAwesomeIcon
-                            icon={faFilePen}
-                            className="h-4 w-4"
-                          />
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                )
-              )}
-            </div>
-            {editMode && (
-              <Button
-                className="text-lg w-full bg-inherit border-none hover:bg-inherit text-black hover:underline hover:underline-offset-4 hover:decoration-black"
-                onClick={handleSaveChanges}
-              >
-                Save Changes
-              </Button>
+      <div className="flex-1 w-full max-w-2xl mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <div className="grid gap-1">
+            <Label className="text-2xl">Name</Label>
+            {editMode ? (
+              <Input
+                name="firstName"
+                value={userInfo.firstName}
+                onChange={handleInputChange}
+                className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
+              />
+            ) : (
+              <div className="flex items-center border-b-[1px]">
+                <span className="flex-grow">{userInfo.firstName}</span>
+              </div>
             )}
           </div>
+          <div className="grid gap-1">
+            <Label className="text-2xl">Date</Label>
+            {editMode ? (
+              <DatePicker
+                selected={userInfo.date}
+                onChange={handleDateChange}
+                dateFormat="MMMM d, yyyy"
+                className="w-full p-2 border rounded focus:ring focus:ring-opacity-50 focus:ring-blue-500"
+              />
+            ) : (
+              <div className="flex items-center border-b-[1px]">
+                <span className="flex-grow">{userInfo.date.toDateString()}</span>
+              </div>
+            )}
+          </div>
+          <div className="grid gap-1">
+            <Label className="text-2xl">Email</Label>
+            {editMode ? (
+              <Input
+                name="email"
+                value={userInfo.email}
+                onChange={handleInputChange}
+                className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
+              />
+            ) : (
+              <div className="flex items-center border-b-[1px]">
+                <span className="flex-grow">{userInfo.email}</span>
+              </div>
+            )}
+          </div>
+          <div className="grid gap-1">
+            <Label className="text-2xl">Country</Label>
+            {editMode ? (
+              <Select
+                options={countryList().getData()}
+                value={{ label: userInfo.country, value: userInfo.country }}
+                onChange={handleCountryChange}
+                className="w-full text-xl"
+              />
+            ) : (
+              <div className="flex items-center border-b-[1px]">
+                <span className="flex-grow">{userInfo.country}</span>
+              </div>
+            )}
+          </div>
+          <Button
+            variant="outline"
+            className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black"
+            onClick={handleEditToggle}
+          >
+            {editMode ? "Save Changes" : "Edit Information"}
+          </Button>
+        </div>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold">Bio</h2>
+            {bioEditMode ? (
+              <textarea
+                value={bio}
+                onChange={handleEditBio}
+                rows={10}
+                className="w-full p-2 border rounded resize-none focus:ring focus:ring-opacity-50 focus:ring-blue-500"
+              />
+            ) : (
+              <p className="text-gray-500">{bio}</p>
+            )}
+          </div>
+          <Button
+            variant="outline"
+            className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black"
+            onClick={handleBioEditToggle}
+          >
+            {bioEditMode ? "Save Changes" : "Edit Bio"}
+          </Button>
+          <div className="flex gap-4">
+            <Link href="#" className="text-primary hover:underline" prefetch={false}>
+              <FacebookIcon className="w-6 h-6" />
+            </Link>
+            <Link href="#" className="text-primary hover:underline" prefetch={false}>
+              <InstagramIcon className="w-6 h-6" />
+            </Link>
+            <Link href="#" className="text-primary hover:underline" prefetch={false}>
+              <TwitterIcon className="w-6 h-6" />
+            </Link>
+            <Link href="#" className="text-primary hover:underline" prefetch={false}>
+              <LinkedinIcon className="w-6 h-6" />
+            </Link>
+          </div>
+          <Button
+            className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black"
+            onClick={() => handleSectionChange("security")}
+          >
+            Edit Social Links
+          </Button>
         </div>
       </div>
-    );
+      <div className="w-full max-w-2xl mt-8 flex items-center justify-between">
+        <Badge variant="secondary" className="flex items-center gap-2">
+          <PencilIcon className="w-4 h-4" />
+          Content Creator
+        </Badge>
+      </div>
+    </div>
+  );
+};
+
+const SecuritySettings: React.FC<SecuritySettingsProps> = ({
+  profileImage,
+  userInfo,
+  handleInputChange,
+  handleEditToggle,
+  handleProfileSave,
+  editMode,
+}) => {
+  const [localUserInfo, setLocalUserInfo] = useState<UserInfo>(userInfo);
+  const [fieldsProvided, setFieldsProvided] = useState<{
+    [key: string]: boolean;
+  }>({
+    medium: !!userInfo.medium,
+    instagram: !!userInfo.instagram,
+    facebook: !!userInfo.facebook,
+    twitter: !!userInfo.twitter,
+    linkedin: !!userInfo.linkedin,
+  });
+
+  const handleLocalInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setLocalUserInfo({ ...localUserInfo, [name]: value });
   };
 
-{
-  /*Componente padre*/
-}
-export default function Users() {
+  const handleSaveChanges = () => {
+    handleProfileSave(localUserInfo);
+    setFieldsProvided({
+      medium: !!localUserInfo.medium,
+      instagram: !!localUserInfo.instagram,
+      facebook: !!localUserInfo.facebook,
+      twitter: !!localUserInfo.twitter,
+      linkedin: !!localUserInfo.linkedin,
+    });
+  };
+
+  return (
+    <div className="flex p-6 sm:p-10">
+      <div className="mx-auto min-w-3xl">
+        <div className="flex items-center gap-4">
+          <Avatar className="h-24 w-24">
+            <AvatarImage src={profileImage} />
+            <AvatarFallback>NC</AvatarFallback>
+          </Avatar>
+          <div>
+            <h1 className="text-4xl font-bold">Hi, {userInfo.firstName}</h1>
+            <p className="text-3xl text-muted-foreground">
+              Welcome to your profile settings.
+            </p>
+          </div>
+        </div>
+        <Separator className="my-6" />
+        <div className="grid gap-6">
+          <div className="grid gap-2">
+            {["medium", "instagram", "facebook", "twitter", "linkedin"].map(
+              (field, index) => (
+                <div key={index} className="flex items-center justify-between border-b-2">
+                  <div className="text-xl font-medium capitalize">
+                    {field}
+                  </div>
+                  {editMode ? (
+                    <Input
+                      name={field}
+                      value={String(localUserInfo[field as keyof UserInfo])}
+                      onChange={handleLocalInputChange}
+                      className="border-none rounded-none w-3/9 border-gray-400 cursor-text"
+                    />
+                  ) : (
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className={`${
+                        fieldsProvided[field] ? "text-green-500" : "text-muted-foreground"
+                      }`}>
+                        {fieldsProvided[field] ? "Provided" : "Not Provided"}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleEditToggle}
+                        className="bg-inherit hover:bg-inherit"
+                      >
+                        <FontAwesomeIcon icon={faFilePen} className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )
+            )}
+          </div>
+          {editMode && (
+            <Button
+              className="text-lg w-full bg-inherit border-none hover:bg-inherit text-black hover:underline hover:underline-offset-4 hover:decoration-black"
+              onClick={handleSaveChanges}
+            >
+              Save Changes
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Users = () => {
   const [selectedSection, setSelectedSection] = useState("personal");
   const [editMode, setEditMode] = useState(false);
   const [bioEditMode, setBioEditMode] = useState(false);
@@ -639,10 +599,7 @@ export default function Users() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm" className="gap-2">
-                      <FontAwesomeIcon
-                        icon={faArrowsUpDown}
-                        className="h-4 w-4"
-                      />
+                      <FontAwesomeIcon icon={faArrowsUpDown} className="h-4 w-4" />
                       Order
                     </Button>
                   </DropdownMenuTrigger>
@@ -678,10 +635,7 @@ export default function Users() {
             </div>
             <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {articles.map((article) => (
-                <div
-                  key={article.id}
-                  className="relative group overflow-hidden rounded-lg shadow-lg"
-                >
+                <div key={article.id} className="relative group overflow-hidden rounded-lg shadow-lg">
                   <img
                     src={article.imageUrl}
                     alt={article.title}
@@ -769,7 +723,7 @@ export default function Users() {
       </div>
     </div>
   );
-}
+};
 
 function InstagramIcon(
   props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
@@ -958,3 +912,5 @@ function PencilIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export default Users;

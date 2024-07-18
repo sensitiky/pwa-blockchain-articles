@@ -15,19 +15,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import LoginCard from "@/assets/login";
 import axios from "axios";
+import { useAuth } from "../../context/authContext";
 
 const Header = () => {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<{
-    name: string;
-    profilePicture: string;
-  } | null>(null);
   const [showLoginCard, setShowLoginCard] = useState(false);
+  const { user, setUser } = useAuth();
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem("jwt");
+      const token = localStorage.getItem("token");
       if (token) {
         try {
           const response = await axios.get(
@@ -46,7 +44,13 @@ const Header = () => {
       }
     };
     fetchUser();
-  }, []);
+  }, [setUser]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/newarticles");
+    }
+  }, [isAuthenticated, router]);
 
   const handleStartNewCampaign = () => {
     if (!isAuthenticated) {
@@ -73,7 +77,7 @@ const Header = () => {
       setShowLoginCard(false);
     }
   };
-  
+
   return (
     <div className="bg-customColor-header">
       <div className="lg:hidden flex items-center justify-between px-4 lg:px-6 h-14 border-b">

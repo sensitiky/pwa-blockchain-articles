@@ -1,56 +1,73 @@
-"use client";
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
+// authContext.tsx
+import {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  ReactNode,
+} from "react";
+import { login as loginService, getProfile } from "../services/authService";
 
-interface AuthContextProps {
+interface AuthContextType {
   user: any;
   setUser: (user: any) => void;
-  login: (credentials: any) => Promise<void>;
-  logout: () => Promise<void>;
+  isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextProps | null>(null);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState(null);
-  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const checkUser = async () => {
+    const loadUser = async () => {
       try {
-        const response = await axios.get('https://blogchain.onrender.com/users/me');
-        setUser(response.data);
+        const profile = await getProfile();
+        setUser(profile);
+        setIsAuthenticated(true);
       } catch (error) {
-        console.log('User not logged in');
+        console.error("Failed to load user", error);
       }
     };
-    checkUser();
+
+    const token = localStorage.getItem("token");
+    if (token) {
+      loadUser();
+    }
   }, []);
 
-  const login = async (credentials: any) => {
-    const response = await axios.post('https://blogchain.onrender.com/users/login', credentials);
-    setUser(response.data.user);
-    router.push('/users');
+  const login = async (email: string, password: string) => {
+    try {
+      const data = await loginService(email, password);
+      setUser(data.user);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error("Login failed", error);
+    }
   };
 
-  const logout = async () => {
-    await axios.post('https://blogchain.onrender.com/api/users/logout');
+  const logout = () => {
+    localStorage.removeItem("token");
     setUser(null);
-    router.push('/login');
+    setIsAuthenticated(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, setUser, isAuthenticated, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

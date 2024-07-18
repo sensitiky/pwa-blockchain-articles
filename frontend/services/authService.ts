@@ -1,7 +1,7 @@
 import api from './api';
 
-export const login = async (usuario: string, contrasena: string) => {
-  const response = await api.post('https://blogchain.onrender.com/auth/login', { usuario, contrasena });
+export const login = async (email: string, password: string) => {
+  const response = await api.post('https://blogchain.onrender.com/auth/login', { email, password });
   const { token } = response.data;
   if (token) {
     localStorage.setItem('token', token);

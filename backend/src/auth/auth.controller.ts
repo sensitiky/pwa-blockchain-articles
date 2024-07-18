@@ -10,24 +10,24 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  async login(
-    @Body() loginDto: { email: string; contrasena: string },
-    @Res() res: Response,
-  ): Promise<void> {
-    this.logger.log(`Login attempt for email: ${loginDto.email}`);
-    const user = await this.authService.validateUser(
-      loginDto.email,
-      loginDto.contrasena,
-    );
-    if (user) {
-      const token = this.authService.generateJwtToken(user);
-      this.logger.log(`Login successful for email: ${loginDto.email}`);
-      res.status(200).json({ message: 'Login successful', token });
-    } else {
-      this.logger.warn(`Login failed for email: ${loginDto.email}`);
-      res.status(401).json({ message: 'Login failed' });
-    }
+async login(
+  @Body() loginDto: { email: string; contrasena: string },
+  @Res() res: Response,
+): Promise<void> {
+  this.logger.log(`Login attempt for email: ${loginDto.email}`);
+  const user = await this.authService.validateUser(
+    loginDto.email,
+    loginDto.contrasena,
+  );
+  if (user) {
+    const token = this.authService.generateJwtToken(user);
+    this.logger.log(`Login successful for email: ${loginDto.email}`);
+    res.status(200).json({ message: 'Login successful', token });
+  } else {
+    this.logger.warn(`Login failed for email: ${loginDto.email}`);
+    res.status(401).json({ message: 'Login failed' });
   }
+}
 
   @Post('forgot-password')
   async forgotPassword(@Body() body: { email: string }, @Res() res: Response): Promise<void> {
