@@ -33,7 +33,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const handleLogin = async () => {
     setLoading(true);
     setError(null);
-
+  
     try {
       const response = await axios.post(
         "https://blogchain.onrender.com/auth/login",
@@ -43,13 +43,14 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
         },
         { withCredentials: true }
       );
-
+  
       console.log("Login response:", response);
-
+  
       if (response.status === 200) {
         console.log("Login successful", response.data);
+        localStorage.setItem('token', response.data.token);
         setUser(response.data.user);
-        router.push("/newarticles");
+        router.push("/users");
       } else {
         setError("Login failed");
       }

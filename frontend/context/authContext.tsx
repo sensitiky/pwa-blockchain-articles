@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
   createContext,
   useContext,
@@ -34,6 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
+    localStorage.removeItem("token");
     setUser(null);
   };
 
@@ -42,11 +43,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(
-          "https://blogchain.onrender.com/users/me",
-          { withCredentials: true }
-        );
-        setUser(response.data);
+        const token = localStorage.getItem("token");
+        if (token) {
+          const response = await axios.get(
+            "https://blogchain.onrender.com/users/me",
+            { withCredentials: true }
+          );
+          setUser(response.data);
+        }
       } catch (error) {
         console.error("Error fetching user data", error);
       }
