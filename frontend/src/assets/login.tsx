@@ -39,7 +39,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/login",
+        "https://blogchain.onrender.com/auth/login",
         {
           email,
           contrasena,
@@ -85,7 +85,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/register",
+        "https://blogchain.onrender.com/auth/register",
         {
           usuario,
           contrasena,
@@ -120,7 +120,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/send-verification-code",
+        "https://blogchain.onrender.com/auth/send-verification-code",
         { email },
         { withCredentials: true }
       );
@@ -155,7 +155,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/verify-code",
+        "https://blogchain.onrender.com/auth/verify-code",
         { email, code: verificationCode },
         { withCredentials: true }
       );
@@ -187,7 +187,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/forgot-password",
+        "https://blogchain.onrender.com/auth/forgot-password",
         { email },
         { withCredentials: true }
       );
@@ -225,7 +225,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/reset-password",
+        "https://blogchain.onrender.com/auth/reset-password",
         { email, code: resetCode, newPassword },
         { withCredentials: true }
       );
@@ -254,7 +254,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   ) => {
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/google",
+        "https://blogchain.onrender.com/auth/google",
         { token: credentialResponse.credential },
         { withCredentials: true }
       );
@@ -277,7 +277,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   ) => {
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/google",
+        "https://blogchain.onrender.com/auth/google",
         { token: credentialResponse.credential },
         { withCredentials: true }
       );
@@ -301,7 +301,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
         if (response.authResponse) {
           try {
             const res = await axios.post(
-              "http://localhost:4000/auth/facebook",
+              "https://blogchain.onrender.com/auth/facebook",
               { accessToken: response.authResponse.accessToken },
               { withCredentials: true }
             );

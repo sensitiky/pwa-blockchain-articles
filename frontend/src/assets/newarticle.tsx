@@ -48,7 +48,7 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/posts",
+        "https://blogchain.onrender.com/posts",
         formData,
         {
           headers: {
