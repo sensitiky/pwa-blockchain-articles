@@ -1,19 +1,20 @@
 import {
-    Controller,
-    Post,
-    Body,
-    UseInterceptors,
-    UploadedFile,
-    Req,
-  } from '@nestjs/common';
-  import { FileInterceptor } from '@nestjs/platform-express';
-  import { diskStorage } from 'multer';
-  import { extname } from 'path';
-  import { PostsService } from './posts.service';
-  import { CreatePostDto } from '../../dto/posts.dto';
-  import { Request } from 'express';
-  
-  @Controller('posts')
+  Controller,
+  Post,
+  Body,
+  UseInterceptors,
+  UploadedFile,
+  Req,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { PostsService } from './posts.service';
+import { CreatePostDto } from '../../dto/posts.dto';
+import { Request } from 'express';
+import { Express } from 'express';
+
+@Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
