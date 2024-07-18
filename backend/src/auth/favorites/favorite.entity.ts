@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { User } from './user.entity';
-import { Post } from './post.entity';
-import { Comment } from './comment.entity';
+import { User } from '../users/user.entity';
+import { Post } from '../posts/post.entity';
+import { Comment } from '../comments/comment.entity';
 
 @Entity()
 export class Favorite {
@@ -11,10 +11,10 @@ export class Favorite {
   @ManyToOne(() => User, user => user.favorites)
   user: User;
 
-  @ManyToOne(() => Post, post => post.id)
+  @ManyToOne(() => Post, post => post.favorites, { nullable: true })
   post: Post;
 
-  @ManyToOne(() => Comment, comment => comment.id)
+  @ManyToOne(() => Comment, comment => comment.favorites, { nullable: true })
   comment: Comment;
 
   @Column()

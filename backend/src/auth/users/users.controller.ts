@@ -1,6 +1,6 @@
 import { Controller, Get, Put, Body, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { User } from '../../database/entities/user.entity';
+import { User } from './user.entity';
 import { UsersService } from './users.service';
 import { CurrentUser } from '../decorators/current-user.decorator';
 

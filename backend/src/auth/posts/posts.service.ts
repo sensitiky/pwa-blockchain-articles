@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Post } from '../../database/entities/post.entity';
+import { Post } from './post.entity';
 import { CreatePostDto } from '../../dto/posts.dto';
-import { User } from '../../database/entities/user.entity';
+import { User } from '../users/user.entity';
+import { Tag } from '../../database/entities/tag.entity'
+import { Category } from 'src/database/entities/category.entity';
 
 @Injectable()
 export class PostsService {
@@ -12,11 +14,28 @@ export class PostsService {
     private postsRepository: Repository<Post>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(Tag)
+    private tagsRepository: Repository<Tag>,
+    @InjectRepository(Category)
+    private categoriesRepository: Repository<Category>,
   ) {}
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
     const author = await this.usersRepository.findOne({ where: { id: createPostDto.authorId } });
-    const post = this.postsRepository.create({ ...createPostDto, author });
+    const category = await this.categoriesRepository.findOne({ where: { id: createPostDto.categoryId } });
+
+    const tags = await Promise.all(
+      createPostDto.tags.map(async (tagName) => {
+        let tag = await this.tagsRepository.findOne({ where: { name: tagName } });
+        if (!tag) {
+          tag = this.tagsRepository.create({ name: tagName });
+          await this.tagsRepository.save(tag);
+        }
+        return tag;
+      })
+    );
+
+    const post = this.postsRepository.create({ ...createPostDto, author, category, tags });
     return this.postsRepository.save(post);
   }
 }

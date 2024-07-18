@@ -1,11 +1,11 @@
-import { IsNotEmpty, IsOptional, IsBoolean } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsBoolean, IsArray, ArrayNotEmpty } from 'class-validator';
 
 export class CreatePostDto {
   @IsNotEmpty()
   title: string;
 
   @IsNotEmpty()
-  description: string;
+  content: string;
 
   @IsOptional()
   imageUrl?: string;
@@ -16,4 +16,11 @@ export class CreatePostDto {
   @IsOptional()
   @IsBoolean()
   published?: boolean;
+
+  @IsNotEmpty()
+  categoryId: number;
+  
+  @IsArray()
+  @ArrayNotEmpty()
+  tags: string[];
 }
