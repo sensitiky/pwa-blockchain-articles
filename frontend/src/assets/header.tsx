@@ -62,6 +62,18 @@ const Header = () => {
     }
   };
 
+  const handleCloseModalOnClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      setShowLoginCard(false);
+    }
+  };
+
+  const handleCloseModalOnKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      setShowLoginCard(false);
+    }
+  };
+  
   return (
     <div className="bg-customColor-header">
       <div className="lg:hidden flex items-center justify-between px-4 lg:px-6 h-14 border-b">
@@ -216,7 +228,10 @@ const Header = () => {
       {showLoginCard && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-          onClick={handleCloseModal}
+          onClick={handleCloseModalOnClick}
+          onKeyDown={handleCloseModalOnKeyDown}
+          role="button"
+          tabIndex={0}
         >
           <div className="relative bg-white p-8 rounded-lg shadow-lg">
             <LoginCard

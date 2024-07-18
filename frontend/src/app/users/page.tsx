@@ -428,7 +428,7 @@ export default function Users() {
       setUserInfo({
         firstName: profile.firstName || "",
         lastName: profile.lastName || "",
-        date: new Date(profile.date) || new Date(),
+        date: profile.date ? new Date(profile.date) : new Date(),
         email: profile.email || "",
         usuario: profile.usuario || "",
         country: profile.country || "",
