@@ -4,14 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ChangeEvent, SVGProps, useState } from "react";
 import { ArrowLeftIcon } from "lucide-react";
+import axios from "axios";
+import { useAuth } from "../../context/authContext";
 
 interface CreateArticlesProps {
   onGoBack: () => void;
 }
 
 export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const { user } = useAuth();
 
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -22,6 +27,38 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
         setImageUrl(reader.result as string);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmit = async (publish: boolean) => {
+    if (!user) {
+      console.error("User not authenticated");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("authorId", user.id); // Assuming user.id exists
+    formData.append("publish", JSON.stringify(publish));
+
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/posts",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Post created successfully:", response.data);
+    } catch (error) {
+      console.error("Error creating post:", error);
     }
   };
 
@@ -59,6 +96,8 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
               <Input
                 id="title"
                 placeholder="Enter a title for your article"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 className="w-full"
               />
             </div>
@@ -107,6 +146,8 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
               <Textarea
                 id="description"
                 placeholder="Write a detailed description of your article"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 rows={10}
                 className="h-40 w-full resize-none text-lg"
               />
@@ -144,33 +185,30 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
           </div>
         </div>
         <div className="justify-end py-4 flex gap-4">
-            <Button
-              variant="outline"
-              className="px-2 py-2 border-black hover:bg-yellow-500 text-md rounded-full border-[1px]"
-            >
-              Save Draft
-            </Button>
-            <Button
-              variant="outline"
-              className="px-2 py-2 text-md bg-customColor-innovatio2 border-black hover:bg-green-500 rounded-full border-[1px]"
-            >
-              Publish
-            </Button>
-          </div>
+          <Button
+            variant="outline"
+            className="px-2 py-2 border-black hover:bg-yellow-500 text-md rounded-full border-[1px]"
+            onClick={() => handleSubmit(false)}
+          >
+            Save Draft
+          </Button>
+          <Button
+            variant="outline"
+            className="px-2 py-2 text-md bg-customColor-innovatio2 border-black hover:bg-green-500 rounded-full border-[1px]"
+            onClick={() => handleSubmit(true)}
+          >
+            Publish
+          </Button>
+        </div>
       </main>
     </div>
   );
 }
 
-function FacebookIcon(
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
-) {
+function UploadIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -178,113 +216,59 @@ function FacebookIcon(
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+      <path d="M12 20v-6M12 4v10M5 12l7-7 7 7" />
     </svg>
   );
 }
 
-function InstagramIcon(
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
-) {
+function FacebookIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+      <path d="M22 12C22 6.48 17.52 2 12 2S2 6.48 2 12c0 4.84 3.65 8.85 8.34 9.74V14.9h-2.51v-2.9h2.51V10.1c0-2.52 1.49-3.9 3.77-3.9 1.09 0 2.23.19 2.23.19v2.44h-1.26c-1.24 0-1.62.77-1.62 1.56v1.87h2.78l-.44 2.9h-2.34v6.84C18.35 20.85 22 16.84 22 12z" />
     </svg>
   );
 }
 
-function LinkedinIcon(
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
-) {
+function TwitterIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-      <rect width="4" height="12" x="2" y="9" />
-      <circle cx="4" cy="4" r="2" />
+      <path d="M22.46 6.011c-.793.353-1.643.592-2.536.699a4.515 4.515 0 001.984-2.495 9.03 9.03 0 01-2.857 1.093 4.51 4.51 0 00-7.693 4.113 12.795 12.795 0 01-9.296-4.71 4.497 4.497 0 001.396 6.023 4.475 4.475 0 01-2.044-.566v.056a4.509 4.509 0 003.617 4.421 4.481 4.481 0 01-2.037.077 4.515 4.515 0 004.213 3.128 9.042 9.042 0 01-5.601 1.932c-.363 0-.72-.021-1.073-.063a12.79 12.79 0 006.923 2.027c8.307 0 12.847-6.879 12.847-12.847 0-.197-.005-.393-.014-.587a9.18 9.18 0 002.258-2.338z" />
     </svg>
   );
 }
 
-function TwitterIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+function LinkedinIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+      <path d="M21 2H3C2.447 2 2 2.447 2 3v18c0 .553.447 1 1 1h18c.553 0 1-.447 1-1V3c0-.553-.447-1-1-1zM8.357 19.708H5.579V9.372h2.778v10.336zM6.968 8.075a1.609 1.609 0 110-3.218 1.609 1.609 0 010 3.218zm12.738 11.633h-2.778v-5.306c0-1.266-.024-2.894-1.764-2.894-1.768 0-2.038 1.381-2.038 2.804v5.396H10.35V9.372h2.667v1.419h.037c.371-.703 1.276-1.445 2.625-1.445 2.806 0 3.322 1.847 3.322 4.248v6.114z" />
     </svg>
   );
 }
 
-function UploadIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+function InstagramIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="17 8 12 3 7 8" />
-      <line x1="12" x2="12" y1="3" y2="15" />
-    </svg>
-  );
-}
-
-function XIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
+      fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
     >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
+      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.332 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.332 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.332-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.332-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308 1.266-.058 1.646-.07 4.85-.07m0-2.163C8.754 0 8.329.015 7.053.073c-1.731.08-3.264.643-4.488 1.867C1.343 3.164.78 4.697.7 6.428.642 7.704.627 8.129.627 12s.015 4.296.073 5.572c.08 1.731.643 3.264 1.867 4.488 1.224 1.224 2.757 1.787 4.488 1.867 1.276.058 1.701.073 5.572.073s4.296-.015 5.572-.073c1.731-.08 3.264-.643 4.488-1.867 1.224-1.224 1.787-2.757 1.867-4.488.058-1.276.073-1.701.073-5.572s-.015-4.296-.073-5.572c-.08-1.731-.643-3.264-1.867-4.488C19.697 1.343 18.164.78 16.428.7 15.152.642 14.727.627 12 .627zM12 5.838c-3.403 0-6.162 2.76-6.162 6.162S8.597 18.162 12 18.162 18.162 15.403 18.162 12 15.403 5.838 12 5.838zm0 10.162a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 110-2.881 1.44 1.44 0 010 2.881z" />
     </svg>
   );
 }

@@ -34,4 +34,7 @@ export class Post {
 
   @Column({ nullable: true })
   savedAt: Date;
+
+  @Column({ nullable: true })
+  imageUrl: string;
 }
