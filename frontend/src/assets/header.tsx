@@ -1,10 +1,10 @@
-"use client";
-import { useEffect, useState } from "react";
+"use client"
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import LoginCard from "@/assets/login";
-import axios from "axios";
+import api from "../../services/api";
 import { useAuth } from "../../context/authContext";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -16,21 +16,25 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const router = useRouter();
   const [showLoginCard, setShowLoginCard] = useState(false);
   const { user, setUser, isAuthenticated, login, logout } = useAuth();
+  const prevIsAuthenticated = useRef(isAuthenticated);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(
-          "https://blogchain.onrender.com/users/me",
-          {
-            withCredentials: true,
-          }
-        );
+        const response = await api.get("/users/me");
         setUser(response.data);
       } catch (error) {
         console.error("Error fetching user data", error);
@@ -40,9 +44,10 @@ const Header = () => {
   }, [setUser]);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      router.push("/newarticles");
+    if (!prevIsAuthenticated.current && isAuthenticated) {
+      router.push("/users");
     }
+    prevIsAuthenticated.current = isAuthenticated;
   }, [isAuthenticated, router]);
 
   const handleLoginClick = () => {
@@ -59,6 +64,11 @@ const Header = () => {
     } else {
       router.push("/newarticles");
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push("/");
   };
 
   const handleCloseModal = (e: React.MouseEvent) => {
@@ -214,10 +224,34 @@ const Header = () => {
               Articles
             </Link>
             {isAuthenticated ? (
-              <Avatar className="rounded-full">
-                <AvatarImage src={user?.profilePicture} />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="rounded-full cursor-pointer">
+                    <AvatarImage src={user?.profilePicture} />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => router.push('/profile')}>
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push('/billing')}>
+                    Billing
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push('/team')}>
+                    Team
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push('/subscription')}>
+                    Subscription
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <Button
                 onClick={handleStartNewCampaign}
