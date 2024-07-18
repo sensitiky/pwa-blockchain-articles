@@ -19,9 +19,8 @@ import { useAuth } from "../../context/authContext";
 
 const Header = () => {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLoginCard, setShowLoginCard] = useState(false);
-  const { user, setUser } = useAuth();
+  const { user, setUser, isAuthenticated, login, logout } = useAuth();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -37,7 +36,6 @@ const Header = () => {
             }
           );
           setUser(response.data);
-          setIsAuthenticated(true);
         } catch (error) {
           console.error("Error fetching user data", error);
         }

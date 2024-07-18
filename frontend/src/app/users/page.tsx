@@ -31,6 +31,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { getProfile, updateProfile } from "../../../services/authService";
 import React from "react";
 import Footer from "@/assets/footer";
+import { useAuth } from "../../../context/authContext";
 
 const articles = [
   {
@@ -82,7 +83,9 @@ interface ProfileSettingsProps {
   profileImage: string;
   userInfo: UserInfo;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleCountryChange: (selectedOption: SingleValue<{ label: string; value: string }>) => void;
+  handleCountryChange: (
+    selectedOption: SingleValue<{ label: string; value: string }>
+  ) => void;
   handleEditToggle: () => void;
   handleBioEditToggle: () => void;
   handleEditBio: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
@@ -135,7 +138,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             onChange={handleImageChange}
           />
         </label>
-        <h1 className="text-5xl md:text-5xl font-bold">Hi, {userInfo.firstName}</h1>
+        <h1 className="text-5xl md:text-5xl font-bold">
+          Hi, {userInfo.firstName}
+        </h1>
       </div>
       <div className="flex-1 w-full max-w-2xl mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
@@ -165,7 +170,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
               />
             ) : (
               <div className="flex items-center border-b-[1px]">
-                <span className="flex-grow">{userInfo.date.toDateString()}</span>
+                <span className="flex-grow">
+                  {userInfo.date.toDateString()}
+                </span>
               </div>
             )}
           </div>
@@ -229,16 +236,32 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             {bioEditMode ? "Save Changes" : "Edit Bio"}
           </Button>
           <div className="flex gap-4">
-            <Link href="#" className="text-primary hover:underline" prefetch={false}>
+            <Link
+              href="#"
+              className="text-primary hover:underline"
+              prefetch={false}
+            >
               <FacebookIcon className="w-6 h-6" />
             </Link>
-            <Link href="#" className="text-primary hover:underline" prefetch={false}>
+            <Link
+              href="#"
+              className="text-primary hover:underline"
+              prefetch={false}
+            >
               <InstagramIcon className="w-6 h-6" />
             </Link>
-            <Link href="#" className="text-primary hover:underline" prefetch={false}>
+            <Link
+              href="#"
+              className="text-primary hover:underline"
+              prefetch={false}
+            >
               <TwitterIcon className="w-6 h-6" />
             </Link>
-            <Link href="#" className="text-primary hover:underline" prefetch={false}>
+            <Link
+              href="#"
+              className="text-primary hover:underline"
+              prefetch={false}
+            >
               <LinkedinIcon className="w-6 h-6" />
             </Link>
           </div>
@@ -315,10 +338,11 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({
           <div className="grid gap-2">
             {["medium", "instagram", "facebook", "twitter", "linkedin"].map(
               (field, index) => (
-                <div key={index} className="flex items-center justify-between border-b-2">
-                  <div className="text-xl font-medium capitalize">
-                    {field}
-                  </div>
+                <div
+                  key={index}
+                  className="flex items-center justify-between border-b-2"
+                >
+                  <div className="text-xl font-medium capitalize">{field}</div>
                   {editMode ? (
                     <Input
                       name={field}
@@ -328,9 +352,13 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({
                     />
                   ) : (
                     <div className="flex items-center gap-2 text-sm">
-                      <span className={`${
-                        fieldsProvided[field] ? "text-green-500" : "text-muted-foreground"
-                      }`}>
+                      <span
+                        className={`${
+                          fieldsProvided[field]
+                            ? "text-green-500"
+                            : "text-muted-foreground"
+                        }`}
+                      >
                         {fieldsProvided[field] ? "Provided" : "Not Provided"}
                       </span>
                       <Button
@@ -379,31 +407,34 @@ const Users = () => {
     twitter: "",
     linkedin: "",
   });
+  const { user, isAuthenticated } = useAuth();
   const [profileImage, setProfileImage] = useState<string>("/shadcn.jpg");
   const options = countryList().getData();
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const profile = await getProfile();
-      setUserInfo({
-        firstName: profile.firstName || "",
-        lastName: profile.lastName || "",
-        date: profile.date ? new Date(profile.date) : new Date(),
-        email: profile.email || "",
-        usuario: profile.usuario || "",
-        country: profile.country || "",
-        medium: profile.medium || "",
-        instagram: profile.instagram || "",
-        facebook: profile.facebook || "",
-        twitter: profile.twitter || "",
-        linkedin: profile.linkedin || "",
-      });
-      setProfileImage(profile.profileImage || "/shadcn.jpg");
-      setBio(profile.bio || "");
+      if (isAuthenticated) {
+        const profile = await getProfile();
+        setUserInfo({
+          firstName: profile.firstName || "",
+          lastName: profile.lastName || "",
+          date: profile.date ? new Date(profile.date) : new Date(),
+          email: profile.email || "",
+          usuario: profile.usuario || "",
+          country: profile.country || "",
+          medium: profile.medium || "",
+          instagram: profile.instagram || "",
+          facebook: profile.facebook || "",
+          twitter: profile.twitter || "",
+          linkedin: profile.linkedin || "",
+        });
+        setProfileImage(profile.profileImage || "/shadcn.jpg");
+        setBio(profile.bio || "");
+      }
     };
 
     fetchProfile();
-  }, []);
+  }, [isAuthenticated]);
 
   const handleEditToggle = () => {
     setEditMode(!editMode);
@@ -599,7 +630,10 @@ const Users = () => {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm" className="gap-2">
-                      <FontAwesomeIcon icon={faArrowsUpDown} className="h-4 w-4" />
+                      <FontAwesomeIcon
+                        icon={faArrowsUpDown}
+                        className="h-4 w-4"
+                      />
                       Order
                     </Button>
                   </DropdownMenuTrigger>
@@ -635,7 +669,10 @@ const Users = () => {
             </div>
             <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {articles.map((article) => (
-                <div key={article.id} className="relative group overflow-hidden rounded-lg shadow-lg">
+                <div
+                  key={article.id}
+                  className="relative group overflow-hidden rounded-lg shadow-lg"
+                >
                   <img
                     src={article.imageUrl}
                     alt={article.title}
@@ -719,7 +756,7 @@ const Users = () => {
         <main className="p-6 md:p-8">{renderContent()}</main>
       </div>
       <div className="hidden lg:flex md:flex">
-      <Footer/>
+        <Footer />
       </div>
     </div>
   );
