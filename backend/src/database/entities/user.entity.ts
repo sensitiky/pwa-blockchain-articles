@@ -11,6 +11,9 @@ export class User {
   @Column()
   usuario: string;
 
+  @Column({ nullable: true })
+  facebookId: string;
+  
   @Column()
   email: string;
 

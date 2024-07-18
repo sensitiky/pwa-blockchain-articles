@@ -13,6 +13,7 @@ import {
   CredentialResponse,
 } from "@react-oauth/google";
 import { AuthProvider, useAuth } from "../../context/authContext";
+import useFacebookSDK from "@/hooks/MetaSDK";
 
 export default function LoginCard({ onClose }: { onClose: () => void }) {
   const [showRegister, setShowRegister] = useState(false);
@@ -30,10 +31,12 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const router = useRouter();
   const { setUser } = useAuth();
 
+  useFacebookSDK();
+
   const handleLogin = async () => {
     setLoading(true);
     setError(null);
-  
+
     try {
       const response = await axios.post(
         "https://blogchain.onrender.com/auth/login",
@@ -43,9 +46,9 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
         },
         { withCredentials: true }
       );
-  
+
       console.log("Login response:", response);
-  
+
       if (response.status === 200) {
         console.log("Login successful", response.data);
         localStorage.setItem('token', response.data.token);
@@ -280,6 +283,32 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     }
   };
 
+  const handleFacebookLogin = () => {
+    window.FB.login(async (response: any) => {
+      if (response.authResponse) {
+        try {
+          const res = await axios.post(
+            "https://blogchain.onrender.com/auth/facebook",
+            { accessToken: response.authResponse.accessToken },
+            { withCredentials: true }
+          );
+
+          if (res.status === 200) {
+            setUser(res.data);
+            router.push("/users");
+            onClose();
+          } else {
+            setError("Facebook login failed");
+          }
+        } catch (err) {
+          setError("Facebook login failed");
+        }
+      } else {
+        setError("User cancelled login or did not fully authorize.");
+      }
+    }, { scope: 'public_profile,email' });
+  };
+
   const toggleForgotPassword = () => {
     setForgotPassword(!forgotPassword);
     setError(null);
@@ -315,8 +344,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
               </p>
             </div>
           )}
-
-          {/*Modal iniciar sesion*/}
 
           {!showRegister && !forgotPassword && (
             <div className="space-y-4">
@@ -357,6 +384,9 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   onSuccess={handleGoogleLoginSuccess}
                   onError={() => setError("Google login failed")}
                 />
+                <Button onClick={handleFacebookLogin}>
+                  Login with Facebook
+                </Button>
               </div>
               <div className="mt-4 text-center text-sm">
                 <div>
@@ -371,8 +401,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
               </div>
             </div>
           )}
-
-          {/*Modal registro*/}
 
           {showRegister && !forgotPassword && (
             <div className="space-y-4">
@@ -465,6 +493,9 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   onSuccess={handleGoogleRegisterSuccess}
                   onError={() => setError("Google registration failed")}
                 />
+                <Button onClick={handleFacebookLogin}>
+                  Register with Facebook
+                </Button>
               </div>
               <div className="space-y-2 flex items-center">
                 <Checkbox id="terms" className="mr-4" required />
@@ -508,8 +539,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
               </div>
             </div>
           )}
-
-          {/*Modal recuperar password*/}
 
           {!showRegister && forgotPassword && (
             <div className="space-y-4">

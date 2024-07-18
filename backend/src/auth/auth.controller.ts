@@ -2,6 +2,7 @@ import { Controller, Post, Body, Res, Logger } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { CreateUserDto } from 'src/dto/user.dto';
+import axios from 'axios';
 
 @Controller('auth')
 export class AuthController {
@@ -26,6 +27,24 @@ export class AuthController {
     } else {
       this.logger.warn(`Login failed for user: ${loginDto.email}`);
       res.status(401).json({ message: 'Login failed' });
+    }
+  }
+  @Post('facebook')
+  async facebookLogin(
+    @Body() body: { accessToken: string },
+    @Res() res: Response,
+  ): Promise<void> {
+    try {
+      const response = await axios.get(`https://graph.facebook.com/me?access_token=${body.accessToken}&fields=id,name,email`);
+      const { id, email, name } = response.data;
+      
+      let user = await this.authService.findOrCreateFacebookUser(id, email, name);
+
+      const token = this.authService.generateJwtToken(user);
+      res.status(200).json({ message: 'Facebook login successful', token, user });
+    } catch (error) {
+      this.logger.error(`Error with Facebook login: ${error.message}`);
+      res.status(401).json({ message: 'Facebook login failed' });
     }
   }
 

@@ -14,10 +14,17 @@ export class UsersService {
   async findOne(email: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { email } });
   }
+  async findByFacebookId(facebookId: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { facebookId } });
+  }
+
+  async update(user: User): Promise<User> {
+    return this.userRepository.save(user);
+  }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const newUser = this.userRepository.create(createUserDto);
-    return this.userRepository.save(newUser);
+    const user = this.userRepository.create(createUserDto);
+    return this.userRepository.save(user);
   }
 
   async findByEmail(email: string): Promise<User | undefined> {

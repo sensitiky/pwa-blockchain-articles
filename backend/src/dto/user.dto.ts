@@ -5,7 +5,8 @@ export class CreateUserDto {
   contrasena: string;
   firstName?: string;
   lastName?: string;
-  code:string;
+  code: string;
+  facebookId?: string;
 }
 
 export class UpdateUserDto {

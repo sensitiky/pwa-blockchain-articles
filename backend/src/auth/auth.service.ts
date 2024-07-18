@@ -94,6 +94,30 @@ export class AuthService {
     return user;
   }
 
+  async findOrCreateFacebookUser(facebookId: string, email: string, name: string): Promise<User> {
+    let user = await this.usersService.findByFacebookId(facebookId);
+    if (!user) {
+      user = await this.usersService.findByEmail(email);
+      if (!user) {
+        const [firstName, lastName] = name.split(' ');
+        user = await this.usersService.create({
+          facebookId,
+          email,
+          contrasena: '',
+          firstName,
+          lastName,
+          nombre: '',
+          code: '',
+          usuario:'',
+        });
+      } else {
+        user.facebookId = facebookId;
+        await this.usersService.update(user);
+      }
+    }
+    return user;
+  }
+
   async sendVerificationCode(email: string): Promise<void> {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     this.verificationCodes.set(email, code);
