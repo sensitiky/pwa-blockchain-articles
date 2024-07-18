@@ -1,4 +1,4 @@
-// authContext.tsx
+"use client"
 import {
   createContext,
   useState,
