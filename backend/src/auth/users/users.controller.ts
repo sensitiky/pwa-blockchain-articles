@@ -21,7 +21,10 @@ export class UsersController {
 
   @Put('me')
   @UseGuards(AuthGuard('jwt'))
-  async updateProfile(@Req() req: Request, @Body() updateData: Partial<User>): Promise<User> {
+  async updateProfile(
+    @Req() req: Request,
+    @Body() updateData: Partial<User>,
+  ): Promise<User> {
     const token = req.headers.authorization.split(' ')[1];
     const user = await this.authService.validateToken(token);
     return await this.usersService.updateUserInfo(user.id, updateData);

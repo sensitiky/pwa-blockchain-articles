@@ -145,6 +145,9 @@ export class AuthService {
     try {
       const decoded = this.jwtService.verify(token);
       const user = await this.usersService.findOne(decoded.userId);
+      if (!user) {
+        throw new UnauthorizedException('Invalid token');
+      }
       return user;
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
