@@ -29,7 +29,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { setUser, login } = useAuth();
+  const { setUser, login } = useAuth(); // Asegúrate de extraer login desde useAuth
 
   useFacebookSDK();
 
@@ -39,7 +39,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/login",
+        "http://localhost:4000/auth/login",
         {
           email,
           contrasena,
@@ -85,7 +85,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/register",
+        "http://localhost:4000/auth/register",
         {
           usuario,
           contrasena,
@@ -96,8 +96,8 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       );
 
       if (response.status === 200) {
-        setUser(response.data.user);
-        login(response.data);
+        setUser(response.data.user); // Actualiza el estado del usuario
+        login(response.data); // Pasa los datos del usuario a login
         router.push("/users");
         onClose();
       } else {
@@ -120,7 +120,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/send-verification-code",
+        "http://localhost:4000/auth/send-verification-code",
         { email },
         { withCredentials: true }
       );
@@ -155,7 +155,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/verify-code",
+        "http://localhost:4000/auth/verify-code",
         { email, code: verificationCode },
         { withCredentials: true }
       );
@@ -187,7 +187,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/forgot-password",
+        "http://localhost:4000/auth/forgot-password",
         { email },
         { withCredentials: true }
       );
@@ -225,7 +225,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/reset-password",
+        "http://localhost:4000/auth/reset-password",
         { email, code: resetCode, newPassword },
         { withCredentials: true }
       );
@@ -254,14 +254,14 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   ) => {
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/google",
+        "http://localhost:4000/auth/google",
         { token: credentialResponse.credential },
         { withCredentials: true }
       );
 
       if (response.status === 200) {
-        setUser(response.data.user);
-        login(response.data);
+        setUser(response.data.user); // Actualiza el estado del usuario
+        login(response.data); // Pasa los datos del usuario a login
         router.push("/newarticles");
         onClose();
       } else {
@@ -277,13 +277,14 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   ) => {
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/google",
+        "http://localhost:4000/auth/google",
         { token: credentialResponse.credential },
         { withCredentials: true }
       );
 
       if (response.status === 200) {
-        setUser(response.data);
+        setUser(response.data.user); // Actualiza el estado del usuario
+        login(response.data); // Pasa los datos del usuario a login
         router.push("/users");
         onClose();
       } else {
@@ -300,13 +301,14 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
         if (response.authResponse) {
           try {
             const res = await axios.post(
-              "https://blogchain.onrender.com/auth/facebook",
+              "http://localhost:4000/auth/facebook",
               { accessToken: response.authResponse.accessToken },
               { withCredentials: true }
             );
 
             if (res.status === 200) {
-              setUser(res.data);
+              setUser(res.data.user); // Actualiza el estado del usuario
+              login(res.data); // Pasa los datos del usuario a login
               router.push("/users");
               onClose();
             } else {

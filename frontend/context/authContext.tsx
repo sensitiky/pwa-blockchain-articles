@@ -5,6 +5,7 @@ import {
   useState,
   useEffect,
   ReactNode,
+  useCallback,
 } from "react";
 import api from "../services/api";
 
@@ -29,14 +30,15 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any>(null);
 
-  const login = (userData: any) => {
-    setUser(userData);
-  };
+  const login = useCallback((userData: any) => {
+    localStorage.setItem("token", userData.token);
+    setUser(userData.user);
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("token");
     setUser(null);
-  };
+  }, []);
 
   const isAuthenticated = !!user;
 
