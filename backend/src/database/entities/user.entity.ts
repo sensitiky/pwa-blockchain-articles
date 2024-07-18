@@ -13,7 +13,7 @@ export class User {
 
   @Column()
   email: string;
-  
+
   @Column({ nullable: true })
   firstName?: string;
 
@@ -44,12 +44,12 @@ export class User {
   @Column({ nullable: true })
   linkedin?: string;
 
-  @OneToMany(() => Post, post => post.author) 
+  @OneToMany(() => Post, (post) => post.author)
   posts: Post[];
 
-  @OneToMany(() => Comment, comment => comment.author)
+  @OneToMany(() => Comment, (comment) => comment.author)
   comments: Comment[];
 
-  @OneToMany(() => Favorite, favorite => favorite.user)
+  @OneToMany(() => Favorite, (favorite) => favorite.user)
   favorites: Favorite[];
 }

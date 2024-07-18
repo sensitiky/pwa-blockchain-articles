@@ -50,7 +50,7 @@ const Header = () => {
     }
   }, [isAuthenticated, router]);
 
-  const handleStartNewCampaign = () => {
+  const handleLoginClick = () => {
     if (!isAuthenticated) {
       setShowLoginCard(true);
     } else {
@@ -60,18 +60,6 @@ const Header = () => {
 
   const handleCloseModal = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      setShowLoginCard(false);
-    }
-  };
-
-  const handleCloseModalOnClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      setShowLoginCard(false);
-    }
-  };
-
-  const handleCloseModalOnKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Escape") {
       setShowLoginCard(false);
     }
   };
@@ -154,7 +142,7 @@ const Header = () => {
                   <Button
                     variant="outline"
                     className="bg-customColor-innovatio2 rounded-full px-4 py-2 text-sm font-medium hover:bg-customColor-innovatio3"
-                    onClick={() => setShowLoginCard(true)}
+                    onClick={handleLoginClick}
                   >
                     Get Started
                   </Button>
@@ -217,7 +205,7 @@ const Header = () => {
               </Avatar>
             ) : (
               <Button
-                onClick={handleStartNewCampaign}
+                onClick={handleLoginClick}
                 className="rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio"
               >
                 Get Started
@@ -230,17 +218,12 @@ const Header = () => {
       {showLoginCard && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-          onClick={handleCloseModalOnClick}
-          onKeyDown={handleCloseModalOnKeyDown}
+          onClick={handleCloseModal}
           role="button"
           tabIndex={0}
         >
           <div className="relative bg-white p-8 rounded-lg shadow-lg">
-            <LoginCard
-              onClose={function (): void {
-                throw new Error("Function not implemented.");
-              }}
-            />
+            <LoginCard onClose={() => setShowLoginCard(false)} />
           </div>
         </div>
       )}

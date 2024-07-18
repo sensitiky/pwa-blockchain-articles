@@ -1,5 +1,5 @@
 "use client";
-import { JSX, SVGProps, useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -43,21 +43,18 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
         }
       );
 
-      console.log("Login response:", response);
-
       if (response.status === 200) {
-        console.log("Login successful", response.data);
         setUser(response.data.user); // Usa setUser para actualizar el contexto de autenticación
+        localStorage.setItem("token", response.data.token); // Guarda el token en el almacenamiento local
+        onClose(); // Cierra el modal
         router.push("/newarticles");
       } else {
         setError("Login failed");
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        console.log("Axios error:", err.response);
         setError(err.response?.data.message || "Login failed");
       } else {
-        console.log("General error:", err);
         setError((err as Error).message);
       }
     } finally {
@@ -91,8 +88,9 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
       if (response.status === 200) {
         setUser(response.data);
+        localStorage.setItem("token", response.data.token); // Guarda el token en el almacenamiento local
+        onClose(); // Cierra el modal
         router.push("/users");
-        onClose();
       } else {
         setError("Registration failed");
       }
@@ -240,8 +238,9 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
       if (response.status === 200) {
         setUser(response.data); // Guardar la información del usuario en el contexto
+        localStorage.setItem("token", response.data.token); // Guarda el token en el almacenamiento local
+        onClose(); // Cierra el modal
         router.push("/newarticles");
-        onClose(); // Cerrar el modal
       } else {
         setError("Google login failed");
       }
@@ -261,8 +260,9 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
       if (response.status === 200) {
         setUser(response.data); // Guardar la información del usuario en el contexto
+        localStorage.setItem("token", response.data.token); // Guarda el token en el almacenamiento local
+        onClose(); // Cierra el modal
         router.push("/users");
-        onClose(); // Cerrar el modal
       } else {
         setError("Google registration failed");
       }
@@ -280,300 +280,298 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     <GoogleOAuthProvider
       clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
     >
-      <AuthProvider>
-        <div className="mx-auto max-w-md space-y-6">
-          {!showRegister && !forgotPassword && (
-            <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-bold">Login</h1>
-              <p className="text-muted-foreground">
-                Enter your email and password to access your account.
-              </p>
-            </div>
-          )}
-          {showRegister && !forgotPassword && (
-            <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-bold">Register</h1>
-              <p className="text-muted-foreground">
-                Enter your details to create an account.
-              </p>
-            </div>
-          )}
-          {!showRegister && forgotPassword && (
-            <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-bold">Reset Password</h1>
-              <p className="text-muted-foreground">
-                Enter your email to receive a password reset code.
-              </p>
-            </div>
-          )}
+      <div className="mx-auto max-w-md space-y-6">
+        {!showRegister && !forgotPassword && (
+          <div className="space-y-2 text-center">
+            <h1 className="text-3xl font-bold">Login</h1>
+            <p className="text-muted-foreground">
+              Enter your email and password to access your account.
+            </p>
+          </div>
+        )}
+        {showRegister && !forgotPassword && (
+          <div className="space-y-2 text-center">
+            <h1 className="text-3xl font-bold">Register</h1>
+            <p className="text-muted-foreground">
+              Enter your details to create an account.
+            </p>
+          </div>
+        )}
+        {!showRegister && forgotPassword && (
+          <div className="space-y-2 text-center">
+            <h1 className="text-3xl font-bold">Reset Password</h1>
+            <p className="text-muted-foreground">
+              Enter your email to receive a password reset code.
+            </p>
+          </div>
+        )}
 
-          {/*Modal iniciar sesion*/}
+        {/*Modal iniciar sesion*/}
 
-          {!showRegister && !forgotPassword && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={contrasena}
-                  onChange={(e) => setContrasena(e.target.value)}
-                  required
-                />
-              </div>
-              {error && <div className="text-red-500">{error}</div>}
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  className="rounded-full w-44 bg-customColor-header"
-                  onClick={handleLogin}
-                  disabled={loading}
+        {!showRegister && !forgotPassword && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={contrasena}
+                onChange={(e) => setContrasena(e.target.value)}
+                required
+              />
+            </div>
+            {error && <div className="text-red-500">{error}</div>}
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                className="rounded-full w-44 bg-customColor-header"
+                onClick={handleLogin}
+                disabled={loading}
+              >
+                {loading ? "Logging in..." : "Login"}
+              </Button>
+            </div>
+            <div className="space-y-2 flex flex-col items-center">
+              <GoogleLogin
+                onSuccess={handleGoogleLoginSuccess}
+                onError={() => setError("Google login failed")}
+              />
+            </div>
+            <div className="mt-4 text-center text-sm">
+              <div>
+                Don't have an account?{" "}
+                <button
+                  onClick={() => setShowRegister(true)}
+                  className="underline"
                 >
-                  {loading ? "Logging in..." : "Login"}
-                </Button>
-              </div>
-              <div className="space-y-2 flex flex-col items-center">
-                <GoogleLogin
-                  onSuccess={handleGoogleLoginSuccess}
-                  onError={() => setError("Google login failed")}
-                />
-              </div>
-              <div className="mt-4 text-center text-sm">
-                <div>
-                  Don't have an account?{" "}
-                  <button
-                    onClick={() => setShowRegister(true)}
-                    className="underline"
-                  >
-                    Create one
-                  </button>
-                </div>
+                  Create one
+                </button>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {/*Modal registro*/}
+        {/*Modal registro*/}
 
-          {showRegister && !forgotPassword && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  placeholder="Enter your username"
-                  value={usuario}
-                  onChange={(e) => setUsuario(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={contrasena}
-                  onChange={(e) => setContrasena(e.target.value)}
-                  required
-                />
-              </div>
-              {codeSent && !codeVerified && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="verification-code">Verification Code</Label>
-                    <Input
-                      id="verification-code"
-                      type="text"
-                      placeholder="Enter verification code"
-                      value={verificationCode}
-                      onChange={(e) => setVerificationCode(e.target.value)}
-                      required
-                    />
-                    <div className="flex justify-center">
-                      <Button
-                        type="button"
-                        className="mt-2 rounded-sm w-44 bg-customColor-header"
-                        onClick={handleVerifyCode}
-                        disabled={loading}
-                      >
-                        {loading ? "Verifying..." : "Verify Code"}
-                      </Button>
-                    </div>
-                  </div>
-                </>
-              )}
-              {!codeSent && (
-                <div className="flex justify-center">
-                  <Button
-                    type="button"
-                    className="mt-2 rounded-full w-44 bg-customColor-header"
-                    onClick={handleSendVerificationCode}
-                    disabled={loading}
-                  >
-                    {loading ? "Sending..." : "Send Verification Code"}
-                  </Button>
-                </div>
-              )}
-              {codeVerified && (
-                <>
-                  {error && <div className="text-red-500">{error}</div>}
+        {showRegister && !forgotPassword && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                placeholder="Enter your username"
+                value={usuario}
+                onChange={(e) => setUsuario(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={contrasena}
+                onChange={(e) => setContrasena(e.target.value)}
+                required
+              />
+            </div>
+            {codeSent && !codeVerified && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="verification-code">Verification Code</Label>
+                  <Input
+                    id="verification-code"
+                    type="text"
+                    placeholder="Enter verification code"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                    required
+                  />
                   <div className="flex justify-center">
                     <Button
                       type="button"
-                      className="rounded-sm w-44"
-                      onClick={handleRegister}
+                      className="mt-2 rounded-sm w-44 bg-customColor-header"
+                      onClick={handleVerifyCode}
                       disabled={loading}
                     >
-                      {loading ? "Registering..." : "Register"}
+                      {loading ? "Verifying..." : "Verify Code"}
                     </Button>
                   </div>
-                </>
-              )}
-              <div className="space-y-2 flex flex-col items-center">
-                <GoogleLogin
-                  onSuccess={handleGoogleRegisterSuccess}
-                  onError={() => setError("Google registration failed")}
-                />
-              </div>
-              <div className="space-y-2 flex items-center">
-                <Checkbox id="terms" className="mr-4" required />
-                <Label
-                  htmlFor="terms"
-                  className="text-sm text-gray-600 dark:text-gray-400"
-                >
-                  I confirmed that I have read and agree to the{" "}
-                  <Link href="#" className="underline" prefetch={false}>
-                    Terms and Conditions
-                  </Link>
-                  ,{" "}
-                  <Link href="#" className="underline" prefetch={false}>
-                    Services Terms
-                  </Link>
-                  ,{" "}
-                  <Link href="#" className="underline" prefetch={false}>
-                    Earn Terms
-                  </Link>
-                  ,{" "}
-                  <Link href="#" className="underline" prefetch={false}>
-                    Exchange Terms
-                  </Link>
-                  , and{" "}
-                  <Link href="#" className="underline" prefetch={false}>
-                    Privacy Policy
-                  </Link>{" "}
-                  of Blogchain.
-                </Label>
-              </div>
-              <div className="mt-4 text-center text-sm">
-                <div>
-                  Already have an account?{" "}
-                  <button
-                    onClick={() => setShowRegister(false)}
-                    className="underline"
-                  >
-                    Sign in
-                  </button>
                 </div>
-              </div>
-            </div>
-          )}
-
-          {/*Modal recuperar password*/}
-
-          {!showRegister && forgotPassword && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <div className="flex justify-center">
-                  <Button
-                    type="button"
-                    className="mt-2 rounded-full w-44 bg-customColor-header"
-                    onClick={handleForgotPassword}
-                    disabled={loading}
-                  >
-                    {loading ? "Sending..." : "Send Reset Code"}
-                  </Button>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="reset-code">Reset Code</Label>
-                <Input
-                  id="reset-code"
-                  type="text"
-                  placeholder="Enter reset code"
-                  value={resetCode}
-                  onChange={(e) => setResetCode(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="new-password">New Password</Label>
-                <Input
-                  id="new-password"
-                  type="password"
-                  placeholder="Enter your new password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                />
-              </div>
-              {error && <div className="text-red-500">{error}</div>}
+              </>
+            )}
+            {!codeSent && (
               <div className="flex justify-center">
                 <Button
                   type="button"
-                  className="w-full rounded-full"
-                  onClick={handleResetPassword}
+                  className="mt-2 rounded-full w-44 bg-customColor-header"
+                  onClick={handleSendVerificationCode}
                   disabled={loading}
                 >
-                  {loading ? "Resetting..." : "Reset Password"}
+                  {loading ? "Sending..." : "Send Verification Code"}
+                </Button>
+              </div>
+            )}
+            {codeVerified && (
+              <>
+                {error && <div className="text-red-500">{error}</div>}
+                <div className="flex justify-center">
+                  <Button
+                    type="button"
+                    className="rounded-sm w-44"
+                    onClick={handleRegister}
+                    disabled={loading}
+                  >
+                    {loading ? "Registering..." : "Register"}
+                  </Button>
+                </div>
+              </>
+            )}
+            <div className="space-y-2 flex flex-col items-center">
+              <GoogleLogin
+                onSuccess={handleGoogleRegisterSuccess}
+                onError={() => setError("Google registration failed")}
+              />
+            </div>
+            <div className="space-y-2 flex items-center">
+              <Checkbox id="terms" className="mr-4" required />
+              <Label
+                htmlFor="terms"
+                className="text-sm text-gray-600 dark:text-gray-400"
+              >
+                I confirmed that I have read and agree to the{" "}
+                <Link href="#" className="underline" prefetch={false}>
+                  Terms and Conditions
+                </Link>
+                ,{" "}
+                <Link href="#" className="underline" prefetch={false}>
+                  Services Terms
+                </Link>
+                ,{" "}
+                <Link href="#" className="underline" prefetch={false}>
+                  Earn Terms
+                </Link>
+                ,{" "}
+                <Link href="#" className="underline" prefetch={false}>
+                  Exchange Terms
+                </Link>
+                , and{" "}
+                <Link href="#" className="underline" prefetch={false}>
+                  Privacy Policy
+                </Link>{" "}
+                of Blogchain.
+              </Label>
+            </div>
+            <div className="mt-4 text-center text-sm">
+              <div>
+                Already have an account?{" "}
+                <button
+                  onClick={() => setShowRegister(false)}
+                  className="underline"
+                >
+                  Sign in
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/*Modal recuperar password*/}
+
+        {!showRegister && forgotPassword && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  className="mt-2 rounded-full w-44 bg-customColor-header"
+                  onClick={handleForgotPassword}
+                  disabled={loading}
+                >
+                  {loading ? "Sending..." : "Send Reset Code"}
                 </Button>
               </div>
             </div>
-          )}
-          {!showRegister && !forgotPassword && (
-            <div className="text-center">
-              <Link
-                href="#"
-                passHref
-                onClick={toggleForgotPassword}
-                className="text-sm text-muted-foreground hover:underline"
-              >
-                Forgot your password?
-              </Link>
+            <div className="space-y-2">
+              <Label htmlFor="reset-code">Reset Code</Label>
+              <Input
+                id="reset-code"
+                type="text"
+                placeholder="Enter reset code"
+                value={resetCode}
+                onChange={(e) => setResetCode(e.target.value)}
+                required
+              />
             </div>
-          )}
-        </div>
-      </AuthProvider>
+            <div className="space-y-2">
+              <Label htmlFor="new-password">New Password</Label>
+              <Input
+                id="new-password"
+                type="password"
+                placeholder="Enter your new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+            </div>
+            {error && <div className="text-red-500">{error}</div>}
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                className="w-full rounded-full"
+                onClick={handleResetPassword}
+                disabled={loading}
+              >
+                {loading ? "Resetting..." : "Reset Password"}
+              </Button>
+            </div>
+          </div>
+        )}
+        {!showRegister && !forgotPassword && (
+          <div className="text-center">
+            <Link
+              href="#"
+              passHref
+              onClick={toggleForgotPassword}
+              className="text-sm text-muted-foreground hover:underline"
+            >
+              Forgot your password?
+            </Link>
+          </div>
+        )}
+      </div>
     </GoogleOAuthProvider>
   );
 }
