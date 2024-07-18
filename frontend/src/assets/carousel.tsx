@@ -113,8 +113,8 @@ const ArticleCarousel = () => {
           {articles.map((article, index) => (
             <div key={index} className="p-4 flex justify-center">
               <div
-                className="bg-opacity-50 backdrop-blur-3xl bg-white p-6 rounded-xl flex flex-col justify-between border-[1px] border-black"
-                style={{ width: "100%", maxWidth: "560px", height: "100%" }}
+                className="bg-opacity-50 backdrop-blur-3xl bg-white p-6 rounded-xl flex flex-col justify-between border-[1px] border-black min-h-full"
+                style={{ width: "100%", maxWidth: "560px" }}
               >
                 <div className="flex items-start">
                   <Image

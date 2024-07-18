@@ -198,28 +198,22 @@ const Header = () => {
               Home
             </Link>
             <Link
+              href="/articles"
+              className="text-white hover:text-customColor-hueso"
+            >
+              Articles
+            </Link>
+            <Link
               href="/about"
               className="text-white hover:text-customColor-hueso"
             >
               About Us
             </Link>
             <Link
-              href="/users"
+              href="/support"
               className="text-white hover:text-customColor-hueso"
             >
-              Users
-            </Link>
-            <Link
-              href="/newarticles"
-              className="text-white hover:text-customColor-hueso"
-            >
-              Create Articles
-            </Link>
-            <Link
-              href="/articles"
-              className="text-white hover:text-customColor-hueso"
-            >
-              Articles
+              Support Us
             </Link>
             {isAuthenticated ? (
               <DropdownMenu>
