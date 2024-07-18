@@ -29,7 +29,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { setUser, login } = useAuth(); // Asegúrate de extraer login desde useAuth
+  const { setUser, login } = useAuth();
 
   useFacebookSDK();
 
@@ -51,8 +51,8 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
       if (response.status === 200) {
         console.log("Login successful", response.data);
-        setUser(response.data.user); // Actualiza el estado del usuario
-        login(response.data); // Pasa los datos del usuario a login
+        setUser(response.data.user);
+        login(response.data);
         router.push("/users");
       } else {
         setError("Login failed");
@@ -96,8 +96,8 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       );
 
       if (response.status === 200) {
-        setUser(response.data.user); // Actualiza el estado del usuario
-        login(response.data); // Pasa los datos del usuario a login
+        setUser(response.data.user);
+        login(response.data);
         router.push("/users");
         onClose();
       } else {
@@ -260,8 +260,8 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       );
 
       if (response.status === 200) {
-        setUser(response.data.user); // Actualiza el estado del usuario
-        login(response.data); // Pasa los datos del usuario a login
+        setUser(response.data.user);
+        login(response.data);
         router.push("/newarticles");
         onClose();
       } else {
@@ -283,8 +283,8 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       );
 
       if (response.status === 200) {
-        setUser(response.data.user); // Actualiza el estado del usuario
-        login(response.data); // Pasa los datos del usuario a login
+        setUser(response.data.user);
+        login(response.data);
         router.push("/users");
         onClose();
       } else {
@@ -307,8 +307,8 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
             );
 
             if (res.status === 200) {
-              setUser(res.data.user); // Actualiza el estado del usuario
-              login(res.data); // Pasa los datos del usuario a login
+              setUser(res.data.user);
+              login(res.data);
               router.push("/users");
               onClose();
             } else {
