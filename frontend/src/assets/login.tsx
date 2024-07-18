@@ -40,13 +40,13 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
         {
           email,
           contrasena,
-        }
+        },
+        { withCredentials: true }
       );
 
       if (response.status === 200) {
-        setUser(response.data.user); // Usa setUser para actualizar el contexto de autenticación
-        localStorage.setItem("token", response.data.token); // Guarda el token en el almacenamiento local
-        onClose(); // Cierra el modal
+        setUser(response.data.user);
+        onClose();
         router.push("/newarticles");
       } else {
         setError("Login failed");

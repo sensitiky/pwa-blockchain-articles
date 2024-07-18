@@ -1,67 +1,63 @@
-"use client";
-
-import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { login as loginService, getProfile } from '../services/authService';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import axios from "axios";
 
 interface AuthContextType {
   user: any;
   setUser: (user: any) => void;
   isAuthenticated: boolean;
-  login: (email: string, contrasena: string) => Promise<void>;
+  login: (data: any) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const profile = await getProfile();
-        setUser(profile);
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.error('Failed to load user', error);
-      }
-    };
-
-    const token = localStorage.getItem('token');
-    if (token) {
-      loadUser();
-    }
-  }, []);
-
-  const login = async (email: string, contrasena: string) => {
-    try {
-      const data = await loginService(email, contrasena);
-      localStorage.setItem('token', data.token);
-      setUser(data.user);
-      setIsAuthenticated(true);
-    } catch (error) {
-      console.error('Login failed', error);
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
-    setIsAuthenticated(false);
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, setUser, isAuthenticated, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
+};
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<any>(null);
+
+  const login = (userData: any) => {
+    setUser(userData);
+  };
+
+  const logout = () => {
+    setUser(null);
+  };
+
+  const isAuthenticated = !!user;
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(
+          "https://blogchain.onrender.com/users/me",
+          { withCredentials: true }
+        );
+        setUser(response.data);
+      } catch (error) {
+        console.error("Error fetching user data", error);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  return (
+    <AuthContext.Provider
+      value={{ user, setUser, isAuthenticated, login, logout }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };

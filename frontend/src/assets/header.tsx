@@ -1,7 +1,13 @@
 "use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import LoginCard from "@/assets/login";
+import axios from "axios";
+import { useAuth } from "../../context/authContext";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   Sheet,
   SheetContent,
@@ -10,12 +16,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useEffect, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import LoginCard from "@/assets/login";
-import axios from "axios";
-import { useAuth } from "../../context/authContext";
 
 const Header = () => {
   const router = useRouter();
@@ -24,21 +24,16 @@ const Header = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          const response = await axios.get(
-            "https://blogchain.onrender.com/users/me",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          setUser(response.data);
-        } catch (error) {
-          console.error("Error fetching user data", error);
-        }
+      try {
+        const response = await axios.get(
+          "https://blogchain.onrender.com/users/me",
+          {
+            withCredentials: true,
+          }
+        );
+        setUser(response.data);
+      } catch (error) {
+        console.error("Error fetching user data", error);
       }
     };
     fetchUser();
@@ -58,8 +53,28 @@ const Header = () => {
     }
   };
 
+  const handleStartNewCampaign = () => {
+    if (!isAuthenticated) {
+      setShowLoginCard(true);
+    } else {
+      router.push("/newarticles");
+    }
+  };
+
   const handleCloseModal = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
+      setShowLoginCard(false);
+    }
+  };
+
+  const handleCloseModalOnClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      setShowLoginCard(false);
+    }
+  };
+
+  const handleCloseModalOnKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
       setShowLoginCard(false);
     }
   };
@@ -142,7 +157,7 @@ const Header = () => {
                   <Button
                     variant="outline"
                     className="bg-customColor-innovatio2 rounded-full px-4 py-2 text-sm font-medium hover:bg-customColor-innovatio3"
-                    onClick={handleLoginClick}
+                    onClick={() => setShowLoginCard(true)}
                   >
                     Get Started
                   </Button>
@@ -205,7 +220,7 @@ const Header = () => {
               </Avatar>
             ) : (
               <Button
-                onClick={handleLoginClick}
+                onClick={handleStartNewCampaign}
                 className="rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio"
               >
                 Get Started
@@ -218,7 +233,8 @@ const Header = () => {
       {showLoginCard && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-          onClick={handleCloseModal}
+          onClick={handleCloseModalOnClick}
+          onKeyDown={handleCloseModalOnKeyDown}
           role="button"
           tabIndex={0}
         >
@@ -230,4 +246,5 @@ const Header = () => {
     </div>
   );
 };
+
 export default Header;
