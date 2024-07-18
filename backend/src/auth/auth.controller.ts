@@ -29,7 +29,7 @@ export class AuthController {
     res.cookie('jwt', jwt, {
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: 'none',
     });
     return res.send({ user });
   }
@@ -42,7 +42,24 @@ export class AuthController {
     res.cookie('jwt', jwt, {
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: 'none',
+    });
+    return res.send({ user });
+  }
+
+  @Post('google')
+  async googleLogin(@Body('token') token: string, @Res() res: Response) {
+    const user = await this.authService.validateGoogleToken(token);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const jwt = await this.authService.generateJwtToken(user);
+
+    res.cookie('jwt', jwt, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
     });
     return res.send({ user });
   }
