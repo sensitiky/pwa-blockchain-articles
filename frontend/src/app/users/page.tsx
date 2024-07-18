@@ -393,7 +393,7 @@ const Users = () => {
   const [selectedSection, setSelectedSection] = useState("personal");
   const [editMode, setEditMode] = useState(false);
   const [bioEditMode, setBioEditMode] = useState(false);
-  const [bio, setBio] = useState("");
+  const [bio, setBio] = useState<string>("");
   const [userInfo, setUserInfo] = useState<UserInfo>({
     firstName: "",
     lastName: "",
@@ -414,22 +414,26 @@ const Users = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       if (isAuthenticated) {
-        const profile = await getProfile();
-        setUserInfo({
-          firstName: profile.firstName || "",
-          lastName: profile.lastName || "",
-          date: profile.date ? new Date(profile.date) : new Date(),
-          email: profile.email || "",
-          usuario: profile.usuario || "",
-          country: profile.country || "",
-          medium: profile.medium || "",
-          instagram: profile.instagram || "",
-          facebook: profile.facebook || "",
-          twitter: profile.twitter || "",
-          linkedin: profile.linkedin || "",
-        });
-        setProfileImage(profile.profileImage || "/shadcn.jpg");
-        setBio(profile.bio || "");
+        try {
+          const profile = await getProfile();
+          setUserInfo({
+            firstName: profile.firstName || "",
+            lastName: profile.lastName || "",
+            date: profile.date ? new Date(profile.date) : new Date(),
+            email: profile.email || "",
+            usuario: profile.usuario || "",
+            country: profile.country || "",
+            medium: profile.medium || "",
+            instagram: profile.instagram || "",
+            facebook: profile.facebook || "",
+            twitter: profile.twitter || "",
+            linkedin: profile.linkedin || "",
+          });
+          setProfileImage(profile.profileImage || "/shadcn.jpg");
+          setBio(profile.bio || "");
+        } catch (error) {
+          console.error("Error fetching profile data", error);
+        }
       }
     };
 

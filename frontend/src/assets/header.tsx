@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,6 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import axios from "axios";
 
 const Header = () => {
   const router = useRouter();
@@ -34,14 +35,27 @@ const Header = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        console.log("Attempting to fetch user data");
         const response = await api.get("/users/me");
+        console.log("User data fetched successfully", response.data);
         setUser(response.data);
       } catch (error) {
         console.error("Error fetching user data", error);
+
+        if (axios.isAxiosError(error)) {
+          console.log("Error response data", error.response?.data);
+          console.log("Error response status", error.response?.status);
+          console.log("Error response headers", error.response?.headers);
+        } else {
+          console.log("Unexpected error", error);
+        }
       }
     };
-    fetchUser();
-  }, [setUser]);
+
+    if (isAuthenticated) {
+      fetchUser();
+    }
+  }, [isAuthenticated, setUser]);
 
   useEffect(() => {
     if (!prevIsAuthenticated.current && isAuthenticated) {
@@ -50,31 +64,15 @@ const Header = () => {
     prevIsAuthenticated.current = isAuthenticated;
   }, [isAuthenticated, router]);
 
-  const handleLoginClick = () => {
-    if (!isAuthenticated) {
-      setShowLoginCard(true);
-    } else {
-      router.push("/newarticles");
-    }
-  };
-
   const handleStartNewCampaign = () => {
     if (!isAuthenticated) {
       setShowLoginCard(true);
-    } else {
-      router.push("/newarticles");
     }
   };
 
   const handleLogout = () => {
     logout();
     router.push("/");
-  };
-
-  const handleCloseModal = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      setShowLoginCard(false);
-    }
   };
 
   const handleCloseModalOnClick = (e: React.MouseEvent) => {
@@ -234,17 +232,14 @@ const Header = () => {
                 <DropdownMenuContent>
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push('/profile')}>
+                  <DropdownMenuItem onClick={() => router.push("/users")}>
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push('/billing')}>
-                    Billing
+                  <DropdownMenuItem onClick={() => router.push("/newarticles")}>
+                    Create
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push('/team')}>
-                    Team
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push('/subscription')}>
-                    Subscription
+                  <DropdownMenuItem onClick={() => router.push("/articles")}>
+                    Articles
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>

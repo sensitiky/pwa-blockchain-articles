@@ -35,13 +35,21 @@ export class AuthController {
     @Res() res: Response,
   ): Promise<void> {
     try {
-      const response = await axios.get(`https://graph.facebook.com/me?access_token=${body.accessToken}&fields=id,name,email`);
+      const response = await axios.get(
+        `https://graph.facebook.com/me?access_token=${body.accessToken}&fields=id,name,email`,
+      );
       const { id, email, name } = response.data;
-      
-      let user = await this.authService.findOrCreateFacebookUser(id, email, name);
+
+      let user = await this.authService.findOrCreateFacebookUser(
+        id,
+        email,
+        name,
+      );
 
       const token = this.authService.generateJwtToken(user);
-      res.status(200).json({ message: 'Facebook login successful', token, user });
+      res
+        .status(200)
+        .json({ message: 'Facebook login successful', token, user });
     } catch (error) {
       this.logger.error(`Error with Facebook login: ${error.message}`);
       res.status(401).json({ message: 'Facebook login failed' });
@@ -87,26 +95,27 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(
-    @Body() registerDto: CreateUserDto,
-    @Res() res: Response,
-  ): Promise<void> {
-    try {
-      const isVerified = await this.authService.verifyCode(
-        registerDto.email,
-        registerDto.code,
-      );
-      if (!isVerified) {
-        res.status(400).json({ message: 'Invalid verification code' });
-        return;
-      }
-      await this.authService.registerUser(registerDto);
-      res.status(200).json({ message: 'Registration successful' });
-    } catch (error) {
-      this.logger.error(`Error registering user: ${error.message}`);
-      res.status(500).json({ message: 'Failed to register user' });
+async register(
+  @Body() registerDto: CreateUserDto,
+  @Res() res: Response,
+): Promise<void> {
+  try {
+    const isVerified = await this.authService.verifyCode(
+      registerDto.email,
+      registerDto.code,
+    );
+    if (!isVerified) {
+      res.status(400).json({ message: 'Invalid verification code' });
+      return;
     }
+    await this.authService.registerUser(registerDto);
+    this.authService.deleteVerificationCode(registerDto.email);
+    res.status(200).json({ message: 'Registration successful' });
+  } catch (error) {
+    this.logger.error(`Error registering user: ${error.message}`);
+    res.status(500).json({ message: 'Failed to register user' });
   }
+}
 
   @Post('send-verification-code')
   async sendVerificationCode(
@@ -127,18 +136,27 @@ export class AuthController {
     @Body() body: { email: string; code: string },
     @Res() res: Response,
   ): Promise<void> {
+    this.logger.log(`Verifying code for email: ${body.email}`);
+
     try {
       const isVerified = await this.authService.verifyCode(
         body.email,
         body.code,
       );
+
       if (isVerified) {
+        this.logger.log(
+          `Code verification successful for email: ${body.email}`,
+        );
         res.status(200).json({ message: 'Code verification successful' });
       } else {
+        this.logger.warn(`Invalid verification code for email: ${body.email}`);
         res.status(400).json({ message: 'Invalid verification code' });
       }
     } catch (error) {
-      this.logger.error(`Error verifying code: ${error.message}`);
+      this.logger.error(
+        `Error verifying code for email: ${body.email} - ${error.message}`,
+      );
       res.status(500).json({ message: 'Failed to verify code' });
     }
   }

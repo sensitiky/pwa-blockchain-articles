@@ -6,7 +6,7 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import axios from "axios";
+import api from "../services/api";
 
 interface AuthContextType {
   user: any;
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setUser(null);
   };
 
@@ -43,20 +43,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (token) {
-          const response = await axios.get(
-            "https://blogchain.onrender.com/users/me",
-            { withCredentials: true }
-          );
+          const response = await api.get("/users/me");
           setUser(response.data);
         }
       } catch (error) {
         console.error("Error fetching user data", error);
+        logout();
       }
     };
     fetchUser();
-  }, []);
+  }, [logout]);
 
   return (
     <AuthContext.Provider

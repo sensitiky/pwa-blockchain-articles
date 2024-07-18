@@ -94,7 +94,11 @@ export class AuthService {
     return user;
   }
 
-  async findOrCreateFacebookUser(facebookId: string, email: string, name: string): Promise<User> {
+  async findOrCreateFacebookUser(
+    facebookId: string,
+    email: string,
+    name: string,
+  ): Promise<User> {
     let user = await this.usersService.findByFacebookId(facebookId);
     if (!user) {
       user = await this.usersService.findByEmail(email);
@@ -108,7 +112,7 @@ export class AuthService {
           lastName,
           nombre: '',
           code: '',
-          usuario:'',
+          usuario: '',
         });
       } else {
         user.facebookId = facebookId;
@@ -133,11 +137,17 @@ export class AuthService {
   }
 
   async verifyCode(email: string, code: string): Promise<boolean> {
+    console.log(`Verifying code for email: ${email}`);
+
     const storedCode = this.verificationCodes.get(email);
+    console.log(`Stored code: ${storedCode}`);
+
     if (storedCode === code) {
-      this.verificationCodes.delete(email);
+      console.log(`Code verified successfully for email: ${email}`);
       return true;
     }
+
+    console.log(`Code verification failed for email: ${email}`);
     return false;
   }
 
@@ -181,5 +191,9 @@ export class AuthService {
   generateJwtToken(user: User): string {
     const payload = { userId: user.id, email: user.email };
     return this.jwtService.sign(payload);
+  }
+
+  public deleteVerificationCode(email: string): void {
+    this.verificationCodes.delete(email);
   }
 }

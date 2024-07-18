@@ -1,32 +1,27 @@
-import { Controller, Get, Put, Req, Body, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+import { Controller, Get, Put, Body, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { User } from '../../database/entities/user.entity';
 import { UsersService } from './users.service';
-import { AuthService } from '../auth.service';
+import { CurrentUser } from '../decorators/current-user.decorator';
 
 @Controller('users')
 export class UsersController {
   constructor(
-    private readonly authService: AuthService,
     private readonly usersService: UsersService,
   ) {}
 
   @Get('me')
-  @UseGuards(AuthGuard('jwt'))
-  async getProfile(@Req() req: Request): Promise<User> {
-    const token = req.headers.authorization.split(' ')[1];
-    return await this.authService.validateToken(token);
+  @UseGuards(JwtAuthGuard)
+  async getProfile(@CurrentUser() user: User): Promise<User> {
+    return user;
   }
 
   @Put('me')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async updateProfile(
-    @Req() req: Request,
+    @CurrentUser() user: User,
     @Body() updateData: Partial<User>,
   ): Promise<User> {
-    const token = req.headers.authorization.split(' ')[1];
-    const user = await this.authService.validateToken(token);
     return await this.usersService.updateUserInfo(user.id, updateData);
   }
 }
