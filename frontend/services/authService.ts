@@ -27,7 +27,7 @@ export const login = async (email: string, contrasena: string) => {
 
 export const getProfile = async () => {
   try {
-    const response = await api.get("http://localhost:4000/users/me");
+    const response = await api.get("https://blogchain.onrender.com/users/me");
     return response.data;
   } catch (error) {
     console.error("Error fetching profile data", error);
@@ -39,7 +39,7 @@ export const updateProfile = async (userInfo: UserInfo) => {
   try {
     const token = localStorage.getItem("token");
     const response = await axios.put(
-      "http://localhost:4000/users/me",
+      "https://blogchain.onrender.com/users/me",
       userInfo,
       {
         headers: {

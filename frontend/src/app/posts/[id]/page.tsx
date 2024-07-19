@@ -63,7 +63,7 @@ export default function PostPage() {
 
   const fetchPost = async (id: string) => {
     try {
-      const response = await axios.get(`http://localhost:4000/posts/${id}`);
+      const response = await axios.get(`https://blogchain.onrender.com/posts/${id}`);
       const postData = response.data; // Acceder a la data correctamente
       setPost(postData);
       setLoading(false);

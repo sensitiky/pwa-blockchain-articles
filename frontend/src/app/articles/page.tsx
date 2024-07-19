@@ -48,7 +48,7 @@ export default function Articles() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/categories");
+      const response = await axios.get("https://blogchain.onrender.com/categories");
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories", error);
@@ -58,8 +58,8 @@ export default function Articles() {
   const fetchPosts = async (page: number, categoryId?: number) => {
     try {
       const url = categoryId
-        ? `http://localhost:4000/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
-        : `http://localhost:4000/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
+        ? `https://blogchain.onrender.com/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
+        : `https://blogchain.onrender.com/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
       const response = await axios.get(url);
       const postsData = response.data.data;
       setPosts(postsData || []);
@@ -183,7 +183,7 @@ export default function Articles() {
                           className="w-full md:w-1/3 rounded-lg overflow-hidden h-full"
                         >
                           <Image
-                            src={`http://localhost:4000${post.imageUrl}`}
+                            src={`https://blogchain.onrender.com${post.imageUrl}`}
                             alt="Article image"
                             className="object-cover w-full h-full"
                             width={300}
