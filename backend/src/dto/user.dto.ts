@@ -14,4 +14,5 @@ export class UpdateUserDto {
   readonly lastName?: string;
   readonly email?: string;
   readonly usuario?: string;
+  readonly bio?: string;
 }

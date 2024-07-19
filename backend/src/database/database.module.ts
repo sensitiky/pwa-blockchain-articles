@@ -5,7 +5,7 @@ import { User } from '../auth/users/user.entity';
 import { Post } from '../auth/posts/post.entity';
 import { Comment } from '../auth/comments/comment.entity';
 import { Category } from '../auth/category/category.entity';
-import { Tag } from './entities/tag.entity';
+import { Tag } from 'src/auth/tag/tag.entity';
 import { Favorite } from '../auth/favorites/favorite.entity';
 import { DatabaseService } from './database.service';
 

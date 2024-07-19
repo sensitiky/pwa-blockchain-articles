@@ -31,9 +31,58 @@ type Category = {
   name: string;
 };
 
+type Post = {
+  id: number;
+  title: string;
+  content: string;
+  imageUrl?: string;
+  createdAt: string;
+  description: string;
+  author: { usuario: string };
+};
+
+const POSTS_PER_PAGE = 5;
+
 export default function Articles() {
   const categoriesRef = useRef<HTMLDivElement>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [orderBy, setOrderBy] = useState<string>("recentDesc");
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(
+        "https://blogchain.onrender.com/categories"
+      );
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Error fetching categories", error);
+    }
+  };
+
+  const fetchPosts = async (page: number, order: string) => {
+    try {
+      const response = await axios.get(
+        `https://blogchain.onrender.com/posts?page=${page}&order=${order}&limit=${POSTS_PER_PAGE}`
+      );
+      setPosts(response.data.posts);
+      setTotalPages(response.data.totalPages);
+    } catch (error) {
+      console.error("Error fetching posts", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+    fetchPosts(currentPage, orderBy);
+  }, [currentPage, orderBy]);
+
+  const handleOrderChange = (order: string) => {
+    setOrderBy(order);
+    setCurrentPage(1); // Reset to first page on order change
+  };
 
   const scrollLeft = () => {
     if (categoriesRef.current) {
@@ -53,23 +102,10 @@ export default function Articles() {
     }
   };
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get("/categories");
-        setCategories(response.data);
-      } catch (error) {
-        console.error("Error fetching categories", error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
   return (
-    <div className="bg-gradientbg2 w-full">
+    <div className="bg-gradientbg2 w-full flex flex-col min-h-screen">
       <Header />
-      <div className="container mx-auto py-8 md:py-12 lg:py-16">
+      <div className="container mx-auto py-8 md:py-12 lg:py-16 flex-grow">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-12">
           <div className="space-y-4 md:space-y-6">
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl text-center text-yellow-400">
@@ -93,19 +129,34 @@ export default function Articles() {
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Order by</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuCheckboxItem checked>
+                  <DropdownMenuCheckboxItem
+                    checked={orderBy === "savedDesc"}
+                    onClick={() => handleOrderChange("savedDesc")}
+                  >
                     Saved (Most first)
                   </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={orderBy === "savedAsc"}
+                    onClick={() => handleOrderChange("savedAsc")}
+                  >
                     Saved (Less first)
                   </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={orderBy === "recentDesc"}
+                    onClick={() => handleOrderChange("recentDesc")}
+                  >
                     Recents (Most first)
                   </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={orderBy === "recentAsc"}
+                    onClick={() => handleOrderChange("recentAsc")}
+                  >
                     Recents (Less first)
                   </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={orderBy === "relevant"}
+                    onClick={() => handleOrderChange("relevant")}
+                  >
                     More Relevants
                   </DropdownMenuCheckboxItem>
                 </DropdownMenuContent>
@@ -152,260 +203,86 @@ export default function Articles() {
 
         <div className="mt-12 md:mt-16 lg:mt-20">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
-            <Card className="bg-inherit h-auto rounded-none shadow-none flex flex-col md:flex-row items-start gap-4 border-b-[1px] border-black border-r-0 border-l-0">
-              <Image
-                src="/Saly-1.png"
-                alt="Blog Post Image"
-                width={200}
-                height={150}
-                className="aspect-video w-full md:w-40 mt-10 rounded-lg object-cover"
-              />
-              <div className="mt-3 flex-1 space-y-2">
-                <div className="text-sm font-medium text-muted-foreground">
-                  June 15, 2023
-                </div>
-                <h3 className="text-lg font-semibold">
-                  Unlocking the Secrets of Successful Blogging
-                </h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <div>
-                    <UserIcon className="w-4 h-4 mr-1" />
-                    John Doe
+            {posts.map((post) => (
+              <Card
+                key={post.id}
+                className="bg-inherit h-auto rounded-none shadow-none flex flex-col md:flex-row items-start gap-4 border-b-[1px] border-black border-r-0 border-l-0"
+              >
+                {post.imageUrl && (
+                  <Image
+                    src={post.imageUrl}
+                    alt="Blog Post Image"
+                    width={200}
+                    height={150}
+                    className="aspect-video w-full md:w-40 mt-10 rounded-lg object-cover"
+                  />
+                )}
+                <div className="mt-3 flex-1 space-y-2">
+                  <div className="text-sm font-medium text-muted-foreground">
+                    {new Date(post.createdAt).toLocaleDateString()}
                   </div>
-                  <div>
-                    <ClockIcon className="w-4 h-4 mr-1" />5 min read
+                  <h3 className="text-lg font-semibold">{post.title}</h3>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div>
+                      <UserIcon className="w-4 h-4 mr-1" />
+                      {post.author.usuario}
+                    </div>
+                    <div>
+                      <ClockIcon className="w-4 h-4 mr-1" />5 min read
+                    </div>
                   </div>
-                </div>
-                <p className="text-muted-foreground line-clamp-2">
-                  Discover the essential tips and strategies to take your blog
-                  to new heights and engage your audience.
-                </p>
-                <div className="flex items-center gap-2 text-sm">
-                  <Button variant="ghost" size="icon">
-                    <HeartIcon className="w-4 h-4" />
-                    <span className="sr-only">Like</span>
-                  </Button>
-                  <Button variant="ghost" size="icon">
-                    <MessageCircleIcon className="w-4 h-4" />
-                    <span className="sr-only">Comment</span>
-                  </Button>
-                  <Link
-                    href="#"
-                    className="text-primary hover:underline"
-                    prefetch={false}
-                  >
-                    Read more
-                  </Link>
-                </div>
-              </div>
-            </Card>
-            <Card className="bg-inherit h-auto rounded-none shadow-none flex flex-col md:flex-row items-start gap-4 border-b-[1px] border-black border-r-0 border-l-0">
-              <Image
-                src="/Saly-1.png"
-                alt="Blog Post Image"
-                width={200}
-                height={150}
-                className="aspect-video w-full md:w-40 mt-10 rounded-lg object-cover"
-              />
-              <div className="mt-3 flex-1 space-y-2">
-                <div className="text-sm font-medium text-muted-foreground">
-                  June 10, 2023
-                </div>
-                <h3 className="text-lg font-semibold">
-                  The Art of Crafting Captivating Blog Titles
-                </h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <div>
-                    <UserIcon className="w-4 h-4 mr-1" />
-                    Jane Smith
-                  </div>
-                  <div>
-                    <ClockIcon className="w-4 h-4 mr-1" />7 min read
+                  <p className="text-muted-foreground line-clamp-2">
+                    {post.description}
+                  </p>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Button variant="ghost" size="icon">
+                      <HeartIcon className="w-4 h-4" />
+                      <span className="sr-only">Like</span>
+                    </Button>
+                    <Button variant="ghost" size="icon">
+                      <MessageCircleIcon className="w-4 h-4" />
+                      <span className="sr-only">Comment</span>
+                    </Button>
+                    <Link
+                      href="#"
+                      className="text-primary hover:underline"
+                      prefetch={false}
+                    >
+                      Read more
+                    </Link>
                   </div>
                 </div>
-                <p className="text-muted-foreground line-clamp-2">
-                  Learn the secrets to creating blog titles that grab attention
-                  and drive more traffic to your content.
-                </p>
-                <div className="flex items-center gap-2 text-sm">
-                  <Button variant="ghost" size="icon">
-                    <HeartIcon className="w-4 h-4" />
-                    <span className="sr-only">Like</span>
-                  </Button>
-                  <Button variant="ghost" size="icon">
-                    <MessageCircleIcon className="w-4 h-4" />
-                    <span className="sr-only">Comment</span>
-                  </Button>
-                  <Link
-                    href="#"
-                    className="text-primary hover:underline"
-                    prefetch={false}
-                  >
-                    Read more
-                  </Link>
-                </div>
-              </div>
-            </Card>
-            <Card className="bg-inherit h-auto rounded-none shadow-none flex flex-col md:flex-row items-start gap-4 border-b-[1px] border-black border-r-0 border-l-0">
-              <Image
-                src="/Saly-1.png"
-                alt="Blog Post Image"
-                width={200}
-                height={150}
-                className="aspect-video w-full md:w-40 mt-10 rounded-lg object-cover"
-              />
-              <div className="mt-3 flex-1 space-y-2">
-                <div className="text-sm font-medium text-muted-foreground">
-                  June 5, 2023
-                </div>
-                <h3 className="text-lg font-semibold">
-                  Mastering the Art of Storytelling in Blogging
-                </h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <div>
-                    <UserIcon className="w-4 h-4 mr-1" />
-                    Sarah Lee
-                  </div>
-                  <div>
-                    <ClockIcon className="w-4 h-4 mr-1" />
-                    10 min read
-                  </div>
-                </div>
-                <p className="text-muted-foreground line-clamp-2">
-                  Discover how to weave captivating stories into your blog posts
-                  and connect with your readers on a deeper level.
-                </p>
-                <div className="flex items-center gap-2 text-sm">
-                  <Button variant="ghost" size="icon">
-                    <HeartIcon className="w-4 h-4" />
-                    <span className="sr-only">Like</span>
-                  </Button>
-                  <Button variant="ghost" size="icon">
-                    <MessageCircleIcon className="w-4 h-4" />
-                    <span className="sr-only">Comment</span>
-                  </Button>
-                  <Link
-                    href="#"
-                    className="text-primary hover:underline"
-                    prefetch={false}
-                  >
-                    Read more
-                  </Link>
-                </div>
-              </div>
-            </Card>
-            <Card className="bg-inherit h-auto rounded-none shadow-none flex flex-col md:flex-row items-start gap-4 border-b-[1px] border-black border-r-0 border-l-0">
-              <Image
-                src="/Saly-1.png"
-                alt="Blog Post Image"
-                width={200}
-                height={150}
-                className="aspect-video w-full md:w-40 mt-10 rounded-lg object-cover"
-              />
-              <div className="mt-3 flex-1 space-y-2">
-                <div className="text-sm font-medium text-muted-foreground">
-                  June 1, 2023
-                </div>
-                <h3 className="text-lg font-semibold">
-                  Optimizing Your Blog for Maximum Visibility
-                </h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <div>
-                    <UserIcon className="w-4 h-4 mr-1" />
-                    Michael Chen
-                  </div>
-                  <div>
-                    <ClockIcon className="w-4 h-4 mr-1" />8 min read
-                  </div>
-                </div>
-                <p className="text-muted-foreground line-clamp-2">
-                  Learn the latest SEO strategies to boost your blog's ranking
-                  and reach a wider audience.
-                </p>
-                <div className="flex items-center gap-2 text-sm">
-                  <Button variant="ghost" size="icon">
-                    <HeartIcon className="w-4 h-4" />
-                    <span className="sr-only">Like</span>
-                  </Button>
-                  <Button variant="ghost" size="icon">
-                    <MessageCircleIcon className="w-4 h-4" />
-                    <span className="sr-only">Comment</span>
-                  </Button>
-                  <Link
-                    href="#"
-                    className="text-primary hover:underline"
-                    prefetch={false}
-                  >
-                    Read more
-                  </Link>
-                </div>
-              </div>
-            </Card>
-            <Card className="bg-inherit h-auto rounded-none shadow-none flex flex-col md:flex-row items-start gap-4 border-b-[1px] border-black border-r-0 border-l-0">
-              <Image
-                src="/Saly-1.png"
-                alt="Blog Post Image"
-                width={200}
-                height={150}
-                className="aspect-video w-full md:w-40 mt-10 rounded-lg object-cover"
-              />
-              <div className="mt-3 flex-1 space-y-2">
-                <div className="text-sm font-medium text-muted-foreground">
-                  May 25, 2023
-                </div>
-                <h3 className="text-lg font-semibold">
-                  Unleashing the Power of Visuals in Blogging
-                </h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <div>
-                    <UserIcon className="w-4 h-4 mr-1" />
-                    Emily Gonzalez
-                  </div>
-                  <div>
-                    <ClockIcon className="w-4 h-4 mr-1" />6 min read
-                  </div>
-                </div>
-                <p className="text-muted-foreground line-clamp-2">
-                  Discover how to use stunning visuals to enhance your blog
-                  posts and captivate your audience.
-                </p>
-                <div className="flex items-center gap-2 text-sm">
-                  <Button variant="ghost" size="icon">
-                    <HeartIcon className="w-4 h-4" />
-                    <span className="sr-only">Like</span>
-                  </Button>
-                  <Button variant="ghost" size="icon">
-                    <MessageCircleIcon className="w-4 h-4" />
-                    <span className="sr-only">Comment</span>
-                  </Button>
-                  <Link
-                    href="#"
-                    className="text-primary hover:underline"
-                    prefetch={false}
-                  >
-                    Read more
-                  </Link>
-                </div>
-              </div>
-            </Card>
+              </Card>
+            ))}
           </div>
           <div className="mt-8 flex justify-center">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
-                  <PaginationPrevious href="#" />
+                  <PaginationPrevious
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
+                    href="#"
+                  />
                 </PaginationItem>
+                {Array.from({ length: totalPages }, (_, index) => (
+                  <PaginationItem key={index}>
+                    <PaginationLink
+                      href="#"
+                      onClick={() => setCurrentPage(index + 1)}
+                    >
+                      {index + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
                 <PaginationItem>
-                  <PaginationLink href="#">1</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#">2</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#">3</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationNext href="#" />
+                  <PaginationNext
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
+                    href="#"
+                  />
                 </PaginationItem>
               </PaginationContent>
             </Pagination>

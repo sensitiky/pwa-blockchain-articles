@@ -1,16 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/assets/footer";
 import Header from "@/assets/header";
 import CreateArticles from "@/assets/newarticle";
 import { ArrowRightIcon } from "lucide-react";
+import axios from "axios";
+
+type Category = {
+  id: number;
+  name: string;
+};
+type Tag = {
+  id: number;
+  name: string;
+};
 
 export default function Newarticles() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [step, setStep] = useState<number>(1);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
+
+  useEffect(() => {
+    const fetchCategoriesAndTags = async () => {
+      try {
+        const [categoriesResponse] = await Promise.all([
+          axios.get("https://blogchain.onrender.com/categories"),
+          axios.get("https://blogchain.onrender.com/tags"),
+        ]);
+        setCategories(categoriesResponse.data);
+      } catch (error) {
+        console.error("Error fetching categories and tags", error);
+      }
+    };
+
+    fetchCategoriesAndTags();
+  }, []);
 
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
@@ -47,27 +75,23 @@ export default function Newarticles() {
             {step === 1 && (
               <div className="space-y-8">
                 <div className="text-center">
-                  <div className="text-black font-semibold text-xl">Category</div>
+                  <div className="text-black font-semibold text-xl">
+                    Category
+                  </div>
                   <div className="text-yellow-500 text-xl">Step 1</div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-                    {[
-                      "Analysis & Opinions",
-                      "Tutorial",
-                      "Review",
-                      "Case Study",
-                      "News & Updates",
-                      "Resources & Tools",
-                      "Interviews",
-                    ].map((category) => (
+                    {categories.map((category) => (
                       <Button
-                        key={category}
+                        key={category.id}
                         variant="outline"
                         className={`text-lg hover:bg-inherit rounded-full border-gray-500 w-full ${
-                          selectedCategory === category ? "bg-gray-300" : ""
+                          selectedCategory === category.name
+                            ? "bg-gray-300"
+                            : ""
                         }`}
-                        onClick={() => handleCategorySelect(category)}
+                        onClick={() => handleCategorySelect(category.name)}
                       >
-                        {category}
+                        {category.name}
                       </Button>
                     ))}
                   </div>
@@ -75,28 +99,23 @@ export default function Newarticles() {
                 <div className="text-center">
                   <div className="text-black font-semibold text-xl">Tags</div>
                   <div className="text-yellow-500 text-xl">Step 2</div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-                    {[
-                      "Blockchain",
-                      "Cryptocurrency",
-                      "DeFi",
-                      "NFTs",
-                      "Web3",
-                      "Metaverse",
-                    ].map((tag) => (
+                    {tags.map((tag) => (
                       <Button
-                        key={tag}
+                        key={tag.id}
                         variant="outline"
                         className={`text-lg hover:bg-inherit rounded-full border-gray-500 w-full ${
-                          selectedTags.includes(tag) ? "bg-gray-300" : ""
+                          selectedTags.includes(tag.name) ? "bg-gray-300" : ""
                         }`}
-                        onClick={() => handleTagSelect(tag)}
+                        onClick={() => handleTagSelect(tag.name)}
                       >
-                        {tag}
+                        {tag.name}
                       </Button>
                     ))}
                   </div>
                 </div>
+
                 <div className="flex justify-end mt-6">
                   <Button
                     variant="outline"

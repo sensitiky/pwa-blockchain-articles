@@ -3,12 +3,11 @@ import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { User } from './user.entity';
 import { UsersService } from './users.service';
 import { CurrentUser } from '../decorators/current-user.decorator';
+import { UpdateUserDto } from 'src/dto/user.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
@@ -20,8 +19,9 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   async updateProfile(
     @CurrentUser() user: User,
-    @Body() updateData: Partial<User>,
+    @Body() updateData: UpdateUserDto,
   ): Promise<User> {
+    console.log('Updating user with ID:', user.id);
     return await this.usersService.updateUserInfo(user.id, updateData);
   }
 }

@@ -5,11 +5,12 @@ import { UsersController } from './auth/users/users.controller';
 import { AuthModule } from './auth/auth.module';
 import { PostsModule } from './auth/posts/posts.module';
 import { Category } from './auth/category/category.entity';
-import { Tag } from './database/entities/tag.entity';
+import { Tag } from './auth/tag/tag.entity';
 import { Repository } from 'typeorm';
 import { CommentsModule } from './auth/comments/comments.module';
 import { FavoritesModule } from './auth/favorites/favorites.module';
 import { CategoriesModule } from './auth/category/category.module';
+import { TagsModule } from './auth/tag/tag.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CategoriesModule } from './auth/category/category.module';
     CommentsModule,
     FavoritesModule,
     CategoriesModule,
+    TagsModule,
     TypeOrmModule.forFeature([Category, Tag]),
   ],
   controllers: [UsersController],

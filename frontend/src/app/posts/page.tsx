@@ -1,3 +1,5 @@
+"use client"
+import React, { SVGProps, useEffect, useState } from 'react';
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -7,193 +9,209 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-import { JSX, SVGProps } from "react";
 import Header from "@/assets/header";
 import Image from 'next/image';
 import Footer from "@/assets/footer";
+import axios from 'axios';
+import { FaFacebook } from 'react-icons/fa';
+import { Skeleton } from '@/components/ui/skeleton';
+
+interface Post {
+  id: number;
+  title: string;
+  content: string;
+  imageUrl: string | null;
+  createdAt: string;
+  author: User;
+  category: { name: string };
+  tags: { name: string }[];
+  comments: Comment[];
+  favorites: number;
+}
+
+interface User {
+  id: number;
+  usuario: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  facebook?: string;
+  twitter?: string;
+  linkedin?: string;
+}
+
+interface Comment {
+  id: number;
+  content: string;
+  createdAt: string;
+  author: User;
+  favorites: number;
+}
 
 export default function Posts() {
+  const [post, setPost] = useState<Post | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPostData = async () => {
+      try {
+        const postId = 1;
+        const postResponse = await axios.get(`/posts/${postId}`);
+        setPost(postResponse.data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching post data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchPostData();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!post) {
+    return <div><Skeleton/></div>;
+  }
+
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
   return (
     <div>
       <Header />
-    <div className="px-4 py-2 md:px-6 lg:py-2">
-      <div className="mx-auto max-w-4xl">
-        <div className="flex items-center justify-between">
-          <Link
-            href="#"
-            className="bg-inherit text-black inline-flex h-8 items-center justify-center rounded-md px-4 text-sm font-medium transition-colors hover:bg-inherit focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-            prefetch={false}
-          >
-            <ArrowLeftIcon className="mr-2 h-4 w-4" />
-            Go Back
-          </Link>
-          <div className="flex items-center space-x-4">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src="/placeholder-user.jpg" />
-              <AvatarFallback>AC</AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="text-sm font-medium text-white">Acme Inc</p>
-              <div className="flex items-center space-x-2 text-xs text-gray-300">
-                <time dateTime="2023-07-13">July 13, 2023</time>
-                <span>·</span>
-                <span>5 min read</span>
+      <div className="px-4 py-2 md:px-6 lg:py-2">
+        <div className="mx-auto max-w-4xl">
+          <div className="flex items-center justify-between">
+            <Link
+              href="#"
+              className="bg-inherit text-black inline-flex h-8 items-center justify-center rounded-md px-4 text-sm font-medium transition-colors hover:bg-inherit focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+              prefetch={false}
+            >
+              <ArrowLeftIcon className="mr-2 h-4 w-4" />
+              Go Back
+            </Link>
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src="/placeholder-user.jpg" />
+                <AvatarFallback>{post.author.firstName[0]}{post.author.lastName[0]}</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-sm font-medium text-white">{post.author.firstName} {post.author.lastName}</p>
+                <div className="flex items-center space-x-2 text-xs text-gray-300">
+                  <time dateTime={post.createdAt}>{formatDate(post.createdAt)}</time>
+                  <span>·</span>
+                  <span>5 min read</span>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                {post.author.twitter && (
+                  <Link href={post.author.twitter} className="text-muted-foreground hover:text-foreground" prefetch={false}>
+                    <TwitterIcon className="h-5 w-5 text-black" />
+                    <span className="sr-only">Twitter</span>
+                  </Link>
+                )}
+                {post.author.linkedin && (
+                  <Link href={post.author.linkedin} className="text-muted-foreground hover:text-foreground" prefetch={false}>
+                    <LinkedinIcon className="h-5 w-5 text-black" />
+                    <span className="sr-only">LinkedIn</span>
+                  </Link>
+                )}
+                {post.author.facebook && (
+                  <Link href={post.author.facebook} className="text-muted-foreground hover:text-foreground" prefetch={false}>
+                    <FaFacebook className="h-5 w-5 text-black" />
+                    <span className="sr-only">Facebook</span>
+                  </Link>
+                )}
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Link
-                href="#"
-                className="text-muted-foreground hover:text-foreground"
-                prefetch={false}
-              >
-                <TwitterIcon className="h-5 w-5 text-black" />
-                <span className="sr-only">Twitter</span>
-              </Link>
-              <Link
-                href="#"
-                className="text-muted-foreground hover:text-foreground"
-                prefetch={false}
-              >
-                <LinkedinIcon className="h-5 w-5 text-black" />
-                <span className="sr-only">LinkedIn</span>
-              </Link>
-              <Link
-                href="#"
-                className="text-muted-foreground hover:text-foreground"
-                prefetch={false}
-              >
-                <GitlabIcon className="h-5 w-5 text-black" />
-                <span className="sr-only">GitHub</span>
-              </Link>
+          </div>
+          {post.imageUrl && (
+            <div className="mt-6 rounded-lg border">
+              <Image
+                src={post.imageUrl}
+                alt="Banner"
+                width={1200}
+                height={300}
+                className="aspect-[4/1] w-full object-cover"
+              />
             </div>
-          </div>
-        </div>
-        <div className="mt-6 rounded-lg border">
-          <Image
-            src="/test.jpg"
-            alt="Banner"
-            width={1200}
-            height={300}
-            className="aspect-[4/1] w-full object-cover"
-          />
-        </div>
-        <div className="prose prose-gray mx-auto mt-8 dark:prose-invert">
-          <p>
-            Once upon a time, in a far-off land, there was a very lazy king who
-            spent all day lounging on his throne. One day, his advisors came to
-            him with a problem: the kingdom was running out of money.
-          </p>
-          <Image
-            src="/test.jpg"
-            alt="Image"
-            width={800}
-            height={450}
-            className="mx-auto aspect-video rounded-lg object-cover"
-          />
-          <p>
-            Jokester began sneaking into the castle in the middle of the night
-            and leaving jokes all over the place: under the king&apos;s pillow,
-            in his soup, even in the royal toilet. The king was furious, but he
-            couldn&apos;t seem to stop Jokester.
-          </p>
-          <p>
-            And then, one day, the people of the kingdom discovered that the
-            jokes left by Jokester were so funny that they couldn&apos;t help
-            but laugh. And once they started laughing, they couldn&apos;t stop.
-          </p>
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="icon">
-              <HeartIcon className="h-5 w-5" />
-              <span className="sr-only">Like</span>
-            </Button>
-            <Button variant="ghost" size="icon">
-              <MessageCircleIcon className="h-5 w-5" />
-              <span className="sr-only">Comment</span>
-            </Button>
-          </div>
-          <div className="mb-32 mt-8 rounded-lg border p-4">
-            <h3 className="text-lg font-medium">Comments</h3>
-            <Accordion type="single" collapsible className="mt-4 space-y-2">
-              <AccordionItem value="comment-1">
-                <AccordionTrigger className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src="/placeholder-user.jpg" />
-                      <AvatarFallback>JP</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-medium">John Doe</p>
-                      <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                        <time dateTime="2023-07-13">July 13, 2023</time>
+          )}
+          <div className="prose prose-gray mx-auto mt-8 dark:prose-invert">
+            <h1>{post.title}</h1>
+            <p>{post.content}</p>
+            {post.tags.length > 0 && (
+              <div>
+                <h3>Tags:</h3>
+                <ul>
+                  {post.tags.map((tag, index) => (
+                    <li key={index}>{tag.name}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" size="icon">
+                <HeartIcon className="h-5 w-5" />
+                <span className="sr-only">Like</span>
+              </Button>
+              <Button variant="ghost" size="icon">
+                <MessageCircleIcon className="h-5 w-5" />
+                <span className="sr-only">Comment</span>
+              </Button>
+            </div>
+            <div className="mb-32 mt-8 rounded-lg border p-4">
+              <h3 className="text-lg font-medium">Comments</h3>
+              <Accordion type="single" collapsible className="mt-4 space-y-2">
+                {post.comments.map((comment, index) => (
+                  <AccordionItem value={`comment-${index}`} key={comment.id}>
+                    <AccordionTrigger className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src="/placeholder-user.jpg" />
+                          <AvatarFallback>{comment.author.firstName[0]}{comment.author.lastName[0]}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-sm font-medium">{comment.author.firstName} {comment.author.lastName}</p>
+                          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                            <time dateTime={comment.createdAt}>{formatDate(comment.createdAt)}</time>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p className="mt-2 text-sm">
-                    This post just made my day! 😃👍
-                  </p>
-                  <div className="mt-2 flex items-center space-x-4">
-                    <Button variant="ghost" size="icon">
-                      <HeartIcon className="h-4 w-4" />
-                      <span className="sr-only">Reply</span>
-                    </Button>
-                    <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                      <time dateTime="2023-07-13">July 13, 2023</time>
-                      <Button variant="ghost" size="icon">
-                        <MessageCircleIcon className="h-4 w-4" />
-                        <span className="sr-only">Like</span>
-                      </Button>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="comment-2">
-                <AccordionTrigger className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src="/placeholder-user.jpg" />
-                      <AvatarFallback>JD</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-medium">Jane Doe</p>
                       <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                        <time dateTime="2023-07-13">July 13, 2023</time>
                       </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p className="mt-2 text-sm">
-                    Wow, this photo is absolutely stunning! 😍✨
-                  </p>
-                  <div className="mt-2 flex items-center space-x-4">
-                    <Button variant="ghost" size="icon">
-                      <HeartIcon className="h-4 w-4" />
-                      <span className="sr-only">Reply</span>
-                    </Button>
-                    <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                      <time dateTime="2023-07-13">July 13, 2023</time>
-                      <Button variant="ghost" size="icon">
-                        <MessageCircleIcon className="h-4 w-4" />
-                        <span className="sr-only">Like</span>
-                      </Button>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <p className="mt-2 text-sm">
+                        {comment.content}
+                      </p>
+                      <div className="mt-2 flex items-center space-x-4">
+                        <Button variant="ghost" size="icon">
+                          <HeartIcon className="h-4 w-4" />
+                          <span className="sr-only">Reply</span>
+                        </Button>
+                        <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                          <time dateTime={comment.createdAt}>{formatDate(comment.createdAt)}</time>
+                          <Button variant="ghost" size="icon">
+                            <MessageCircleIcon className="h-4 w-4" />
+                            <span className="sr-only">Like</span>
+                          </Button>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
-    <Footer />
-    </div>
-
   );
 }
 

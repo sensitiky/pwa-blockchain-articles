@@ -6,6 +6,7 @@ import { ChangeEvent, SVGProps, useState } from "react";
 import { ArrowLeftIcon } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "../../context/authContext";
+import { useRouter } from "next/navigation";
 
 interface CreateArticlesProps {
   onGoBack: () => void;
@@ -31,6 +32,8 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
   };
 
   const handleSubmit = async (publish: boolean) => {
+    const router = useRouter();
+
     if (!user) {
       console.error("User not authenticated");
       return;
@@ -39,7 +42,7 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("authorId", user.id); // Assuming user.id exists
+    formData.append("authorId", user.id);
     formData.append("publish", JSON.stringify(publish));
 
     if (imageFile) {
@@ -57,11 +60,13 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
         }
       );
       console.log("Post created successfully:", response.data);
+
+      router.push("/articles");
     } catch (error) {
       console.error("Error creating post:", error);
     }
   };
-
+  
   return (
     <div className="text-foreground py-4">
       <header className="container mx-auto px-4 md:px-6 relative">

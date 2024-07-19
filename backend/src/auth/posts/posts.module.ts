@@ -4,7 +4,7 @@ import { PostsService } from './posts.service';
 import { PostsController } from './posts.controller';
 import { Post } from './post.entity';
 import { User } from '../users/user.entity';
-import { Tag } from 'src/database/entities/tag.entity';
+import { Tag } from '../tag/tag.entity';
 import { Category } from '../category/category.entity';
 
 @Module({

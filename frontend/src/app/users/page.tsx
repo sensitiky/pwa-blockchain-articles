@@ -32,6 +32,7 @@ import { getProfile, updateProfile } from "../../../services/authService";
 import React from "react";
 import Footer from "@/assets/footer";
 import { useAuth } from "../../../context/authContext";
+import { useRouter } from "next/navigation";
 
 const articles = [
   {
@@ -77,6 +78,7 @@ interface UserInfo {
   facebook: string;
   twitter: string;
   linkedin: string;
+  bio:string;
 }
 
 interface ProfileSettingsProps {
@@ -91,12 +93,14 @@ interface ProfileSettingsProps {
   handleEditBio: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleDateChange: (date: Date | null) => void;
   handleProfileSave: () => void;
+  handleBioSave: () => void;
   handleSectionChange: (section: string) => void;
   editMode: boolean;
   bioEditMode: boolean;
   bio: string;
   handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
+
 interface SecuritySettingsProps {
   profileImage: string;
   userInfo: UserInfo;
@@ -116,6 +120,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
   handleEditBio,
   handleDateChange,
   handleProfileSave,
+  handleBioSave,
   handleSectionChange,
   editMode,
   bioEditMode,
@@ -209,7 +214,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
           <Button
             variant="outline"
             className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black"
-            onClick={handleEditToggle}
+            onClick={() => {
+              handleProfileSave();
+              handleEditToggle();
+            }}
           >
             {editMode ? "Save Changes" : "Edit Information"}
           </Button>
@@ -231,7 +239,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
           <Button
             variant="outline"
             className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black"
-            onClick={handleBioEditToggle}
+            onClick={() => {
+              handleBioSave();
+              handleBioEditToggle();
+            }}
           >
             {bioEditMode ? "Save Changes" : "Edit Bio"}
           </Button>
@@ -406,6 +417,7 @@ const Users = () => {
     facebook: "",
     twitter: "",
     linkedin: "",
+    bio:"",
   });
   const { user, isAuthenticated } = useAuth();
   const [profileImage, setProfileImage] = useState<string>("/shadcn.jpg");
@@ -428,6 +440,7 @@ const Users = () => {
             facebook: profile.facebook || "",
             twitter: profile.twitter || "",
             linkedin: profile.linkedin || "",
+            bio:profile.bio||"",
           });
           setProfileImage(profile.profileImage || "/shadcn.jpg");
           setBio(profile.bio || "");
@@ -495,13 +508,21 @@ const Users = () => {
   };
 
   const handleProfileSave = async () => {
-    await updateProfile(userInfo);
-    setEditMode(false);
+    try {
+      await updateProfile(userInfo);
+      setEditMode(false);
+    } catch (error) {
+      console.error("Error updating profile", error);
+    }
   };
 
   const handleBioSave = async () => {
-    await updateProfile({ bio });
-    setBioEditMode(false);
+    try {
+      await updateProfile({ bio });
+      setBioEditMode(false);
+    } catch (error) {
+      console.error("Error updating bio", error);
+    }
   };
 
   const SavedItems: React.FC = () => {
@@ -589,6 +610,10 @@ const Users = () => {
   };
 
   const renderContent = () => {
+    const router=useRouter();
+    if (!isAuthenticated){
+      router.push('/')
+    }
     switch (selectedSection) {
       case "personal":
         return (
@@ -602,6 +627,7 @@ const Users = () => {
             handleEditBio={handleEditBio}
             handleDateChange={handleDateChange}
             handleProfileSave={handleProfileSave}
+            handleBioSave={handleBioSave}
             handleSectionChange={handleSectionChange}
             editMode={editMode}
             bioEditMode={bioEditMode}

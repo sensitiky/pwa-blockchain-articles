@@ -28,6 +28,12 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const [codeVerified, setCodeVerified] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordCriteria, setPasswordCriteria] = useState({
+    length: false,
+    uppercase: false,
+    numberOrSymbol: false,
+  });
   const router = useRouter();
   const { setUser, login } = useAuth();
 
@@ -47,22 +53,17 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
         { withCredentials: true }
       );
 
-      console.log("Login response:", response);
-
       if (response.status === 200) {
-        console.log("Login successful", response.data);
         setUser(response.data.user);
         login(response.data);
-        router.push("/users");
+        router.push("/");
       } else {
         setError("Login failed");
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        console.log("Axios error:", err.response);
         setError(err.response?.data.message || "Login failed");
       } else {
-        console.log("General error:", err);
         setError((err as Error).message);
       }
     } finally {
@@ -74,11 +75,12 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     setLoading(true);
     setError(null);
 
-    const passwordRegex = /^(?=.*[A-Z]).{8,}$/;
-    if (!passwordRegex.test(contrasena)) {
-      setError(
-        "Password must be at least 8 characters long and contain one uppercase letter."
-      );
+    if (
+      !passwordCriteria.length ||
+      !passwordCriteria.uppercase ||
+      !passwordCriteria.numberOrSymbol
+    ) {
+      setError("Password does not meet the criteria.");
       setLoading(false);
       return;
     }
@@ -114,6 +116,17 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     }
   };
 
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const password = e.target.value;
+    setContrasena(password);
+
+    setPasswordCriteria({
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      numberOrSymbol: /[0-9!@#$%^&*]/.test(password),
+    });
+  };
+
   const handleSendVerificationCode = async () => {
     setLoading(true);
     setError(null);
@@ -128,20 +141,16 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       if (response.status === 200) {
         setCodeSent(true);
         setError("Verification code sent to your email");
-        console.log(`Verification code sent to ${email}`);
       } else {
         setError("Failed to send verification code");
-        console.log(`Failed to send verification code to ${email}`);
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
         setError(
           err.response?.data.message || "Failed to send verification code"
         );
-        console.log(`Axios error: ${err.response?.data.message}`);
       } else {
         setError((err as Error).message);
-        console.log(`General error: ${(err as Error).message}`);
       }
     } finally {
       setLoading(false);
@@ -151,7 +160,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const handleVerifyCode = async () => {
     setLoading(true);
     setError(null);
-    console.log(`Verifying code: ${verificationCode} for email: ${email}`);
 
     try {
       const response = await axios.post(
@@ -163,18 +171,14 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       if (response.status === 200) {
         setCodeVerified(true);
         setError(null);
-        console.log("Code verification successful");
       } else {
         setError("Invalid verification code");
-        console.log("Code verification failed with status:", response.status);
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
         setError(err.response?.data.message || "Invalid verification code");
-        console.log("Axios error:", err.response);
       } else {
         setError((err as Error).message);
-        console.log("General error:", err);
       }
     } finally {
       setLoading(false);
@@ -214,11 +218,12 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     setLoading(true);
     setError(null);
 
-    const passwordRegex = /^(?=.*[A-Z]).{8,}$/;
-    if (!passwordRegex.test(newPassword)) {
-      setError(
-        "Password must be at least 8 characters long and contain one uppercase letter."
-      );
+    if (
+      !passwordCriteria.length ||
+      !passwordCriteria.uppercase ||
+      !passwordCriteria.numberOrSymbol
+    ) {
+      setError("Password does not meet the criteria.");
       setLoading(false);
       return;
     }
@@ -262,36 +267,13 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       if (response.status === 200) {
         setUser(response.data.user);
         login(response.data);
-        router.push("/newarticles");
+        router.push("/");
         onClose();
       } else {
         setError("Google login failed");
       }
     } catch (err) {
       setError("Google login failed");
-    }
-  };
-
-  const handleGoogleRegisterSuccess = async (
-    credentialResponse: CredentialResponse
-  ) => {
-    try {
-      const response = await axios.post(
-        "https://blogchain.onrender.com/auth/google",
-        { token: credentialResponse.credential },
-        { withCredentials: true }
-      );
-
-      if (response.status === 200) {
-        setUser(response.data.user);
-        login(response.data);
-        router.push("/users");
-        onClose();
-      } else {
-        setError("Google registration failed");
-      }
-    } catch (err) {
-      setError("Google registration failed");
     }
   };
 
@@ -380,7 +362,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   type="password"
                   placeholder="Enter your password"
                   value={contrasena}
-                  onChange={(e) => setContrasena(e.target.value)}
+                  onChange={handlePasswordChange}
                   required
                 />
               </div>
@@ -448,9 +430,41 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   type="password"
                   placeholder="Enter your password"
                   value={contrasena}
-                  onChange={(e) => setContrasena(e.target.value)}
+                  onChange={handlePasswordChange}
                   required
                 />
+              </div>
+              <div className="space-y-2">
+                <p>Password must contain:</p>
+                <ul>
+                  <li
+                    className={
+                      passwordCriteria.length
+                        ? "text-green-500"
+                        : "text-muted-foreground"
+                    }
+                  >
+                    💪🏽 At least 8 characters
+                  </li>
+                  <li
+                    className={
+                      passwordCriteria.uppercase
+                        ? "text-green-500"
+                        : "text-muted-foreground"
+                    }
+                  >
+                    🤳🏽 Lowercase or uppercase letter
+                  </li>
+                  <li
+                    className={
+                      passwordCriteria.numberOrSymbol
+                        ? "text-green-500"
+                        : "text-muted-foreground"
+                    }
+                  >
+                    👨🏽‍💻 Number or symbol
+                  </li>
+                </ul>
               </div>
               {codeSent && !codeVerified && (
                 <>
@@ -504,15 +518,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   </div>
                 </>
               )}
-              <div className="space-y-2 flex flex-col items-center">
-                <GoogleLogin
-                  onSuccess={handleGoogleRegisterSuccess}
-                  onError={() => setError("Google registration failed")}
-                />
-                <Button onClick={handleFacebookLogin}>
-                  Register with Facebook
-                </Button>
-              </div>
               <div className="space-y-2 flex items-center">
                 <Checkbox id="terms" className="mr-4" required />
                 <Label
@@ -556,64 +561,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
             </div>
           )}
 
-          {!showRegister && forgotPassword && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <div className="flex justify-center">
-                  <Button
-                    type="button"
-                    className="mt-2 rounded-full w-44 bg-customColor-header"
-                    onClick={handleForgotPassword}
-                    disabled={loading}
-                  >
-                    {loading ? "Sending..." : "Send Reset Code"}
-                  </Button>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="reset-code">Reset Code</Label>
-                <Input
-                  id="reset-code"
-                  type="text"
-                  placeholder="Enter reset code"
-                  value={resetCode}
-                  onChange={(e) => setResetCode(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="new-password">New Password</Label>
-                <Input
-                  id="new-password"
-                  type="password"
-                  placeholder="Enter your new password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                />
-              </div>
-              {error && <div className="text-red-500">{error}</div>}
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  className="w-full rounded-full"
-                  onClick={handleResetPassword}
-                  disabled={loading}
-                >
-                  {loading ? "Resetting..." : "Reset Password"}
-                </Button>
-              </div>
-            </div>
-          )}
           {!showRegister && !forgotPassword && (
             <div className="text-center">
               <Link

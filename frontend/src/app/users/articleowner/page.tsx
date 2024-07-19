@@ -1,20 +1,92 @@
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+"use client";
+import React, { SVGProps, useEffect, useState } from "react";
+import axios from "axios";
 import Link from "next/link";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { JSX, SVGProps } from "react";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import Header from "@/assets/header";
+import Footer from "@/assets/footer";
+import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default function Owner() {
+interface User {
+  id: number;
+  usuario: string;
+  firstName?: string;
+  lastName?: string;
+  avatarUrl?: string;
+  bio?: string;
+  facebook?: string;
+  instagram?: string;
+  twitter?: string;
+  linkedin?: string;
+}
+
+interface Post {
+  id: number;
+  title: string;
+  content: string;
+  imageUrl?: string;
+  category: { name: string };
+  comments: { id: number; content: string }[];
+  favorites: { id: number }[];
+  createdAt: string;
+}
+
+const Owner: React.FC = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(
+          "https://blogchain.onrender.com/users/me",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        const userData = response.data;
+        setUser(userData);
+
+        const postsResponse = await axios.get(
+          `https://blogchain.onrender.com/posts?authorId=${userData.id}`
+        );
+        setPosts(postsResponse.data);
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          console.error("Error fetching user data:", err.message);
+          setError("Failed to load data");
+        } else {
+          console.error("Unknown error:", err);
+          setError("An unknown error occurred");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [router]);
+
+  if (loading) {
+    return (
+      <div>
+        <Skeleton className="w-[100px] h-[20px] rounded-full" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div> <Skeleton className="w-[100px] h-[20px] rounded-full" /></div>;
+  }
+
   return (
     <div>
       <Header />
@@ -22,126 +94,115 @@ export default function Owner() {
         <div className="container max-w-5xl grid grid-cols-1 md:grid-cols-5 gap-2 px-4 md:px-0">
           <div className="bg-background rounded-2xl p-6 flex flex-col items-center gap-4 col-span-1">
             <Avatar className="w-32 h-32 border-4 border-background">
-              <AvatarImage src="/shadcn.jpg" />
-              <AvatarFallback>NM</AvatarFallback>
+              <AvatarImage src={user?.avatarUrl || "/placeholder-user.jpg"} />
+              <AvatarFallback>
+                {user?.firstName ? user.firstName[0] : user?.usuario[0]}
+              </AvatarFallback>
             </Avatar>
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold">Nevermind</h2>
+              <h2 className="text-2xl font-bold">{user?.usuario}</h2>
               <p className="text-muted-foreground">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                euismod, nisl nec ultricies lacinia, nisl nisl aliquam nisl, nec
-                aliquam nisl nisl sit amet nisl.
+                {user?.bio || "No bio available."}
               </p>
             </div>
             <div className="flex items-center gap-4">
-              <Link href="#" className="text-primary" prefetch={false}>
-                <FacebookIcon className="w-6 h-6" />
-              </Link>
-              <Link href="#" className="text-primary" prefetch={false}>
-                <InstagramIcon className="w-6 h-6" />
-              </Link>
-              <Link href="#" className="text-primary" prefetch={false}>
-                <TwitterIcon className="w-6 h-6" />
-              </Link>
-              <Link href="#" className="text-primary" prefetch={false}>
-                <LinkedinIcon className="w-6 h-6" />
-              </Link>
+              {user?.facebook && (
+                <Link
+                  href={user.facebook}
+                  className="text-primary"
+                  prefetch={false}
+                >
+                  <FacebookIcon className="w-6 h-6" />
+                </Link>
+              )}
+              {user?.instagram && (
+                <Link
+                  href={user.instagram}
+                  className="text-primary"
+                  prefetch={false}
+                >
+                  <InstagramIcon className="w-6 h-6" />
+                </Link>
+              )}
+              {user?.twitter && (
+                <Link
+                  href={user.twitter}
+                  className="text-primary"
+                  prefetch={false}
+                >
+                  <TwitterIcon className="w-6 h-6" />
+                </Link>
+              )}
+              {user?.linkedin && (
+                <Link
+                  href={user.linkedin}
+                  className="text-primary"
+                  prefetch={false}
+                >
+                  <LinkedinIcon className="w-6 h-6" />
+                </Link>
+              )}
             </div>
           </div>
           <Separator orientation="vertical" className="h-full col-span-1" />
           <div className="flex flex-col space-y-6 col-span-3">
-            <div className="bg-background rounded-none p-6 border-b-2">
-              <img
-                src="/test.jpg"
-                width={400}
-                height={225}
-                alt="Article Image"
-                className="w-full h-48 object-cover rounded-lg"
-              />
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <UserIcon className="w-4 h-4" />
-                  <span>Nevermind</span>
-                  <Separator orientation="vertical" />
-                  <TagIcon className="w-4 h-4" />
-                  <span>Blockchain</span>
+            {posts.map((post) => (
+              <div
+                key={post.id}
+                className="bg-background rounded-none p-6 border-b-2"
+              >
+                {post.imageUrl && (
+                  <img
+                    src={post.imageUrl}
+                    width={400}
+                    height={225}
+                    alt="Article Image"
+                    className="w-full h-48 object-cover rounded-lg"
+                  />
+                )}
+                <div className="mt-4 space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <UserIcon className="w-4 h-4" />
+                    <span>{user?.usuario}</span>
+                    <Separator orientation="vertical" />
+                    <TagIcon className="w-4 h-4" />
+                    <span>{post.category.name}</span>
+                  </div>
+                  <h3 className="text-lg font-semibold">{post.title}</h3>
+                  <p className="text-muted-foreground line-clamp-2">
+                    {post.content}
+                  </p>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <ClockIcon className="w-4 h-4" />
+                      <span>
+                        {new Date(post.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MessageCircleIcon className="w-4 h-4" />
+                      <span>{post.comments.length} comments</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <HeartIcon className="w-4 h-4" />
+                      <span>{post.favorites.length} likes</span>
+                    </div>
+                  </div>
+                  <Button variant="link" className="text-primary">
+                    Read Article
+                  </Button>
                 </div>
-                <h3 className="text-lg font-semibold">
-                  Why Blockchain is Hard
-                </h3>
-                <p className="text-muted-foreground line-clamp-2">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  euismod, nisl nec ultricies lacinia, nisl nisl aliquam nisl,
-                  nec aliquam nisl nisl sit amet nisl.
-                </p>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <ClockIcon className="w-4 h-4" />
-                    <span>5 min read</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <MessageCircleIcon className="w-4 h-4" />
-                    <span>12 comments</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <HeartIcon className="w-4 h-4" />
-                    <span>24 likes</span>
-                  </div>
-                </div>
-                <Button variant="link" className="text-primary">
-                  Read Article
-                </Button>
               </div>
-            </div>
-            <div className="bg-background rounded-none p-6 border-b-2">
-              <img
-                src="/test.jpg"
-                width={400}
-                height={225}
-                alt="Article Image"
-                className="w-full h-48 object-cover rounded-lg"
-              />
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <UserIcon className="w-4 h-4" />
-                  <span>Nevermind</span>
-                  <Separator orientation="vertical" />
-                  <TagIcon className="w-4 h-4" />
-                  <span>Blockchain</span>
-                </div>
-                <h3 className="text-lg font-semibold">
-                  Why Blockchain is Hard
-                </h3>
-                <p className="text-muted-foreground line-clamp-2">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  euismod, nisl nec ultricies lacinia, nisl nisl aliquam nisl,
-                  nec aliquam nisl nisl sit amet nisl.
-                </p>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <ClockIcon className="w-4 h-4" />
-                    <span>5 min read</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <MessageCircleIcon className="w-4 h-4" />
-                    <span>12 comments</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <HeartIcon className="w-4 h-4" />
-                    <span>24 likes</span>
-                  </div>
-                </div>
-                <Button variant="link" className="text-primary">
-                  Read Article
-                </Button>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
-}
+};
+
+export default Owner;
 
 function ClockIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (

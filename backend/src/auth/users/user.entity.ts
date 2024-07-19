@@ -55,4 +55,7 @@ export class User {
 
   @OneToMany(() => Favorite, (favorite) => favorite.user)
   favorites: Favorite[];
+  
+  @Column({ nullable: true })
+  bio?: string;
 }

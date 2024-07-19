@@ -13,7 +13,7 @@ import {
 import { User } from '../users/user.entity';
 import { Category } from '../category/category.entity';
 import { Comment } from '../comments/comment.entity';
-import { Tag } from '../../database/entities/tag.entity';
+import { Tag } from '../tag/tag.entity';
 import { Favorite } from '../favorites/favorite.entity';
 
 @Entity()
@@ -44,7 +44,7 @@ export class Post {
 
   @ManyToMany(() => Tag, (tag) => tag.posts, { cascade: true })
   @JoinTable()
-  tags: Tag[];
+  tags: Tag[];  
 
   @UpdateDateColumn()
   updatedAt: Date;

@@ -35,8 +35,26 @@ export class UsersService {
     await this.userRepository.update({ email }, { contrasena: newPassword });
   }
 
-  async updateUserInfo(userId: number, updateData: Partial<User>): Promise<User> {
+  async updateUserInfo(
+    userId: number,
+    updateData: Partial<User>,
+  ): Promise<User> {
+    if (!userId) {
+      throw new Error('User ID is required for updating user info.');
+    }
+    if (Object.keys(updateData).length === 0) {
+      throw new Error('Update data cannot be empty.');
+    }
+
     await this.userRepository.update(userId, updateData);
-    return this.userRepository.findOne({ where: { id: userId } });
+    const updatedUser = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!updatedUser) {
+      throw new Error('User not found after update.');
+    }
+
+    return updatedUser;
   }
 }
