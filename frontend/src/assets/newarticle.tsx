@@ -10,14 +10,30 @@ import { useRouter } from "next/navigation";
 
 interface CreateArticlesProps {
   onGoBack: () => void;
+  selectedCategory: Category | null;
+  selectedTags: Tag[];
 }
 
-export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
+interface Category {
+  id: number;
+  name: string;
+}
+
+interface Tag {
+  id: number;
+  name: string;
+}
+export default function CreateArticles({
+  onGoBack,
+  selectedCategory,
+  selectedTags,
+}: CreateArticlesProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const { user } = useAuth();
+  const router = useRouter();
 
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -32,18 +48,23 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
   };
 
   const handleSubmit = async (publish: boolean) => {
-    const router = useRouter();
-
     if (!user) {
       console.error("User not authenticated");
+      return;
+    }
+
+    if (!selectedCategory) {
+      console.error("Category not selected");
       return;
     }
 
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("authorId", user.id);
+    formData.append("authorId", user.id.toString());
     formData.append("publish", JSON.stringify(publish));
+    formData.append("categoryId", selectedCategory.id.toString());
+    formData.append("tags", JSON.stringify(selectedTags));
 
     if (imageFile) {
       formData.append("image", imageFile);
@@ -66,7 +87,7 @@ export default function CreateArticles({ onGoBack }: CreateArticlesProps) {
       console.error("Error creating post:", error);
     }
   };
-  
+
   return (
     <div className="text-foreground py-4">
       <header className="container mx-auto px-4 md:px-6 relative">

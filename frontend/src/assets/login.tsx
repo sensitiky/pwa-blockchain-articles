@@ -57,6 +57,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
         setUser(response.data.user);
         login(response.data);
         router.push("/");
+        onClose();
       } else {
         setError("Login failed");
       }
@@ -267,7 +268,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       if (response.status === 200) {
         setUser(response.data.user);
         login(response.data);
-        router.push("/");
         onClose();
       } else {
         setError("Google login failed");
@@ -291,7 +291,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
             if (res.status === 200) {
               setUser(res.data.user);
               login(res.data);
-              router.push("/users");
               onClose();
             } else {
               setError("Facebook login failed");
@@ -556,6 +555,71 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   >
                     Sign in
                   </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!showRegister && forgotPassword && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  className="rounded-full w-44 bg-customColor-header"
+                  onClick={handleForgotPassword}
+                  disabled={loading}
+                >
+                  {loading ? "Sending..." : "Send Reset Code"}
+                </Button>
+              </div>
+              {error && <div className="text-red-500">{error}</div>}
+              <div className="mt-4 text-center text-sm">
+                <button
+                  onClick={() => setForgotPassword(false)}
+                  className="underline"
+                >
+                  Back to Login
+                </button>
+              </div>
+              <div className="space-y-2 text-center">
+                <p className="text-muted-foreground">
+                  Enter the code sent to your email and your new password.
+                </p>
+                <Input
+                  id="reset-code"
+                  type="text"
+                  placeholder="Enter reset code"
+                  value={resetCode}
+                  onChange={(e) => setResetCode(e.target.value)}
+                  required
+                />
+                <Input
+                  id="new-password"
+                  type="password"
+                  placeholder="Enter new password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                />
+                <div className="flex justify-center">
+                  <Button
+                    type="button"
+                    className="rounded-full w-44 bg-customColor-header"
+                    onClick={handleResetPassword}
+                    disabled={loading}
+                  >
+                    {loading ? "Resetting..." : "Reset Password"}
+                  </Button>
                 </div>
               </div>
             </div>

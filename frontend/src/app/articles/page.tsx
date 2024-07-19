@@ -67,8 +67,9 @@ export default function Articles() {
       const response = await axios.get(
         `https://blogchain.onrender.com/posts?page=${page}&order=${order}&limit=${POSTS_PER_PAGE}`
       );
-      setPosts(response.data.posts);
-      setTotalPages(response.data.totalPages);
+      console.log("Fetched posts:", response.data);
+      setPosts(response.data.posts || []); // Add a fallback to an empty array
+      setTotalPages(response.data.totalPages || 1); // Add a fallback to 1
     } catch (error) {
       console.error("Error fetching posts", error);
     }
@@ -81,7 +82,7 @@ export default function Articles() {
 
   const handleOrderChange = (order: string) => {
     setOrderBy(order);
-    setCurrentPage(1); // Reset to first page on order change
+    setCurrentPage(1);
   };
 
   const scrollLeft = () => {
@@ -181,14 +182,20 @@ export default function Articles() {
                   className="flex overflow-hidden gap-4"
                   style={{ width: "600px" }}
                 >
-                  {categories.map((category) => (
-                    <button
-                      key={category.id}
-                      className="rounded-full flex-shrink-0 p-2 border"
-                    >
-                      {category.name}
-                    </button>
-                  ))}
+                  {categories.length > 0 ? (
+                    categories.map((category) => (
+                      <button
+                        key={category.id}
+                        className="rounded-full flex-shrink-0 p-2 border"
+                      >
+                        {category.name}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="text-muted-foreground">
+                      No categories available
+                    </div>
+                  )}
                 </div>
                 <button
                   onClick={scrollRight}
@@ -202,60 +209,66 @@ export default function Articles() {
         </div>
 
         <div className="mt-12 md:mt-16 lg:mt-20">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
-            {posts.map((post) => (
-              <Card
-                key={post.id}
-                className="bg-inherit h-auto rounded-none shadow-none flex flex-col md:flex-row items-start gap-4 border-b-[1px] border-black border-r-0 border-l-0"
-              >
-                {post.imageUrl && (
-                  <Image
-                    src={post.imageUrl}
-                    alt="Blog Post Image"
-                    width={200}
-                    height={150}
-                    className="aspect-video w-full md:w-40 mt-10 rounded-lg object-cover"
-                  />
-                )}
-                <div className="mt-3 flex-1 space-y-2">
-                  <div className="text-sm font-medium text-muted-foreground">
-                    {new Date(post.createdAt).toLocaleDateString()}
-                  </div>
-                  <h3 className="text-lg font-semibold">{post.title}</h3>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <div>
-                      <UserIcon className="w-4 h-4 mr-1" />
-                      {post.author.usuario}
+          {posts.length > 0 ? (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
+              {posts.map((post) => (
+                <Card
+                  key={post.id}
+                  className="bg-inherit h-auto rounded-none shadow-none flex flex-col items-start gap-4 border-b-[1px] border-black border-r-0 border-l-0"
+                >
+                  {post.imageUrl && (
+                    <Image
+                      src={post.imageUrl}
+                      alt="Blog Post Image"
+                      width={200}
+                      height={150}
+                      className="aspect-video w-full mt-10 rounded-lg object-cover"
+                    />
+                  )}
+                  <div className="mt-3 flex-1 space-y-2 px-4">
+                    <div className="text-sm font-medium text-muted-foreground">
+                      {new Date(post.createdAt).toLocaleDateString()}
                     </div>
-                    <div>
-                      <ClockIcon className="w-4 h-4 mr-1" />5 min read
+                    <h3 className="text-lg font-semibold">{post.title}</h3>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <div>
+                        <UserIcon className="w-4 h-4 mr-1" />
+                        {post.author.usuario}
+                      </div>
+                      <div>
+                        <ClockIcon className="w-4 h-4 mr-1" />5 min read
+                      </div>
+                    </div>
+                    <p className="text-muted-foreground line-clamp-2">
+                      {post.description}
+                    </p>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Button variant="ghost" size="icon">
+                        <HeartIcon className="w-4 h-4" />
+                        <span className="sr-only">Like</span>
+                      </Button>
+                      <Button variant="ghost" size="icon">
+                        <MessageCircleIcon className="w-4 h-4" />
+                        <span className="sr-only">Comment</span>
+                      </Button>
+                      <Link
+                        href="#"
+                        className="text-primary hover:underline"
+                        prefetch={false}
+                      >
+                        Read more
+                      </Link>
                     </div>
                   </div>
-                  <p className="text-muted-foreground line-clamp-2">
-                    {post.description}
-                  </p>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Button variant="ghost" size="icon">
-                      <HeartIcon className="w-4 h-4" />
-                      <span className="sr-only">Like</span>
-                    </Button>
-                    <Button variant="ghost" size="icon">
-                      <MessageCircleIcon className="w-4 h-4" />
-                      <span className="sr-only">Comment</span>
-                    </Button>
-                    <Link
-                      href="#"
-                      className="text-primary hover:underline"
-                      prefetch={false}
-                    >
-                      Read more
-                    </Link>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-          <div className="mt-8 flex justify-center">
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-muted-foreground">
+              No posts available
+            </div>
+          )}
+          <div className="mt-8 flex justify-center mb-4">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>

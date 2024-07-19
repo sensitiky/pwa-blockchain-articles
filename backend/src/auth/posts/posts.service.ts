@@ -24,22 +24,31 @@ export class PostsService {
     const author = await this.usersRepository.findOne({
       where: { id: createPostDto.authorId },
     });
-    const category = await this.categoriesRepository.findOne({
-      where: { id: createPostDto.categoryId },
-    });
 
-    const tags = await Promise.all(
-      createPostDto.tags.map(async (tagName) => {
-        let tag = await this.tagsRepository.findOne({
-          where: { name: tagName },
-        });
-        if (!tag) {
-          tag = this.tagsRepository.create({ name: tagName });
-          await this.tagsRepository.save(tag);
-        }
-        return tag;
-      }),
-    );
+    if (!author) {
+      throw new Error('Author not found');
+    }
+
+    const category = createPostDto.categoryId
+      ? await this.categoriesRepository.findOne({
+          where: { id: createPostDto.categoryId },
+        })
+      : null;
+
+    const tags = Array.isArray(createPostDto.tags)
+      ? await Promise.all(
+          createPostDto.tags.map(async (tagName) => {
+            let tag = await this.tagsRepository.findOne({
+              where: { name: tagName },
+            });
+            if (!tag) {
+              tag = this.tagsRepository.create({ name: tagName });
+              await this.tagsRepository.save(tag);
+            }
+            return tag;
+          }),
+        )
+      : [];
 
     const post = this.postsRepository.create({
       ...createPostDto,
@@ -47,6 +56,7 @@ export class PostsService {
       category,
       tags,
     });
+
     return this.postsRepository.save(post);
   }
 

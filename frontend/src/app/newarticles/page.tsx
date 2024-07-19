@@ -18,8 +18,8 @@ type Tag = {
 };
 
 export default function Newarticles() {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [step, setStep] = useState<number>(1);
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
@@ -27,11 +27,13 @@ export default function Newarticles() {
   useEffect(() => {
     const fetchCategoriesAndTags = async () => {
       try {
-        const [categoriesResponse] = await Promise.all([
+        const [categoriesResponse, tagsResponse] = await Promise.all([
           axios.get("https://blogchain.onrender.com/categories"),
           axios.get("https://blogchain.onrender.com/tags"),
         ]);
         setCategories(categoriesResponse.data);
+        const filteredTags = tagsResponse.data.filter((tag: Tag) => tag.id <= 25);
+        setTags(filteredTags);
       } catch (error) {
         console.error("Error fetching categories and tags", error);
       }
@@ -40,11 +42,11 @@ export default function Newarticles() {
     fetchCategoriesAndTags();
   }, []);
 
-  const handleCategorySelect = (category: string) => {
+  const handleCategorySelect = (category: Category) => {
     setSelectedCategory(category);
   };
 
-  const handleTagSelect = (tag: string) => {
+  const handleTagSelect = (tag: Tag) => {
     setSelectedTags((prevTags) => {
       if (prevTags.includes(tag)) {
         return prevTags.filter((t) => t !== tag);
@@ -85,11 +87,11 @@ export default function Newarticles() {
                         key={category.id}
                         variant="outline"
                         className={`text-lg hover:bg-inherit rounded-full border-gray-500 w-full ${
-                          selectedCategory === category.name
+                          selectedCategory === category
                             ? "bg-gray-300"
                             : ""
                         }`}
-                        onClick={() => handleCategorySelect(category.name)}
+                        onClick={() => handleCategorySelect(category)}
                       >
                         {category.name}
                       </Button>
@@ -106,9 +108,9 @@ export default function Newarticles() {
                         key={tag.id}
                         variant="outline"
                         className={`text-lg hover:bg-inherit rounded-full border-gray-500 w-full ${
-                          selectedTags.includes(tag.name) ? "bg-gray-300" : ""
+                          selectedTags.includes(tag) ? "bg-gray-300" : ""
                         }`}
-                        onClick={() => handleTagSelect(tag.name)}
+                        onClick={() => handleTagSelect(tag)}
                       >
                         {tag.name}
                       </Button>
@@ -128,7 +130,13 @@ export default function Newarticles() {
                 </div>
               </div>
             )}
-            {step === 2 && <CreateArticles onGoBack={handlePreviousStep} />}
+            {step === 2 && (
+              <CreateArticles
+                onGoBack={handlePreviousStep}
+                selectedCategory={selectedCategory}
+                selectedTags={selectedTags}
+              />
+            )}
           </div>
         </main>
       </div>

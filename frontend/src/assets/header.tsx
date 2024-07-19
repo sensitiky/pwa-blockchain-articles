@@ -59,7 +59,7 @@ const Header = () => {
 
   useEffect(() => {
     if (!prevIsAuthenticated.current && isAuthenticated) {
-      router.push("/users");
+      router.push("/");
     }
     prevIsAuthenticated.current = isAuthenticated;
   }, [isAuthenticated, router]);
