@@ -204,6 +204,14 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
 };
 
 const Owner: React.FC = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OwnerContent />
+    </Suspense>
+  );
+};
+
+const OwnerContent: React.FC = () => {
   const searchParams = useSearchParams();
   const userId = searchParams.get("userId");
 
@@ -212,11 +220,11 @@ const Owner: React.FC = () => {
   }
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <>
       <Header />
       <UserContent userId={userId} />
       <Footer />
-    </Suspense>
+    </>
   );
 };
 
