@@ -5,7 +5,7 @@ import { PostsController } from './posts.controller';
 import { Post } from './post.entity';
 import { User } from '../users/user.entity';
 import { Tag } from 'src/database/entities/tag.entity';
-import { Category } from 'src/database/entities/category.entity';
+import { Category } from '../category/category.entity';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Post, User, Tag, Category])],

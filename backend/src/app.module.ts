@@ -4,13 +4,23 @@ import { DatabaseModule } from './database/database.module';
 import { UsersController } from './auth/users/users.controller';
 import { AuthModule } from './auth/auth.module';
 import { PostsModule } from './auth/posts/posts.module';
-import { Category } from './database/entities/category.entity';
+import { Category } from './auth/category/category.entity';
 import { Tag } from './database/entities/tag.entity';
 import { Repository } from 'typeorm';
 import { CommentsModule } from './auth/comments/comments.module';
-import {FavoritesModule} from './auth/favorites/favorites.module'
+import { FavoritesModule } from './auth/favorites/favorites.module';
+import { CategoriesModule } from './auth/category/category.module';
+
 @Module({
-  imports: [DatabaseModule, AuthModule, PostsModule, CommentsModule, FavoritesModule],
+  imports: [
+    DatabaseModule,
+    AuthModule,
+    PostsModule,
+    CommentsModule,
+    FavoritesModule,
+    CategoriesModule,
+    TypeOrmModule.forFeature([Category, Tag]),
+  ],
   controllers: [UsersController],
 })
 export class AppModule implements OnModuleInit {

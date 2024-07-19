@@ -5,7 +5,7 @@ import { Post } from './post.entity';
 import { CreatePostDto } from '../../dto/posts.dto';
 import { User } from '../users/user.entity';
 import { Tag } from '../../database/entities/tag.entity'
-import { Category } from 'src/database/entities/category.entity';
+import { Category } from '../category/category.entity';
 
 @Injectable()
 export class PostsService {

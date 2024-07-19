@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
@@ -24,9 +24,16 @@ import {
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import axios from "axios";
+
+type Category = {
+  id: number;
+  name: string;
+};
 
 export default function Articles() {
   const categoriesRef = useRef<HTMLDivElement>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const scrollLeft = () => {
     if (categoriesRef.current) {
@@ -45,6 +52,19 @@ export default function Articles() {
       });
     }
   };
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("/categories");
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   return (
     <div className="bg-gradientbg2 w-full">
@@ -92,83 +112,39 @@ export default function Articles() {
               </DropdownMenu>
             </div>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-2 md:justify-end">
+
+          <div className="flex flex-wrap items-center justify-center gap-2 md:justify-center">
             <div className="space-y-2">
-              <h3 className="text-center text-sm font-medium text-black">
+              <h3 className="text-center text-lg font-medium text-black">
                 Categories
               </h3>
               <div className="flex items-center gap-2">
-                <Button
+                <button
                   onClick={scrollLeft}
-                  variant="outline"
-                  size="sm"
-                  className="rounded-full bg-inherit hover:bg-inherit border-none"
+                  className="rounded-full bg-inherit hover:bg-inherit border-none p-2"
                 >
-                  <ChevronLeftIcon className="h-4 w-4" />
-                </Button>
+                  <ChevronLeftIcon className="h-6 w-6" />
+                </button>
                 <div
                   ref={categoriesRef}
                   className="flex overflow-hidden gap-4"
-                  style={{ width: "300px" }}
+                  style={{ width: "600px" }}
                 >
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full flex-shrink-0"
-                  >
-                    Lifestyle
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full flex-shrink-0"
-                  >
-                    Technology
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full flex-shrink-0"
-                  >
-                    Travel
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full flex-shrink-0"
-                  >
-                    Food
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full flex-shrink-0"
-                  >
-                    Fashion
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full flex-shrink-0"
-                  >
-                    Health
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full flex-shrink-0"
-                  >
-                    Business
-                  </Button>
+                  {categories.map((category) => (
+                    <button
+                      key={category.id}
+                      className="rounded-full flex-shrink-0 p-2 border"
+                    >
+                      {category.name}
+                    </button>
+                  ))}
                 </div>
-                <Button
+                <button
                   onClick={scrollRight}
-                  variant="outline"
-                  size="sm"
-                  className="rounded-full bg-inherit hover:bg-inherit border-none"
+                  className="rounded-full bg-inherit hover:bg-inherit border-none p-2"
                 >
-                  <ChevronRightIcon className="h-4 w-4" />
-                </Button>
+                  <ChevronRightIcon className="h-6 w-6" />
+                </button>
               </div>
             </div>
           </div>

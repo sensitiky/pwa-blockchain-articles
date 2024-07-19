@@ -11,7 +11,7 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { User } from '../users/user.entity';
-import { Category } from '../../database/entities/category.entity';
+import { Category } from '../category/category.entity';
 import { Comment } from '../comments/comment.entity';
 import { Tag } from '../../database/entities/tag.entity';
 import { Favorite } from '../favorites/favorite.entity';
