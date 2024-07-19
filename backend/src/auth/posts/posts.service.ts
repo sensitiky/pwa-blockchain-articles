@@ -60,9 +60,14 @@ export class PostsService {
     return this.postsRepository.save(post);
   }
 
-  async findAll(): Promise<Post[]> {
-    return this.postsRepository.find({
-      relations: ['comments', 'favorites', 'tags', 'category', 'author'],
+  async findAll(page: number, limit: number) {
+    const [result, total] = await this.postsRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
     });
+    return {
+      data: result,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 }

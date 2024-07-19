@@ -132,6 +132,16 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     setLoading(true);
     setError(null);
 
+    if (
+      !passwordCriteria.length ||
+      !passwordCriteria.uppercase ||
+      !passwordCriteria.numberOrSymbol
+    ) {
+      setError("Password does not meet the criteria.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await axios.post(
         "https://blogchain.onrender.com/auth/send-verification-code",
@@ -198,6 +208,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       );
 
       if (response.status === 200) {
+        setCodeSent(true);
         setError("Password reset code sent to your email");
       } else {
         setError("Failed to send password reset code");
@@ -465,6 +476,13 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   </li>
                 </ul>
               </div>
+              {!passwordCriteria.length ||
+              !passwordCriteria.uppercase ||
+              !passwordCriteria.numberOrSymbol ? (
+                <div className="text-red-500">
+                  Please complete all the password criteria.
+                </div>
+              ) : null}
               {codeSent && !codeVerified && (
                 <>
                   <div className="space-y-2">
@@ -583,6 +601,39 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                 </Button>
               </div>
               {error && <div className="text-red-500">{error}</div>}
+              {codeSent && (
+                <div className="space-y-2 text-center">
+                  <p className="text-muted-foreground">
+                    Enter the code sent to your email and your new password.
+                  </p>
+                  <Input
+                    id="reset-code"
+                    type="text"
+                    placeholder="Enter reset code"
+                    value={resetCode}
+                    onChange={(e) => setResetCode(e.target.value)}
+                    required
+                  />
+                  <Input
+                    id="new-password"
+                    type="password"
+                    placeholder="Enter new password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                  />
+                  <div className="flex justify-center">
+                    <Button
+                      type="button"
+                      className="rounded-full w-44 bg-customColor-header"
+                      onClick={handleResetPassword}
+                      disabled={loading}
+                    >
+                      {loading ? "Resetting..." : "Reset Password"}
+                    </Button>
+                  </div>
+                </div>
+              )}
               <div className="mt-4 text-center text-sm">
                 <button
                   onClick={() => setForgotPassword(false)}
@@ -590,37 +641,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                 >
                   Back to Login
                 </button>
-              </div>
-              <div className="space-y-2 text-center">
-                <p className="text-muted-foreground">
-                  Enter the code sent to your email and your new password.
-                </p>
-                <Input
-                  id="reset-code"
-                  type="text"
-                  placeholder="Enter reset code"
-                  value={resetCode}
-                  onChange={(e) => setResetCode(e.target.value)}
-                  required
-                />
-                <Input
-                  id="new-password"
-                  type="password"
-                  placeholder="Enter new password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                />
-                <div className="flex justify-center">
-                  <Button
-                    type="button"
-                    className="rounded-full w-44 bg-customColor-header"
-                    onClick={handleResetPassword}
-                    disabled={loading}
-                  >
-                    {loading ? "Resetting..." : "Reset Password"}
-                  </Button>
-                </div>
               </div>
             </div>
           )}

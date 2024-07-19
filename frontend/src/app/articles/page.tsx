@@ -1,8 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import Link from "next/link";
+import Image from "next/image";
+import axios from "axios";
+import { FaComment, FaHeart } from "react-icons/fa";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import Header from "@/assets/header";
+import Footer from "@/assets/footer";
 import {
   Pagination,
   PaginationContent,
@@ -11,22 +15,13 @@ import {
   PaginationLink,
   PaginationNext,
 } from "@/components/ui/pagination";
-import { JSX, SVGProps } from "react";
-import Header from "@/assets/header";
-import Image from "next/image";
-import Footer from "@/assets/footer";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuCheckboxItem,
-} from "@/components/ui/dropdown-menu";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import axios from "axios";
 
 type Category = {
+  id: number;
+  name: string;
+};
+
+type Tag = {
   id: number;
   name: string;
 };
@@ -38,7 +33,9 @@ type Post = {
   imageUrl?: string;
   createdAt: string;
   description: string;
-  author: { id: number; usuario: string };
+  author?: { id: number; usuario: string };
+  category?: Category;
+  tags?: Tag[];
 };
 
 const POSTS_PER_PAGE = 5;
@@ -49,26 +46,25 @@ export default function Articles() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [orderBy, setOrderBy] = useState<string>("recentDesc");
 
   const fetchCategories = async () => {
     try {
       const response = await axios.get("https://blogchain.onrender.com/categories");
-      const fetchedCategories = response.data;
-      setCategories([...fetchedCategories,]);
+      setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories", error);
     }
   };
-  
 
-  const fetchPosts = async (page: number, order: string) => {
+  const fetchPosts = async (page: number) => {
     try {
       const response = await axios.get(
-        `https://blogchain.onrender.com/posts?page=${page}&order=${order}&limit=${POSTS_PER_PAGE}`
+        `https://blogchain.onrender.com/posts?page=${page}&limit=${POSTS_PER_PAGE}`
       );
-      setPosts(response.data.posts || []);
+      const postsData = response.data.data;
+      setPosts(postsData || []);
       setTotalPages(response.data.totalPages || 1);
+      console.log(response.data);
     } catch (error) {
       console.error("Error fetching posts", error);
     }
@@ -76,13 +72,8 @@ export default function Articles() {
 
   useEffect(() => {
     fetchCategories();
-    fetchPosts(currentPage, orderBy);
-  }, [currentPage, orderBy]);
-
-  const handleOrderChange = (order: string) => {
-    setOrderBy(order);
-    setCurrentPage(1);
-  };
+    fetchPosts(currentPage);
+  }, [currentPage]);
 
   const scrollLeft = () => {
     if (categoriesRef.current) {
@@ -103,179 +94,122 @@ export default function Articles() {
   };
 
   return (
-    <div className="bg-gradientbg2 w-full flex flex-col min-h-screen">
+    <div className="bg-gradient2 articles-container flex flex-col min-h-screen">
       <Header />
-      <div className="container mx-auto py-8 md:py-12 lg:py-16 flex-grow">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-12">
-          <div className="space-y-4 md:space-y-6">
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl text-center text-yellow-400">
-              Articles
-            </h1>
-            <p className="text-muted-foreground md:text-xl lg:text-lg text-center text-customColor-welcome">
-              Choose your favourite categories
-            </p>
-            <div className="flex justify-center mt-4">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-2 border-t-[1px] border-b-[1px] border-r-0 border-l-0 border-black bg-inherit rounded-none hover:bg-inherit"
+      <div className="articles-header w-full bg-customColor-header text-center py-8 px-4">
+        <div className="articles-title-container py-4">
+          <h1 className="articles-title text-4xl font-bold text-yellow-500">
+            Articles
+          </h1>
+        </div>
+        <div className="categories-container text-center py-4 w-full">
+          <h3 className="categories-title text-xl font-medium text-white">
+            Categories
+          </h3>
+          <div className="categories-scroll flex items-center justify-center mt-4 space-x-4">
+            <button className="block md:hidden" onClick={scrollLeft}>
+              <ChevronLeftIcon className="h-6 w-6 text-white" />
+            </button>
+            <div
+              ref={categoriesRef}
+              className="categories-list flex overflow-x-auto space-x-4 w-full justify-center"
+            >
+              {categories.length > 0 ? (
+                categories.map((category) => (
+                  <button
+                    key={category.id}
+                    className="category-item w-auto px-4 py-2 border border-white rounded-full text-white bg-inherit whitespace-nowrap"
                   >
-                    <ArrowUpDownIcon className="h-4 w-4" />
-                    Order
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Order by</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuCheckboxItem
-                    checked={orderBy === "savedDesc"}
-                    onClick={() => handleOrderChange("savedDesc")}
-                  >
-                    Saved (Most first)
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={orderBy === "savedAsc"}
-                    onClick={() => handleOrderChange("savedAsc")}
-                  >
-                    Saved (Less first)
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={orderBy === "recentDesc"}
-                    onClick={() => handleOrderChange("recentDesc")}
-                  >
-                    Recents (Most first)
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={orderBy === "recentAsc"}
-                    onClick={() => handleOrderChange("recentAsc")}
-                  >
-                    Recents (Less first)
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={orderBy === "relevant"}
-                    onClick={() => handleOrderChange("relevant")}
-                  >
-                    More Relevants
-                  </DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    {category.name}
+                  </button>
+                ))
+              ) : (
+                <div className="text-white">No categories available</div>
+              )}
             </div>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-2 md:justify-center">
-            <div className="space-y-2 w-full">
-              <h3 className="text-center text-lg font-medium text-black">
-                Categories
-              </h3>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={scrollLeft}
-                  className="rounded-full bg-inherit hover:bg-inherit border-none p-2"
-                >
-                  <ChevronLeftIcon className="h-6 w-6" />
-                </button>
-                <div
-                  ref={categoriesRef}
-                  className="flex overflow-hidden gap-4 w-full"
-                  style={{ scrollBehavior: "smooth" }}
-                >
-                  {categories.length > 0 ? (
-                    categories.map((category, index) => (
-                      <button
-                        key={category.id}
-                        className="rounded-full flex-shrink-0 p-2 border whitespace-nowrap"
-                        style={{
-                          minWidth: "150px",
-                          textAlign: "center",
-                        }}
-                      >
-                        {category.name}
-                      </button>
-                    ))
-                  ) : (
-                    <div className="text-muted-foreground">
-                      No categories available
-                    </div>
-                  )}
-                </div>
-                <button
-                  onClick={scrollRight}
-                  className="rounded-full bg-inherit hover:bg-inherit border-none p-2"
-                >
-                  <ChevronRightIcon className="h-6 w-6" />
-                </button>
-              </div>
-            </div>
+            <button className="block md:hidden" onClick={scrollRight}>
+              <ChevronRightIcon className="h-6 w-6 text-white" />
+            </button>
           </div>
         </div>
+      </div>
 
-        <div className="mt-12 md:mt-16 lg:mt-20">
+      <div className="articles-content flex-grow flex justify-center py-8 px-4 bg-white">
+        <div className="posts-container w-full max-w-screen-lg mx-auto">
           {posts.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
+            <div className="posts-grid grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-1">
               {posts.map((post) => (
-                <Card
+                <div
                   key={post.id}
-                  className="bg-inherit h-auto rounded-none shadow-none flex flex-col items-start gap-4 border-b-[1px] border-black border-r-0 border-l-0"
+                  className="max-w-4xl mx-auto p-4 bg-card text-card-foreground border-gray-500 border rounded-none border-r-0 border-l-0 w-[895px] h-[290px]"
                 >
-                  {post.imageUrl && (
-                    <Image
-                      src={post.imageUrl}
-                      alt="Blog Post Image"
-                      width={200}
-                      height={150}
-                      className="aspect-video w-full mt-10 rounded-lg object-cover"
-                    />
-                  )}
-                  <div className="mt-3 flex-1 space-y-2 px-4">
-                    <div className="text-sm font-medium text-muted-foreground">
-                      {new Date(post.createdAt).toLocaleDateString()}
-                    </div>
-                    <h3 className="text-lg font-semibold">{post.title}</h3>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="flex flex-col md:flex-row h-full">
+                    {post.imageUrl && (
+                      <Image
+                        src={`https://blogchain.onrender.com${post.imageUrl}`}
+                        alt="Article image"
+                        className="w-full md:w-1/3 rounded-lg object-cover"
+                        width={1920}
+                        height={1080}
+                      />
+                    )}
+                    <div className="flex-1 md:ml-4 mt-4 md:mt-0 flex flex-col justify-between">
                       <div>
-                        <Link href={`/articleowner?userId=${post.author.id}`}>
-                          <a className="flex items-center gap-1">
-                            <UserIcon className="w-4 h-4" />
-                            {post.author.usuario}
-                          </a>
-                        </Link>
+                        <div className="flex items-center mb-2">
+                          <Image
+                            src="/shadcn.jpg"
+                            alt="Author image"
+                            className="w-10 h-10 rounded-full"
+                            width={40}
+                            height={40}
+                          />
+                          <span className="ml-2 text-lg font-semibold">
+                            {post.author?.usuario}
+                          </span>
+                          <span className="ml-4 px-2 py-1 bg-secondary text-secondary-foreground rounded-full">
+                            {post.category?.name}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {post.tags?.map((tag) => (
+                            <span
+                              key={tag.id}
+                              className="px-2 py-1 bg-muted text-muted-foreground rounded-full"
+                            >
+                              #{tag.name}
+                            </span>
+                          ))}
+                        </div>
+                        <h2 className="text-2xl font-bold mb-2">
+                          {post.title}
+                        </h2>
+                        <p className="text-muted-foreground mb-4" dangerouslySetInnerHTML={{ __html: post.description }}></p>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <ClockIcon className="w-4 h-4" />5 min read
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center text-muted-foreground">
+                          <span>10 min read</span>
+                          <span className="mx-2">|</span>
+                          <span className="flex items-center">
+                            <FaComment className="w-5 h-5 mr-1" />5
+                          </span>
+                          <span className="flex items-center ml-4">
+                            <FaHeart className="w-5 h-5 mr-1" />
+                            11
+                          </span>
+                        </div>
+                        <button className="bg-primary text-primary-foreground px-4 py-2 rounded-full hover:bg-primary/80">
+                          Learn More
+                        </button>
                       </div>
-                    </div>
-                    <p className="text-muted-foreground line-clamp-2">
-                      {post.description}
-                    </p>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Button variant="ghost" size="icon">
-                        <HeartIcon className="w-4 h-4" />
-                        <span className="sr-only">Like</span>
-                      </Button>
-                      <Button variant="ghost" size="icon">
-                        <MessageCircleIcon className="w-4 h-4" />
-                        <span className="sr-only">Comment</span>
-                      </Button>
-                      <Link
-                        href="#"
-                        className="text-primary hover:underline"
-                        prefetch={false}
-                      >
-                        Read more
-                      </Link>
                     </div>
                   </div>
-                </Card>
+                </div>
               ))}
             </div>
           ) : (
-            <div className="text-center text-muted-foreground">
-              No posts available
-            </div>
+            <div className="text-center text-gray-500">No posts available</div>
           )}
-          <div className="mt-8 flex justify-center mb-4">
+          <div className="pagination-container flex justify-center mt-8">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
@@ -311,129 +245,5 @@ export default function Articles() {
       </div>
       <Footer />
     </div>
-  );
-}
-
-function ClockIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  );
-}
-
-function HeartIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-    </svg>
-  );
-}
-
-function MessageCircleIcon(
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
-) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-    </svg>
-  );
-}
-
-function UserIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  );
-}
-
-function XIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
-  );
-}
-
-function ArrowUpDownIcon(
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
-) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m21 16-4 4-4-4" />
-      <path d="M17 20V4" />
-      <path d="m3 8 4-4 4 4" />
-      <path d="M7 4v16" />
-    </svg>
   );
 }
