@@ -45,7 +45,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/login",
+        "http://localhost:4000/auth/login",
         {
           email,
           contrasena,
@@ -88,7 +88,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/register",
+        "http://localhost:4000/auth/register",
         {
           usuario,
           contrasena,
@@ -144,7 +144,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/send-verification-code",
+        "http://localhost:4000/auth/send-verification-code",
         { email },
         { withCredentials: true }
       );
@@ -174,7 +174,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/verify-code",
+        "http://localhost:4000/auth/verify-code",
         { email, code: verificationCode },
         { withCredentials: true }
       );
@@ -202,7 +202,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/forgot-password",
+        "http://localhost:4000/auth/forgot-password",
         { email },
         { withCredentials: true }
       );
@@ -242,7 +242,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/reset-password",
+        "http://localhost:4000/auth/reset-password",
         { email, code: resetCode, newPassword },
         { withCredentials: true }
       );
@@ -271,7 +271,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   ) => {
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/google",
+        "http://localhost:4000/auth/google",
         { token: credentialResponse.credential },
         { withCredentials: true }
       );
@@ -290,31 +290,35 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
   const handleFacebookLogin = () => {
     window.FB.login(
-      async (response: any) => {
+      (response: any) => {
         if (response.authResponse) {
-          try {
-            const res = await axios.post(
-              "https://blogchain.onrender.com/auth/facebook",
-              { accessToken: response.authResponse.accessToken },
-              { withCredentials: true }
-            );
-
-            if (res.status === 200) {
-              setUser(res.data.user);
-              login(res.data);
-              onClose();
-            } else {
-              setError("Facebook login failed");
-            }
-          } catch (err) {
-            setError("Facebook login failed");
-          }
+          handleFacebookResponse(response.authResponse.accessToken);
         } else {
           setError("User cancelled login or did not fully authorize.");
         }
       },
       { scope: "public_profile,email" }
     );
+  };
+
+  const handleFacebookResponse = async (accessToken: string) => {
+    try {
+      const res = await axios.post(
+        "http://localhost:4000/auth/facebook",
+        { accessToken },
+        { withCredentials: true }
+      );
+
+      if (res.status === 200) {
+        setUser(res.data.user);
+        login(res.data);
+        onClose();
+      } else {
+        setError("Facebook login failed");
+      }
+    } catch (err) {
+      setError("Facebook login failed");
+    }
   };
 
   const toggleForgotPassword = () => {

@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
-const config = {
+/** @type {import('tailwindcss').Config} */
+const config: Config = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -19,7 +20,7 @@ const config = {
     },
     extend: {
       fontFamily: {
-        gilroy: ['Gilroy', 'sans-serif'],
+        gilroy: ["Gilroy", "sans-serif"],
       },
       colors: {
         customColor: {
@@ -28,9 +29,9 @@ const config = {
           innovatio3: "#000000",
           innovatio4: "#eef4ff",
           letras: "#fec116",
-          header:'#000916',
-          hueso: '#CDCDCD',
-          welcome:'#93a68d'
+          header: "#000916",
+          hueso: "#CDCDCD",
+          welcome: "#93a68d",
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -81,10 +82,10 @@ const config = {
           "linear-gradient(0deg, #061d34 0%, #103253 19%, #ffffff 39%, #ffffff 60%, #103253 80%, #061d34 100%)",
         gradient6:
           "linear-gradient(0deg, #103253 0%, #ffffff 19%, #ffffff 39%, #ffffff 60%, #ffffff 80%, #103253 100%)",
-          gradientbg: 'linear-gradient(to bottom, #e0f7ff, #ffffff)',
-          gradientbg2: 'linear-gradient(to top, #e0f7ff, #ffffff)',
+        gradientbg: "linear-gradient(to bottom, #e0f7ff, #ffffff)",
+        gradientbg2: "linear-gradient(to top, #e0f7ff, #ffffff)",
       },
-      borderRadius: { 
+      borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
@@ -98,14 +99,20 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "border-beam": {
+          "100%": {
+            "offset-distance": "100%",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "border-beam": "border-beam calc(var(--duration)*1s) infinite linear",
       },
     },
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config;
+};
 
 export default config;

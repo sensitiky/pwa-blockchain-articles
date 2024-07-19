@@ -7,12 +7,14 @@ export class CreateUserDto {
   lastName?: string;
   code: string;
   facebookId?: string;
+  avatar?: string;
 }
 
 export class UpdateUserDto {
-  readonly firstName?: string;
-  readonly lastName?: string;
-  readonly email?: string;
-  readonly usuario?: string;
-  readonly bio?: string;
+   firstName?: string;
+   lastName?: string;
+   email?: string;
+   usuario?: string;
+   bio?: string;
+   avatar?: string;
 }

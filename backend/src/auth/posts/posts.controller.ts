@@ -1,12 +1,13 @@
 import {
   Controller,
-  Post,
+  Post as HttpPost,
   Body,
   UseInterceptors,
   UploadedFile,
   Req,
   Get,
   Query,
+  Param,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -24,11 +25,27 @@ export class PostsController {
   async findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 5,
+    @Query('sortOrder') sortOrder: string = 'recent',
   ) {
-    return this.postsService.findAll(page, limit);
+    return this.postsService.findAll(page, limit, sortOrder);
   }
 
-  @Post()
+  @Get('by-category')
+  async findAllByCategory(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 5,
+    @Query('categoryId') categoryId: number,
+    @Query('sortOrder') sortOrder: string = 'recent',
+  ) {
+    return this.postsService.findAllByCategory(page, limit, categoryId, sortOrder);
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: number) {
+    return this.postsService.findOne(id);
+  }
+
+  @HttpPost()
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({

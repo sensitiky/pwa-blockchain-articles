@@ -33,6 +33,13 @@ import React from "react";
 import Footer from "@/assets/footer";
 import { useAuth } from "../../../context/authContext";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import { BookMarkedIcon } from "lucide-react";
+import { FilePenIcon } from "lucide-react";
+import { LockIcon } from "lucide-react";
+import { UserIcon } from "lucide-react";
+import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
+import TextField from "@mui/material/TextField";
 
 const articles = [
   {
@@ -130,10 +137,16 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
   return (
     <div className="flex-1 flex flex-col items-center pt-12 md:pt-24 px-4 md:px-6">
       <div className="flex items-center gap-6">
-        <Avatar className="w-36 h-36 md:w-36 md:h-36">
-          <AvatarImage src={profileImage} />
-          <AvatarFallback>{userInfo.firstName}</AvatarFallback>
-        </Avatar>
+        <CardContainer className="inter-var mx-auto">
+          <CardBody className="bg-inherit text-card-foreground border-none rounded-lg shadow-none w-full h-full transition-transform relative flex justify-center items-center">
+            <CardItem translateZ="50" className="relative z-10">
+              <Avatar className="w-36 h-36 md:w-36 md:h-36">
+                <AvatarImage src={profileImage} />
+                <AvatarFallback>{userInfo.firstName}</AvatarFallback>
+              </Avatar>
+            </CardItem>
+          </CardBody>
+        </CardContainer>
         <label htmlFor="profile-image-upload" className="cursor-pointer">
           <FaCamera className="w-6 h-6 text-primary" />
           <input
@@ -150,7 +163,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
       <div className="flex-1 w-full max-w-2xl mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div className="grid gap-1">
-            <Label className="text-2xl">Name</Label>
+            <Label className="text-2xl">First Name</Label>
             {editMode ? (
               <Input
                 name="firstName"
@@ -161,6 +174,21 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             ) : (
               <div className="flex items-center border-b-[1px]">
                 <span className="flex-grow">{userInfo.firstName}</span>
+              </div>
+            )}
+          </div>
+          <div className="grid gap-1">
+            <Label className="text-2xl">Last Name</Label>
+            {editMode ? (
+              <Input
+                name="lastName"
+                value={userInfo.lastName}
+                onChange={handleInputChange}
+                className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
+              />
+            ) : (
+              <div className="flex items-center border-b-[1px]">
+                <span className="flex-grow">{userInfo.lastName}</span>
               </div>
             )}
           </div>
@@ -183,18 +211,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
           </div>
           <div className="grid gap-1">
             <Label className="text-2xl">Email</Label>
-            {editMode ? (
-              <Input
-                name="email"
-                value={userInfo.email}
-                onChange={handleInputChange}
-                className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
-              />
-            ) : (
-              <div className="flex items-center border-b-[1px]">
-                <span className="flex-grow">{userInfo.email}</span>
-              </div>
-            )}
+            <div className="flex items-center border-b-[1px]">
+              <span className="flex-grow">{userInfo.email}</span>
+            </div>
           </div>
           <div className="grid gap-1">
             <Label className="text-2xl">Country</Label>
@@ -246,49 +265,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
           >
             {bioEditMode ? "Save Changes" : "Edit Bio"}
           </Button>
-          <div className="flex gap-4">
-            <Link
-              href="#"
-              className="text-primary hover:underline"
-              prefetch={false}
-            >
-              <FacebookIcon className="w-6 h-6" />
-            </Link>
-            <Link
-              href="#"
-              className="text-primary hover:underline"
-              prefetch={false}
-            >
-              <InstagramIcon className="w-6 h-6" />
-            </Link>
-            <Link
-              href="#"
-              className="text-primary hover:underline"
-              prefetch={false}
-            >
-              <TwitterIcon className="w-6 h-6" />
-            </Link>
-            <Link
-              href="#"
-              className="text-primary hover:underline"
-              prefetch={false}
-            >
-              <LinkedinIcon className="w-6 h-6" />
-            </Link>
-          </div>
-          <Button
-            className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black"
-            onClick={() => handleSectionChange("security")}
-          >
-            Edit Social Links
-          </Button>
         </div>
-      </div>
-      <div className="w-full max-w-2xl mt-8 flex items-center justify-between">
-        <Badge variant="secondary" className="flex items-center gap-2">
-          <PencilIcon className="w-4 h-4" />
-          Content Creator
-        </Badge>
       </div>
     </div>
   );
@@ -333,10 +310,16 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({
     <div className="flex p-6 sm:p-10">
       <div className="mx-auto min-w-3xl">
         <div className="flex items-center gap-4">
-          <Avatar className="h-24 w-24">
-            <AvatarImage src={profileImage} />
-            <AvatarFallback>NC</AvatarFallback>
-          </Avatar>
+          <CardContainer className="inter-var mx-auto">
+            <CardBody className="bg-inherit text-card-foreground border-none rounded-lg shadow-none w-full h-full transition-transform relative flex justify-center items-center">
+              <CardItem translateZ="50" className="relative z-10">
+                <Avatar className="w-36 h-36 md:w-36 md:h-36">
+                  <AvatarImage src={profileImage} />
+                  <AvatarFallback>{userInfo.firstName}</AvatarFallback>
+                </Avatar>
+              </CardItem>
+            </CardBody>
+          </CardContainer>
           <div>
             <h1 className="text-4xl font-bold">Hi, {userInfo.firstName}</h1>
             <p className="text-3xl text-muted-foreground">
@@ -349,16 +332,18 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({
           <div className="grid gap-2">
             {["medium", "instagram", "facebook", "twitter", "linkedin"].map(
               (field, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between border-b-2"
-                >
-                  <div className="text-xl font-medium capitalize">{field}</div>
+                <div key={index} className="flex items-center justify-between">
+                  <div className="text-xl font-medium capitalize border-b-2">
+                    {field}
+                  </div>
                   {editMode ? (
-                    <Input
+                    <TextField
+                      id="standard-basic"
+                      label="Edit here"
+                      variant="standard"
                       name={field}
-                      value={String(localUserInfo[field as keyof UserInfo])}
                       onChange={handleLocalInputChange}
+                      value={String(localUserInfo[field as keyof UserInfo])}
                       className="border-none rounded-none w-3/9 border-gray-400 cursor-text"
                     />
                   ) : (
@@ -519,7 +504,7 @@ const Users = () => {
 
   const handleBioSave = async () => {
     try {
-      await updateProfile({ bio });
+      await updateProfile({ ...userInfo, bio });
       setBioEditMode(false);
     } catch (error) {
       console.error("Error updating bio", error);
@@ -595,7 +580,7 @@ const Users = () => {
                     onClick={() => toggleLike(index)}
                     className="ml-2 p-2 focus:outline-none"
                   >
-                    <BookmarkIcon
+                    <BookMarkedIcon
                       className={`h-5 w-5 ${
                         liked[index] ? "text-yellow-500" : "text-gray-500"
                       }`}
@@ -770,7 +755,7 @@ const Users = () => {
                 onClick={() => setSelectedSection("saved")}
                 className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white hover:underline hover:underline-offset-4 hover:decoration-yellow-500"
               >
-                <BookmarkIcon className="h-5 w-5" />
+                <BookMarkedIcon className="h-5 w-5" />
                 Saved Articles
               </button>
               <button
@@ -791,193 +776,5 @@ const Users = () => {
     </div>
   );
 };
-
-function InstagramIcon(
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
-) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-    </svg>
-  );
-}
-
-function BookmarkIcon(
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
-) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-    </svg>
-  );
-}
-
-function FacebookIcon(
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
-) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-    </svg>
-  );
-}
-
-function FilePenIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v10" />
-      <path d="M14 2v4a2 2 0 0 0 2 2h4" />
-      <path d="M10.4 12.6a2 2 0 1 1 3 3L8 21l-4 1 1-4Z" />
-    </svg>
-  );
-}
-
-function LinkedinIcon(
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
-) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-      <rect width="4" height="12" x="2" y="9" />
-      <circle cx="4" cy="4" r="2" />
-    </svg>
-  );
-}
-
-function LockIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>
-  );
-}
-
-function TwitterIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-    </svg>
-  );
-}
-
-function UserIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  );
-}
-
-function PencilIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-      <path d="m15 5 4 4" />
-    </svg>
-  );
-}
 
 export default Users;

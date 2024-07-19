@@ -3,12 +3,17 @@ import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { CreateUserDto } from 'src/dto/user.dto';
 import axios from 'axios';
+import * as crypto from 'crypto';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService, // Agregar ConfigService
+  ) {}
 
   @Post('login')
   async login(
@@ -29,29 +34,63 @@ export class AuthController {
       res.status(401).json({ message: 'Login failed' });
     }
   }
+
   @Post('facebook')
   async facebookLogin(
     @Body() body: { accessToken: string },
     @Res() res: Response,
   ): Promise<void> {
-    try {
-      const response = await axios.get(
-        `https://graph.facebook.com/me?access_token=${body.accessToken}&fields=id,name,email`,
-      );
-      const { id, email, name } = response.data;
+    // Obtener el secreto de la app
+    const appSecret = this.configService.get<string>('FACEBOOK_CLIENT_SECRET');
+    // Generar el appSecretProof
+    const appSecretProof = crypto
+      .createHmac('sha256', appSecret)
+      .update(body.accessToken)
+      .digest('hex');
 
+    // Log the received accessToken and appSecretProof
+    this.logger.log(`Received Facebook access token: ${body.accessToken}`);
+    this.logger.log(`Generated appSecretProof: ${appSecretProof}`);
+    console.log(`Received Facebook access token: ${body.accessToken}`);
+    console.log(`Generated appSecretProof: ${appSecretProof}`);
+
+    try {
+      // Verificar y obtener información del usuario desde la API de Facebook
+      const facebookResponse = await axios.get(
+        `https://graph.facebook.com/me?access_token=${body.accessToken}&appsecret_proof=${appSecretProof}&fields=id,name,email`,
+      );
+
+      // Log the response from Facebook
+      this.logger.log(
+        `Facebook response: ${JSON.stringify(facebookResponse.data)}`,
+      );
+      console.log(
+        `Facebook response: ${JSON.stringify(facebookResponse.data)}`,
+      );
+
+      const { id, email, name } = facebookResponse.data;
+
+      // Buscar o crear el usuario en tu base de datos
       let user = await this.authService.findOrCreateFacebookUser(
         id,
         email,
         name,
       );
 
+      // Generar token JWT para la sesión del usuario
       const token = this.authService.generateJwtToken(user);
       res
         .status(200)
         .json({ message: 'Facebook login successful', token, user });
     } catch (error) {
       this.logger.error(`Error with Facebook login: ${error.message}`);
+
+      if (axios.isAxiosError(error)) {
+        const axiosError = error.response?.data;
+        this.logger.error(`Axios error: ${JSON.stringify(axiosError)}`);
+        console.log(`Axios error: ${JSON.stringify(axiosError)}`);
+      }
+
       res.status(401).json({ message: 'Facebook login failed' });
     }
   }
@@ -95,27 +134,27 @@ export class AuthController {
   }
 
   @Post('register')
-async register(
-  @Body() registerDto: CreateUserDto,
-  @Res() res: Response,
-): Promise<void> {
-  try {
-    const isVerified = await this.authService.verifyCode(
-      registerDto.email,
-      registerDto.code,
-    );
-    if (!isVerified) {
-      res.status(400).json({ message: 'Invalid verification code' });
-      return;
+  async register(
+    @Body() registerDto: CreateUserDto,
+    @Res() res: Response,
+  ): Promise<void> {
+    try {
+      const isVerified = await this.authService.verifyCode(
+        registerDto.email,
+        registerDto.code,
+      );
+      if (!isVerified) {
+        res.status(400).json({ message: 'Invalid verification code' });
+        return;
+      }
+      await this.authService.registerUser(registerDto);
+      this.authService.deleteVerificationCode(registerDto.email);
+      res.status(200).json({ message: 'Registration successful' });
+    } catch (error) {
+      this.logger.error(`Error registering user: ${error.message}`);
+      res.status(500).json({ message: 'Failed to register user' });
     }
-    await this.authService.registerUser(registerDto);
-    this.authService.deleteVerificationCode(registerDto.email);
-    res.status(200).json({ message: 'Registration successful' });
-  } catch (error) {
-    this.logger.error(`Error registering user: ${error.message}`);
-    res.status(500).json({ message: 'Failed to register user' });
   }
-}
 
   @Post('send-verification-code')
   async sendVerificationCode(

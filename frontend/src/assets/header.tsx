@@ -36,7 +36,7 @@ const Header = () => {
     const fetchUser = async () => {
       try {
         console.log("Attempting to fetch user data");
-        const response = await api.get("/users/me");
+        const response = await api.get("http://localhost:4000/users/me");
         console.log("User data fetched successfully", response.data);
         setUser(response.data);
       } catch (error) {

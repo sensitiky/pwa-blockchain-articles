@@ -3,6 +3,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./globals.css";
 import { AuthProvider } from '../../context/authContext';
 import dynamic from "next/dynamic";
+import FacebookInit from "@/assets/FacebookInit";
 
 const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 if (!clientId) {
@@ -23,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-gilroy">
+        <FacebookInit/>
         <GoogleOAuthProvider clientId={clientId as string}>
           <AuthProvider>
             <main className="flex-grow-0">{children}</main>

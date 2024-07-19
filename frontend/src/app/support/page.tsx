@@ -1,4 +1,5 @@
 import Header from "@/assets/header";
+import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { FC } from "react";
@@ -17,20 +18,24 @@ const SupportSection: FC = () => {
               height={400}
               objectFit="contain"
               className="z-0"
-              style={{ filter: 'blur(100px)', opacity: 0.5 }}
+              style={{ filter: "blur(100px)", opacity: 0.5 }}
             />
           </div>
           <div className="flex flex-col items-center justify-center z-10 space-y-6 text-center px-4 h-full">
-            <div className="relative">
-              <Image
-                src="/support.png"
-                alt="Card Image"
-                width={200}
-                height={200}
-                objectFit="contain"
-                className="relative z-10"
-              />
-            </div>
+            <CardContainer className="inter-var mx-auto">
+              <CardBody className="bg-inherit text-card-foreground border-none rounded-lg shadow-none w-full h-full transition-transform relative flex justify-center items-center">
+                <CardItem translateZ="50" className="relative z-10">
+                  <Image
+                    src="/support.png"
+                    alt="Card Image"
+                    width={200}
+                    height={200}
+                    objectFit="contain"
+                    className="relative z-10"
+                  />
+                </CardItem>
+              </CardBody>
+            </CardContainer>
             <p className="text-xl sm:text-2xl text-white leading-snug">
               Did you know that Innovatio & Blogchain has a Pool in the Cardano
               network and you can support our mission by simply delegating us?
@@ -42,15 +47,20 @@ const SupportSection: FC = () => {
         </aside>
         <main className="flex flex-col justify-center items-center bg-gradient-to-b from-white to-cyan-100 text-black px-4 sm:px-8 py-8 sm:py-10">
           <div className="space-y-6 text-center px-4 flex flex-col justify-center h-full">
-            <div className="mb-4">
-              <Image
-                src="/support2.png"
-                alt="Support Illustration"
-                width={150}
-                height={200}
-                className="max-w-full"
-              />
-            </div>
+          <CardContainer className="inter-var mx-auto">
+              <CardBody className="bg-inherit text-card-foreground border-none rounded-lg shadow-none w-full h-full transition-transform relative flex justify-center items-center">
+                <CardItem translateZ="50" className="relative z-10">
+                  <Image
+                    src="/support2.png"
+                    alt="Card Image"
+                    width={200}
+                    height={200}
+                    objectFit="contain"
+                    className="relative z-10"
+                  />
+                </CardItem>
+              </CardBody>
+            </CardContainer>
             <p className="text-xl sm:text-2xl leading-snug">
               Remember that Blogchain is maintained thanks to the donations of
               its readers, if you have the opportunity, do not hesitate to

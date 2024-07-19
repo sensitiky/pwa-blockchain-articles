@@ -1,5 +1,6 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { UsersController } from './auth/users/users.controller';
 import { AuthModule } from './auth/auth.module';
@@ -14,6 +15,7 @@ import { TagsModule } from './auth/tag/tag.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(), // Asegúrate de que ConfigModule está importado
     DatabaseModule,
     AuthModule,
     PostsModule,

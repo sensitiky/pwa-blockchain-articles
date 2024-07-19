@@ -45,13 +45,13 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-          `https://blogchain.onrender.com/users/${userId}`
+          `http://localhost:4000/users/${userId}`
         );
         const userData = response.data;
         setUser(userData);
 
         const postsResponse = await axios.get(
-          `https://blogchain.onrender.com/posts?authorId=${userData.id}`
+          `http://localhost:4000/posts?authorId=${userData.id}`
         );
         setPosts(postsResponse.data);
       } catch (err) {

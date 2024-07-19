@@ -14,6 +14,7 @@ export class UsersService {
   async findOne(email: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { email } });
   }
+
   async findByFacebookId(facebookId: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { facebookId } });
   }
