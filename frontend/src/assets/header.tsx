@@ -155,7 +155,7 @@ const Header = () => {
                   Create Articles
                 </Link>
                 <Link
-                  href="#"
+                  href="/support"
                   className="w-fit border-b-[1px] border-gray-400 text-sm font-medium hover:underline underline-offset-4"
                   prefetch={false}
                 >

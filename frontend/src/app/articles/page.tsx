@@ -38,7 +38,7 @@ type Post = {
   imageUrl?: string;
   createdAt: string;
   description: string;
-  author: { id: number, usuario: string };
+  author: { id: number; usuario: string };
 };
 
 const POSTS_PER_PAGE = 5;
@@ -54,16 +54,19 @@ export default function Articles() {
   const fetchCategories = async () => {
     try {
       const response = await axios.get("https://blogchain.onrender.com/categories");
-      setCategories(response.data);
+      const fetchedCategories = response.data;
+      setCategories([...fetchedCategories,]);
     } catch (error) {
       console.error("Error fetching categories", error);
     }
   };
+  
 
   const fetchPosts = async (page: number, order: string) => {
     try {
-      const response = await axios.get(`https://blogchain.onrender.com/posts?page=${page}&order=${order}&limit=${POSTS_PER_PAGE}`);
-      console.log("Fetched posts:", response.data);
+      const response = await axios.get(
+        `https://blogchain.onrender.com/posts?page=${page}&order=${order}&limit=${POSTS_PER_PAGE}`
+      );
       setPosts(response.data.posts || []);
       setTotalPages(response.data.totalPages || 1);
     } catch (error) {
@@ -162,7 +165,7 @@ export default function Articles() {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-2 md:justify-center">
-            <div className="space-y-2">
+            <div className="space-y-2 w-full">
               <h3 className="text-center text-lg font-medium text-black">
                 Categories
               </h3>
@@ -175,14 +178,18 @@ export default function Articles() {
                 </button>
                 <div
                   ref={categoriesRef}
-                  className="flex overflow-hidden gap-4"
-                  style={{ width: "600px" }}
+                  className="flex overflow-hidden gap-4 w-full"
+                  style={{ scrollBehavior: "smooth" }}
                 >
                   {categories.length > 0 ? (
-                    categories.map((category) => (
+                    categories.map((category, index) => (
                       <button
                         key={category.id}
-                        className="rounded-full flex-shrink-0 p-2 border"
+                        className="rounded-full flex-shrink-0 p-2 border whitespace-nowrap"
+                        style={{
+                          minWidth: "150px",
+                          textAlign: "center",
+                        }}
                       >
                         {category.name}
                       </button>
@@ -229,14 +236,14 @@ export default function Articles() {
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <div>
                         <Link href={`/articleowner?userId=${post.author.id}`}>
-                          <a>
-                            <UserIcon className="w-4 h-4 mr-1" />
+                          <a className="flex items-center gap-1">
+                            <UserIcon className="w-4 h-4" />
                             {post.author.usuario}
                           </a>
                         </Link>
                       </div>
-                      <div>
-                        <ClockIcon className="w-4 h-4 mr-1" />5 min read
+                      <div className="flex items-center gap-1">
+                        <ClockIcon className="w-4 h-4" />5 min read
                       </div>
                     </div>
                     <p className="text-muted-foreground line-clamp-2">

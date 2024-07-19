@@ -14,6 +14,7 @@ import Footer from "@/assets/footer";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 const cookies = new Cookie();
+
 type image = {
   url: string;
   alt: string;
@@ -22,6 +23,7 @@ type image = {
 type Avatar = {
   avatar: image;
 };
+
 const HomePage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<{ username: string } | null>(null);
@@ -42,6 +44,42 @@ const HomePage: React.FC = () => {
       mirror: false,
     });
   }, []);
+
+  const fetchUserSession = async (token: string) => {
+    try {
+      const response = await fetch(`${API_URL}/users/session`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+        setIsAuthenticated(true);
+      } else {
+        console.error("Failed to fetch user session");
+      }
+    } catch (error) {
+      console.error("Error fetching user session:", error);
+    }
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    setUser(null);
+    cookies.remove("token");
+  };
+
+  const handleLoginSignUpClick = () => {
+    setShowLoginCard(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowLoginCard(false);
+  };
+
   const articles2 = [
     {
       author: "Nevermind",
@@ -81,40 +119,6 @@ const HomePage: React.FC = () => {
         "It wasn&apos;t too long ago that Silicon Valley scoffed at cryptocurrencies. All over coffee shops in Mountain View and Menlo Park, you heard the same conversation: &quot;Sure, it&apos;s cool technology, but when are we going...",
     },
   ];
-  const fetchUserSession = async (token: string) => {
-    try {
-      const response = await fetch(`${API_URL}/users/session`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data.user);
-        setIsAuthenticated(true);
-      } else {
-        console.error("Failed to fetch user session");
-      }
-    } catch (error) {
-      console.error("Error fetching user session:", error);
-    }
-  };
-
-  const logout = () => {
-    setIsAuthenticated(false);
-    setUser(null);
-    cookies.remove("token");
-  };
-
-  const handleLoginSignUpClick = () => {
-    setShowLoginCard(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowLoginCard(false);
-  };
 
   return (
     <div className="min-w-screen">
@@ -158,7 +162,7 @@ const HomePage: React.FC = () => {
           data-aos-anchor-placement="top-bottom"
           data-aos-offset="200"
         >
-          <div className="grid gap-8 mb-24 sm:grid-cols-2">
+          <div className="grid gap-8 mb-24 sm:grid-cols-1 md:grid-cols-2">
             <div className="text-center flex flex-col justify-center">
               <h1 className="text-2xl sm:text-3xl md:text-5xl font-semibold mb-4 text-customColor-innovatio3">
                 Read, write, share and discuss blockchain
