@@ -421,7 +421,7 @@ const Users = () => {
     bio: "",
   });
   const { user, isAuthenticated } = useAuth();
-  const [profileImage, setProfileImage] = useState<string>("/shadcn.jpg");
+  const [profileImage, setProfileImage] = useState<string>("");
   const options = countryList().getData();
 
   useEffect(() => {
@@ -443,7 +443,7 @@ const Users = () => {
             linkedin: profile.linkedin || "",
             bio: profile.bio || "",
           });
-          setProfileImage(profile.profileImage || "/shadcn.jpg");
+          setProfileImage(profile.profileImage || "");
           setBio(profile.bio || "");
         } catch (error) {
           console.error("Error fetching profile data", error);

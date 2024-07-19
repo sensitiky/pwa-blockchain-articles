@@ -1,5 +1,6 @@
 "use client";
-import React, { SVGProps, useEffect, useState } from "react";
+
+import React, { SVGProps, useEffect, useState, Suspense } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -7,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import Header from "@/assets/header";
 import Footer from "@/assets/footer";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface User {
@@ -34,13 +35,11 @@ interface Post {
   createdAt: string;
 }
 
-const Owner: React.FC = () => {
+const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
   const [user, setUser] = useState<User | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const searchParams = useSearchParams();
-  const userId = searchParams.get("userId");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -68,9 +67,7 @@ const Owner: React.FC = () => {
       }
     };
 
-    if (userId) {
-      fetchUserData();
-    }
+    fetchUserData();
   }, [userId]);
 
   if (loading) {
@@ -98,117 +95,128 @@ const Owner: React.FC = () => {
   }
 
   return (
-    <div>
-      <Header />
-      <div className="w-full min-h-screen flex items-start justify-center py-10">
-        <div className="container max-w-5xl grid grid-cols-1 md:grid-cols-5 gap-2 px-4 md:px-0">
-          <div className="bg-background rounded-2xl p-6 flex flex-col items-center gap-4 col-span-1">
-            <Avatar className="w-32 h-32 border-4 border-background">
-              <AvatarImage src={user?.avatarUrl || "/placeholder-user.jpg"} />
-              <AvatarFallback>
-                {user?.firstName ? user.firstName[0] : user?.usuario[0]}
-              </AvatarFallback>
-            </Avatar>
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold">{user?.usuario}</h2>
-              <p className="text-muted-foreground">
-                {user?.bio || "No bio available."}
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              {user?.facebook && (
-                <Link
-                  href={user.facebook}
-                  className="text-primary"
-                  prefetch={false}
-                >
-                  <FacebookIcon className="w-6 h-6" />
-                </Link>
-              )}
-              {user?.instagram && (
-                <Link
-                  href={user.instagram}
-                  className="text-primary"
-                  prefetch={false}
-                >
-                  <InstagramIcon className="w-6 h-6" />
-                </Link>
-              )}
-              {user?.twitter && (
-                <Link
-                  href={user.twitter}
-                  className="text-primary"
-                  prefetch={false}
-                >
-                  <TwitterIcon className="w-6 h-6" />
-                </Link>
-              )}
-              {user?.linkedin && (
-                <Link
-                  href={user.linkedin}
-                  className="text-primary"
-                  prefetch={false}
-                >
-                  <LinkedinIcon className="w-6 h-6" />
-                </Link>
-              )}
-            </div>
+    <div className="w-full min-h-screen flex items-start justify-center py-10">
+      <div className="container max-w-5xl grid grid-cols-1 md:grid-cols-5 gap-2 px-4 md:px-0">
+        <div className="bg-background rounded-2xl p-6 flex flex-col items-center gap-4 col-span-1">
+          <Avatar className="w-32 h-32 border-4 border-background">
+            <AvatarImage src={user?.avatarUrl || "/placeholder-user.jpg"} />
+            <AvatarFallback>
+              {user?.firstName ? user.firstName[0] : user?.usuario[0]}
+            </AvatarFallback>
+          </Avatar>
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl font-bold">{user?.usuario}</h2>
+            <p className="text-muted-foreground">
+              {user?.bio || "No bio available."}
+            </p>
           </div>
-          <Separator orientation="vertical" className="h-full col-span-1" />
-          <div className="flex flex-col space-y-6 col-span-3">
-            {posts.map((post) => (
-              <div
-                key={post.id}
-                className="bg-background rounded-none p-6 border-b-2"
+          <div className="flex items-center gap-4">
+            {user?.facebook && (
+              <Link
+                href={user.facebook}
+                className="text-primary"
+                prefetch={false}
               >
-                {post.imageUrl && (
-                  <img
-                    src={post.imageUrl}
-                    width={400}
-                    height={225}
-                    alt="Article Image"
-                    className="w-full h-48 object-cover rounded-lg"
-                  />
-                )}
-                <div className="mt-4 space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <UserIcon className="w-4 h-4" />
-                    <span>{user?.usuario}</span>
-                    <Separator orientation="vertical" />
-                    <TagIcon className="w-4 h-4" />
-                    <span>{post.category.name}</span>
-                  </div>
-                  <h3 className="text-lg font-semibold">{post.title}</h3>
-                  <p className="text-muted-foreground line-clamp-2">
-                    {post.content}
-                  </p>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <ClockIcon className="w-4 h-4" />
-                      <span>
-                        {new Date(post.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <MessageCircleIcon className="w-4 h-4" />
-                      <span>{post.comments.length} comments</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <HeartIcon className="w-4 h-4" />
-                      <span>{post.favorites.length} likes</span>
-                    </div>
-                  </div>
-                  <Button variant="link" className="text-primary">
-                    Read Article
-                  </Button>
-                </div>
-              </div>
-            ))}
+                <FacebookIcon className="w-6 h-6" />
+              </Link>
+            )}
+            {user?.instagram && (
+              <Link
+                href={user.instagram}
+                className="text-primary"
+                prefetch={false}
+              >
+                <InstagramIcon className="w-6 h-6" />
+              </Link>
+            )}
+            {user?.twitter && (
+              <Link
+                href={user.twitter}
+                className="text-primary"
+                prefetch={false}
+              >
+                <TwitterIcon className="w-6 h-6" />
+              </Link>
+            )}
+            {user?.linkedin && (
+              <Link
+                href={user.linkedin}
+                className="text-primary"
+                prefetch={false}
+              >
+                <LinkedinIcon className="w-6 h-6" />
+              </Link>
+            )}
           </div>
         </div>
+        <Separator orientation="vertical" className="h-full col-span-1" />
+        <div className="flex flex-col space-y-6 col-span-3">
+          {posts.map((post) => (
+            <div
+              key={post.id}
+              className="bg-background rounded-none p-6 border-b-2"
+            >
+              {post.imageUrl && (
+                <img
+                  src={post.imageUrl}
+                  width={400}
+                  height={225}
+                  alt="Article Image"
+                  className="w-full h-48 object-cover rounded-lg"
+                />
+              )}
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <UserIcon className="w-4 h-4" />
+                  <span>{user?.usuario}</span>
+                  <Separator orientation="vertical" />
+                  <TagIcon className="w-4 h-4" />
+                  <span>{post.category.name}</span>
+                </div>
+                <h3 className="text-lg font-semibold">{post.title}</h3>
+                <p className="text-muted-foreground line-clamp-2">
+                  {post.content}
+                </p>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <ClockIcon className="w-4 h-4" />
+                    <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <MessageCircleIcon className="w-4 h-4" />
+                    <span>{post.comments.length} comments</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <HeartIcon className="w-4 h-4" />
+                    <span>{post.favorites.length} likes</span>
+                  </div>
+                </div>
+                <Button variant="link" className="text-primary">
+                  Read Article
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-      <Footer />
     </div>
+  );
+};
+
+const Owner: React.FC = () => {
+  const searchParams = useSearchParams();
+  const userId = searchParams.get("userId");
+
+  if (!userId) {
+    return <div>User ID is missing</div>;
+  }
+
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Header />
+      <UserContent userId={userId} />
+      <Footer />
+    </Suspense>
   );
 };
 
