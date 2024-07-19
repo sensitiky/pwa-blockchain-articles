@@ -38,7 +38,7 @@ type Post = {
   imageUrl?: string;
   createdAt: string;
   description: string;
-  author: { usuario: string };
+  author: { id: number, usuario: string };
 };
 
 const POSTS_PER_PAGE = 5;
@@ -53,9 +53,7 @@ export default function Articles() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(
-        "https://blogchain.onrender.com/categories"
-      );
+      const response = await axios.get("https://blogchain.onrender.com/categories");
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories", error);
@@ -64,12 +62,10 @@ export default function Articles() {
 
   const fetchPosts = async (page: number, order: string) => {
     try {
-      const response = await axios.get(
-        `https://blogchain.onrender.com/posts?page=${page}&order=${order}&limit=${POSTS_PER_PAGE}`
-      );
+      const response = await axios.get(`https://blogchain.onrender.com/posts?page=${page}&order=${order}&limit=${POSTS_PER_PAGE}`);
       console.log("Fetched posts:", response.data);
-      setPosts(response.data.posts || []); // Add a fallback to an empty array
-      setTotalPages(response.data.totalPages || 1); // Add a fallback to 1
+      setPosts(response.data.posts || []);
+      setTotalPages(response.data.totalPages || 1);
     } catch (error) {
       console.error("Error fetching posts", error);
     }
@@ -232,8 +228,12 @@ export default function Articles() {
                     <h3 className="text-lg font-semibold">{post.title}</h3>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <div>
-                        <UserIcon className="w-4 h-4 mr-1" />
-                        {post.author.usuario}
+                        <Link href={`/articleowner?userId=${post.author.id}`}>
+                          <a>
+                            <UserIcon className="w-4 h-4 mr-1" />
+                            {post.author.usuario}
+                          </a>
+                        </Link>
                       </div>
                       <div>
                         <ClockIcon className="w-4 h-4 mr-1" />5 min read

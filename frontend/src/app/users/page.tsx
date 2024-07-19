@@ -78,7 +78,7 @@ interface UserInfo {
   facebook: string;
   twitter: string;
   linkedin: string;
-  bio:string;
+  bio: string;
 }
 
 interface ProfileSettingsProps {
@@ -405,6 +405,7 @@ const Users = () => {
   const [editMode, setEditMode] = useState(false);
   const [bioEditMode, setBioEditMode] = useState(false);
   const [bio, setBio] = useState<string>("");
+  const router = useRouter();
   const [userInfo, setUserInfo] = useState<UserInfo>({
     firstName: "",
     lastName: "",
@@ -417,7 +418,7 @@ const Users = () => {
     facebook: "",
     twitter: "",
     linkedin: "",
-    bio:"",
+    bio: "",
   });
   const { user, isAuthenticated } = useAuth();
   const [profileImage, setProfileImage] = useState<string>("/shadcn.jpg");
@@ -440,7 +441,7 @@ const Users = () => {
             facebook: profile.facebook || "",
             twitter: profile.twitter || "",
             linkedin: profile.linkedin || "",
-            bio:profile.bio||"",
+            bio: profile.bio || "",
           });
           setProfileImage(profile.profileImage || "/shadcn.jpg");
           setBio(profile.bio || "");
@@ -609,10 +610,9 @@ const Users = () => {
     );
   };
 
-  const renderContent = () => {
-    const router=useRouter();
-    if (!isAuthenticated){
-      router.push('/')
+  const RenderContent = () => {
+    if (!isAuthenticated) {
+      router.push("/");
     }
     switch (selectedSection) {
       case "personal":
@@ -783,7 +783,7 @@ const Users = () => {
             </nav>
           </div>
         </aside>
-        <main className="p-6 md:p-8">{renderContent()}</main>
+        <main className="p-6 md:p-8">{RenderContent()}</main>
       </div>
       <div className="hidden lg:flex md:flex">
         <Footer />

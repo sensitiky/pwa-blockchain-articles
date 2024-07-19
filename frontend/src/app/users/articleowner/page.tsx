@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import Header from "@/assets/header";
 import Footer from "@/assets/footer";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface User {
@@ -39,18 +39,14 @@ const Owner: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const userId = searchParams.get("userId");
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-          "https://blogchain.onrender.com/users/me",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
+          `https://blogchain.onrender.com/users/${userId}`
         );
         const userData = response.data;
         setUser(userData);
@@ -72,29 +68,33 @@ const Owner: React.FC = () => {
       }
     };
 
-    fetchUserData();
-  }, [router]);
+    if (userId) {
+      fetchUserData();
+    }
+  }, [userId]);
 
   if (loading) {
     return (
       <div className="flex flex-col space-y-3">
-      <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-      <div className="space-y-2">
-        <Skeleton className="h-4 w-[250px]" />
-        <Skeleton className="h-4 w-[200px]" />
+        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
       </div>
-    </div>
     );
   }
 
   if (error) {
-    return <div className="flex flex-col space-y-3">
-    <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-    <div className="space-y-2">
-      <Skeleton className="h-4 w-[250px]" />
-      <Skeleton className="h-4 w-[200px]" />
-    </div>
-  </div>;
+    return (
+      <div className="flex flex-col space-y-3">
+        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    );
   }
 
   return (
