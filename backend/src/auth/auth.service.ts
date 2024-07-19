@@ -94,26 +94,23 @@ export class AuthService {
     return user;
   }
 
-  async findOrCreateFacebookUser(
-    facebookId: string,
-    email: string,
-    name: string,
-  ): Promise<User> {
+  async findOrCreateFacebookUser(facebookId: string, email: string, name: string): Promise<User> {
     let user = await this.usersService.findByFacebookId(facebookId);
     if (!user) {
       user = await this.usersService.findByEmail(email);
       if (!user) {
         const [firstName, lastName] = name.split(' ');
-        user = await this.usersService.create({
+        const newUser: CreateUserDto = {
           facebookId,
           email,
-          contrasena: '',
           firstName,
           lastName,
-          nombre: '',
+          nombre: firstName + ' ' + lastName,
+          usuario: email, 
+          contrasena: '',
           code: '',
-          usuario: '',
-        });
+        };
+        user = await this.usersService.create(newUser);
       } else {
         user.facebookId = facebookId;
         await this.usersService.update(user);
