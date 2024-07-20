@@ -88,3 +88,28 @@
     font-family: "Gilroy", sans-serif;
   }
 }
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.hover\:rotateX-12:hover {
+  transform: rotateX(12deg);
+}
+
+.hover\:rotateY-12:hover {
+  transform: rotateY(12deg);
+}
+
+.hover\:scale-110:hover {
+  transform: scale(1.10);
+}
+
+.hover\:shadow-2xl:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.hover\:shadow-black\/50:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+

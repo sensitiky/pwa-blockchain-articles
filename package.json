@@ -8,6 +8,7 @@
     "test": "concurrently \"cd backend && npm run test\" \"cd frontend && npm run test\""
   },
   "dependencies": {
+    "@tabler/icons-react": "^3.11.0",
     "axios": "^1.7.2",
     "concurrently": "^8.2.2",
     "next": "^14.2.4",

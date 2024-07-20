@@ -1,4 +1,5 @@
 import Header from "@/assets/header";
+import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import Image from "next/image";
 import { FC } from "react";
 
@@ -28,13 +29,20 @@ const LandingSection: FC = () => {
             </p>
           </div>
           <div className="mt-6 sm:mt-10 flex justify-center">
-            <Image
-              src="/about us.png"
-              alt="Illustration"
-              width={300}
-              height={200}
-              className="max-w-full"
-            />
+          <CardContainer className="inter-var mx-auto">
+              <CardBody className="bg-inherit text-card-foreground border-none rounded-lg shadow-none w-full h-full transition-transform relative flex justify-center items-center">
+                <CardItem translateZ="50" className="relative z-10">
+                  <Image
+                    src="/about us.png"
+                    alt="Blogchain About"
+                    width={300}
+                    height={300}
+                    objectFit="contain"
+                    className="relative z-10"
+                  />
+                </CardItem>
+              </CardBody>
+            </CardContainer>
           </div>
         </aside>
         <main className="flex flex-col justify-center bg-gradient-to-b from-white to-cyan-100 text-black px-4 sm:px-8 py-8 sm:py-10">

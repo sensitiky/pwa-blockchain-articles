@@ -127,24 +127,23 @@ const HomePage: React.FC = () => {
 
       <div className="relative h-screen flex items-center justify-center bg-customColor-header">
         <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-white to-transparent z-0"></div>
-        <div className="relative z-10">
-          <BlurIn
-            word=" Welcome to Blogchain"
-            className="text-center text-yellow-400 text-xs sm:text-3xl md:text-xs"
-          />
-          <BlurIn
-            word="A place where we write
+        <div
+          className="relative z-10"
+          data-aos="fade-in"
+          data-aos-once="true"
+          data-aos-anchor-placement="top-bottom"
+          data-aos-offset="200"
+        >
+          <h1 className="text-center text-yellow-400 text-2xl sm:text-3xl md:text-4xl">
+            Welcome to Blogchain
+          </h1>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl text-center text-white font-bold mt-4">
+            A place where we write <br />
             articles about blockchain
-            to discuss"
-            className="text-xs sm:text-sm md:text-xs text-center text-white font-bold mt-4"
-          />
-          <div
-            className="text-center mt-8 flex justify-center"
-            data-aos="fade-in"
-            data-aos-once="true"
-            data-aos-anchor-placement="top-bottom"
-            data-aos-offset="200"
-          >
+            <br />
+            to discuss
+          </h2>
+          <div className="text-center mt-8 flex justify-center">
             <Image
               src="/Hero.png"
               alt="Hero Image"

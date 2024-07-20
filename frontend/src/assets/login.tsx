@@ -391,14 +391,19 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   {loading ? "Logging in..." : "Login"}
                 </Button>
               </div>
+              <div className="flex justify-center">
+                <Button
+                  className="rounded-full w-44 bg-customColor-header"
+                  onClick={handleFacebookLogin}
+                >
+                  Login with Facebook
+                </Button>
+              </div>
               <div className="space-y-2 flex flex-col items-center">
                 <GoogleLogin
                   onSuccess={handleGoogleLoginSuccess}
                   onError={() => setError("Google login failed")}
                 />
-                <Button onClick={handleFacebookLogin}>
-                  Login with Facebook
-                </Button>
               </div>
               <div className="mt-4 text-center text-sm">
                 <div>
