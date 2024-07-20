@@ -34,6 +34,14 @@ export class AuthService {
     });
   }
 
+  private validatePassword(password: string): boolean {
+    const lengthCriteria = password.length >= 8;
+    const uppercaseCriteria = /[A-Z]/.test(password);
+    const numberOrSymbolCriteria = /[0-9!@#$%^&*]/.test(password);
+
+    return lengthCriteria && uppercaseCriteria && numberOrSymbolCriteria;
+  }
+
   async validateUser(email: string, contrasena: string): Promise<User | null> {
     const user = await this.usersService.findByEmail(email);
     if (user && (await bcrypt.compare(contrasena, user.contrasena))) {
@@ -55,6 +63,10 @@ export class AuthService {
     );
     if (existingUsername) {
       throw new ConflictException('Username already in use');
+    }
+
+    if (!this.validatePassword(createUserDto.contrasena)) {
+      throw new ConflictException('Password does not meet the criteria');
     }
 
     const salt = await bcrypt.genSalt();
