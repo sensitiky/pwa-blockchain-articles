@@ -1,19 +1,18 @@
-"use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { Checkbox } from "@/components/ui/checkbox";
 import axios from "axios";
+import { AuthProvider, useAuth } from "../../context/authContext";
+import useFacebookSDK from "@/hooks/MetaSDK";
 import {
   GoogleOAuthProvider,
   GoogleLogin,
   CredentialResponse,
 } from "@react-oauth/google";
-import { AuthProvider, useAuth } from "../../context/authContext";
-import useFacebookSDK from "@/hooks/MetaSDK";
+import Link from "next/link";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function LoginCard({ onClose }: { onClose: () => void }) {
   const [showRegister, setShowRegister] = useState(false);
@@ -39,6 +38,26 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
   useFacebookSDK();
 
+  const validatePassword = (password: string) => ({
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    numberOrSymbol: /[0-9!@#$%^&*]/.test(password),
+  });
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const password = e.target.value;
+    setContrasena(password);
+
+    const criteria = validatePassword(password);
+    setPasswordCriteria(criteria);
+
+    if (!criteria.length || !criteria.uppercase || !criteria.numberOrSymbol) {
+      setPasswordError("Password does not meet the criteria.");
+    } else {
+      setPasswordError(null);
+    }
+  };
+
   const handleLogin = async () => {
     setLoading(true);
     setError(null);
@@ -46,10 +65,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     try {
       const response = await axios.post(
         "https://blogchain.onrender.com/auth/login",
-        {
-          email,
-          contrasena,
-        },
+        { email, contrasena },
         { withCredentials: true }
       );
 
@@ -89,12 +105,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     try {
       const response = await axios.post(
         "https://blogchain.onrender.com/auth/register",
-        {
-          usuario,
-          contrasena,
-          email,
-          code: verificationCode,
-        },
+        { usuario, contrasena, email, code: verificationCode },
         { withCredentials: true }
       );
 
@@ -115,17 +126,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const password = e.target.value;
-    setContrasena(password);
-
-    setPasswordCriteria({
-      length: password.length >= 8,
-      uppercase: /[A-Z]/.test(password),
-      numberOrSymbol: /[0-9!@#$%^&*]/.test(password),
-    });
   };
 
   const handleSendVerificationCode = async () => {
@@ -172,15 +172,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     setLoading(true);
     setError(null);
 
-    if (
-      !passwordCriteria.length ||
-      !passwordCriteria.uppercase ||
-      !passwordCriteria.numberOrSymbol
-    ) {
-      setError("Password does not meet the criteria.");
-      setLoading(false);
-      return;
-    }
     try {
       const response = await axios.post(
         "https://blogchain.onrender.com/auth/verify-code",
