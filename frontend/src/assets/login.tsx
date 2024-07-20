@@ -172,6 +172,15 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     setLoading(true);
     setError(null);
 
+    if (
+      !passwordCriteria.length ||
+      !passwordCriteria.uppercase ||
+      !passwordCriteria.numberOrSymbol
+    ) {
+      setError("Password does not meet the criteria.");
+      setLoading(false);
+      return;
+    }
     try {
       const response = await axios.post(
         "https://blogchain.onrender.com/auth/verify-code",
