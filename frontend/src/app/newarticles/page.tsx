@@ -44,8 +44,8 @@ export default function NewArticles() {
     const fetchCategoriesAndTags = async () => {
       try {
         const [categoriesResponse, tagsResponse] = await Promise.all([
-          axios.get("http://localhost:4000/categories"),
-          axios.get("http://localhost:4000/tags"),
+          axios.get("https://blogchain.onrender.com/categories"),
+          axios.get("https://blogchain.onrender.com/tags"),
         ]);
         setCategories(categoriesResponse.data);
         const filteredTags = tagsResponse.data.filter(
@@ -123,7 +123,7 @@ export default function NewArticles() {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/posts",
+        "https://blogchain.onrender.com/posts",
         formData,
         {
           headers: {
