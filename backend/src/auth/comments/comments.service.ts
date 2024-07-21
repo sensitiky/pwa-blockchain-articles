@@ -18,16 +18,37 @@ export class CommentsService {
   ) {}
 
   async create(createCommentDto: CreateCommentDto): Promise<Comment> {
-    const author = await this.usersRepository.findOne({ where: { id: createCommentDto.authorId } });
-    const post = await this.postsRepository.findOne({ where: { id: createCommentDto.postId } });
+    const author = await this.usersRepository.findOne({
+      where: { id: createCommentDto.authorId },
+    });
+    const post = await this.postsRepository.findOne({
+      where: { id: createCommentDto.postId },
+    });
+    const parentComment = createCommentDto.parentCommentId
+      ? await this.commentsRepository.findOne({
+          where: { id: createCommentDto.parentCommentId },
+        })
+      : null;
 
-    const comment = this.commentsRepository.create({ ...createCommentDto, author, post });
+    const comment = this.commentsRepository.create({
+      ...createCommentDto,
+      author,
+      post,
+      replies: [],
+    });
     return this.commentsRepository.save(comment);
   }
 
   async findAllByPost(postId: number): Promise<Comment[]> {
     return this.commentsRepository.find({
-      where: { post: { id: postId } },
+      where: { post: { id: postId }, parentComment: null },
+      relations: ['author', 'replies', 'replies.author'],
+    });
+  }
+
+  async findAllReplies(commentId: number): Promise<Comment[]> {
+    return this.commentsRepository.find({
+      where: { parentComment: { id: commentId } },
       relations: ['author'],
     });
   }

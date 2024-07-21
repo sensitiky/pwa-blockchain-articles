@@ -36,7 +36,7 @@ const Header = () => {
     const fetchUser = async () => {
       try {
         console.log("Attempting to fetch user data");
-        const response = await api.get("https://blogchain.onrender.com/users/me");
+        const response = await api.get("http://localhost:4000/users/me");
         console.log("User data fetched successfully", response.data);
         setUser(response.data);
       } catch (error) {
@@ -219,8 +219,8 @@ const Header = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Avatar className="rounded-full cursor-pointer">
-                    <AvatarImage src={user?.profilePicture} />
-                    <AvatarFallback>CN</AvatarFallback>
+                    <AvatarImage src={`http://localhost:4000${user.avatar}`} />
+                    <AvatarFallback>{user.usuario}</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>

@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Res, Logger } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
-import { CreateUserDto } from 'src/dto/user.dto';
+import { CreateUserDto, UserDto } from 'src/dto/user.dto';
 import axios from 'axios';
 import * as crypto from 'crypto';
 import { ConfigService } from '@nestjs/config';
@@ -12,18 +12,18 @@ export class AuthController {
 
   constructor(
     private readonly authService: AuthService,
-    private readonly configService: ConfigService, // Agregar ConfigService
+    private readonly configService: ConfigService,
   ) {}
 
   @Post('login')
   async login(
-    @Body() loginDto: { email: string; contrasena: string },
+    @Body() loginDto: { email: string; password: string },
     @Res() res: Response,
   ): Promise<void> {
     this.logger.log(`Login attempt for user: ${loginDto.email}`);
     const user = await this.authService.validateUser(
       loginDto.email,
-      loginDto.contrasena,
+      loginDto.password,
     );
     if (user) {
       const token = this.authService.generateJwtToken(user);
@@ -40,27 +40,22 @@ export class AuthController {
     @Body() body: { accessToken: string },
     @Res() res: Response,
   ): Promise<void> {
-    // Obtener el secreto de la app
     const appSecret = this.configService.get<string>('FACEBOOK_CLIENT_SECRET');
-    // Generar el appSecretProof
     const appSecretProof = crypto
       .createHmac('sha256', appSecret)
       .update(body.accessToken)
       .digest('hex');
 
-    // Log the received accessToken and appSecretProof
     this.logger.log(`Received Facebook access token: ${body.accessToken}`);
     this.logger.log(`Generated appSecretProof: ${appSecretProof}`);
     console.log(`Received Facebook access token: ${body.accessToken}`);
     console.log(`Generated appSecretProof: ${appSecretProof}`);
 
     try {
-      // Verificar y obtener información del usuario desde la API de Facebook
       const facebookResponse = await axios.get(
         `https://graph.facebook.com/me?access_token=${body.accessToken}&appsecret_proof=${appSecretProof}&fields=id,name,email`,
       );
 
-      // Log the response from Facebook
       this.logger.log(
         `Facebook response: ${JSON.stringify(facebookResponse.data)}`,
       );
@@ -69,15 +64,11 @@ export class AuthController {
       );
 
       const { id, email, name } = facebookResponse.data;
-
-      // Buscar o crear el usuario en tu base de datos
       let user = await this.authService.findOrCreateFacebookUser(
         id,
         email,
         name,
       );
-
-      // Generar token JWT para la sesión del usuario
       const token = this.authService.generateJwtToken(user);
       res
         .status(200)
@@ -147,9 +138,11 @@ export class AuthController {
         res.status(400).json({ message: 'Invalid verification code' });
         return;
       }
-      await this.authService.registerUser(registerDto);
+      const userDto = await this.authService.registerUser(registerDto);
       this.authService.deleteVerificationCode(registerDto.email);
-      res.status(200).json({ message: 'Registration successful' });
+      res
+        .status(200)
+        .json({ message: 'Registration successful', user: userDto });
     } catch (error) {
       this.logger.error(`Error registering user: ${error.message}`);
       res.status(500).json({ message: 'Failed to register user' });
@@ -206,8 +199,10 @@ export class AuthController {
     @Res() res: Response,
   ): Promise<void> {
     try {
-      const user = await this.authService.validateGoogleToken(body.token);
-      res.status(200).json({ message: 'Google login successful', user });
+      const userDto = await this.authService.validateGoogleToken(body.token);
+      res
+        .status(200)
+        .json({ message: 'Google login successful', user: userDto });
     } catch (error) {
       this.logger.error(`Error with Google login: ${error.message}`);
       res.status(401).json({ message: 'Google login failed' });

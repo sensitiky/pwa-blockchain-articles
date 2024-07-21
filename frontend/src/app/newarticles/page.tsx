@@ -8,6 +8,8 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import dynamic from "next/dynamic";
+import { FaUpload } from "react-icons/fa";
+import { useAuth } from "../../../context/authContext";
 
 type Category = {
   id: number;
@@ -24,6 +26,7 @@ const CustomEditor = dynamic(() => import("@/components/ui/editor"), {
 });
 
 export default function NewArticles() {
+  const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
@@ -36,14 +39,13 @@ export default function NewArticles() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [newTag, setNewTag] = useState<string>("");
   const router = useRouter();
-  const user = { id: 1 };
 
   useEffect(() => {
     const fetchCategoriesAndTags = async () => {
       try {
         const [categoriesResponse, tagsResponse] = await Promise.all([
-          axios.get("https://blogchain.onrender.com/categories"),
-          axios.get("https://blogchain.onrender.com/tags"),
+          axios.get("http://localhost:4000/categories"),
+          axios.get("http://localhost:4000/tags"),
         ]);
         setCategories(categoriesResponse.data);
         const filteredTags = tagsResponse.data.filter(
@@ -121,7 +123,7 @@ export default function NewArticles() {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/posts",
+        "http://localhost:4000/posts",
         formData,
         {
           headers: {
@@ -251,7 +253,7 @@ export default function NewArticles() {
                         />
                       ) : (
                         <div className="w-full h-52 flex items-center justify-center border-2 border-dashed border-gray-400 rounded-lg mb-4">
-                          <UploadIcon className="h-10 w-10 text-gray-400" />
+                          <FaUpload className="h-10 w-10 text-gray-400" />
                         </div>
                       )}
                       <input
@@ -275,21 +277,5 @@ export default function NewArticles() {
       </div>
       <Footer />
     </div>
-  );
-}
-
-function UploadIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 20v-6M12 4v10M5 12l7-7 7 7" />
-    </svg>
   );
 }

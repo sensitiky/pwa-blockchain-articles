@@ -1,4 +1,5 @@
-import React, { useRef, useState } from "react";
+"use client";
+import React, { useRef, useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,76 +12,173 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { AiOutlinePlus } from "react-icons/ai";
 import Image from "next/image";
+import { useAuth } from "../../context/authContext";
+import { Skeleton } from "@/components/ui/skeleton";
+import api from "../../services/api";
 
-interface UserInfo {
-  firstName: string;
-  lastName: string;
-  date: Date;
-  email: string;
-  usuario: string;
-  country: string;
-  medium: string;
-  instagram: string;
-  facebook: string;
-  twitter: string;
-  linkedin: string;
-  bio: string;
+interface User {
+  firstName?: string;
+  lastName?: string;
+  date?: Date;
+  email?: string;
+  usuario?: string;
+  country?: string;
+  medium?: string;
+  instagram?: string;
+  facebook?: string;
+  twitter?: string;
+  linkedin?: string;
+  bio?: string;
+  avatar?: string;
+  postCount?: number;
 }
 
-interface ProfileSettingsProps {
-  profileImage: string;
-  userInfo: UserInfo;
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleCountryChange: (
-    selectedOption: SingleValue<{ label: string; value: string }>
-  ) => void;
-  handleEditToggle: () => void;
-  handleBioEditToggle: () => void;
-  handleEditBio: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  handleDateChange: (date: Date | null) => void;
-  handleProfileSave: () => void;
-  handleBioSave: () => void;
-  handleSectionChange: (section: string) => void;
-  editMode: boolean;
-  bioEditMode: boolean;
-  bio: string;
-  handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
-
-const user = {
-  username: "Nearby-Rise7977",
-  postLikes: 1,
-  comments: 1,
-  postKarma: 0,
-  commentKarma: 0,
-  cakeDay: "Jul 19, 2024",
-  goldReceived: 0,
-};
-
-const ProfileSettings: React.FC<ProfileSettingsProps> = ({
-  profileImage,
-  userInfo,
-  handleInputChange,
-  handleCountryChange,
-  handleEditToggle,
-  handleBioEditToggle,
-  handleEditBio,
-  handleDateChange,
-  handleProfileSave,
-  handleBioSave,
-  handleSectionChange,
-  editMode,
-  bioEditMode,
-  bio,
-  handleImageChange,
-}) => {
-  const formattedDate = userInfo.date.toLocaleDateString();
+const ProfileSettings: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  const [editMode, setEditMode] = useState(false);
+  const [bioEditMode, setBioEditMode] = useState(false);
+  const [userInfo, setUserInfo] = useState<User>({});
+  const [profileImage, setProfileImage] = useState<string>("");
+  const [bio, setBio] = useState<string>("");
+  const [loading, setLoading] = useState(true);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  const fetchProfile = async () => {
+    if (isAuthenticated) {
+      try {
+        const response = await api.get("http://localhost:4000/users/me");
+        const profile = response.data;
+        const avatarUrl = profile.avatar
+          ? `http://localhost:4000${profile.avatar}`
+          : "";
+        setUserInfo({
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          date: profile.date ? new Date(profile.date) : undefined,
+          email: profile.email,
+          usuario: profile.usuario,
+          country: profile.country,
+          medium: profile.medium,
+          instagram: profile.instagram,
+          facebook: profile.facebook,
+          twitter: profile.twitter,
+          linkedin: profile.linkedin,
+          bio: profile.bio,
+          avatar: avatarUrl,
+          postCount: profile.postCount || 0,
+        });
+        setProfileImage(
+          avatarUrl ? `${avatarUrl}?${new Date().getTime()}` : ""
+        );
+        setBio(profile.bio || "");
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching profile data", error);
+        setLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, [isAuthenticated]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUserInfo({ ...userInfo, [name]: value });
+  };
+
+  const handleCountryChange = (
+    selectedOption: SingleValue<{ label: string; value: string }>
+  ) => {
+    setUserInfo({ ...userInfo, country: selectedOption?.value || "" });
+  };
+
+  const handleDateChange = (date: Date | null) => {
+    if (date) {
+      setUserInfo({ ...userInfo, date });
+    }
+  };
+
+  const handleEditToggle = () => {
+    if (editMode) {
+      handleProfileSave();
+    }
+    setEditMode(!editMode);
+  };
+
+  const handleBioEditToggle = () => {
+    if (bioEditMode) {
+      handleBioSave();
+    }
+    setBioEditMode(!bioEditMode);
+  };
+
+  const handleEditBio = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setBio(e.target.value);
+  };
+
+  const handleProfileSave = async () => {
+    try {
+      await api.put("http://localhost:4000/users/me", userInfo);
+      fetchProfile();
+    } catch (error) {
+      console.error("Error saving profile information:", error);
+    }
+  };
+
+  const handleBioSave = async () => {
+    try {
+      await api.put("http://localhost:4000/users/me", { ...userInfo, bio });
+      setUserInfo({ ...userInfo, bio });
+      fetchProfile();
+    } catch (error) {
+      console.error("Error saving bio:", error);
+    }
+  };
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const formData = new FormData();
+      formData.append("avatar", e.target.files[0]);
+
+      try {
+        const response = await api.put(
+          "http://localhost:4000/users/me",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        const avatarUrl = `http://localhost:4000${response.data.avatar}`;
+        setProfileImage(`${avatarUrl}?${new Date().getTime()}`);
+        setUserInfo({ ...userInfo, avatar: avatarUrl });
+        fetchProfile();
+      } catch (error) {
+        console.error("Error uploading avatar:", error);
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col space-y-3">
+        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center justify-center md:flex-row md:space-x-8 px-4 md:px-6">
-      <div className="flex-1 flex flex-col">
-        <div className="flex items-center gap-6">
+      <div className="flex-1 flex flex-col items-center md:items-start">
+        <div className="flex items-center gap-6 flex-col md:flex-row">
           <CardContainer className="inter-var mx-auto">
             <CardBody className="bg-inherit text-card-foreground border-none rounded-lg shadow-none w-full h-full transition-transform relative flex justify-center items-center">
               <CardItem translateZ="50" className="relative z-10">
@@ -100,7 +198,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
               onChange={handleImageChange}
             />
           </label>
-          <h1 className="text-5xl md:text-5xl font-bold">
+          <h1 className="text-5xl md:text-5xl font-bold text-center md:text-left">
             Hi, {userInfo.firstName}
           </h1>
         </div>
@@ -111,7 +209,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
               {editMode ? (
                 <Input
                   name="usuario"
-                  value={userInfo.usuario}
+                  value={userInfo.usuario || ""}
                   onChange={handleInputChange}
                   className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
                 />
@@ -126,7 +224,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
               {editMode ? (
                 <Input
                   name="firstName"
-                  value={userInfo.firstName}
+                  value={userInfo.firstName || ""}
                   onChange={handleInputChange}
                   className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
                 />
@@ -141,7 +239,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
               {editMode ? (
                 <Input
                   name="lastName"
-                  value={userInfo.lastName}
+                  value={userInfo.lastName || ""}
                   onChange={handleInputChange}
                   className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
                 />
@@ -163,7 +261,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
               ) : (
                 <div className="flex items-center border-b-[1px]">
                   <span className="flex-grow">
-                    {userInfo.date.toDateString()}
+                    {userInfo.date?.toDateString()}
                   </span>
                 </div>
               )}
@@ -179,7 +277,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
               {editMode ? (
                 <Select
                   options={countryList().getData()}
-                  value={{ label: userInfo.country, value: userInfo.country }}
+                  value={{
+                    label: userInfo.country || "",
+                    value: userInfo.country || "",
+                  }}
                   onChange={handleCountryChange}
                   className="w-full text-xl"
                 />
@@ -192,10 +293,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             <Button
               variant="outline"
               className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black"
-              onClick={() => {
-                handleProfileSave();
-                handleEditToggle();
-              }}
+              onClick={handleEditToggle}
             >
               {editMode ? "Save Changes" : "Edit Information"}
             </Button>
@@ -217,10 +315,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             <Button
               variant="outline"
               className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black"
-              onClick={() => {
-                handleBioSave();
-                handleBioEditToggle();
-              }}
+              onClick={handleBioEditToggle}
             >
               {bioEditMode ? "Save Changes" : "Edit Bio"}
             </Button>
@@ -230,13 +325,15 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
       <div
         ref={cardRef}
-        className="w-96 bg-customColor-header p-6 rounded-lg text-white transform transition-transform duration-500 hover:rotateX-6 hover:rotateY-6 hover:shadow-2xl hover:shadow-black/50 relative flex flex-col items-center"
+        className="w-96 bg-customColor-header p-6 rounded-lg text-white transform transition-transform duration-500 hover:rotateX-6 hover:scale-125 hover:rotateY-6 hover:shadow-2xl hover:shadow-black/50 relative flex flex-col items-center mt-6 md:mt-0"
       >
         <div className="bg-customColor-innovatio2 p-3 rounded-full mb-4 transform transition-transform duration-500 hover:scale-110">
           <Image
-            alt=""
+            alt="Banner"
             src={profileImage}
-            className="text-customColor-innovatio3 h-6 w-6"
+            width={1920}
+            height={1080}
+            className="text-customColor-innovatio3 rounded-full h-24 w-24"
           />
         </div>
         <h2 className="text-xl font-bold mb-2 transform transition-transform duration-500 hover:scale-110">
@@ -249,27 +346,23 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         <div className="mt-4 text-center w-full">
           <div className="flex justify-between mb-4">
             <div className="text-center w-1/2 transform transition-transform duration-500 hover:scale-110">
-              <p className="font-semibold">Saved Articles</p>
-              <p>{user.postLikes}</p>
+              <p className="font-semibold">Posts</p>
+              <p>{userInfo.postCount}</p>
             </div>
             <div className="text-center w-1/2 transform transition-transform duration-500 hover:scale-110">
               <p className="font-semibold">Comments</p>
-              <p>{user.comments}</p>
+              <p>1</p>
             </div>
           </div>
           <div className="flex justify-between mb-4">
             <div className="text-center w-1/2 transform transition-transform duration-500 hover:scale-110">
               <p className="font-semibold">Favorites</p>
-              <p>{user.postKarma + user.commentKarma}</p>
-            </div>
-            <div className="text-center w-1/2 transform transition-transform duration-500 hover:scale-110">
-              <p className="font-semibold">Articles</p>
-              <p>{user.postKarma}</p>
+              <p>1</p>
             </div>
           </div>
           <div className="mb-4 transform transition-transform duration-500 hover:scale-110">
             <p className="font-semibold">Birthday</p>
-            <p>{formattedDate}</p>
+            <p>{userInfo.date?.toLocaleDateString()}</p>
           </div>
         </div>
         <div className="mt-6 w-full">
@@ -286,7 +379,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             </div>
             <Button
               className="bg-gray-800 px-4 py-2 rounded-full hover:bg-white hover:text-black"
-              onClick={() => handleSectionChange("security")}
+              onClick={() => {}}
             >
               Edit Profile
             </Button>

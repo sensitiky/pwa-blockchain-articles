@@ -15,7 +15,7 @@ import { TagsModule } from './auth/tag/tag.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), // Asegúrate de que ConfigModule está importado
+    ConfigModule.forRoot(),
     DatabaseModule,
     AuthModule,
     PostsModule,

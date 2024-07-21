@@ -1,10 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import axios from "axios";
 import { FaComment, FaHeart } from "react-icons/fa";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import Header from "@/assets/header";
 import Footer from "@/assets/footer";
 import {
@@ -15,7 +13,7 @@ import {
   PaginationLink,
   PaginationNext,
 } from "@/components/ui/pagination";
-import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
+import Link from "next/link";
 
 type Category = {
   id: number;
@@ -48,7 +46,7 @@ export default function Articles() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("https://blogchain.onrender.com/categories");
+      const response = await axios.get("http://localhost:4000/categories");
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories", error);
@@ -58,8 +56,8 @@ export default function Articles() {
   const fetchPosts = async (page: number, categoryId?: number) => {
     try {
       const url = categoryId
-        ? `https://blogchain.onrender.com/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
-        : `https://blogchain.onrender.com/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
+        ? `http://localhost:4000/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
+        : `http://localhost:4000/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
       const response = await axios.get(url);
       const postsData = response.data.data;
       setPosts(postsData || []);
@@ -79,24 +77,6 @@ export default function Articles() {
     setSelectedCategoryId(newCategoryId);
     setCurrentPage(1);
     fetchPosts(1, newCategoryId || undefined);
-  };
-
-  const scrollLeft = () => {
-    if (categoriesRef.current) {
-      categoriesRef.current.scrollBy({
-        left: -200,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const scrollRight = () => {
-    if (categoriesRef.current) {
-      categoriesRef.current.scrollBy({
-        left: 200,
-        behavior: "smooth",
-      });
-    }
   };
 
   const handleSortOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -173,7 +153,7 @@ export default function Articles() {
                   <div className="flex flex-col md:flex-row h-full">
                     {post.imageUrl && (
                       <Image
-                        src={`https://blogchain.onrender.com${post.imageUrl}`}
+                        src={`http://localhost:4000${post.imageUrl}`}
                         alt="Article image"
                         className="w-full md:w-1/3 rounded-lg object-cover"
                         width={300}
@@ -223,9 +203,11 @@ export default function Articles() {
                             11
                           </span>
                         </div>
+                        <Link href={`/posts/${post.id}`}>
                         <button className="bg-primary text-primary-foreground px-4 py-2 rounded-full hover:bg-primary/80">
                           Learn More
                         </button>
+                        </Link>
                       </div>
                     </div>
                   </div>

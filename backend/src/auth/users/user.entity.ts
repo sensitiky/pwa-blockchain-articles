@@ -1,4 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+} from 'typeorm';
 import { Post } from '../posts/post.entity';
 import { Comment } from '../comments/comment.entity';
 import { Favorite } from '../favorites/favorite.entity';
@@ -13,7 +18,7 @@ export class User {
 
   @Column({ nullable: true })
   facebookId: string;
-  
+
   @Column()
   email: string;
 
@@ -24,7 +29,7 @@ export class User {
   lastName?: string;
 
   @Column()
-  contrasena: string;
+  password: string;
 
   @Column({ nullable: true })
   date?: Date;
@@ -55,10 +60,13 @@ export class User {
 
   @OneToMany(() => Favorite, (favorite) => favorite.user)
   favorites: Favorite[];
-  
+
   @Column({ nullable: true })
   bio?: string;
-  
+
   @Column({ nullable: true })
   avatar?: string;
+
+  @Column({ default: 0 })
+  postCount: number;
 }

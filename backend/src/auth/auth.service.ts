@@ -8,7 +8,7 @@ import { UsersService } from './users/users.service';
 import { OAuth2Client } from 'google-auth-library';
 import * as nodemailer from 'nodemailer';
 import * as bcrypt from 'bcryptjs';
-import { CreateUserDto } from '../dto/user.dto';
+import { CreateUserDto, UserDto } from '../dto/user.dto';
 import { User } from './users/user.entity';
 
 @Injectable()
@@ -42,15 +42,15 @@ export class AuthService {
     return lengthCriteria && uppercaseCriteria && numberOrSymbolCriteria;
   }
 
-  async validateUser(email: string, contrasena: string): Promise<User | null> {
+  async validateUser(email: string, password: string): Promise<UserDto | null> {
     const user = await this.usersService.findByEmail(email);
-    if (user && (await bcrypt.compare(contrasena, user.contrasena))) {
-      return user;
+    if (user && (await bcrypt.compare(password, user.password))) {
+      return this.usersService.transformToDto(user);
     }
     return null;
   }
 
-  async registerUser(createUserDto: CreateUserDto): Promise<User> {
+  async registerUser(createUserDto: CreateUserDto): Promise<UserDto> {
     const existingUser = await this.usersService.findByEmail(
       createUserDto.email,
     );
@@ -65,18 +65,20 @@ export class AuthService {
       throw new ConflictException('Username already in use');
     }
 
-    if (!this.validatePassword(createUserDto.contrasena)) {
+    if (!this.validatePassword(createUserDto.password)) {
       throw new ConflictException('Password does not meet the criteria');
     }
 
     const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(createUserDto.contrasena, salt);
-    createUserDto.contrasena = hashedPassword;
+    const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
+    createUserDto.password = hashedPassword;
 
-    return this.usersService.create(createUserDto);
+    const newUser = await this.usersService.create(createUserDto);
+    newUser.postCount = newUser.posts ? newUser.posts.length : 0;
+    return this.usersService.transformToDto(newUser);
   }
 
-  async validateGoogleToken(token: string): Promise<User> {
+  async validateGoogleToken(token: string): Promise<UserDto> {
     const ticket = await this.googleClient.verifyIdToken({
       idToken: token,
       audience: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
@@ -95,18 +97,21 @@ export class AuthService {
       user = await this.usersService.create({
         usuario: payload?.sub,
         email,
-        contrasena: '',
+        password: '',
         firstName: payload?.given_name,
         lastName: payload?.family_name,
         nombre: '',
         code: '',
       });
+      user.postCount = user.posts ? user.posts.length : 0;
+    } else {
+      user.postCount = user.posts ? user.posts.length : 0;
     }
 
-    return user;
+    return this.usersService.transformToDto(user);
   }
 
-  async findOrCreateFacebookUser(facebookId: string, email: string, name: string): Promise<User> {
+  async findOrCreateFacebookUser(facebookId: string, email: string, name: string): Promise<UserDto> {
     let user = await this.usersService.findByFacebookId(facebookId);
     if (!user) {
       user = await this.usersService.findByEmail(email);
@@ -119,16 +124,17 @@ export class AuthService {
           lastName,
           nombre: firstName + ' ' + lastName,
           usuario: email, 
-          contrasena: '',
+          password: '',
           code: '',
         };
         user = await this.usersService.create(newUser);
+        user.postCount = user.posts ? user.posts.length : 0;
       } else {
         user.facebookId = facebookId;
         await this.usersService.update(user);
       }
     }
-    return user;
+    return this.usersService.transformToDto(user);
   }
 
   async sendVerificationCode(email: string): Promise<void> {
@@ -184,20 +190,20 @@ export class AuthService {
     return this.verifyCode(email, code);
   }
 
-  async validateToken(token: string): Promise<User> {
+  async validateToken(token: string): Promise<UserDto> {
     try {
       const decoded = this.jwtService.verify(token);
       const user = await this.usersService.findOne(decoded.userId);
       if (!user) {
         throw new UnauthorizedException('Invalid token');
       }
-      return user;
+      return this.usersService.transformToDto(user);
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
     }
   }
 
-  generateJwtToken(user: User): string {
+  generateJwtToken(user: UserDto): string {
     const payload = { userId: user.id, email: user.email };
     return this.jwtService.sign(payload);
   }

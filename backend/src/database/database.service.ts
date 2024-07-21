@@ -31,17 +31,17 @@ export class DatabaseService {
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     this.logger.log(`Creating user: ${createUserDto.usuario}`);
-    if (!createUserDto.contrasena) {
+    if (!createUserDto.password) {
       this.logger.warn('Contraseña is required');
       throw new BadRequestException('Contraseña is required');
     }
     
     const salt = await bcrypt.genSalt();
-    const hashedcontrasena = await bcrypt.hash(createUserDto.contrasena, salt);
+    const hashedcontrasena = await bcrypt.hash(createUserDto.password, salt);
 
     const newUser = this.userRepository.create({
       ...createUserDto,
-      contrasena: hashedcontrasena,
+      password: hashedcontrasena,
     });
 
     const savedUser = await this.userRepository.save(newUser);

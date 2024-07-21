@@ -17,7 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 export default function LoginCard({ onClose }: { onClose: () => void }) {
   const [showRegister, setShowRegister] = useState(false);
   const [usuario, setUsuario] = useState("");
-  const [contrasena, setContrasena] = useState("");
+  const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [forgotPassword, setForgotPassword] = useState(false);
@@ -46,7 +46,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const password = e.target.value;
-    setContrasena(password);
+    setPassword(password);
 
     const criteria = validatePassword(password);
     setPasswordCriteria(criteria);
@@ -64,8 +64,8 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/login",
-        { email, contrasena },
+        "http://localhost:4000/auth/login",
+        { email, password },
         { withCredentials: true }
       );
 
@@ -104,8 +104,8 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/register",
-        { usuario, contrasena, email, code: verificationCode },
+        "http://localhost:4000/auth/register",
+        { usuario, password, email, code: verificationCode },
         { withCredentials: true }
       );
 
@@ -144,7 +144,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/send-verification-code",
+        "http://localhost:4000/auth/send-verification-code",
         { email },
         { withCredentials: true }
       );
@@ -174,7 +174,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/verify-code",
+        "http://localhost:4000/auth/verify-code",
         { email, code: verificationCode },
         { withCredentials: true }
       );
@@ -202,7 +202,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/forgot-password",
+        "http://localhost:4000/auth/forgot-password",
         { email },
         { withCredentials: true }
       );
@@ -242,7 +242,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/reset-password",
+        "http://localhost:4000/auth/reset-password",
         { email, code: resetCode, newPassword },
         { withCredentials: true }
       );
@@ -271,7 +271,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   ) => {
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/google",
+        "http://localhost:4000/auth/google",
         { token: credentialResponse.credential },
         { withCredentials: true }
       );
@@ -304,7 +304,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const handleFacebookResponse = async (accessToken: string) => {
     try {
       const res = await axios.post(
-        "https://blogchain.onrender.com/auth/facebook",
+        "http://localhost:4000/auth/facebook",
         { accessToken },
         { withCredentials: true }
       );
@@ -375,7 +375,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   id="password"
                   type="password"
                   placeholder="Enter your password"
-                  value={contrasena}
+                  value={password}
                   onChange={handlePasswordChange}
                   required
                 />
@@ -448,7 +448,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   id="password"
                   type="password"
                   placeholder="Enter your password"
-                  value={contrasena}
+                  value={password}
                   onChange={handlePasswordChange}
                   required
                 />

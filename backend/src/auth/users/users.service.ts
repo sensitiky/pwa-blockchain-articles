@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
-import { CreateUserDto, UpdateUserDto } from '../../dto/user.dto';
+import { CreateUserDto, UpdateUserDto, UserDto } from '../../dto/user.dto';
 
 @Injectable()
 export class UsersService {
@@ -25,15 +25,14 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.userRepository.create(createUserDto);
-    return this.userRepository.save(user);
+    user.postCount = 0;
+    const newUser = await this.userRepository.save(user);
+    newUser.postCount = newUser.posts ? newUser.posts.length : 0;
+    return this.userRepository.save(newUser);
   }
 
   async findByEmail(email: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { email } });
-  }
-
-  async updatePassword(email: string, newPassword: string): Promise<void> {
-    await this.userRepository.update({ email }, { contrasena: newPassword });
   }
 
   async updateUserInfo(
@@ -56,6 +55,19 @@ export class UsersService {
       throw new Error('User not found after update.');
     }
 
-    return updatedUser;
+    updatedUser.postCount = updatedUser.posts ? updatedUser.posts.length : 0;
+    return this.userRepository.save(updatedUser);
+  }
+
+  async updatePassword(email: string, newPassword: string): Promise<void> {
+    await this.userRepository.update({ email }, { password: newPassword });
+  }
+
+  transformToDto(user: User): UserDto {
+    const userDto: UserDto = {
+      ...user,
+      postCount: user.postCount,
+    };
+    return userDto;
   }
 }

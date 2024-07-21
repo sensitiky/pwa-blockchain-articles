@@ -1,12 +1,12 @@
 import { Controller, Get, Put, Body, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { User } from './user.entity';
 import { UsersService } from './users.service';
 import { CurrentUser } from '../decorators/current-user.decorator';
-import { UpdateUserDto } from 'src/dto/user.dto';
+import { UpdateUserDto, UserDto } from 'src/dto/user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { User } from './user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -14,8 +14,9 @@ export class UsersController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async getProfile(@CurrentUser() user: User): Promise<User> {
-    return user;
+  async getProfile(@CurrentUser() user: User): Promise<UserDto> {
+    const userDto = this.usersService.transformToDto(user);
+    return userDto;
   }
 
   @Put('me')
@@ -37,10 +38,12 @@ export class UsersController {
     @CurrentUser() user: User,
     @Body() updateData: UpdateUserDto,
     @UploadedFile() file: Express.Multer.File,
-  ): Promise<User> {
+  ): Promise<UserDto> {
     if (file) {
       updateData.avatar = `/uploads/avatars/${file.filename}`;
     }
-    return await this.usersService.updateUserInfo(user.id, updateData);
+    const updatedUser = await this.usersService.updateUserInfo(user.id, updateData);
+    const userDto = this.usersService.transformToDto(updatedUser);
+    return userDto;
   }
 }

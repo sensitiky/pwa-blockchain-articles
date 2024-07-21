@@ -31,6 +31,7 @@ const Users = () => {
     twitter: "",
     linkedin: "",
     bio: "",
+    avatar: "",
   });
   const { user, isAuthenticated } = useAuth();
   const [profileImage, setProfileImage] = useState<string>("");
@@ -53,6 +54,7 @@ const Users = () => {
             twitter: profile.twitter || "",
             linkedin: profile.linkedin || "",
             bio: profile.bio || "",
+            avatar: profile.avatar || "",
           });
           setProfileImage(profile.profileImage || "");
           setBio(profile.bio || "");
@@ -145,21 +147,6 @@ const Users = () => {
       case "personal":
         return (
           <ProfileSettings
-            profileImage={profileImage}
-            userInfo={userInfo}
-            handleInputChange={handleInputChange}
-            handleCountryChange={handleCountryChange}
-            handleEditToggle={handleEditToggle}
-            handleBioEditToggle={handleBioEditToggle}
-            handleEditBio={handleEditBio}
-            handleDateChange={handleDateChange}
-            handleProfileSave={handleProfileSave}
-            handleBioSave={handleBioSave}
-            handleSectionChange={handleSectionChange}
-            editMode={editMode}
-            bioEditMode={bioEditMode}
-            bio={bio}
-            handleImageChange={handleImageChange}
           />
         );
 
@@ -190,7 +177,7 @@ const Users = () => {
     <div className="bg-customColor-header">
       <Header />
       <div className="grid min-h-screen grid-cols-[1fr] md:grid-cols-[400px_1fr] bg-background text-foreground">
-        <aside className="border-r border-border bg-customColor-header px-6 py-8">
+        <aside className="border-r border-border bg-customColor-header px-6 py-8 w-fit" >
           <div className="flex flex-col gap-8">
             <div className="space-y-2">
               <h2 className="text-white text-2xl font-bold">Welcome</h2>

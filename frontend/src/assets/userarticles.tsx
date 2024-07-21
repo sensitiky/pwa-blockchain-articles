@@ -34,7 +34,6 @@ const articles = [
     status: "Draft",
     imageUrl: "/test.jpg",
   },
-  // Agrega más artículos según sea necesario
 ];
 
 const Articles: React.FC = () => {
