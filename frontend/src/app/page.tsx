@@ -367,7 +367,7 @@ const HomePage: React.FC = () => {
                 <div className="flex items-start mb-4">
                   {post.author?.avatar && (
                     <img
-                      src={`http://localhost:4000${post.author.avatar}`}
+                      src={`https://blogchain.onrender.com${post.author.avatar}`}
                       alt={post.author.firstName[0] ?? "Author"}
                       width={50}
                       height={50}
@@ -386,7 +386,7 @@ const HomePage: React.FC = () => {
                 <div className="flex mb-4">
                   {post.imageUrl && (
                     <Image
-                      src={`http://localhost:4000${post.imageUrl}`}
+                      src={`https://blogchain.onrender.com${post.imageUrl}`}
                       alt={post.title}
                       width={100}
                       height={100}

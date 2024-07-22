@@ -46,10 +46,10 @@ const ProfileSettings: React.FC = () => {
   const fetchProfile = async () => {
     if (isAuthenticated) {
       try {
-        const response = await api.get("http://localhost:4000/users/me");
+        const response = await api.get("https://blogchain.onrender.com/users/me");
         const profile = response.data;
         const avatarUrl = profile.avatar
-          ? `http://localhost:4000${profile.avatar}`
+          ? `https://blogchain.onrender.com${profile.avatar}`
           : "";
         setUserInfo({
           firstName: profile.firstName,
@@ -120,7 +120,7 @@ const ProfileSettings: React.FC = () => {
 
   const handleProfileSave = async () => {
     try {
-      await api.put("http://localhost:4000/users/me", userInfo);
+      await api.put("https://blogchain.onrender.com/users/me", userInfo);
       fetchProfile();
     } catch (error) {
       console.error("Error saving profile information:", error);
@@ -129,7 +129,7 @@ const ProfileSettings: React.FC = () => {
 
   const handleBioSave = async () => {
     try {
-      await api.put("http://localhost:4000/users/me", { ...userInfo, bio });
+      await api.put("https://blogchain.onrender.com/users/me", { ...userInfo, bio });
       setUserInfo({ ...userInfo, bio });
       fetchProfile();
     } catch (error) {
@@ -156,7 +156,7 @@ const ProfileSettings: React.FC = () => {
   };
 
   const uploadAvatar = async (formData: FormData) => {
-    return await api.put("http://localhost:4000/users/me", formData, {
+    return await api.put("https://blogchain.onrender.com/users/me", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -164,7 +164,7 @@ const ProfileSettings: React.FC = () => {
   };
 
   const formatAvatarUrl = (avatarPath: string): string => {
-    const baseUrl = "http://localhost:4000";
+    const baseUrl = "https://blogchain.onrender.com";
     return `${baseUrl}${avatarPath}`;
   };
 
@@ -349,7 +349,7 @@ const ProfileSettings: React.FC = () => {
         <div className="bg-customColor-innovatio2 p-3 rounded-full mb-4 transform transition-transform duration-500 hover:scale-110">
           <AvatarImage
             alt="Banner"
-            src={`http://localhost:4000${profileImage}`}
+            src={`https://blogchain.onrender.com${profileImage}`}
             width={1920}
             height={1080}
             className="text-customColor-innovatio3 rounded-full h-24 w-24"
@@ -394,7 +394,7 @@ const ProfileSettings: React.FC = () => {
                     src={
                       profileImage.startsWith("http")
                         ? profileImage
-                        : `http://localhost:4000${profileImage}`
+                        : `https://blogchain.onrender.com${profileImage}`
                     }
                   />
                   <AvatarFallback>{userInfo.firstName}</AvatarFallback>
