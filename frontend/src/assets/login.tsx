@@ -64,7 +64,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/login",
+        "http://localhost:4000/auth/login",
         { email, password },
         { withCredentials: true }
       );
@@ -104,7 +104,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/register",
+        "http://localhost:4000/auth/register",
         { usuario, password, email, code: verificationCode },
         { withCredentials: true }
       );
@@ -134,7 +134,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/send-verification-code",
+        "http://localhost:4000/auth/send-verification-code",
         { email },
         { withCredentials: true }
       );
@@ -164,7 +164,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/verify-code",
+        "http://localhost:4000/auth/verify-code",
         { email, code: verificationCode },
         { withCredentials: true }
       );
@@ -192,7 +192,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/forgot-password",
+        "http://localhost:4000/auth/forgot-password",
         { email },
         { withCredentials: true }
       );
@@ -222,7 +222,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/reset-password",
+        "http://localhost:4000/auth/reset-password",
         { email, code: resetCode, newPassword },
         { withCredentials: true }
       );
@@ -251,7 +251,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   ) => {
     try {
       const response = await axios.post(
-        "https://blogchain.onrender.com/auth/google",
+        "http://localhost:4000/auth/google",
         { token: credentialResponse.credential },
         { withCredentials: true }
       );
@@ -272,7 +272,9 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     window.FB.login(
       (response: any) => {
         if (response.authResponse) {
-          handleFacebookResponse(response.authResponse.accessToken);
+          const accessToken = response.authResponse.accessToken;
+          console.log("Facebook Access Token:", accessToken);
+          handleFacebookResponse(accessToken);
         } else {
           setError("User cancelled login or did not fully authorize.");
         }
@@ -284,7 +286,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const handleFacebookResponse = async (accessToken: string) => {
     try {
       const res = await axios.post(
-        "https://blogchain.onrender.com/auth/facebook",
+        "http://localhost:4000/auth/facebook",
         { accessToken },
         { withCredentials: true }
       );

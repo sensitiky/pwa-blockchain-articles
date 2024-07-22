@@ -37,7 +37,7 @@ export function DropdownMenuAvatar({ user }: { user: User }) {
 
   const avatarUrl = user.avatar?.startsWith("http")
     ? user.avatar
-    : `https://blogchain.onrender.com${user.avatar}`;
+    : `http://localhost:4000${user.avatar}`;
 
   return (
     <DropdownMenu>
