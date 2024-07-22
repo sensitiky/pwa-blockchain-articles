@@ -2,7 +2,7 @@ import { Controller, Get, Put, Body, UseGuards, UseInterceptors, UploadedFile } 
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { UsersService } from './users.service';
 import { CurrentUser } from '../decorators/current-user.decorator';
-import { UpdateUserDto, UserDto } from 'src/dto/user.dto';
+import { UpdateUserDto, UserDto } from 'src/auth/users/user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';

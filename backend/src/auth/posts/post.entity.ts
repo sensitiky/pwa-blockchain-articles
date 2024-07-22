@@ -42,9 +42,9 @@ export class Post {
   @CreateDateColumn()
   createdAt: Date;
 
-  @ManyToMany(() => Tag, (tag) => tag.posts, { cascade: true })
+  @ManyToMany(() => Tag, tag => tag.posts)
   @JoinTable()
-  tags: Tag[];  
+  tags: Tag[];
 
   @UpdateDateColumn()
   updatedAt: Date;

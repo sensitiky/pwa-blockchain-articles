@@ -12,8 +12,8 @@ import {
   FaFacebook,
   FaTwitter,
   FaLinkedin,
-  FaRegComment,
-  FaRegHeart,
+  FaComment,
+  FaHeart,
 } from "react-icons/fa";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeftIcon } from "lucide-react";
@@ -38,9 +38,14 @@ interface Post {
     facebook?: string;
   };
   category?: { name: string };
-  tags: { name: string }[];
+  tags: Tag[];
   comments: Comment[];
   favorites: number;
+}
+
+interface Tag {
+  id: number;
+  name: string;
 }
 
 interface Comment {
@@ -86,12 +91,10 @@ const PostPage = () => {
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    {
-      if (!user) {
-        console.error("User is not logged in");
-        alert("You need to be authenticated in order to interact");
-        return;
-      }
+    if (!user) {
+      console.error("User is not logged in");
+      alert("You need to be authenticated in order to interact");
+      return;
     }
     try {
       const response = await axios.post(`https://blogchain.onrender.com/comments`, {
@@ -201,7 +204,16 @@ const PostPage = () => {
     sup: "sup",
   };
 
-  const PostDescription = ({ description }: { description: string }) => {
+  const PostDescription = ({ description }: { description: string | null }) => {
+    if (!description) {
+      return (
+        <div
+          style={{ textIndent: "20px" }}
+          className="text-lg justify-between"
+        ></div>
+      );
+    }
+
     const transformedDescription = description
       .replace(/\.(?!\d)/g, ".<br/>")
       .replace(/\[(\w+)\](.*?)\[\/\1\]/g, (match, tagName, content) => {
@@ -336,19 +348,20 @@ const PostPage = () => {
                     key={index}
                     className="px-2 py-1 bg-secondary text-secondary-foreground rounded-full"
                   >
-                    {tag.name}
+                    {tag ? tag.name : "Uncategorized"}
                   </li>
                 ))}
               </ul>
             </div>
           )}
+
           <div className="flex items-center mt-8">
             <Button
               variant="ghost"
               className="w-fit flex items-center space-x-1"
               onClick={() => handleFavorite(post.id)}
             >
-              <FaRegHeart className="h-5 w-5 text-gray-500" />
+              <FaHeart className="h-5 w-5 text-gray-500" />
               <span>
                 {Array.isArray(post.favorites) ? post.favorites.length : 0}
               </span>
@@ -358,7 +371,7 @@ const PostPage = () => {
               className="w-fit flex items-center space-x-1 text-gray-500"
               variant="ghost"
             >
-              <FaRegComment className="w-5 h-5" />
+              <FaComment className="w-5 h-5" />
               <span>
                 {Array.isArray(post.comments) ? post.comments.length : 0}
               </span>
@@ -395,7 +408,7 @@ const PostPage = () => {
                     className="flex w-fit items-center rounded-full  space-x-1 "
                     onClick={() => handleFavorite(post.id, comment.id)}
                   >
-                    <FaRegHeart className="h-4 w-4" />
+                    <FaHeart className="h-4 w-4" />
                     <span className="ml-2">Favorite</span>
                   </Button>
                 </div>

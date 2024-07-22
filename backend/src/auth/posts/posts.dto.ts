@@ -1,4 +1,6 @@
-import { IsNotEmpty, IsOptional, IsBoolean, IsArray, ArrayNotEmpty, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsBoolean, IsArray, IsString, IsNumber, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { TagDto } from '../tag/tag.dto';
 
 export class CreatePostDto {
   @IsNotEmpty()
@@ -25,6 +27,7 @@ export class CreatePostDto {
   categoryId: number;
 
   @IsArray()
-  @IsString({ each: true })
-  tags: string[];
+  @ValidateNested({ each: true })
+  @Type(() => TagDto)
+  tags: TagDto[];
 }

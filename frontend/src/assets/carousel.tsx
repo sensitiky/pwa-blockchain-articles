@@ -7,6 +7,7 @@ import { FaRegComment, FaRegHeart } from "react-icons/fa";
 import Link from "next/link";
 import axios from "axios";
 import parse from "html-react-parser";
+import { useAuth } from "../../context/authContext";
 
 type Category = {
   id: number;
@@ -87,9 +88,12 @@ const calculateReadingTime = (text: string) => {
 };
 
 const ArticleCarousel = () => {
+  const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [post, setPost] = useState<Post | null>(null);
   const [sortOrder, setSortOrder] = useState<string>("recent");
 
   const fetchPosts = async (page: number, categoryId?: number) => {
@@ -106,6 +110,36 @@ const ArticleCarousel = () => {
     }
   };
 
+  const handleFavorite = async (postId: number, commentId?: number) => {
+    if (!user) {
+      console.error("User is not logged in");
+      alert("You need to be authenticated in order to interact");
+      return;
+    }
+    try {
+      await axios.post(`https://blogchain.onrender.com/favorites`, {
+        userId: user.id,
+        postId: commentId ? undefined : postId,
+        commentId: commentId || undefined,
+        isFavorite: true,
+      });
+
+      if (commentId) {
+        const updatedComments = comments.map((comment) =>
+          comment.id === commentId
+            ? { ...comment, favorites: comment.favorites + 1 }
+            : comment
+        );
+        setComments(updatedComments);
+      } else {
+        setPost((prevPost) =>
+          prevPost ? { ...prevPost, favorites: prevPost.favorites + 1 } : null
+        );
+      }
+    } catch (error) {
+      console.error("Error favoriting post or comment:", error);
+    }
+  };
   useEffect(() => {
     fetchPosts(currentPage);
   }, [currentPage, sortOrder]);
@@ -173,7 +207,10 @@ const ArticleCarousel = () => {
                             : 0}
                         </span>
                       </button>
-                      <button className="flex items-center space-x-1 text-gray-500">
+                      <button
+                        className="flex items-center space-x-1 text-gray-500"
+                        onClick={() => handleFavorite(post.id)}
+                      >
                         <FaRegHeart className="w-5 h-5" />
                         <span>
                           {Array.isArray(post.favorites)

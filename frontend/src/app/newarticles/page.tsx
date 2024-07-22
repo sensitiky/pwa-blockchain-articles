@@ -11,15 +11,15 @@ import dynamic from "next/dynamic";
 import { FaUpload } from "react-icons/fa";
 import { useAuth } from "../../../context/authContext";
 
-type Category = {
+interface Category {
   id: number;
   name: string;
-};
+}
 
-type Tag = {
+interface Tag {
   id: number;
   name: string;
-};
+}
 
 const CustomEditor = dynamic(() => import("@/components/ui/editor"), {
   ssr: false,
@@ -48,10 +48,8 @@ export default function NewArticles() {
           axios.get("https://blogchain.onrender.com/tags"),
         ]);
         setCategories(categoriesResponse.data);
-        const filteredTags = tagsResponse.data.filter(
-          (tag: Tag) => tag.id <= 6
-        );
-        setTags(filteredTags);
+        setTags(tagsResponse.data);
+        console.log("Tags",tagsResponse.data);
       } catch (error) {
         console.error("Error fetching categories and tags", error);
       }
@@ -66,8 +64,8 @@ export default function NewArticles() {
 
   const handleTagSelect = (tag: Tag) => {
     setSelectedTags((prevTags) => {
-      if (prevTags.includes(tag)) {
-        return prevTags.filter((t) => t !== tag);
+      if (prevTags.some((t) => t.id === tag.id)) {
+        return prevTags.filter((t) => t.id !== tag.id);
       } else if (prevTags.length < 5) {
         return [...prevTags, tag];
       } else {
@@ -109,30 +107,28 @@ export default function NewArticles() {
       return;
     }
 
+    const tags = selectedTags.map(tag => ({ id: tag.id  , name: tag.name }));
+    console.log("Tags being sent:", tags);
+
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
     formData.append("authorId", user.id.toString());
     formData.append("publish", JSON.stringify(publish));
     formData.append("categoryId", selectedCategory.id.toString());
-    formData.append("tags", JSON.stringify(selectedTags));
-
+    formData.append("tags", JSON.stringify(tags));
+    console.log("Form",formData);
     if (imageFile) {
       formData.append("image", imageFile);
     }
 
     try {
-      const response = await axios.post(
-        "https://blogchain.onrender.com/posts",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post("https://blogchain.onrender.com/posts", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       console.log("Post created successfully:", response.data);
-
       router.push("/articles");
     } catch (error) {
       console.error("Error creating post:", error);
@@ -175,7 +171,9 @@ export default function NewArticles() {
                       key={tag.id}
                       variant="outline"
                       className={`text-lg hover:bg-inherit rounded-full border-gray-500 w-fit ${
-                        selectedTags.includes(tag) ? "bg-gray-300" : ""
+                        selectedTags.some((t) => t.id === tag.id)
+                          ? "bg-gray-300"
+                          : ""
                       }`}
                       onClick={() => handleTagSelect(tag)}
                     >

@@ -11,6 +11,6 @@ export class TagsService {
   ) {}
 
   findAll(): Promise<Tag[]> {
-    return this.tagsRepository.find();
+    return this.tagsRepository.find({ relations: ['posts'] });
   }
 }

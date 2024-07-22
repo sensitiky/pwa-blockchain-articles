@@ -8,7 +8,7 @@ import { UsersService } from './users/users.service';
 import { OAuth2Client } from 'google-auth-library';
 import * as nodemailer from 'nodemailer';
 import * as bcrypt from 'bcryptjs';
-import { CreateUserDto, UserDto } from '../dto/user.dto';
+import { CreateUserDto, UserDto } from './users/user.dto';
 import { User } from './users/user.entity';
 
 @Injectable()

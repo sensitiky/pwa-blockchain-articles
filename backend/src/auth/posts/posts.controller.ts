@@ -1,21 +1,22 @@
 import {
   Controller,
+  Get,
+  Query,
+  Param,
   Post as HttpPost,
   Body,
   UseInterceptors,
   UploadedFile,
   Req,
-  Get,
-  Query,
-  Param,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { PostsService } from './posts.service';
-import { CreatePostDto } from '../../dto/posts.dto';
+import { CreatePostDto } from './posts.dto';
 import { Request } from 'express';
 import { Express } from 'express';
+import { Post } from './post.entity';
 
 @Controller('posts')
 export class PostsController {
@@ -30,6 +31,14 @@ export class PostsController {
     return this.postsService.findAll(page, limit, sortOrder);
   }
 
+  @Get('by-tag')
+  findByTag(
+    @Query('limit') limit: number,
+    @Query('tagId') tagId: number,
+  ): Promise<Post[]> {
+    return this.postsService.findByTag(limit, tagId);
+  }
+
   @Get('by-category')
   async findAllByCategory(
     @Query('page') page: number = 1,
@@ -37,7 +46,12 @@ export class PostsController {
     @Query('categoryId') categoryId: number,
     @Query('sortOrder') sortOrder: string = 'recent',
   ) {
-    return this.postsService.findAllByCategory(page, limit, categoryId, sortOrder);
+    return this.postsService.findAllByCategory(
+      page,
+      limit,
+      categoryId,
+      sortOrder,
+    );
   }
 
   @Get(':id')
@@ -65,6 +79,7 @@ export class PostsController {
     @UploadedFile() file: Express.Multer.File,
     @Req() req: Request,
   ) {
+    console.log('Received CreatePostDto:', createPostDto);
     const authorId = parseInt(req.body.authorId, 10);
     const imageUrl = file ? `/uploads/${file.filename}` : null;
     return this.postsService.create({ ...createPostDto, imageUrl, authorId });

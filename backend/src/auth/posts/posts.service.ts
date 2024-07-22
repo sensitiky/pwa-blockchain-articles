@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from './post.entity';
-import { CreatePostDto } from '../../dto/posts.dto';
+import { CreatePostDto } from './posts.dto';
 import { User } from '../users/user.entity';
 import { Tag } from '../tag/tag.entity';
 import { Category } from '../category/category.entity';
@@ -21,6 +21,8 @@ export class PostsService {
   ) {}
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
+    console.log('Received createPostDto:', createPostDto);
+
     const author = await this.usersRepository.findOne({
       where: { id: createPostDto.authorId },
     });
@@ -35,20 +37,28 @@ export class PostsService {
         })
       : null;
 
-    const tags = Array.isArray(createPostDto.tags)
+    // Deserializa los tags
+    let tags = [];
+    if (typeof createPostDto.tags === 'string') {
+      tags = JSON.parse(createPostDto.tags);
+    }
+
+    tags = Array.isArray(tags)
       ? await Promise.all(
-          createPostDto.tags.map(async (tagName) => {
-            let tag = await this.tagsRepository.findOne({
-              where: { name: tagName },
+          tags.map(async (tag) => {
+            let existingTag = await this.tagsRepository.findOne({
+              where: { name: tag.name },
             });
-            if (!tag) {
-              tag = this.tagsRepository.create({ name: tagName });
-              await this.tagsRepository.save(tag);
+            if (!existingTag) {
+              existingTag = this.tagsRepository.create({ name: tag.name });
+              await this.tagsRepository.save(existingTag);
             }
-            return tag;
+            return existingTag;
           }),
         )
       : [];
+
+    console.log('Tags processed:', tags);
 
     const post = this.postsRepository.create({
       ...createPostDto,
@@ -62,16 +72,47 @@ export class PostsService {
 
   async findAll(page: number, limit: number, sortOrder: string) {
     const order = this.getSortOrder(sortOrder);
-    const [result, total] = await this.postsRepository.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
-      order,
-      relations: ['author', 'category', 'tags', 'comments', 'favorites'],
-    });
-    return {
-      data: result,
-      totalPages: Math.ceil(total / limit),
-    };
+
+    if (sortOrder === 'comments') {
+      // Custom query for sorting by comments count
+      const [result, total] = await this.postsRepository
+        .createQueryBuilder('post')
+        .leftJoinAndSelect('post.comments', 'comment')
+        .leftJoinAndSelect('post.tags', 'tag')
+        .groupBy('post.id')
+        .addSelect('COUNT(comment.id)', 'commentsCount')
+        .orderBy('commentsCount', 'DESC')
+        .skip((page - 1) * limit)
+        .take(limit)
+        .getManyAndCount();
+      console.log(sortOrder);
+      return {
+        data: result,
+        totalPages: Math.ceil(total / limit),
+      };
+    } else {
+      // Default sorting
+      const [result, total] = await this.postsRepository.findAndCount({
+        skip: (page - 1) * limit,
+        take: limit,
+        order,
+        relations: ['author', 'category', 'tags', 'comments', 'favorites'],
+      });
+
+      return {
+        data: result,
+        totalPages: Math.ceil(total / limit),
+      };
+    }
+  }
+
+  async findByTag(limit: number, tagId: number): Promise<Post[]> {
+    return this.postsRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.tags', 'tag')
+      .where('tag.id = :tagId', { tagId })
+      .take(limit)
+      .getMany();
   }
 
   async findAllByCategory(
@@ -101,14 +142,14 @@ export class PostsService {
     });
   }
 
-  private getSortOrder(sortOrder: string) {
+  private getSortOrder(sortOrder: string): { [key: string]: 'ASC' | 'DESC' } {
     switch (sortOrder) {
       case 'saved':
-        return { savedAt: 'DESC' as const };
+        return { savedAt: 'DESC' };
       case 'comments':
-        return { comments: 'DESC' as const };
+        return {}; // Sorting by comments count is handled separately in `findAll`
       default:
-        return { createdAt: 'DESC' as const };
+        return { createdAt: 'DESC' };
     }
   }
 }

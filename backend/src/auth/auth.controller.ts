@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Res, Logger } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
-import { CreateUserDto, UserDto } from 'src/dto/user.dto';
+import { CreateUserDto, UserDto } from 'src/auth/users/user.dto';
 import axios from 'axios';
 import * as crypto from 'crypto';
 import { ConfigService } from '@nestjs/config';

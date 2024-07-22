@@ -4,10 +4,10 @@ import { Tag } from './tag.entity';
 
 @Controller('tags')
 export class TagsController {
-  constructor(private readonly TagsService: TagsService) {}
+  constructor(private readonly tagsService: TagsService) {}
 
   @Get()
-  findAll(): Promise<Tag[]> {
-    return this.TagsService.findAll();
+  async findAll(): Promise<Tag[]> {
+    return this.tagsService.findAll();
   }
 }

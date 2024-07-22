@@ -14,6 +14,7 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 type Category = {
   id: number;
@@ -29,6 +30,8 @@ type Post = {
   description: string;
   author?: { id: number; usuario: string };
   category?: Category;
+  comments: Comment[];
+  favorites: number;
 };
 
 const POSTS_PER_PAGE = 5;
@@ -39,6 +42,9 @@ export default function Articles() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { id } = useParams();
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
   );
@@ -53,6 +59,29 @@ export default function Articles() {
     }
   };
 
+  const fetchPost = async (id: string) => {
+    try {
+      const response = await axios.get(`https://blogchain.onrender.com/posts/${id}`);
+      const postData = response.data;
+      setPosts(postData);
+      setComments(postData.comments);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching post data:", error);
+      setLoading(false);
+    }
+  };
+
+  const fetchComments = async (postId: string) => {
+    try {
+      const response = await axios.get(
+        `https://blogchain.onrender.com/comments/post/${postId}`
+      );
+      setComments(response.data);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
   const fetchPosts = async (page: number, categoryId?: number) => {
     try {
       const url = categoryId
@@ -67,6 +96,12 @@ export default function Articles() {
     }
   };
 
+  useEffect(() => {
+    if (id) {
+      fetchPost(id as string);
+      fetchComments(id as string);
+    }
+  }, [id]);
   useEffect(() => {
     fetchCategories();
     fetchPosts(currentPage, selectedCategoryId || undefined);
@@ -196,17 +231,22 @@ export default function Articles() {
                           <span>10 min read</span>
                           <span className="mx-2">|</span>
                           <span className="flex items-center">
-                            <FaComment className="w-5 h-5 mr-1" />5
+                            <FaComment className="w-5 h-5 mr-1" />
+                            {Array.isArray(post.comments)
+                              ? post.comments.length
+                              : 0}
                           </span>
                           <span className="flex items-center ml-4">
                             <FaHeart className="w-5 h-5 mr-1" />
-                            11
+                            {Array.isArray(post.favorites)
+                              ? post.favorites.length
+                              : 0}
                           </span>
                         </div>
                         <Link href={`/posts/${post.id}`}>
-                        <button className="bg-primary text-primary-foreground px-4 py-2 rounded-full hover:bg-primary/80">
-                          Learn More
-                        </button>
+                          <button className="bg-primary text-primary-foreground px-4 py-2 rounded-full hover:bg-primary/80">
+                            Learn More
+                          </button>
                         </Link>
                       </div>
                     </div>

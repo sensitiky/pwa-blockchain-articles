@@ -6,7 +6,7 @@ import {
   Param,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { CreateCommentDto } from 'src/dto/comment.dto';
+import { CreateCommentDto } from 'src/auth/comments/comment.dto';
 
 @Controller('comments')
 export class CommentsController {

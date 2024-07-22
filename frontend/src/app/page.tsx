@@ -11,25 +11,75 @@ import "aos/dist/aos.css";
 import ArticleCarousel from "@/assets/carousel";
 import LoginCard from "@/assets/login";
 import Footer from "@/assets/footer";
-import BlurIn from "@/components/magicui/blur-in";
+import axios from "axios";
+import parse from "html-react-parser";
+import { FaRegComment, FaRegHeart } from "react-icons/fa";
+import { Separator } from "@/components/ui/separator";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 const cookies = new Cookie();
 
-type image = {
-  url: string;
-  alt: string;
-};
+interface Post {
+  id: number;
+  title: string;
+  content: string;
+  imageUrl: string | null;
+  createdAt: string;
+  description: string | object;
+  author?: Author;
+  category?: { name: string };
+  tags: { name: string }[];
+  comments: Comment[];
+  favorites: number;
+}
 
-type Avatar = {
-  avatar: image;
-};
+interface Author {
+  id: number;
+  usuario: string;
+  firstName: string;
+  lastName: string;
+  bio: string;
+  twitter?: string;
+  linkedin?: string;
+  facebook?: string;
+  avatar?: string;
+}
+
+interface Comment {
+  id: number;
+  content: string;
+  createdAt: string;
+  author: { id: number; firstName: string; lastName: string; usuario: string };
+  favorites: number;
+}
+
+interface Tag {
+  id: number;
+  name: string;
+}
+
+interface Category {
+  id: number;
+  name: string;
+}
+
+const POSTS_PER_PAGE = 6;
 
 const HomePage: React.FC = () => {
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<{ username: string } | null>(null);
-  const [avatar, setAvatar] = useState<Avatar | null>(null);
+  const [user, setUser] = useState<{ username: string; id: number } | null>(
+    null
+  );
   const [showLoginCard, setShowLoginCard] = useState(false);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [selectedTagId, setSelectedTagId] = useState<number | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
+    null
+  );
   const router = useRouter();
 
   useEffect(() => {
@@ -44,7 +94,51 @@ const HomePage: React.FC = () => {
       once: true,
       mirror: false,
     });
+
+    fetchTags();
+    fetchCategories();
+    fetchPosts();
   }, []);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [selectedTagId, selectedCategoryId]);
+
+  const fetchTags = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/tags`);
+      setTags(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching tags", error);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/categories`);
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Error fetching categories", error);
+    }
+  };
+
+  const fetchPosts = async () => {
+    try {
+      const url = selectedTagId
+        ? `${API_URL}/posts/by-tag?limit=${POSTS_PER_PAGE}&tagId=${selectedTagId}`
+        : selectedCategoryId
+        ? `${API_URL}/posts/by-category?limit=${POSTS_PER_PAGE}&categoryId=${selectedCategoryId}`
+        : `${API_URL}/posts?limit=${POSTS_PER_PAGE}`;
+      const response = await axios.get(url);
+      const postsData = response.data.data;
+      setPosts(postsData || []);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      setLoading(false);
+    }
+  };
 
   const fetchUserSession = async (token: string) => {
     try {
@@ -67,59 +161,64 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const logout = () => {
-    setIsAuthenticated(false);
-    setUser(null);
-    cookies.remove("token");
-  };
+  const handleFavorite = async (postId: number, commentId?: number) => {
+    if (!user) {
+      console.error("User is not logged in");
+      alert("You need to be authenticated in order to interact");
+      return;
+    }
+    try {
+      await axios.post(`${API_URL}/favorites`, {
+        userId: user.id,
+        postId: commentId ? undefined : postId,
+        commentId: commentId || undefined,
+        isFavorite: true,
+      });
 
-  const handleLoginSignUpClick = () => {
-    setShowLoginCard(true);
+      if (commentId) {
+        const updatedComments = comments.map((comment) =>
+          comment.id === commentId
+            ? { ...comment, favorites: comment.favorites + 1 }
+            : comment
+        );
+        setComments(updatedComments);
+      } else {
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.id === postId
+              ? { ...post, favorites: post.favorites + 1 }
+              : post
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error favoriting post or comment:", error);
+    }
   };
 
   const handleCloseModal = () => {
     setShowLoginCard(false);
   };
 
-  const articles2 = [
-    {
-      author: "Nevermind",
-      title: "Why Blockchain is Hard",
-      date: "Jan 17, 2021",
-      avatar: "/shadcn.jpg",
-      image: "/reunion.png",
-      description:
-        "The hype around blockchain is massive. To hear the blockchain hype train tell it, blockchain will now: Solve income inequality, Make all data secure forever, Make everything much more efficient and trustless, Save dying.",
-    },
-    {
-      author: "Kai Stinchcombe",
-      title:
-        "Blockchain is not only crappy technology but a bad vision for the future",
-      date: "Oct 31, 2017",
-      avatar: "/shadcn.jpg",
-      image: "/badge.png",
-      description:
-        "Blockchain is not only crappy technology but a bad vision for the future. Its failure to achieve adoption to date is because systems built on trust, norm...",
-    },
-    {
-      author: "Jimmy Song",
-      title: "Learn Blockchains by Building One",
-      date: "Dec 12, 2019",
-      avatar: "/shadcn.jpg",
-      image: "/profit.png",
-      description:
-        "The fastest way to learn how Blockchains work is to build one &ndash; You&apos;re here because, like me, you&apos;re psyched about the rise of Cryptocurrencies. And you want to know how Blockchains work &ndash; the fundamental ...",
-    },
-    {
-      author: "Emmie Chang",
-      title: "We already know blockchains killer apps",
-      date: "Mar 28, 2019",
-      avatar: "/shadcn.jpg",
-      image: "/Saly-1.png",
-      description:
-        "It wasn&apos;t too long ago that Silicon Valley scoffed at cryptocurrencies. All over coffee shops in Mountain View and Menlo Park, you heard the same conversation: &quot;Sure, it&apos;s cool technology, but when are we going...",
-    },
-  ];
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const handleTagClick = (tagId: number) => {
+    const newTagId = selectedTagId === tagId ? null : tagId;
+    setSelectedTagId(newTagId);
+    console.log(newTagId);
+  };
+
+  const handleCategoryClick = (categoryId: number) => {
+    const newCategoryId = selectedCategoryId === categoryId ? null : categoryId;
+    setSelectedCategoryId(newCategoryId);
+  };
 
   return (
     <div className="min-w-screen">
@@ -233,52 +332,91 @@ const HomePage: React.FC = () => {
           </div>
           <div className="flex flex-wrap justify-between mb-8">
             <div className="flex flex-col w-full sm:w-auto mb-4 md:mb-0">
-              <select className="py-2 border-b-2 border-t-2 border-l-0 bg-inherit border-r-0 focus:ring-0 border-customColor-innovatio3 focus:border-customColor-innovatio3 text-base sm:text-lg">
-                <option>Category</option>
+              <select
+                className="py-2 border-b-2 border-t-2 border-l-0 bg-inherit border-r-0 focus:ring-0 border-customColor-innovatio3 focus:border-customColor-innovatio3 text-base sm:text-lg"
+                onChange={(e) => handleCategoryClick(parseInt(e.target.value))}
+              >
+                <option value="">Category</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="flex flex-col w-full sm:w-auto mb-4 md:mb-0">
-              <select className="py-2 border-b-2 border-t-2 bg-inherit border-l-0 border-r-0 focus:ring-0 border-customColor-innovatio3 focus:border-customColor-innovatio3 text-base sm:text-lg">
-                <option>Labels most used</option>
-              </select>
-            </div>
-            <div className="flex flex-col w-full sm:w-auto mb-4 md:mb-0">
-              <select className="py-2 border-b-2 border-t-2 bg-inherit border-l-0 border-r-0 border-customColor-innovatio3 focus:ring-0 focus:border-customColor-innovatio3 text-base sm:text-lg">
-                <option>Date</option>
+              <select
+                className="py-2 border-b-2 border-t-2 border-l-0 bg-inherit border-r-0 focus:ring-0 border-customColor-innovatio3 focus:border-customColor-innovatio3 text-base sm:text-lg"
+                onChange={(e) => handleTagClick(parseInt(e.target.value))}
+              >
+                <option value="">Tags</option>
+                {tags.map((tag) => (
+                  <option key={tag.id} value={tag.id}>
+                    {tag.name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
           <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2">
-            {articles2.map((article, index) => (
+            {posts.map((post, index) => (
               <div
                 key={index}
                 className="flex flex-col border-b border-customColor-innovatio3 pb-4 mb-4"
               >
                 <div className="flex items-start mb-4">
-                  <Image
-                    src={article.avatar}
-                    alt={article.author}
-                    width={50}
-                    height={50}
-                    className="rounded-full"
-                  />
+                  {post.author?.avatar && (
+                    <Image
+                      src={`https://blogchain.onrender.com${post.author.avatar}`}
+                      alt={post.author.firstName[0] ?? "Author"}
+                      width={50}
+                      height={50}
+                      className="rounded-full"
+                    />
+                  )}
                   <div className="ml-4">
-                    <p className="text-lg font-semibold">{article.author}</p>
-                    <p className="text-sm text-gray-500">{article.date}</p>
+                    <p className="text-lg font-semibold">
+                      {post.author?.firstName} {post.author?.lastName}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {formatDate(post.createdAt)}
+                    </p>
                   </div>
                 </div>
                 <div className="flex mb-4">
-                  <Image
-                    src={article.image}
-                    alt={article.title}
-                    width={100}
-                    height={100}
-                    className="rounded-md"
-                  />
+                  {post.imageUrl && (
+                    <Image
+                      src={`https://blogchain.onrender.com${post.imageUrl}`}
+                      alt={post.title}
+                      width={100}
+                      height={100}
+                      className="rounded-md"
+                    />
+                  )}
                   <div className="ml-4">
-                    <h3 className="text-xl font-bold mb-2">{article.title}</h3>
-                    <p className="text-gray-600">{article.description}</p>
+                    <h3 className="text-xl font-bold mb-2">{post.title}</h3>
+                    <p className="text-gray-600 line-clamp-3">
+                      {typeof post.description === "string"
+                        ? parse(post.description)
+                        : JSON.stringify(post.description)}
+                    </p>
                   </div>
+                </div>
+                <div className="flex mt-2 items-center space-x-1">
+                  <FaRegHeart className="h-5 w-5 text-gray-500" />
+                  <span>
+                    {Array.isArray(post.favorites) ? post.favorites.length : 0}
+                  </span>
+                  <Separator
+                    className="h-5 w-[1px] bg-gray-500"
+                    orientation="vertical"
+                  />
+
+                  <FaRegComment className="w-5 h-5 text-gray-500" />
+                  <span>
+                    {" "}
+                    {Array.isArray(post.comments) ? post.comments.length : 0}
+                  </span>
                 </div>
               </div>
             ))}
