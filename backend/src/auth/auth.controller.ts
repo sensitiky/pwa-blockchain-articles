@@ -34,7 +34,7 @@ export class AuthController {
       res.status(401).json({ message: 'Login failed' });
     }
   }
-
+  //
   @Post('facebook')
   async facebookLogin(
     @Body() body: { accessToken: string },
@@ -46,25 +46,13 @@ export class AuthController {
       .update(body.accessToken)
       .digest('hex');
 
-    this.logger.log(`Received Facebook access token: ${body.accessToken}`);
-    this.logger.log(`Generated appSecretProof: ${appSecretProof}`);
-    console.log(`Received Facebook access token: ${body.accessToken}`);
-    console.log(`Generated appSecretProof: ${appSecretProof}`);
-
     try {
       const facebookResponse = await axios.get(
         `https://graph.facebook.com/me?access_token=${body.accessToken}&appsecret_proof=${appSecretProof}&fields=id,name,email`,
       );
 
-      this.logger.log(
-        `Facebook response: ${JSON.stringify(facebookResponse.data)}`,
-      );
-      console.log(
-        `Facebook response: ${JSON.stringify(facebookResponse.data)}`,
-      );
-
       const { id, email, name } = facebookResponse.data;
-      let user = await this.authService.findOrCreateFacebookUser(
+      const user = await this.authService.findOrCreateFacebookUser(
         id,
         email,
         name,
@@ -75,16 +63,14 @@ export class AuthController {
         .json({ message: 'Facebook login successful', token, user });
     } catch (error) {
       this.logger.error(`Error with Facebook login: ${error.message}`);
-
       if (axios.isAxiosError(error)) {
         const axiosError = error.response?.data;
         this.logger.error(`Axios error: ${JSON.stringify(axiosError)}`);
-        console.log(`Axios error: ${JSON.stringify(axiosError)}`);
       }
-
       res.status(401).json({ message: 'Facebook login failed' });
     }
   }
+  //
 
   @Post('forgot-password')
   async forgotPassword(

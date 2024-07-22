@@ -8,7 +8,7 @@ const FacebookInit = () => {
         appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID,
         cookie: true,
         xfbml: true,
-        version: "v10.0",
+        version: "v20.0",
       });
       window.FB.AppEvents.logPageView();
     };

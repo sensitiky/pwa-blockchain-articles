@@ -46,10 +46,10 @@ const ProfileSettings: React.FC = () => {
   const fetchProfile = async () => {
     if (isAuthenticated) {
       try {
-        const response = await api.get("https://blogchain.onrender.com/users/me");
+        const response = await api.get("http://localhost:4000/users/me");
         const profile = response.data;
         const avatarUrl = profile.avatar
-          ? `https://blogchain.onrender.com${profile.avatar}`
+          ? `http://localhost:4000${profile.avatar}`
           : "";
         setUserInfo({
           firstName: profile.firstName,
@@ -120,7 +120,7 @@ const ProfileSettings: React.FC = () => {
 
   const handleProfileSave = async () => {
     try {
-      await api.put("https://blogchain.onrender.com/users/me", userInfo);
+      await api.put("http://localhost:4000/users/me", userInfo);
       fetchProfile();
     } catch (error) {
       console.error("Error saving profile information:", error);
@@ -129,7 +129,7 @@ const ProfileSettings: React.FC = () => {
 
   const handleBioSave = async () => {
     try {
-      await api.put("https://blogchain.onrender.com/users/me", { ...userInfo, bio });
+      await api.put("http://localhost:4000/users/me", { ...userInfo, bio });
       setUserInfo({ ...userInfo, bio });
       fetchProfile();
     } catch (error) {
@@ -138,29 +138,48 @@ const ProfileSettings: React.FC = () => {
   };
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const formData = new FormData();
-      formData.append("avatar", e.target.files[0]);
-
-      try {
-        const response = await api.put(
-          "https://blogchain.onrender.com/users/me",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-
-        const avatarUrl = `https://blogchain.onrender.com${response.data.avatar}`;
-        setProfileImage(`${avatarUrl}?${new Date().getTime()}`);
-        setUserInfo({ ...userInfo, avatar: avatarUrl });
-        fetchProfile();
-      } catch (error) {
-        console.error("Error uploading avatar:", error);
-      }
+    if (!e.target.files || !e.target.files[0]) {
+      return;
     }
+
+    const formData = new FormData();
+    formData.append("avatar", e.target.files[0]);
+
+    try {
+      const response = await uploadAvatar(formData);
+      const avatarUrl = formatAvatarUrl(response.data.avatar);
+      updateProfileImage(avatarUrl);
+      await refreshUserProfile();
+    } catch (error) {
+      handleAvatarUploadError(error);
+    }
+  };
+
+  const uploadAvatar = async (formData: FormData) => {
+    return await api.put("http://localhost:4000/users/me", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  };
+
+  const formatAvatarUrl = (avatarPath: string): string => {
+    const baseUrl = "http://localhost:4000";
+    return `${baseUrl}${avatarPath}`;
+  };
+
+  const updateProfileImage = (avatarUrl: string) => {
+    const cacheBuster = `?${new Date().getTime()}`;
+    setProfileImage(`${avatarUrl}${cacheBuster}`);
+    setUserInfo((prevUserInfo) => ({ ...prevUserInfo, avatar: avatarUrl }));
+  };
+
+  const refreshUserProfile = async () => {
+    await fetchProfile();
+  };
+
+  const handleAvatarUploadError = (error: any) => {
+    console.error("Error uploading avatar:", error);
   };
 
   if (loading) {
@@ -328,9 +347,9 @@ const ProfileSettings: React.FC = () => {
         className="w-96 bg-customColor-header p-6 rounded-lg text-white transform transition-transform duration-500 hover:rotateX-6 hover:scale-125 hover:rotateY-6 hover:shadow-2xl hover:shadow-black/50 relative flex flex-col items-center mt-6 md:mt-0"
       >
         <div className="bg-customColor-innovatio2 p-3 rounded-full mb-4 transform transition-transform duration-500 hover:scale-110">
-          <Image
+          <AvatarImage
             alt="Banner"
-            src={profileImage}
+            src={`http://localhost:4000${profileImage}`}
             width={1920}
             height={1080}
             className="text-customColor-innovatio3 rounded-full h-24 w-24"
@@ -371,7 +390,13 @@ const ProfileSettings: React.FC = () => {
             <div className="flex items-center">
               <div className="p-2 rounded-full">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage src={profileImage} />
+                  <AvatarImage
+                    src={
+                      profileImage.startsWith("http")
+                        ? profileImage
+                        : `http://localhost:4000${profileImage}`
+                    }
+                  />
                   <AvatarFallback>{userInfo.firstName}</AvatarFallback>
                 </Avatar>
               </div>
