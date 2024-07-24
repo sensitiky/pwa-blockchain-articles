@@ -2,7 +2,6 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import axios from "axios";
-import { FaComment, FaHeart } from "react-icons/fa";
 import Header from "@/assets/header";
 import Footer from "@/assets/footer";
 import {
@@ -15,6 +14,7 @@ import {
 } from "@/components/ui/pagination";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { ClockIcon, TagIcon, MessageSquareIcon, HeartIcon } from "lucide-react";
 
 type Category = {
   id: number;
@@ -28,11 +28,17 @@ type Post = {
   imageUrl?: string;
   createdAt: string;
   description: string;
-  author?: { id: number; usuario: string };
-  category?: Category;
+  author?: { id: number; user: string; avatar?: string; bio: string };
+  category?: { name: string };
   comments: Comment[];
   favorites: number;
+  tags: Tag[];
 };
+
+interface Tag {
+  id: number;
+  name: string;
+}
 
 const POSTS_PER_PAGE = 5;
 
@@ -52,7 +58,7 @@ export default function Articles() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("https://blogchain.onrender.com/categories");
+      const response = await axios.get("http://localhost:4000/categories");
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories", error);
@@ -61,7 +67,7 @@ export default function Articles() {
 
   const fetchPost = async (id: string) => {
     try {
-      const response = await axios.get(`https://blogchain.onrender.com/posts/${id}`);
+      const response = await axios.get(`http://localhost:4000/posts/${id}`);
       const postData = response.data;
       setPosts(postData);
       setComments(postData.comments);
@@ -75,18 +81,19 @@ export default function Articles() {
   const fetchComments = async (postId: string) => {
     try {
       const response = await axios.get(
-        `https://blogchain.onrender.com/comments/post/${postId}`
+        `http://localhost:4000/comments/post/${postId}`
       );
       setComments(response.data);
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
   };
+
   const fetchPosts = async (page: number, categoryId?: number) => {
     try {
       const url = categoryId
-        ? `https://blogchain.onrender.com/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
-        : `https://blogchain.onrender.com/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
+        ? `http://localhost:4000/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
+        : `http://localhost:4000/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
       const response = await axios.get(url);
       const postsData = response.data.data;
       setPosts(postsData || []);
@@ -102,6 +109,7 @@ export default function Articles() {
       fetchComments(id as string);
     }
   }, [id]);
+
   useEffect(() => {
     fetchCategories();
     fetchPosts(currentPage, selectedCategoryId || undefined);
@@ -121,7 +129,7 @@ export default function Articles() {
   };
 
   return (
-    <div className="bg-gradient2 articles-container flex flex-col min-h-screen">
+    <div className="articles-container flex flex-col min-h-screen">
       <Header />
       <div className="articles-header w-full bg-customColor-header text-center py-8 px-4">
         <div className="articles-title-container py-4">
@@ -159,96 +167,130 @@ export default function Articles() {
             </div>
           </div>
         </div>
-        <div className="sort-order-container text-center justify-center py-4">
-          <label htmlFor="sortOrder" className="text-white">
-            Sort by:
-          </label>
-          <select
-            id="sortOrder"
-            className="ml-2 p-2 rounded"
-            value={sortOrder}
-            onChange={handleSortOrderChange}
-          >
-            <option value="recent">Most Recents</option>
-            <option value="saved">Most Saved</option>
-            <option value="comment">More Comments</option>
-          </select>
+        <div className="sort-order-container flex text-center">
+          <div className="flex flex-col justify-start py-4 lg:px-[450px] flex-shrink">
+            <label htmlFor="sortOrder" className="text-white">
+              Sort by:
+            </label>
+            <select
+              id="sortOrder"
+              className="ml-2 p-2 rounded w-fit"
+              value={sortOrder}
+              onChange={handleSortOrderChange}
+            >
+              <option value="recent">Most Recents</option>
+              <option value="saved">Most Saved</option>
+              <option value="comment">More Comments</option>
+            </select>
+          </div>
+          <div className="sort-order-container flex text-center ">
+            <div className="flex flex-col  justify-end py-4 lg:px-[180px] flex-shrink">
+              <label htmlFor="sortOrder" className="text-white">
+                Sort by:
+              </label>
+              <select
+                id="sortOrder"
+                className="ml-2 p-2 rounded w-fit"
+                value={sortOrder}
+                onChange={handleSortOrderChange}
+              >
+                <option value="less_than_1000">
+                  Less than 1000 characters
+                </option>
+                <option value="1000_to_2000">1000 to 2000 characters</option>
+                <option value="2000_and_above">
+                  2000 and above characters
+                </option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="articles-content flex-grow flex justify-center py-8 px-4 bg-white">
-        <div className="posts-container w-full max-w-screen-lg mx-auto">
+      <div className="articles-content flex-grow flex justify-center py-8 px-4 bg-inherit">
+        <div className="bg-inherit posts-container w-full max-w-screen-lg mx-auto">
           {posts.length > 0 ? (
-            <div className="posts-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1">
+            <div className="posts-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 bg-inherit shadow-none">
               {posts.map((post) => (
                 <div
                   key={post.id}
-                  className="max-w-4xl mx-auto p-4 bg-card text-card-foreground border border-r-0 border-l-0 rounded-none shadow-none w-full transition-transform"
+                  className="p-12 bg-inherit mx-auto text-card-foreground border border-r-0 border-l-0 rounded-none shadow-none w-full transition-transform"
                 >
-                  <div className="flex flex-col md:flex-row h-full">
+                  <div className="flex flex-col h-full">
                     {post.imageUrl && (
                       <Image
-                        src={`https://blogchain.onrender.com${post.imageUrl}`}
+                        src={`http://localhost:4000${post.imageUrl}`}
                         alt="Article image"
-                        className="w-full md:w-1/3 rounded-lg object-cover"
-                        width={300}
-                        height={290}
+                        className="w-full h-64 rounded-lg object-cover border-border border-gray-300"
+                        width={1920}
+                        height={1080}
                       />
                     )}
-                    <div className="flex-1 md:ml-4 mt-4 md:mt-0 flex flex-col justify-between">
-                      <div>
-                        <div className="flex items-center mb-2">
+                    <div className="flex justify-between mt-2">
+                      <div className="flex items-center">
+                        <Link href={`/users/${post.author?.id}`}>
                           <Image
-                            src="/default-avatar.png"
+                            src={`http://localhost:4000${post.author?.avatar}`}
                             alt="Author image"
                             className="w-10 h-10 rounded-full"
                             width={40}
                             height={40}
                           />
-                          <span className="ml-2 text-lg font-semibold">
-                            {post.author
-                              ? post.author.usuario
-                              : "Unknown Author"}
-                          </span>
-                          <span className="ml-4 px-2 py-1 bg-secondary text-secondary-foreground rounded-full">
-                            {post.category
-                              ? post.category.name
-                              : "Uncategorized"}
-                          </span>
-                        </div>
-                        <h2 className="text-2xl font-bold mb-2 truncate">
-                          {post.title}
-                        </h2>
-                        <p
-                          className="text-muted-foreground mb-4 line-clamp-3"
-                          dangerouslySetInnerHTML={{
-                            __html: post.description,
-                          }}
-                        ></p>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center text-muted-foreground">
-                          <span>10 min read</span>
-                          <span className="mx-2">|</span>
-                          <span className="flex items-center">
-                            <FaComment className="w-5 h-5 mr-1" />
-                            {Array.isArray(post.comments)
-                              ? post.comments.length
-                              : 0}
-                          </span>
-                          <span className="flex items-center ml-4">
-                            <FaHeart className="w-5 h-5 mr-1" />
-                            {Array.isArray(post.favorites)
-                              ? post.favorites.length
-                              : 0}
-                          </span>
-                        </div>
-                        <Link href={`/posts/${post.id}`}>
-                          <button className="bg-primary text-primary-foreground px-4 py-2 rounded-full hover:bg-primary/80">
-                            Learn More
-                          </button>
                         </Link>
+                        <div className="flex-col flex">
+                          <span className="ml-2 text-lg font-semibold">
+                            {post.author ? post.author.user : "Unknown Author"}
+                          </span>
+                          <span className="ml-2 text-sm text-muted-foreground">
+                            {post.author ? post.author.bio : "Unknown Author"}
+                          </span>
+                        </div>
                       </div>
+                      <div className="flex items-center">
+                        <TagIcon className="w-4 h-4 mr-1" />
+                        {post.tags
+                          .slice(0, 3)
+                          .map((tag) => tag.name)
+                          .join(", ")}
+                      </div>
+                    </div>
+                    <div className="flex-1 mt-4">
+                      <h2 className="text-3xl font-bold mb-2 truncate">
+                        {post.title}
+                      </h2>
+                      <p
+                        className="text-muted-foreground mb-4 line-clamp-3"
+                        dangerouslySetInnerHTML={{
+                          __html: post.description,
+                        }}
+                      ></p>
+                    </div>
+                    <div className="flex items-center text-muted-foreground mt-4">
+                      <ClockIcon className="w-5 h-5 mr-1" />
+                      <span>
+                        {calculateReadingTime(post.description)} min read
+                      </span>
+                      <span className="mx-2">|</span>
+                      <MessageSquareIcon className="w-5 h-5 mr-1" />
+                      <span>
+                        {Array.isArray(post.comments)
+                          ? post.comments.length
+                          : 0}
+                      </span>
+                      <span className="mx-2">|</span>
+                      <HeartIcon className="w-5 h-5 mr-1" />
+                      <span>
+                        {Array.isArray(post.favorites)
+                          ? post.favorites.length
+                          : 0}
+                      </span>
+                    </div>
+                    <div className="flex justify-end">
+                      <Link href={`/posts/${post.id}`}>
+                        <button className="bg-primary text-primary-foreground px-4 py-2 rounded-full hover:bg-primary/80">
+                          Read More
+                        </button>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -294,4 +336,10 @@ export default function Articles() {
       <Footer />
     </div>
   );
+}
+
+function calculateReadingTime(text: string) {
+  const wordsPerMinute = 200;
+  const numberOfWords = text.split(/\s+/).length;
+  return Math.ceil(numberOfWords / wordsPerMinute);
 }

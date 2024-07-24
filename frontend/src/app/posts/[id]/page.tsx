@@ -29,7 +29,7 @@ interface Post {
   description: string;
   author?: {
     id: number;
-    usuario: string;
+    user: string;
     firstName: string;
     lastName: string;
     bio: string;
@@ -52,7 +52,7 @@ interface Comment {
   id: number;
   content: string;
   createdAt: string;
-  author: { id: number; firstName: string; lastName: string; usuario: string };
+  author: { id: number; firstName: string; lastName: string; user: string };
   favorites: number;
 }
 
@@ -67,7 +67,7 @@ const PostPage = () => {
 
   const fetchPost = async (id: string) => {
     try {
-      const response = await axios.get(`https://blogchain.onrender.com/posts/${id}`);
+      const response = await axios.get(`http://localhost:4000/posts/${id}`);
       const postData = response.data;
       setPost(postData);
       setComments(postData.comments);
@@ -81,7 +81,7 @@ const PostPage = () => {
   const fetchComments = async (postId: string) => {
     try {
       const response = await axios.get(
-        `https://blogchain.onrender.com/comments/post/${postId}`
+        `http://localhost:4000/comments/post/${postId}`
       );
       setComments(response.data);
     } catch (error) {
@@ -97,7 +97,7 @@ const PostPage = () => {
       return;
     }
     try {
-      const response = await axios.post(`https://blogchain.onrender.com/comments`, {
+      const response = await axios.post(`http://localhost:4000/comments`, {
         content: commentContent,
         authorId: user.id,
         postId: post?.id,
@@ -109,7 +109,7 @@ const PostPage = () => {
           id: user.id,
           firstName: user.firstName,
           lastName: user.lastName,
-          usuario: user.usuario,
+          user: user.user,
         },
       };
 
@@ -127,7 +127,7 @@ const PostPage = () => {
       return;
     }
     try {
-      await axios.post(`https://blogchain.onrender.com/favorites`, {
+      await axios.post(`http://localhost:4000/favorites`, {
         userId: user.id,
         postId: commentId ? undefined : postId,
         commentId: commentId || undefined,
@@ -316,7 +316,7 @@ const PostPage = () => {
           {post.imageUrl && (
             <div className="mt-6 rounded-lg border">
               <Image
-                src={`https://blogchain.onrender.com${post.imageUrl}`}
+                src={`http://localhost:4000${post.imageUrl}`}
                 alt="Banner"
                 width={1200}
                 height={300}
@@ -394,7 +394,7 @@ const PostPage = () => {
                   </Avatar>
                   <div>
                     <p className="text-sm font-medium">
-                      {comment.author?.usuario}
+                      {comment.author?.user}
                     </p>
                     <div className="text-xs text-gray-500">
                       {formatDate(comment.createdAt)}

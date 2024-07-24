@@ -23,7 +23,7 @@ type Post = {
   description: string;
   author?: {
     id: number;
-    usuario: string;
+    user: string;
     firstName: string;
     lastName: string;
     twitter?: string;
@@ -99,8 +99,8 @@ const ArticleCarousel = () => {
   const fetchPosts = async (page: number, categoryId?: number) => {
     try {
       const url = categoryId
-        ? `https://blogchain.onrender.com/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
-        : `https://blogchain.onrender.com/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
+        ? `http://localhost:4000/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
+        : `http://localhost:4000/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
       const response = await axios.get(url);
       const postsData = response.data.data;
       setPosts(postsData || []);
@@ -117,7 +117,7 @@ const ArticleCarousel = () => {
       return;
     }
     try {
-      await axios.post(`https://blogchain.onrender.com/favorites`, {
+      await axios.post(`http://localhost:4000/favorites`, {
         userId: user.id,
         postId: commentId ? undefined : postId,
         commentId: commentId || undefined,
@@ -145,7 +145,7 @@ const ArticleCarousel = () => {
   }, [currentPage, sortOrder]);
 
   return (
-    <div className="bg-gradientbg py-16 px-4 md:px-8 z-10">
+    <div className="py-16 px-4 md:px-8 z-10">
       <div
         data-aos="fade-in"
         data-aos-once="true"
@@ -166,7 +166,7 @@ const ArticleCarousel = () => {
                   {post.imageUrl && (
                     <div className="relative w-full h-40">
                       <Image
-                        src={`https://blogchain.onrender.com${post.imageUrl}`}
+                        src={`http://localhost:4000${post.imageUrl}`}
                         alt={post.title}
                         layout="fill"
                         objectFit="cover"

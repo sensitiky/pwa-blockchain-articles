@@ -13,8 +13,8 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  usuario: string;
+  @Column({ nullable: true })
+  user: string;
 
   @Column({ nullable: true })
   facebookId: string;

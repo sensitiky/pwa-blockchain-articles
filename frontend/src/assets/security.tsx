@@ -1,129 +1,151 @@
-import React, { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilePen } from "@fortawesome/free-solid-svg-icons";
-import TextField from "@mui/material/TextField";
+import React, { useState, useEffect } from "react";
+import { TextField, Button, Avatar, CircularProgress } from "@mui/material";
+import { FaEdit } from "react-icons/fa";
+import api from "../../services/api";
+import { useAuth } from "../../context/authContext";
+import { Separator } from "@radix-ui/react-dropdown-menu";
 
-interface UserInfo {
-  firstName: string;
-  lastName: string;
-  date: Date;
-  email: string;
-  usuario: string;
-  country: string;
-  medium: string;
-  instagram: string;
-  facebook: string;
-  twitter: string;
-  linkedin: string;
-  bio: string;
+interface UserProfile {
+  firstName?: string;
+  avatar?: string;
+  medium?: string;
+  instagram?: string;
+  facebook?: string;
+  twitter?: string;
+  linkedin?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
 }
 
-interface SecuritySettingsProps {
-  profileImage: string;
-  userInfo: UserInfo;
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleEditToggle: () => void;
-  handleProfileSave: (updatedInfo: UserInfo) => void;
-  editMode: boolean;
-}
+const SecuritySettings: React.FC = () => {
+  const { isAuthenticated, user, setUser } = useAuth();
+  const [editMode, setEditMode] = useState(false);
+  const [userInfo, setUserInfo] = useState<UserProfile>({});
+  const [loading, setLoading] = useState(true);
 
-const SecuritySettings: React.FC<SecuritySettingsProps> = ({
-  profileImage,
-  userInfo,
-  handleInputChange,
-  handleEditToggle,
-  handleProfileSave,
-  editMode,
-}) => {
-  const [localUserInfo, setLocalUserInfo] = useState<UserInfo>(userInfo);
-  const [fieldsProvided, setFieldsProvided] = useState<{
-    [key: string]: boolean;
-  }>({
-    medium: !!userInfo.medium,
-    instagram: !!userInfo.instagram,
-    facebook: !!userInfo.facebook,
-    twitter: !!userInfo.twitter,
-    linkedin: !!userInfo.linkedin,
-  });
+  const fetchProfile = async () => {
+    if (isAuthenticated) {
+      try {
+        const response = await api.get("http://localhost:4000/users/me");
+        const profile = response.data;
+        const avatarUrl = profile.avatar
+          ? `http://localhost:4000${profile.avatar}`
+          : "";
+        setUser({
+          id: profile.id,
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          date: profile.date ? new Date(profile.date) : undefined,
+          email: profile.email,
+          user: profile.user,
+          country: profile.country,
+          medium: profile.medium,
+          instagram: profile.instagram,
+          facebook: profile.facebook,
+          twitter: profile.twitter,
+          linkedin: profile.linkedin,
+          bio: profile.bio,
+          avatar: avatarUrl,
+          postCount: profile.postCount || 0,
+        });
+        setUserInfo(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching profile data", error);
+        setLoading(false);
+      }
+    }
+  };
 
-  const handleLocalInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    fetchProfile();
+  }, [isAuthenticated]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setLocalUserInfo({ ...localUserInfo, [name]: value });
+    setUserInfo({ ...userInfo, [name]: value });
   };
 
-  const handleSaveChanges = () => {
-    handleProfileSave(localUserInfo);
-    setFieldsProvided({
-      medium: !!localUserInfo.medium,
-      instagram: !!localUserInfo.instagram,
-      facebook: !!localUserInfo.facebook,
-      twitter: !!localUserInfo.twitter,
-      linkedin: !!localUserInfo.linkedin,
-    });
+  const handleSaveChanges = async () => {
+    try {
+      await api.put("http://localhost:4000/users/me", userInfo);
+      setEditMode(false);
+    } catch (error) {
+      console.error("Error saving profile information:", error);
+    }
   };
+
+  const handleSaveChangesPassWord = async () => {
+    try {
+      await api.put("http://localhost:4000/users/me", userInfo);
+      setEditMode(false);
+    } catch (error) {
+      console.error("Error saving profile information:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
-    <div className="flex p-6 sm:p-10">
-      <div className="mx-auto min-w-3xl">
-        <div className="flex items-center gap-4">
-          <CardContainer className="inter-var mx-auto">
-            <CardBody className="bg-inherit text-card-foreground border-none rounded-lg shadow-none w-full h-full transition-transform relative flex justify-center items-center">
-              <CardItem translateZ="50" className="relative z-10">
-                <Avatar className="w-36 h-36 md:w-36 md:h-36">
-                  <AvatarImage src={profileImage} />
-                  <AvatarFallback>{userInfo.firstName}</AvatarFallback>
-                </Avatar>
-              </CardItem>
-            </CardBody>
-          </CardContainer>
+    <div className="flex items-center justify-center h-screen">
+      <div className="container mx-auto p-6 h-[700px] w-4xl bg-inherit shadow-none rounded-lg ">
+        <div className="flex items-center gap-4 mb-6">
+          <Avatar
+            src={user?.avatar}
+            alt={user?.firstName}
+            sx={{ width: 56, height: 56 }}
+          />
           <div>
-            <h1 className="text-4xl font-bold">Hi, {userInfo.firstName}</h1>
-            <p className="text-3xl text-muted-foreground">
-              Welcome to your profile settings.
+            <h1 className="text-4xl font-bold">Hi, {user?.firstName}</h1>
+            <p className="text-xl text-gray-500">
+              Manage your security settings.
             </p>
           </div>
         </div>
-        <Separator className="my-6" />
-        <div className="grid gap-6">
-          <div className="grid gap-2">
+        <div className="grid grid-cols-2 gap-6">
+          <div className="border-r-2">
+            <h2 className="text-2xl font-bold mb-4">Social Media</h2>
             {["medium", "instagram", "facebook", "twitter", "linkedin"].map(
-              (field, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="text-xl font-medium capitalize border-b-2">
-                    {field}
-                  </div>
+              (field) => (
+                <div
+                  key={field}
+                  className="flex items-center justify-between mb-4"
+                >
+                  <div className="text-lg font-medium capitalize">{field}</div>
                   {editMode ? (
                     <TextField
-                      id="standard-basic"
-                      label="Edit here"
-                      variant="standard"
                       name={field}
-                      onChange={handleLocalInputChange}
-                      value={String(localUserInfo[field as keyof UserInfo])}
-                      className="border-none rounded-none w-3/9 border-gray-400 cursor-text"
+                      value={userInfo[field as keyof UserProfile] || ""}
+                      onChange={handleInputChange}
+                      variant="outlined"
+                      size="small"
                     />
                   ) : (
-                    <div className="flex items-center gap-2 text-sm">
+                    <div className="flex items-center gap-2">
                       <span
-                        className={`${
-                          fieldsProvided[field]
+                        className={`text-sm ${
+                          userInfo[field as keyof UserProfile]
                             ? "text-green-500"
-                            : "text-muted-foreground"
+                            : "text-gray-500"
                         }`}
                       >
-                        {fieldsProvided[field] ? "Provided" : "Not Provided"}
+                        {userInfo[field as keyof UserProfile]
+                          ? "Provided"
+                          : "Not Provided"}
                       </span>
                       <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleEditToggle}
-                        className="bg-inherit hover:bg-inherit"
+                        variant="text"
+                        size="small"
+                        onClick={() => setEditMode(true)}
                       >
-                        <FontAwesomeIcon icon={faFilePen} className="h-4 w-4" />
+                        <FaEdit />
                       </Button>
                     </div>
                   )}
@@ -131,15 +153,59 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({
               )
             )}
           </div>
-          {editMode && (
-            <Button
-              className="text-lg w-full bg-inherit border-none hover:bg-inherit text-black hover:underline hover:underline-offset-4 hover:decoration-black"
-              onClick={handleSaveChanges}
-            >
-              Save Changes
-            </Button>
-          )}
+          <div>
+            <h2 className="text-2xl font-bold mb-4">Security</h2>
+            {["email", "password", "confirmPassword"].map((field) => (
+              <div
+                key={field}
+                className="flex items-center justify-between mb-4"
+              >
+                <div className="text-lg font-medium capitalize">{field}</div>
+                {editMode ? (
+                  <TextField
+                    name={field}
+                    type={field.includes("password") ? "password" : "text"}
+                    value={userInfo[field as keyof UserProfile] || ""}
+                    onChange={handleInputChange}
+                    variant="outlined"
+                    size="small"
+                  />
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`text-sm ${
+                        userInfo[field as keyof UserProfile]
+                          ? "text-green-500"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {userInfo[field as keyof UserProfile]
+                        ? "Provided"
+                        : "Not Provided"}
+                    </span>
+                    <Button
+                      variant="text"
+                      size="small"
+                      onClick={() => setEditMode(true)}
+                    >
+                      <FaEdit />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
+        {editMode && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSaveChanges}
+            className="mt-6"
+          >
+            Save Changes
+          </Button>
+        )}
       </div>
     </div>
   );

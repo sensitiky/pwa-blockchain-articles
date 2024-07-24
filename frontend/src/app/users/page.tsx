@@ -10,7 +10,8 @@ import Articles from "@/assets/userarticles";
 import { useAuth } from "../../../context/authContext";
 import { useRouter } from "next/navigation";
 import { getProfile, updateProfile } from "../../../services/authService";
-import { UserIcon, LockIcon, BookMarkedIcon, FilePenIcon } from "lucide-react";
+import { UserIcon, LockIcon, BookMarkedIcon, FilePenIcon, PencilIcon } from "lucide-react";
+import { BookmarkIcon } from "lucide-react";
 
 const Users = () => {
   const [selectedSection, setSelectedSection] = useState("personal");
@@ -23,7 +24,7 @@ const Users = () => {
     lastName: "",
     date: new Date(),
     email: "",
-    usuario: "",
+    user: "",
     country: "",
     medium: "",
     instagram: "",
@@ -46,7 +47,7 @@ const Users = () => {
             lastName: profile.lastName || "",
             date: profile.date ? new Date(profile.date) : new Date(),
             email: profile.email || "",
-            usuario: profile.usuario || "",
+            user: profile.user || "",
             country: profile.country || "",
             medium: profile.medium || "",
             instagram: profile.instagram || "",
@@ -145,22 +146,10 @@ const Users = () => {
     }
     switch (selectedSection) {
       case "personal":
-        return (
-          <ProfileSettings
-          />
-        );
+        return <ProfileSettings />;
 
       case "security":
-        return (
-          <SecuritySettings
-            profileImage={profileImage}
-            userInfo={userInfo}
-            handleInputChange={handleInputChange}
-            handleEditToggle={handleEditToggle}
-            handleProfileSave={handleProfileSave}
-            editMode={editMode}
-          />
-        );
+        return <SecuritySettings />;
 
       case "saved":
         return <SavedItems />;
@@ -174,14 +163,17 @@ const Users = () => {
   };
 
   return (
-    <div className="bg-customColor-header">
+    <div >
       <Header />
-      <div className="grid min-h-screen grid-cols-[1fr] md:grid-cols-[400px_1fr] bg-background text-foreground">
-        <aside className="border-r border-border bg-customColor-header px-6 py-8 w-fit" >
+      <div className="grid min-h-screen grid-cols-[1fr] md:grid-cols-[400px_1fr] bg-inherit text-foreground ">
+        
+        <aside className="border-r border-border bg-customColor-header px-2 py-8 w-16 hover:w-64 transition-all duration-300 group">
           <div className="flex flex-col gap-8">
             <div className="space-y-2">
-              <h2 className="text-white text-2xl font-bold">Welcome</h2>
-              <p className="text-customColor-welcome">
+              <h2 className="text-white text-2xl font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Welcome
+              </h2>
+              <p className="text-customColor-welcome opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 Manage your articles and account settings.
               </p>
             </div>
@@ -190,35 +182,43 @@ const Users = () => {
                 onClick={() => setSelectedSection("personal")}
                 className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white hover:underline hover:underline-offset-4 hover:decoration-yellow-500"
               >
-                <UserIcon className="h-5 w-5" />
-                Personal Information
+                <UserIcon className="size-8" />
+                <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  Personal Information
+                </span>
               </button>
               <button
                 onClick={() => setSelectedSection("security")}
                 className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white hover:underline hover:underline-offset-4 hover:decoration-yellow-500"
               >
-                <LockIcon className="h-5 w-5" />
-                Security & Social Links
+                <LockIcon className="size-8" />
+                <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  Security & Social Links
+                </span>
               </button>
               <button
                 onClick={() => setSelectedSection("saved")}
                 className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white hover:underline hover:underline-offset-4 hover:decoration-yellow-500"
               >
-                <BookMarkedIcon className="h-5 w-5" />
-                Saved Articles
+                <BookmarkIcon className="size-8" />
+                <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  Saved Articles
+                </span>
               </button>
               <button
                 onClick={() => setSelectedSection("articles")}
                 className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white hover:underline hover:underline-offset-4 hover:decoration-yellow-500"
               >
-                <FilePenIcon className="h-5 w-5" />
-                My Articles
+                <PencilIcon className="size-8" />
+                <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  My Articles
+                </span>
               </button>
             </nav>
           </div>
         </aside>
 
-        <main className="p-6 md:p-8">{RenderContent()}</main>
+        <main className="bg-inherit p-6 md:p-8">{RenderContent()}</main>
       </div>
       <div className="hidden lg:flex md:flex">
         <Footer />

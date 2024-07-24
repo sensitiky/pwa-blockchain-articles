@@ -4,8 +4,7 @@ import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import LoginCard from "@/assets/login";
-import api from "../../services/api";
-import { useAuth } from "../../context/authContext";
+import { useAuth, User } from "../../context/authContext";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
@@ -24,38 +23,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import axios from "axios";
 
 const Header = () => {
   const router = useRouter();
   const [showLoginCard, setShowLoginCard] = useState(false);
   const { user, setUser, isAuthenticated, login, logout } = useAuth();
   const prevIsAuthenticated = useRef(isAuthenticated);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        console.log("Attempting to fetch user data");
-        const response = await api.get("https://blogchain.onrender.com/users/me");
-        console.log("User data fetched successfully", response.data);
-        setUser(response.data);
-      } catch (error) {
-        console.error("Error fetching user data", error);
-
-        if (axios.isAxiosError(error)) {
-          console.log("Error response data", error.response?.data);
-          console.log("Error response status", error.response?.status);
-          console.log("Error response headers", error.response?.headers);
-        } else {
-          console.log("Unexpected error", error);
-        }
-      }
-    };
-
-    if (isAuthenticated) {
-      fetchUser();
-    }
-  }, [isAuthenticated, setUser]);
 
   useEffect(() => {
     if (!prevIsAuthenticated.current && isAuthenticated) {
@@ -219,14 +192,8 @@ const Header = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Avatar className="rounded-full cursor-pointer">
-                    <AvatarImage
-                      src={
-                        user.avatar?.startsWith("http")
-                          ? user.avatar
-                          : `https://blogchain.onrender.com${user.avatar}`
-                      }
-                    />
-                    <AvatarFallback>{user.usuario}</AvatarFallback>
+                    <AvatarImage src={user?.avatar} />
+                    <AvatarFallback>{user?.user}</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>

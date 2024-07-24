@@ -1,5 +1,5 @@
 "use client";
-import {
+import React, {
   createContext,
   useContext,
   useState,
@@ -9,9 +9,27 @@ import {
 } from "react";
 import api from "../services/api";
 
+export interface User {
+  id: number;
+  firstName?: string;
+  lastName?: string;
+  date?: Date;
+  email?: string;
+  user?: string;
+  country?: string;
+  medium?: string;
+  instagram?: string;
+  facebook?: string;
+  twitter?: string;
+  linkedin?: string;
+  bio?: string;
+  avatar?: string;
+  postCount?: number;
+}
+
 interface AuthContextType {
-  user: any;
-  setUser: (user: any) => void;
+  user: User | null;
+  setUser: (user: User) => void;
   isAuthenticated: boolean;
   login: (data: any) => void;
   logout: () => void;
@@ -28,7 +46,7 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const login = useCallback((userData: any) => {
     localStorage.setItem("token", userData.token);
@@ -47,7 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const token = localStorage.getItem("token");
         if (token) {
-          const response = await api.get("https://blogchain.onrender.com/users/me");
+          const response = await api.get("http://localhost:4000/users/me");
           setUser(response.data);
         }
       } catch (error) {

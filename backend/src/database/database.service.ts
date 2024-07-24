@@ -14,28 +14,30 @@ export class DatabaseService {
     private userRepository: Repository<User>,
   ) {}
 
-  async findUserByUser(usuario: string): Promise<User | undefined> {
-    this.logger.log(`Finding user by usuario: ${usuario}`);
-    if (!usuario) {
-      this.logger.warn('User not found');
-      throw new BadRequestException('User not found');
+  async findUserByUser(username: string): Promise<User | undefined> {
+    this.logger.log(`Finding user by username: ${username}`);
+    if (!username) {
+      this.logger.warn('Username not provided');
+      throw new BadRequestException('Username not provided');
     }
-    const user = await this.userRepository.findOne({ where: { usuario } });
+    const user = await this.userRepository.findOne({
+      where: { user: username },
+    });
     if (user) {
-      this.logger.log(`User found: ${usuario}`);
+      this.logger.log(`User found: ${user}`);
     } else {
-      this.logger.warn(`User not found: ${usuario}`);
+      this.logger.warn(`User not found: ${username}`);
     }
     return user;
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    this.logger.log(`Creating user: ${createUserDto.usuario}`);
+    this.logger.log(`Creating user: ${createUserDto.user}`);
     if (!createUserDto.password) {
       this.logger.warn('Contraseña is required');
       throw new BadRequestException('Contraseña is required');
     }
-    
+
     const salt = await bcrypt.genSalt();
     const hashedcontrasena = await bcrypt.hash(createUserDto.password, salt);
 
@@ -45,7 +47,7 @@ export class DatabaseService {
     });
 
     const savedUser = await this.userRepository.save(newUser);
-    this.logger.log(`User created: ${createUserDto.usuario}`);
+    this.logger.log(`User created: ${createUserDto.user}`);
     return savedUser;
   }
 

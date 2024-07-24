@@ -37,7 +37,6 @@ export class PostsService {
         })
       : null;
 
-    // Deserializa los tags
     let tags = [];
     if (typeof createPostDto.tags === 'string') {
       tags = JSON.parse(createPostDto.tags);
@@ -67,14 +66,32 @@ export class PostsService {
       tags,
     });
 
-    return this.postsRepository.save(post);
+    await this.postsRepository.save(post);
+    author.postCount += 1;
+    await this.usersRepository.save(author);
+
+    return post;
+  }
+
+  async deletePost(postId: number): Promise<void> {
+    const post = await this.postsRepository.findOne({
+      where: { id: postId },
+      relations: ['author'],
+    });
+    if (post) {
+      const author = post.author;
+      await this.postsRepository.remove(post);
+      if (author) {
+        author.postCount -= 1;
+        await this.usersRepository.save(author);
+      }
+    }
   }
 
   async findAll(page: number, limit: number, sortOrder: string) {
     const order = this.getSortOrder(sortOrder);
 
     if (sortOrder === 'comments') {
-      // Custom query for sorting by comments count
       const [result, total] = await this.postsRepository
         .createQueryBuilder('post')
         .leftJoinAndSelect('post.comments', 'comment')
@@ -91,7 +108,6 @@ export class PostsService {
         totalPages: Math.ceil(total / limit),
       };
     } else {
-      // Default sorting
       const [result, total] = await this.postsRepository.findAndCount({
         skip: (page - 1) * limit,
         take: limit,
@@ -145,9 +161,11 @@ export class PostsService {
   private getSortOrder(sortOrder: string): { [key: string]: 'ASC' | 'DESC' } {
     switch (sortOrder) {
       case 'saved':
-        return { savedAt: 'DESC' };
+        return { 'favorites.length': 'DESC' };
+      case 'createdAt':
+        return { createdAt: 'DESC' };
       case 'comments':
-        return {}; // Sorting by comments count is handled separately in `findAll`
+        return {}; 
       default:
         return { createdAt: 'DESC' };
     }

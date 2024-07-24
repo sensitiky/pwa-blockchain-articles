@@ -3,7 +3,7 @@ interface UserInfo {
   lastName: string;
   date: Date;
   email: string;
-  usuario: string;
+  user: string;
   country: string;
   medium: string;
   instagram: string;
@@ -17,7 +17,7 @@ import axios from "axios";
 import api from "./api";
 
 export const login = async (email: string, password: string) => {
-  const response = await api.post("https://blogchain.onrender.com/auth/login", { email, password });
+  const response = await api.post("http://localhost:4000/auth/login", { email, password });
   const { token } = response.data;
   if (token) {
     localStorage.setItem("token", token);
@@ -27,7 +27,7 @@ export const login = async (email: string, password: string) => {
 
 export const getProfile = async () => {
   try {
-    const response = await api.get("https://blogchain.onrender.com/users/me");
+    const response = await api.get("http://localhost:4000/users/me");
     return response.data;
   } catch (error) {
     console.error("Error fetching profile data", error);
@@ -39,7 +39,7 @@ export const updateProfile = async (userInfo: UserInfo) => {
   try {
     const token = localStorage.getItem("token");
     const response = await axios.put(
-      "https://blogchain.onrender.com/users/me",
+      "http://localhost:4000/users/me",
       userInfo,
       {
         headers: {

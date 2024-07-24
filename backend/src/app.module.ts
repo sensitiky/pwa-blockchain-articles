@@ -12,6 +12,7 @@ import { CommentsModule } from './auth/comments/comments.module';
 import { FavoritesModule } from './auth/favorites/favorites.module';
 import { CategoriesModule } from './auth/category/category.module';
 import { TagsModule } from './auth/tag/tag.module';
+import { UsersModule } from './auth/users/user.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { TagsModule } from './auth/tag/tag.module';
     DatabaseModule,
     AuthModule,
     PostsModule,
+    UsersModule,
     CommentsModule,
     FavoritesModule,
     CategoriesModule,

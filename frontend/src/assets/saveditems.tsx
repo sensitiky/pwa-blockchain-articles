@@ -30,7 +30,7 @@ const SavedItems: React.FC = () => {
         <div className="flex items-center justify-end gap-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button variant="outline" size="sm" className="gap-2 rounded-none bg-inherit border-r-0 border-l-0 border-border border-black">
                 <FontAwesomeIcon icon={faArrowsUpDown} className="h-4 w-4" />
                 Order
               </Button>
@@ -48,11 +48,11 @@ const SavedItems: React.FC = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="mt-4">
-          {Array.from({ length: 3 }).map((_, index) => (
+        <div className="mt-4 ">
+          {Array.from({ length: 2 }).map((_, index) => (
             <div
               key={index}
-              className="border-t-[1px] border-b-[1px] border-r-0 border-l-0 flex flex-col md:flex-row items-center justify-between p-4 sm:p-6 bg-white shadow-none rounded-none"
+              className="border-t-[1px] border-b-[1px] border-r-0 border-l-0 flex flex-col md:flex-row items-center justify-between p-4 sm:p-6 bg-inherit shadow-none rounded-none"
             >
               <img
                 src="/test.jpg"

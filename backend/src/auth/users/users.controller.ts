@@ -1,4 +1,13 @@
-import { Controller, Get, Put, Body, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Body,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  Param,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { UsersService } from './users.service';
 import { CurrentUser } from '../decorators/current-user.decorator';
@@ -7,6 +16,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { User } from './user.entity';
+import { Post } from '../posts/post.entity';
 
 @Controller('users')
 export class UsersController {
@@ -26,7 +36,8 @@ export class UsersController {
       storage: diskStorage({
         destination: './uploads/avatars',
         filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);
           const filename = `${file.fieldname}-${uniqueSuffix}${ext}`;
           callback(null, filename);
@@ -42,8 +53,22 @@ export class UsersController {
     if (file) {
       updateData.avatar = `/uploads/avatars/${file.filename}`;
     }
-    const updatedUser = await this.usersService.updateUserInfo(user.id, updateData);
+    const updatedUser = await this.usersService.updateUserInfo(
+      user.id,
+      updateData,
+    );
     const userDto = this.usersService.transformToDto(updatedUser);
     return userDto;
+  }
+
+  @Get('me/posts')
+  @UseGuards(JwtAuthGuard)
+  async getUserPosts(@CurrentUser() user: User): Promise<Post[]> {
+    return this.usersService.findUserPosts(user.id);
+  }
+
+  @Get(':id')
+  async getUserById(@Param('id') id: number): Promise<User> {
+    return this.usersService.findOneById(id);
   }
 }

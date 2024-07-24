@@ -1,6 +1,6 @@
 export class CreateUserDto {
   nombre: string;
-  usuario: string;
+  user: string;
   email: string;
   password: string;
   firstName?: string;
@@ -13,7 +13,7 @@ export class CreateUserDto {
 
 export class UserDto {
   id: number;
-  usuario: string;
+  user: string;
   facebookId?: string;
   email: string;
   firstName?: string;
@@ -34,7 +34,7 @@ export class UpdateUserDto {
    firstName?: string;
    lastName?: string;
    email?: string;
-   usuario?: string;
+   user?: string;
    bio?: string;
    avatar?: string;
 }

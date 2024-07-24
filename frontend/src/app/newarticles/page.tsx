@@ -44,8 +44,8 @@ export default function NewArticles() {
     const fetchCategoriesAndTags = async () => {
       try {
         const [categoriesResponse, tagsResponse] = await Promise.all([
-          axios.get("https://blogchain.onrender.com/categories"),
-          axios.get("https://blogchain.onrender.com/tags"),
+          axios.get("http://localhost:4000/categories"),
+          axios.get("http://localhost:4000/tags"),
         ]);
         setCategories(categoriesResponse.data);
         setTags(tagsResponse.data);
@@ -123,7 +123,7 @@ export default function NewArticles() {
     }
 
     try {
-      const response = await axios.post("https://blogchain.onrender.com/posts", formData, {
+      const response = await axios.post("http://localhost:4000/posts", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

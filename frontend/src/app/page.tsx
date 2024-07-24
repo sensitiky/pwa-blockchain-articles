@@ -35,7 +35,7 @@ interface Post {
 
 interface Author {
   id: number;
-  usuario: string;
+  user: string;
   firstName: string;
   lastName: string;
   bio: string;
@@ -49,7 +49,7 @@ interface Comment {
   id: number;
   content: string;
   createdAt: string;
-  author: { id: number; firstName: string; lastName: string; usuario: string };
+  author: { id: number; firstName: string; lastName: string; user: string };
   favorites: number;
 }
 
@@ -254,7 +254,7 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      <section className="flex bg-gradientbg2 py-4 px-4 md:px-8">
+      <section className="flex py-4 px-4 md:px-8">
         <div
           className="container mx-auto text-center"
           data-aos="fade-in"
@@ -317,7 +317,7 @@ const HomePage: React.FC = () => {
 
       <ArticleCarousel />
 
-      <section className="bg-gradientbg2 py-16 px-4 md:px-8">
+      <section className="py-16 px-4 md:px-8">
         <div
           className="container mx-auto"
           data-aos="fade-in"
@@ -330,7 +330,7 @@ const HomePage: React.FC = () => {
               Discover Articles
             </h2>
           </div>
-          <div className="flex flex-wrap justify-between mb-8">
+          <div className="flex flex-wrap justify-center mb-8">
             <div className="flex flex-col w-full sm:w-auto mb-4 md:mb-0">
               <select
                 className="py-2 border-b-2 border-t-2 border-l-0 bg-inherit border-r-0 focus:ring-0 border-customColor-innovatio3 focus:border-customColor-innovatio3 text-base sm:text-lg"
@@ -340,19 +340,6 @@ const HomePage: React.FC = () => {
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-col w-full sm:w-auto mb-4 md:mb-0">
-              <select
-                className="py-2 border-b-2 border-t-2 border-l-0 bg-inherit border-r-0 focus:ring-0 border-customColor-innovatio3 focus:border-customColor-innovatio3 text-base sm:text-lg"
-                onChange={(e) => handleTagClick(parseInt(e.target.value))}
-              >
-                <option value="">Tags</option>
-                {tags.map((tag) => (
-                  <option key={tag.id} value={tag.id}>
-                    {tag.name}
                   </option>
                 ))}
               </select>
@@ -367,7 +354,7 @@ const HomePage: React.FC = () => {
                 <div className="flex items-start mb-4">
                   {post.author?.avatar && (
                     <img
-                      src={`https://blogchain.onrender.com${post.author.avatar}`}
+                      src={`http://localhost:4000${post.author.avatar}`}
                       alt={post.author.firstName[0] ?? "Author"}
                       width={50}
                       height={50}
@@ -385,8 +372,8 @@ const HomePage: React.FC = () => {
                 </div>
                 <div className="flex mb-4">
                   {post.imageUrl && (
-                    <Image
-                      src={`https://blogchain.onrender.com${post.imageUrl}`}
+                    <img
+                      src={`http://localhost:4000${post.imageUrl}`}
                       alt={post.title}
                       width={100}
                       height={100}

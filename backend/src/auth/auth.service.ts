@@ -59,7 +59,7 @@ export class AuthService {
     }
 
     const existingUsername = await this.usersService.findOne(
-      createUserDto.usuario,
+      createUserDto.user,
     );
     if (existingUsername) {
       throw new ConflictException('Username already in use');
@@ -95,7 +95,7 @@ export class AuthService {
 
     if (!user) {
       user = await this.usersService.create({
-        usuario: payload?.sub,
+        user: payload?.sub,
         email,
         password: '',
         firstName: payload?.given_name,
@@ -123,7 +123,7 @@ export class AuthService {
           firstName,
           lastName,
           nombre: firstName + ' ' + lastName,
-          usuario: email, 
+          user: email, 
           password: '',
           code: '',
         };
