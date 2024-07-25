@@ -117,7 +117,11 @@ export default function Articles() {
       const response = await axios.get(
         "http://localhost:4000/posts/count-by-category"
       );
-      setCategoryCounts(response.data);
+      const mappedCategoryCounts = response.data.map((item: any) => ({
+        categoryId: parseInt(item.categoryid, 10),
+        count: item.count,
+      }));
+      setCategoryCounts(mappedCategoryCounts);
     } catch (error) {
       console.error("Error fetching category counts", error);
     }
@@ -215,7 +219,6 @@ export default function Articles() {
               )}
             </div>
           </div>
-
           <div
             className={`categories-tags-container text-center py-4 w-full tags-container ${
               tags.length > 0 ? "visible" : ""

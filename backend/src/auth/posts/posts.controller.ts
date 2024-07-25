@@ -8,6 +8,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -43,13 +44,19 @@ export class PostsController {
   async findAllByCategory(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 5,
-    @Query('categoryId') categoryId: number,
+    @Query('categoryId') categoryId: string, // categoría como string
     @Query('sortOrder') sortOrder: string = 'recent',
   ) {
+    const categoryIdNumber = parseInt(categoryId, 10); // convertir a número
+
+    if (isNaN(categoryIdNumber)) {
+      throw new BadRequestException('Invalid categoryId');
+    }
+
     return this.postsService.findAllByCategory(
       page,
       limit,
-      categoryId,
+      categoryIdNumber, // categoría como número
       sortOrder,
     );
   }

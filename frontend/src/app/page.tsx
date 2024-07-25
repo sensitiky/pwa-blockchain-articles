@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -80,7 +80,9 @@ const HomePage: React.FC = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
   );
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const router = useRouter();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const token = cookies.get("token");
@@ -101,6 +103,22 @@ const HomePage: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
     fetchPosts();
   }, [selectedTagId, selectedCategoryId]);
 
@@ -108,7 +126,6 @@ const HomePage: React.FC = () => {
     try {
       const response = await axios.get(`${API_URL}/tags`);
       setTags(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error("Error fetching tags", error);
     }
@@ -209,16 +226,13 @@ const HomePage: React.FC = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const handleTagClick = (tagId: number) => {
-    const newTagId = selectedTagId === tagId ? null : tagId;
-    setSelectedTagId(newTagId);
-    console.log(newTagId);
-  };
-
   const handleCategoryClick = (categoryId: number) => {
     const newCategoryId = selectedCategoryId === categoryId ? null : categoryId;
     setSelectedCategoryId(newCategoryId);
+    setIsDropdownOpen(false);
   };
+
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   return (
     <div className="min-w-screen">
@@ -330,80 +344,77 @@ const HomePage: React.FC = () => {
               Discover Articles
             </h2>
           </div>
-          <div className="flex flex-wrap justify-center mb-8">
-            <div className="flex flex-col w-full sm:w-auto mb-4 md:mb-0">
-              <select
-                className="py-2 border-b-2 border-t-2 border-l-0 bg-inherit border-r-0 focus:ring-0 border-customColor-innovatio3 focus:border-customColor-innovatio3 text-base sm:text-lg"
-                onChange={(e) => handleCategoryClick(parseInt(e.target.value))}
-              >
-                <option value="">Category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+
+          <div className="custom-dropdown-container" ref={dropdownRef}>
+            <div className="custom-dropdown" onClick={toggleDropdown}>
+              <div className="selected-option">
+                {selectedCategoryId
+                  ? categories.find(
+                      (category) => category.id === selectedCategoryId
+                    )?.name
+                  : "Category"}
+              </div>
+              {isDropdownOpen && (
+                <div className="custom-options">
+                  {categories.map((category) => (
+                    <div
+                      key={category.id}
+                      className="custom-option"
+                      onClick={() => handleCategoryClick(category.id)}
+                    >
+                      {category.name}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
+
           <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2">
             {posts.map((post, index) => (
               <div
                 key={index}
                 className="flex flex-col border-b border-customColor-innovatio3 pb-4 mb-4"
               >
-                <div className="flex items-start mb-4">
-                  {post.author?.avatar && (
-                    <img
-                      src={`http://localhost:4000${post.author.avatar}`}
-                      alt={post.author.firstName[0] ?? "Author"}
-                      width={50}
-                      height={50}
-                      className="rounded-full"
-                    />
-                  )}
-                  <div className="ml-4">
-                    <p className="text-lg font-semibold">
-                      {post.author?.firstName} {post.author?.lastName}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {formatDate(post.createdAt)}
-                    </p>
-                  </div>
-                </div>
                 <div className="flex mb-4">
                   {post.imageUrl && (
                     <img
                       src={`http://localhost:4000${post.imageUrl}`}
                       alt={post.title}
-                      width={100}
-                      height={100}
+                      width={300}
+                      height={300}
                       className="rounded-md"
                     />
                   )}
-                  <div className="ml-4">
-                    <h3 className="text-xl font-bold mb-2">{post.title}</h3>
-                    <p className="text-gray-600 line-clamp-3">
-                      {typeof post.description === "string"
-                        ? parse(post.description)
-                        : JSON.stringify(post.description)}
-                    </p>
+                  <div>
+                    <div className="flex items-start m-4">
+                      {post.author?.avatar && (
+                        <img
+                          src={`http://localhost:4000${post.author.avatar}`}
+                          alt={post.author.firstName[0] ?? "Author"}
+                          width={50}
+                          height={50}
+                          className="rounded-full"
+                        />
+                      )}
+                      <div className="ml-4">
+                        <p className="text-lg font-semibold">
+                          {post.author?.firstName} {post.author?.lastName}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {formatDate(post.createdAt)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="ml-4">
+                      <h3 className="text-xl font-bold mb-2">{post.title}</h3>
+                      <p className="text-gray-600 line-clamp-3">
+                        {typeof post.description === "string"
+                          ? parse(post.description)
+                          : JSON.stringify(post.description)}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex mt-2 items-center space-x-1">
-                  <FaRegHeart className="h-5 w-5 text-gray-500" />
-                  <span>
-                    {Array.isArray(post.favorites) ? post.favorites.length : 0}
-                  </span>
-                  <Separator
-                    className="h-5 w-[1px] bg-gray-500"
-                    orientation="vertical"
-                  />
-
-                  <FaRegComment className="w-5 h-5 text-gray-500" />
-                  <span>
-                    {" "}
-                    {Array.isArray(post.comments) ? post.comments.length : 0}
-                  </span>
                 </div>
               </div>
             ))}
@@ -417,6 +428,7 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
+
       <Footer />
 
       {showLoginCard && (

@@ -102,7 +102,7 @@
 }
 
 .hover\:scale-110:hover {
-  transform: scale(1.10);
+  transform: scale(1.1);
 }
 
 .hover\:shadow-2xl:hover {
@@ -122,4 +122,73 @@
 .tags-container.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.custom-dropdown-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+}
+
+.custom-dropdown .selected-option {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid transparent;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  border-radius: 0;
+  appearance: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
+  padding: 20px;
+}
+
+.custom-dropdown::after {
+  content: "▼";
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 12px;
+  color: #333;
+}
+
+.custom-dropdown select:hover,
+.custom-dropdown select:focus {
+  border-color: #000;
+}
+
+.custom-options {
+  position: absolute;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  margin-top: 5px;
+}
+
+.custom-options div {
+  padding: 10px;
+  cursor: pointer;
+  color: #333;
+  border-top: 1px solid #eee;
+}
+
+.custom-options div:first-child {
+  border-top: none;
+}
+
+.custom-options div:hover {
+  background-color: #f5f5f5;
 }
