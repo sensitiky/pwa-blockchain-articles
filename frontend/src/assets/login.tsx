@@ -13,6 +13,7 @@ import {
 } from "@react-oauth/google";
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 export default function LoginCard({ onClose }: { onClose: () => void }) {
   const [showRegister, setShowRegister] = useState(false);
@@ -373,12 +374,20 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
               </div>
               <div className="flex justify-center">
                 <Button
-                  className="rounded-full w-44 bg-customColor-header"
+                  className="rounded-full w-44 bg-customColor-header flex items-center justify-center"
                   onClick={handleFacebookLogin}
                 >
+                  <i className="fab fa-facebook mr-2"></i>
                   Login with Facebook
                 </Button>
               </div>
+              <div className="flex justify-center">
+                <Button className="rounded-full w-44 bg-customColor-header">
+                  <i className="fab fa-apple mr-2"></i>
+                  Login with Apple ID
+                </Button>
+              </div>
+
               <div className="space-y-2 flex flex-col items-center">
                 <GoogleLogin
                   onSuccess={handleGoogleLoginSuccess}

@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import axios from "axios";
 import Header from "@/assets/header";
 import Footer from "@/assets/footer";
@@ -15,6 +14,7 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ClockIcon, TagIcon, MessageSquareIcon, HeartIcon } from "lucide-react";
+import Image from "next/image";
 
 type Category = {
   id: number;
@@ -51,11 +51,16 @@ export default function Articles() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
+  const [tags, setTags] = useState<Tag[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
   );
   const [sortOrder, setSortOrder] = useState<string>("recent");
+  const [categoryCounts, setCategoryCounts] = useState<
+    { categoryId: number; count: number }[]
+  >([]);
 
+  // Fetch categories
   const fetchCategories = async () => {
     try {
       const response = await axios.get("http://localhost:4000/categories");
@@ -65,6 +70,7 @@ export default function Articles() {
     }
   };
 
+  // Fetch posts by ID
   const fetchPost = async (id: string) => {
     try {
       const response = await axios.get(`http://localhost:4000/posts/${id}`);
@@ -78,6 +84,7 @@ export default function Articles() {
     }
   };
 
+  // Fetch comments for a post
   const fetchComments = async (postId: string) => {
     try {
       const response = await axios.get(
@@ -89,6 +96,7 @@ export default function Articles() {
     }
   };
 
+  // Fetch posts by category or page
   const fetchPosts = async (page: number, categoryId?: number) => {
     try {
       const url = categoryId
@@ -103,6 +111,31 @@ export default function Articles() {
     }
   };
 
+  // Fetch post counts by category
+  const fetchCategoryCounts = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:4000/posts/count-by-category"
+      );
+      setCategoryCounts(response.data);
+    } catch (error) {
+      console.error("Error fetching category counts", error);
+    }
+  };
+
+  // Fetch tags by category
+  const fetchTagsByCategory = async (categoryId: number) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/tags/by-category/${categoryId}`
+      );
+      setTags(response.data);
+    } catch (error) {
+      console.error("Error fetching tags", error);
+    }
+  };
+
+  // Effect for fetching data based on params
   useEffect(() => {
     if (id) {
       fetchPost(id as string);
@@ -110,18 +143,29 @@ export default function Articles() {
     }
   }, [id]);
 
+  // Effect for fetching categories, category counts, and posts
   useEffect(() => {
     fetchCategories();
+    fetchCategoryCounts();
     fetchPosts(currentPage, selectedCategoryId || undefined);
   }, [currentPage, selectedCategoryId, sortOrder]);
 
+  // Handle category click to fetch tags and posts
   const handleCategoryClick = (categoryId: number) => {
     const newCategoryId = selectedCategoryId === categoryId ? null : categoryId;
     setSelectedCategoryId(newCategoryId);
     setCurrentPage(1);
-    fetchPosts(1, newCategoryId || undefined);
+    setTags([]);
+
+    if (newCategoryId) {
+      fetchTagsByCategory(newCategoryId);
+      fetchPosts(1, newCategoryId);
+    } else {
+      fetchPosts(1);
+    }
   };
 
+  // Handle sort order change
   const handleSortOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortOrder(e.target.value);
     setCurrentPage(1);
@@ -148,22 +192,45 @@ export default function Articles() {
               className="categories-list flex flex-wrap justify-center gap-4 w-full px-2"
             >
               {categories.length > 0 ? (
-                categories.map((category) => (
-                  <button
-                    key={category.id}
-                    className={`category-item w-auto px-4 py-2 border border-white rounded-full text-white bg-inherit ${
-                      selectedCategoryId === category.id
-                        ? "bg-yellow-500 text-black"
-                        : ""
-                    }`}
-                    onClick={() => handleCategoryClick(category.id)}
-                  >
-                    {category.name}
-                  </button>
-                ))
+                categories.map((category) => {
+                  const count =
+                    categoryCounts.find((c) => c.categoryId === category.id)
+                      ?.count || 0;
+                  return (
+                    <button
+                      key={category.id}
+                      className={`category-item w-auto px-4 py-2 border border-white rounded-full text-white bg-inherit ${
+                        selectedCategoryId === category.id
+                          ? "bg-yellow-500 text-black"
+                          : ""
+                      }`}
+                      onClick={() => handleCategoryClick(category.id)}
+                    >
+                      {category.name} ({count})
+                    </button>
+                  );
+                })
               ) : (
                 <div className="text-white">No categories available</div>
               )}
+            </div>
+          </div>
+
+          <div
+            className={`categories-tags-container text-center py-4 w-full tags-container ${
+              tags.length > 0 ? "visible" : ""
+            }`}
+          >
+            <h3 className="tags-title text-xl font-medium text-white">Tags</h3>
+            <div className="flex flex-wrap justify-center gap-4 mt-4">
+              {tags.map((tag) => (
+                <span
+                  key={tag.id}
+                  className="tag-item px-4 py-2 border border-white rounded-full text-white bg-gray-700"
+                >
+                  {tag.name}
+                </span>
+              ))}
             </div>
           </div>
         </div>

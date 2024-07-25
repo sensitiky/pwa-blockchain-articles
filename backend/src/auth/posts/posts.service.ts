@@ -88,6 +88,18 @@ export class PostsService {
     }
   }
 
+  async countPostsByCategory(): Promise<
+    { categoryId: number; count: number }[]
+  > {
+    const result = await this.postsRepository
+      .createQueryBuilder('post')
+      .select('post.categoryId', 'categoryId')
+      .addSelect('COUNT(post.id)', 'count')
+      .groupBy('post.categoryId')
+      .getRawMany();
+
+    return result;
+  }
   async findAll(page: number, limit: number, sortOrder: string) {
     const order = this.getSortOrder(sortOrder);
 
@@ -165,7 +177,7 @@ export class PostsService {
       case 'createdAt':
         return { createdAt: 'DESC' };
       case 'comments':
-        return {}; 
+        return {};
       default:
         return { createdAt: 'DESC' };
     }

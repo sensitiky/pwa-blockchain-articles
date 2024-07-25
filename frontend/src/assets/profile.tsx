@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import api from "../../services/api";
 import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
 import Link from "next/link";
-import { ComputerIcon } from "lucide-react";
+import { ComputerIcon, PencilIcon } from "lucide-react";
 
 interface User {
   firstName?: string;
@@ -424,12 +424,14 @@ const ProfileSettings: React.FC = () => {
             <p className="font-semibold">Birthday</p>
             <p>{user?.date?.toLocaleDateString()}</p>
           </div>
-          <div className="mb-4 transform transition-transform duration-500 hover:scale-110">
+          <div className="mb-4 transform transition-transform duration-500 hover:scale-110 text-center">
             <p className="font-semibold">Rol</p>
-            <p className="flex items-center justify-center">
-              Full Stack Developer
-              <ComputerIcon className="size-5 ml-2" />
-            </p>
+            <div className="flex items-center justify-center">
+              <p contentEditable="true" className="flex-grow text-center">
+                Full Stack Developer
+              </p>
+              <PencilIcon className="size-5 ml-2" />
+            </div>
           </div>
         </div>
         <div className="mt-6 w-full">

@@ -84,4 +84,9 @@ export class PostsController {
     const imageUrl = file ? `/uploads/${file.filename}` : null;
     return this.postsService.create({ ...createPostDto, imageUrl, authorId });
   }
+
+  @Get('count-by-category')
+  async countPostsByCategory() {
+    return this.postsService.countPostsByCategory();
+  }
 }
