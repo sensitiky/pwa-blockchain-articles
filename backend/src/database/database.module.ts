@@ -27,6 +27,7 @@ import { DatabaseService } from './database.service';
         entities: [User, Post, Comment, Category, Tag, Favorite],
         synchronize: true,
         logging: true,
+        ssl: configService.get<boolean>('DB_SSL') ? { rejectUnauthorized: false } : false,
       }),
       inject: [ConfigService],
     }),
