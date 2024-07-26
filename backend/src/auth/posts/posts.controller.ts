@@ -44,10 +44,10 @@ export class PostsController {
   async findAllByCategory(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 5,
-    @Query('categoryId') categoryId: string, // categoría como string
+    @Query('categoryId') categoryId: string,
     @Query('sortOrder') sortOrder: string = 'recent',
   ) {
-    const categoryIdNumber = parseInt(categoryId, 10); // convertir a número
+    const categoryIdNumber = parseInt(categoryId, 10);
 
     if (isNaN(categoryIdNumber)) {
       throw new BadRequestException('Invalid categoryId');
@@ -56,7 +56,7 @@ export class PostsController {
     return this.postsService.findAllByCategory(
       page,
       limit,
-      categoryIdNumber, // categoría como número
+      categoryIdNumber,
       sortOrder,
     );
   }
@@ -90,10 +90,5 @@ export class PostsController {
     const authorId = parseInt(req.body.authorId, 10);
     const imageUrl = file ? `/uploads/${file.filename}` : null;
     return this.postsService.create({ ...createPostDto, imageUrl, authorId });
-  }
-
-  @Get('count-by-category')
-  async countPostsByCategory() {
-    return this.postsService.countPostsByCategory();
   }
 }

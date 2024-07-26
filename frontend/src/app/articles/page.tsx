@@ -111,22 +111,6 @@ export default function Articles() {
     }
   };
 
-  // Fetch post counts by category
-  const fetchCategoryCounts = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:4000/posts/count-by-category"
-      );
-      const mappedCategoryCounts = response.data.map((item: any) => ({
-        categoryId: parseInt(item.categoryid, 10),
-        count: item.count,
-      }));
-      setCategoryCounts(mappedCategoryCounts);
-    } catch (error) {
-      console.error("Error fetching category counts", error);
-    }
-  };
-
   // Fetch tags by category
   const fetchTagsByCategory = async (categoryId: number) => {
     try {
@@ -150,7 +134,6 @@ export default function Articles() {
   // Effect for fetching categories, category counts, and posts
   useEffect(() => {
     fetchCategories();
-    fetchCategoryCounts();
     fetchPosts(currentPage, selectedCategoryId || undefined);
   }, [currentPage, selectedCategoryId, sortOrder]);
 

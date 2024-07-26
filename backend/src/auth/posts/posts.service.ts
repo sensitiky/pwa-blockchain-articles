@@ -88,15 +88,6 @@ export class PostsService {
     }
   }
 
-  async countPostsByCategory() {
-    return this.postsRepository
-      .createQueryBuilder('post')
-      .select('post.categoryId', 'categoryId')
-      .addSelect('COUNT(post.id)', 'count')
-      .groupBy('post.categoryId')
-      .getRawMany();
-  }
-
   async findAll(page: number, limit: number, sortOrder: string) {
     const order = this.getSortOrder(sortOrder);
 

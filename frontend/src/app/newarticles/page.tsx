@@ -49,7 +49,7 @@ export default function NewArticles() {
         ]);
         setCategories(categoriesResponse.data);
         setTags(tagsResponse.data);
-        console.log("Tags",tagsResponse.data);
+        console.log("Tags", tagsResponse.data);
       } catch (error) {
         console.error("Error fetching categories and tags", error);
       }
@@ -107,7 +107,7 @@ export default function NewArticles() {
       return;
     }
 
-    const tags = selectedTags.map(tag => ({ id: tag.id  , name: tag.name }));
+    const tags = selectedTags.map((tag) => ({ id: tag.id, name: tag.name }));
     console.log("Tags being sent:", tags);
 
     const formData = new FormData();
@@ -117,17 +117,21 @@ export default function NewArticles() {
     formData.append("publish", JSON.stringify(publish));
     formData.append("categoryId", selectedCategory.id.toString());
     formData.append("tags", JSON.stringify(tags));
-    console.log("Form",formData);
+    console.log("Form", formData);
     if (imageFile) {
       formData.append("image", imageFile);
     }
 
     try {
-      const response = await axios.post("http://localhost:4000/posts", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:4000/posts",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       console.log("Post created successfully:", response.data);
       router.push("/articles");
     } catch (error) {
@@ -166,7 +170,7 @@ export default function NewArticles() {
                   Tags
                 </div>
                 <div className="grid grid-cols-1 gap-2">
-                  {tags.map((tag) => (
+                  {tags.slice(0, 5).map((tag) => (
                     <Button
                       key={tag.id}
                       variant="outline"
