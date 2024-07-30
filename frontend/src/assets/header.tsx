@@ -190,7 +190,7 @@ const Header = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ opacity: 0, y: -100 }}
           transition={{ duration: 0.3 }}
-          className="fixed top-0 left-0 w-screen z-50 p-4 backdrop-blur-xl lg:hidden md:hidden"
+          className="fixed top-0 left-0 w-screen z-50 p-4 backdrop-blur-xl bg-customColor-header lg:hidden md:hidden"
         >
           <div className="container mx-auto flex justify-between items-center">
             <div className="text-lg text-white font-semibold">

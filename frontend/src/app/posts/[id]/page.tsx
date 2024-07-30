@@ -275,7 +275,7 @@ const PostPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-white text-gray-900">
       <Header />
-      <div className="px-4 py-2 md:px-6 lg:py-2">
+      <div className="px-4 py-20 md:px-6 lg:py-2">
         <div className="mx-auto max-w-4xl">
           <div className="flex items-center justify-between mb-6">
             <button
