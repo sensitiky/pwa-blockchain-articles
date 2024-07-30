@@ -72,7 +72,9 @@ const PostPage = () => {
 
   const fetchPost = async (id: string) => {
     try {
-      const response = await axios.get(`https://blogchain.onrender.com/posts/${id}`);
+      const response = await axios.get(
+        `https://blogchain.onrender.com/posts/${id}`
+      );
       const postData = response.data;
       console.log("Fetched post data:", postData); // Debugging log
       setPost(postData);
@@ -113,11 +115,14 @@ const PostPage = () => {
       return;
     }
     try {
-      const response = await axios.post(`https://blogchain.onrender.com/comments`, {
-        content: commentContent,
-        authorId: user.id,
-        postId: post?.id,
-      });
+      const response = await axios.post(
+        `https://blogchain.onrender.com/comments`,
+        {
+          content: commentContent,
+          authorId: user.id,
+          postId: post?.id,
+        }
+      );
 
       const newComment = {
         ...response.data,
@@ -353,7 +358,9 @@ const PostPage = () => {
             </div>
           )}
           <div className="prose prose-lg mx-auto mt-8">
-            <PostDescription description={post.description} />
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <PostDescription description={post.description} />
+            </div>
           </div>
           {post.category && (
             <div className="mt-8">
