@@ -10,7 +10,13 @@ import Articles from "@/assets/userarticles";
 import { useAuth } from "../../../context/authContext";
 import { useRouter } from "next/navigation";
 import { getProfile, updateProfile } from "../../../services/authService";
-import { UserIcon, LockIcon, BookMarkedIcon, FilePenIcon, PencilIcon } from "lucide-react";
+import {
+  UserIcon,
+  LockIcon,
+  BookMarkedIcon,
+  FilePenIcon,
+  PencilIcon,
+} from "lucide-react";
 import { BookmarkIcon } from "lucide-react";
 
 const Users = () => {
@@ -19,6 +25,7 @@ const Users = () => {
   const [bioEditMode, setBioEditMode] = useState(false);
   const [bio, setBio] = useState<string>("");
   const router = useRouter();
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [userInfo, setUserInfo] = useState({
     firstName: "",
     lastName: "",
@@ -152,7 +159,7 @@ const Users = () => {
         return <SecuritySettings />;
 
       case "saved":
-        return <SavedItems />;
+        return <SavedItems userId={user?.id ?? 0} />;
 
       case "articles":
         return <Articles />;
@@ -163,11 +170,67 @@ const Users = () => {
   };
 
   return (
-    <div >
+    <div>
       <Header />
-      <div className="grid min-h-screen grid-cols-[1fr] md:grid-cols-[400px_1fr] bg-inherit text-foreground ">
-        
-        <aside className="border-r border-border bg-customColor-header px-2 py-8 w-16 hover:w-64 transition-all duration-300 group">
+      <div className="grid min-h-screen grid-cols-1 md:grid-cols-[400px_1fr] bg-inherit text-foreground">
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden p-4 fixed top-4 right-4 z-50 bg-customColor-header text-white rounded-full shadow-lg"
+          onClick={() => setIsSidebarVisible(!isSidebarVisible)}
+        >
+          {isSidebarVisible ? "✕" : "☰"}
+        </button>
+
+        {/* Mobile Sidebar */}
+        <aside
+          className={`fixed inset-y-0 left-0 z-40 w-64 bg-customColor-header p-4 transform ${
+            isSidebarVisible ? "translate-x-0" : "-translate-x-full"
+          } transition-transform duration-300 md:hidden`}
+        >
+          <div className="flex flex-col gap-8">
+            <div className="space-y-2">
+              <h2 className="text-white text-2xl font-bold">Welcome</h2>
+              <p className="text-customColor-welcome">
+                Manage your articles and account settings.
+              </p>
+            </div>
+            <nav className="space-y-1">
+              <button
+                onClick={() => setSelectedSection("personal")}
+                className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white"
+              >
+                <UserIcon className="size-8" />
+                <span>Personal Information</span>
+              </button>
+              <button
+                onClick={() => setSelectedSection("security")}
+                className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white"
+              >
+                <LockIcon className="size-8" />
+                <span>Security & Social Links</span>
+              </button>
+              <button
+                onClick={() => setSelectedSection("saved")}
+                className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white"
+              >
+                <BookmarkIcon className="size-8" />
+                <span>Saved Articles</span>
+              </button>
+              <button
+                onClick={() => setSelectedSection("articles")}
+                className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white"
+              >
+                <PencilIcon className="size-8" />
+                <span>My Articles</span>
+              </button>
+            </nav>
+          </div>
+        </aside>
+
+        {/* Desktop Sidebar */}
+        <aside
+          className={`hidden md:block border-r border-border bg-customColor-header px-2 py-8 w-full md:w-16 md:hover:w-64 md:transition-all md:duration-300 group`}
+        >
           <div className="flex flex-col gap-8">
             <div className="space-y-2">
               <h2 className="text-white text-2xl font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -218,11 +281,9 @@ const Users = () => {
           </div>
         </aside>
 
-        <main className="bg-inherit p-6 md:p-8">{RenderContent()}</main>
+        <main className="bg-inherit p-4 md:p-6 lg:p-8">{RenderContent()}</main>
       </div>
-      <div className="hidden lg:flex md:flex">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   );
 };

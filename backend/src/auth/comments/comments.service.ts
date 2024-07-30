@@ -17,7 +17,7 @@ export class CommentsService {
     private postsRepository: Repository<Post>,
   ) {}
 
-  async create(createCommentDto: CreateCommentDto): Promise<Comment> {
+  async create(createCommentDto: CreateCommentDto): Promise<Comment> {  
     const author = await this.usersRepository.findOne({
       where: { id: createCommentDto.authorId },
     });

@@ -4,9 +4,9 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="bg-customColor-header min-w-full py-4 border-t border-gray-300 backdrop-blur-sm">
+    <footer className="bg-customColor-header min-w-full py-6 border-t border-gray-200 backdrop-blur-md">
       <div className="min-w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex justify-start items-center gap-4">
+        <div className="flex justify-start items-center gap-4">
           <span className="text-xl font-bold text-white flex items-center">
             Blogchain <span className="font-light mx-2">By</span>
           </span>
@@ -18,7 +18,7 @@ const Footer = () => {
             className="text-customColor-letras"
           />
         </div>
-        <div className="mt-8 flex justify-center space-x-6">
+        <div className="mt-6 flex justify-center space-x-4">
           <Link href="#">
             <Image
               className="filter invert"
@@ -56,7 +56,7 @@ const Footer = () => {
             />
           </Link>
         </div>
-        <div className="mt-8 border-t border-white pt-4 flex justify-center text-gray-300">
+        <div className="mt-6 border-t border-gray-200 pt-4 flex justify-center text-gray-300">
           <p>&copy; 2024 Innovatio. All rights reserved.</p>
         </div>
       </div>

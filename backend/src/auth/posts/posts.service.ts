@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Post } from './post.entity';
 import { CreatePostDto } from './posts.dto';
 import { User } from '../users/user.entity';
 import { Tag } from '../tag/tag.entity';
 import { Category } from '../category/category.entity';
+import { Favorite } from '../favorites/favorite.entity';
 
 @Injectable()
 export class PostsService {
@@ -19,7 +20,23 @@ export class PostsService {
     @InjectRepository(Category)
     private categoriesRepository: Repository<Category>,
   ) {}
+  async findUserFavorites(userId: number): Promise<Post[]> {
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+      relations: ['favorites', 'favorites.post'],
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
 
+    const favoritePostIds = user.favorites
+      .filter((favorite) => favorite.post)
+      .map((favorite) => favorite.post.id);
+
+    const favoritePosts = await this.postsRepository.findByIds(favoritePostIds);
+
+    return favoritePosts;
+  }
   async create(createPostDto: CreatePostDto): Promise<Post> {
     console.log('Received createPostDto:', createPostDto);
 
@@ -158,6 +175,12 @@ export class PostsService {
     });
   }
 
+  async searchPosts(query: string): Promise<Post[]> {
+    return this.postsRepository.find({
+      where: { title: Like(`%${query}%`) },
+    });
+  }
+
   private getSortOrder(sortOrder: string): { [key: string]: 'ASC' | 'DESC' } {
     switch (sortOrder) {
       case 'saved':
@@ -169,5 +192,24 @@ export class PostsService {
       default:
         return { createdAt: 'DESC' };
     }
+  }
+
+  async countPostsByCategory() {
+    return this.postsRepository
+      .createQueryBuilder('post')
+      .select('post.categoryId')
+      .addSelect('COUNT(post.id)', 'count')
+      .groupBy('post.categoryId')
+      .getRawMany();
+  }
+
+  async countPostsByTag() {
+    return this.postsRepository
+      .createQueryBuilder('post')
+      .leftJoin('post.tags', 'tag')
+      .select('tag.id')
+      .addSelect('COUNT(post.id)', 'count')
+      .groupBy('tag.id')
+      .getRawMany();
   }
 }

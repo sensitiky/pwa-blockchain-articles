@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import React, {
   createContext,
   useContext,
@@ -6,10 +6,11 @@ import React, {
   useEffect,
   ReactNode,
   useCallback,
+  useMemo,
 } from "react";
 import api from "../services/api";
 
-export interface User {
+interface User {
   id: number;
   firstName?: string;
   lastName?: string;
@@ -58,8 +59,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
   }, []);
 
-  const isAuthenticated = !!user;
-
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -76,11 +75,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     fetchUser();
   }, [logout]);
 
+  const isAuthenticated = !!user;
+
+  const contextValue = useMemo(
+    () => ({ user, setUser, isAuthenticated, login, logout }),
+    [user, isAuthenticated, login, logout]
+  );
+
   return (
-    <AuthContext.Provider
-      value={{ user, setUser, isAuthenticated, login, logout }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };

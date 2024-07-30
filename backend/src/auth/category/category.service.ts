@@ -13,4 +13,12 @@ export class CategoriesService {
   findAll(): Promise<Category[]> {
     return this.categoriesRepository.find();
   }
+
+  async countPostsByCategory(): Promise<{ categoryId: number, postCount: number }[]> {
+    return this.categoriesRepository.query(`
+      SELECT categoryId, COUNT(*) as postCount 
+      FROM post 
+      GROUP BY categoryId
+    `);
+  }
 }

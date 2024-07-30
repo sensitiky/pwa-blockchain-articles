@@ -231,7 +231,7 @@ const ProfileSettings: React.FC = () => {
               {editMode ? (
                 <Input
                   name="user"
-                  value={userInfo.user || ""}
+                  value={userInfo.user}
                   onChange={handleInputChange}
                   className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
                 />
@@ -246,7 +246,7 @@ const ProfileSettings: React.FC = () => {
               {editMode ? (
                 <Input
                   name="firstName"
-                  value={userInfo.firstName || ""}
+                  value={userInfo.firstName}
                   onChange={handleInputChange}
                   className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
                 />
@@ -261,7 +261,7 @@ const ProfileSettings: React.FC = () => {
               {editMode ? (
                 <Input
                   name="lastName"
-                  value={userInfo.lastName || ""}
+                  value={userInfo.lastName}
                   onChange={handleInputChange}
                   className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
                 />
@@ -275,16 +275,18 @@ const ProfileSettings: React.FC = () => {
               <Label className="text-2xl">Date</Label>
               {editMode ? (
                 <DatePicker
-                  selected={user?.date}
+                  selected={userInfo.date}
                   onChange={handleDateChange}
                   dateFormat="MMMM d, yyyy"
                   className="w-full p-2 border rounded focus:ring focus:ring-opacity-50 focus:ring-blue-500"
                 />
               ) : (
                 <div className="flex items-center border-b-[1px]">
-                  <span className="flex-grow">
-                    {user?.date?.toDateString()}
-                  </span>
+                  <h2>
+                    {user?.date
+                      ? user.date.toDateString()
+                      : "No date available"}
+                  </h2>
                 </div>
               )}
             </div>
@@ -300,10 +302,12 @@ const ProfileSettings: React.FC = () => {
                 <Select
                   options={countryList().getData()}
                   value={{
-                    label: user?.country || "",
-                    value: user?.country || "",
+                    label: userInfo.country || "",
+                    value: userInfo.country || "",
                   }}
-                  onChange={handleCountryChange}
+                  onChange={(
+                    newValue: SingleValue<{ label: string; value: string }>
+                  ) => handleCountryChange(newValue)}
                   className="w-full text-xl"
                 />
               ) : (
@@ -385,7 +389,7 @@ const ProfileSettings: React.FC = () => {
 
       <div
         ref={cardRef}
-        className="w-96 bg-customColor-header p-6 rounded-2xl text-white transform transition-transform duration-500 hover:rotateX-6 hover:scale-125 hover:rotateY-6 hover:shadow-2xl hover:shadow-black/50 relative flex flex-col items-center mt-6 md:mt-0"
+        className="w-full max-w-md bg-customColor-header p-6 rounded-2xl text-white transform transition-transform duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-black/50 relative flex flex-col items-center mt-6 md:mt-0"
       >
         <div className="bg-customColor-innovatio2 p-3 rounded-full mb-4 transform transition-transform duration-500 hover:scale-110">
           <img
@@ -425,7 +429,7 @@ const ProfileSettings: React.FC = () => {
             <p>{user?.date?.toLocaleDateString()}</p>
           </div>
           <div className="mb-4 transform transition-transform duration-500 hover:scale-110 text-center">
-            <p className="font-semibold">Rol</p>
+            <p className="font-semibold">Role</p>
             <div className="flex items-center justify-center">
               <p contentEditable="true" className="flex-grow text-center">
                 Full Stack Developer

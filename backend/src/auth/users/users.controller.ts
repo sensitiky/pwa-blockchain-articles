@@ -71,4 +71,12 @@ export class UsersController {
   async getUserById(@Param('id') id: number): Promise<User> {
     return this.usersService.findOneById(id);
   }
+  @Get(':id/posts')
+  async getUserPostsById(@Param('id') id: number): Promise<Post[]> {
+    return this.usersService.findUserPosts(id);
+  }
+  @Get(':id/favorites')
+  async getUserFavorites(@Param('id') id: number): Promise<Post[]> {
+    return this.usersService.findUserFavorites(id);
+  }
 }

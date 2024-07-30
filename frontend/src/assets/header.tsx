@@ -4,17 +4,9 @@ import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import LoginCard from "@/assets/login";
-import { useAuth, User } from "../../context/authContext";
+import { useAuth } from "../../context/authContext";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -23,13 +15,57 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-
+import axios from "axios";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useScroll,
+} from "framer-motion";
 const Header = () => {
   const router = useRouter();
   const [showLoginCard, setShowLoginCard] = useState(false);
   const { user, setUser, isAuthenticated, login, logout } = useAuth();
   const prevIsAuthenticated = useRef(isAuthenticated);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  const { scrollYProgress } = useScroll();
+  const [visible, setVisible] = useState(false);
+  const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
+  useEffect(() => {
+    if (query.length > 2) {
+      performSearch(query);
+    }
+  }, [query]);
 
+  const performSearch = async (searchQuery: string) => {
+    try {
+      const response = await axios.get(`http://localhost:4000/search`, {
+        params: { q: searchQuery },
+      });
+      setResults(response.data);
+    } catch (error) {
+      console.error("Error fetching search results", error);
+    }
+  };
+
+  useMotionValueEvent(scrollYProgress, "change", (current) => {
+    if (typeof current === "number") {
+      let previous = scrollYProgress.getPrevious();
+      if (previous !== undefined) {
+        let direction = current - previous;
+        if (scrollYProgress.get() < 0.05) {
+          setVisible(true);
+        } else {
+          if (direction < 0) {
+            setVisible(true);
+          } else {
+            setVisible(false);
+          }
+        }
+      }
+    }
+  });
   useEffect(() => {
     if (!prevIsAuthenticated.current && isAuthenticated) {
       router.push("/");
@@ -59,96 +95,15 @@ const Header = () => {
       setShowLoginCard(false);
     }
   };
+  const avatarUrl = user?.avatar
+    ? user.avatar.startsWith("http")
+      ? user.avatar
+      : `http://localhost:4000${user.avatar}`
+    : "default-avatar-url";
 
   return (
     <div className="bg-customColor-header">
-      <div className="lg:hidden flex items-center justify-between px-4 lg:px-6 h-14 border-b">
-        <div className="text-white text-lg font-semibold">
-          <Link href="/">Blogchain</Link>
-        </div>
-        <div className="flex items-center">
-          <Sheet>
-            <SheetTrigger>
-              <button className="focus:outline-none">
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="white"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16m-7 6h7"
-                  ></path>
-                </svg>
-              </button>
-            </SheetTrigger>
-            <SheetContent side="right">
-              <SheetHeader>
-                <SheetTitle>Blogchain</SheetTitle>
-                <SheetDescription>Welcome to Blogchain</SheetDescription>
-              </SheetHeader>
-              <nav className="flex flex-col gap-8 py-9">
-                <Link
-                  href="/"
-                  className="w-fit border-b-[1px] border-gray-400 text-sm font-medium hover:underline underline-offset-4"
-                  prefetch={false}
-                >
-                  Home
-                </Link>
-                <Link
-                  href="/users"
-                  className="w-fit border-b-[1px] border-gray-400 text-sm font-medium hover:underline underline-offset-4"
-                  prefetch={false}
-                >
-                  Users
-                </Link>
-                <Link
-                  href="/articles"
-                  className="w-fit border-b-[1px] border-gray-400 text-sm font-medium hover:underline underline-offset-4"
-                  prefetch={false}
-                >
-                  Articles
-                </Link>
-                <Link
-                  href="/about"
-                  className="w-fit border-b-[1px] border-gray-400 text-sm font-medium hover:underline underline-offset-4"
-                  prefetch={false}
-                >
-                  About Us
-                </Link>
-                <Link
-                  href="/newarticles"
-                  className="w-fit border-b-[1px] border-gray-400 text-sm font-medium hover:underline underline-offset-4"
-                  prefetch={false}
-                >
-                  Create Articles
-                </Link>
-                <Link
-                  href="/support"
-                  className="w-fit border-b-[1px] border-gray-400 text-sm font-medium hover:underline underline-offset-4"
-                  prefetch={false}
-                >
-                  Help with the Campaign
-                </Link>
-                <div className="flex justify-center">
-                  <Button
-                    variant="outline"
-                    className="bg-customColor-innovatio2 rounded-full px-4 py-2 text-sm font-medium hover:bg-customColor-innovatio3"
-                    onClick={() => setShowLoginCard(true)}
-                  >
-                    Get Started
-                  </Button>
-                </div>
-              </nav>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </div>
-
+      {/* Desktop Header */}
       <header className="p-4 hidden lg:block">
         <div className="container mx-auto flex justify-between items-center">
           <div className="text-white text-lg font-semibold">
@@ -192,7 +147,10 @@ const Header = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Avatar className="rounded-full cursor-pointer">
-                    <AvatarImage src={user?.avatar} />
+                    <AvatarImage
+                      src={avatarUrl}
+                      alt={`${user?.firstName}'s avatar`}
+                    />
                     <AvatarFallback>{user?.user}</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
@@ -225,6 +183,93 @@ const Header = () => {
           </nav>
         </div>
       </header>
+
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0, y: -100 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ opacity: 0, y: -100 }}
+          transition={{ duration: 0.3 }}
+          className="fixed top-0 left-0 w-screen z-50 p-4 backdrop-blur-xl lg:hidden md:hidden"
+        >
+          <div className="container mx-auto flex justify-between items-center">
+            <div className="text-lg text-white font-semibold">
+              <Link href="/">Blogchain</Link>
+            </div>
+            <button
+              className="text-white focus:outline-none"
+              onClick={() => setIsMobileMenuVisible(!isMobileMenuVisible)}
+            >
+              {isMobileMenuVisible ? "✕" : "☰"}
+            </button>
+          </div>
+          <AnimatePresence>
+            {isMobileMenuVisible && (
+              <motion.nav
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+                className="mt-4 space-y-2 "
+              >
+                <Link
+                  href="/"
+                  className="block text-gray-300 hover:text-gray-700"
+                >
+                  Home
+                </Link>
+                <Link
+                  href="/articles"
+                  className="block text-gray-300 hover:text-gray-700"
+                >
+                  Articles
+                </Link>
+                <Link
+                  href="/about"
+                  className="block text-gray-300 hover:text-gray-700"
+                >
+                  About Us
+                </Link>
+                <Link
+                  href="/support"
+                  className="block text-gray-300 hover:text-gray-700"
+                >
+                  Support Us
+                </Link>
+                {isAuthenticated ? (
+                  <>
+                    <Link
+                      href="/users"
+                      className="block text-gray-300 hover:text-gray-700"
+                    >
+                      Profile
+                    </Link>
+                    <Link
+                      href="/newarticles"
+                      className="block text-gray-300 hover:text-gray-700"
+                    >
+                      Create
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="block text-gray-300 hover:text-gray-700"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={handleStartNewCampaign}
+                    className="w-full rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio"
+                  >
+                    Get Started
+                  </button>
+                )}
+              </motion.nav>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </AnimatePresence>
 
       {showLoginCard && (
         <div

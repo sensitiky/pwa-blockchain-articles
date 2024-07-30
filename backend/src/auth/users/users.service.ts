@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { User } from './user.entity';
-import { CreateUserDto, UpdateUserDto, UserDto } from './user.dto';
+import { CreateUserDto, UserDto } from './user.dto';
 import { Post } from '../posts/post.entity';
 
 @Injectable()
@@ -13,13 +13,35 @@ export class UsersService {
     @InjectRepository(Post)
     private postRepository: Repository<Post>,
   ) {}
-
+  async findUserFavorites(userId: number): Promise<Post[]> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['favorites', 'favorites.post'],
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+  
+    const favoritePostIds = user.favorites
+      .filter(favorite => favorite.post)
+      .map(favorite => favorite.post.id);
+  
+    const favoritePosts = await this.postRepository.findByIds(favoritePostIds);
+  
+    return favoritePosts;
+  }
   async findOneById(id: number): Promise<User> {
     return this.userRepository.findOne({ where: { id } });
   }
 
   async findOne(email: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { email } });
+  }
+
+  async searchUsers(query: string): Promise<User[]> {
+    return this.userRepository.find({
+      where: { user: Like(`%${query}%`) },
+    });
   }
 
   async findByFacebookId(facebookId: string): Promise<User | null> {

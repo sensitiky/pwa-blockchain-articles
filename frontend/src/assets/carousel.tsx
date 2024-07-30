@@ -57,6 +57,7 @@ const settings = {
   slidesToShow: 3,
   slidesToScroll: 1,
   autoplay: true,
+  width: "100%",
   autoplaySpeed: 1500,
   responsive: [
     {
@@ -140,6 +141,7 @@ const ArticleCarousel = () => {
       console.error("Error favoriting post or comment:", error);
     }
   };
+
   useEffect(() => {
     fetchPosts(currentPage);
   }, [currentPage, sortOrder]);
@@ -153,7 +155,7 @@ const ArticleCarousel = () => {
         data-aos-offset="200"
       >
         <h2 className="text-3xl font-bold text-center text-customColor-innovatio3 mb-8">
-          Last Articles Published
+          Last published articles
         </h2>
         <Slider {...settings}>
           {posts.map((post, index) => (
@@ -212,11 +214,7 @@ const ArticleCarousel = () => {
                         onClick={() => handleFavorite(post.id)}
                       >
                         <FaRegHeart className="w-5 h-5" />
-                        <span>
-                          {Array.isArray(post.favorites)
-                            ? post.favorites.length
-                            : 0}
-                        </span>
+                        <span>{post.favorites}</span>
                       </button>
                     </div>
                   </div>

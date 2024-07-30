@@ -15,6 +15,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ClockIcon, TagIcon, MessageSquareIcon, HeartIcon } from "lucide-react";
 import Image from "next/image";
+import api from "../../../services/api";
 
 type Category = {
   id: number;
@@ -29,7 +30,7 @@ type Post = {
   createdAt: string;
   description: string;
   author?: { id: number; user: string; avatar?: string; bio: string };
-  category?: { name: string };
+  category?: Category;
   comments: Comment[];
   favorites: number;
   tags: Tag[];
@@ -40,7 +41,7 @@ interface Tag {
   name: string;
 }
 
-const POSTS_PER_PAGE = 5;
+const POSTS_PER_PAGE = 7;
 
 export default function Articles() {
   const categoriesRef = useRef<HTMLDivElement>(null);
@@ -111,10 +112,52 @@ export default function Articles() {
     }
   };
 
+  // Fetch post counts by category
+  const fetchPostCountsByCategory = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:4000/posts/count/by-category"
+      );
+      setCategoryCounts(response.data);
+    } catch (error) {
+      console.error("Error fetching post counts by category", error);
+    }
+  };
+
+  // Count posts by category
+  const countPostsByCategory = (posts: Post[]) => {
+    const counts = posts.reduce((acc, post) => {
+      const categoryId = post.category?.id;
+      if (categoryId) {
+        acc[categoryId] = (acc[categoryId] || 0) + 1;
+      }
+      return acc;
+    }, {} as { [key: number]: number });
+    setCategoryCounts(
+      Object.entries(counts).map(([categoryId, count]) => ({
+        categoryId: Number(categoryId),
+        count,
+      }))
+    );
+  };
+
+  // Fetch post counts by tag
+  const fetchPostCountsByTag = async () => {
+    try {
+      const response = await api.get(
+        "http://localhost:4000/posts/count/by-tag"
+      );
+      // Assuming you have a state to store tag counts
+      setTagCounts(response.data);
+    } catch (error) {
+      console.error("Error fetching post counts by tag", error);
+    }
+  };
+
   // Fetch tags by category
   const fetchTagsByCategory = async (categoryId: number) => {
     try {
-      const response = await axios.get(
+      const response = await api.get(
         `http://localhost:4000/tags/by-category/${categoryId}`
       );
       setTags(response.data);
@@ -131,12 +174,17 @@ export default function Articles() {
     }
   }, [id]);
 
-  // Effect for fetching categories, category counts, and posts
+  // Effect for fetching categories, and posts
   useEffect(() => {
     fetchCategories();
     fetchPosts(currentPage, selectedCategoryId || undefined);
+    fetchPostCountsByCategory();
+    fetchPostCountsByTag();
   }, [currentPage, selectedCategoryId, sortOrder]);
 
+  useEffect(() => {
+    countPostsByCategory(posts);
+  }, [posts]);
   // Handle category click to fetch tags and posts
   const handleCategoryClick = (categoryId: number) => {
     const newCategoryId = selectedCategoryId === categoryId ? null : categoryId;
@@ -162,8 +210,8 @@ export default function Articles() {
   return (
     <div className="articles-container flex flex-col min-h-screen">
       <Header />
-      <div className="articles-header w-full bg-customColor-header text-center py-8 px-4">
-        <div className="articles-title-container py-4">
+      <div className="articles-header w-full bg-customColor-header text-center py-8 px-4 tabular-nums ios-style">
+        <div className="articles-title-container py-12">
           <h1 className="articles-title text-4xl font-bold text-yellow-500">
             Articles
           </h1>
@@ -172,7 +220,6 @@ export default function Articles() {
           <h3 className="categories-title text-xl font-medium text-white">
             Categories
           </h3>
-
           <div className="flex flex-wrap items-center justify-center mt-4 space-x-4">
             <div
               ref={categoriesRef}
@@ -186,10 +233,8 @@ export default function Articles() {
                   return (
                     <button
                       key={category.id}
-                      className={`category-item w-auto px-4 py-2 border border-white rounded-full text-white bg-inherit ${
-                        selectedCategoryId === category.id
-                          ? "bg-yellow-500 text-black"
-                          : ""
+                      className={`ios-button ${
+                        selectedCategoryId === category.id ? "selected" : ""
                       }`}
                       onClick={() => handleCategoryClick(category.id)}
                     >
@@ -205,29 +250,26 @@ export default function Articles() {
           <div
             className={`categories-tags-container text-center py-4 w-full tags-container ${
               tags.length > 0 ? "visible" : ""
-            }`}
+            } ios-style`}
           >
             <h3 className="tags-title text-xl font-medium text-white">Tags</h3>
             <div className="flex flex-wrap justify-center gap-4 mt-4">
               {tags.map((tag) => (
-                <span
-                  key={tag.id}
-                  className="tag-item px-4 py-2 border border-white rounded-full text-white bg-gray-700"
-                >
+                <span key={tag.id} className="ios-tag">
                   {tag.name}
                 </span>
               ))}
             </div>
           </div>
         </div>
-        <div className="sort-order-container flex text-center">
+        <div className="sort-order-container flex flex-col lg:flex-row text-center">
           <div className="flex flex-col justify-start py-4 lg:px-[450px] flex-shrink">
-            <label htmlFor="sortOrder" className="text-white">
+            <label htmlFor="sortOrder1" className="text-white">
               Sort by:
             </label>
             <select
-              id="sortOrder"
-              className="ml-2 p-2 rounded w-fit"
+              id="sortOrder1"
+              className="ml-2 p-2 rounded w-fit ios-select"
               value={sortOrder}
               onChange={handleSortOrderChange}
             >
@@ -236,30 +278,23 @@ export default function Articles() {
               <option value="comment">More Comments</option>
             </select>
           </div>
-          <div className="sort-order-container flex text-center ">
-            <div className="flex flex-col  justify-end py-4 lg:px-[180px] flex-shrink">
-              <label htmlFor="sortOrder" className="text-white">
-                Sort by:
-              </label>
-              <select
-                id="sortOrder"
-                className="ml-2 p-2 rounded w-fit"
-                value={sortOrder}
-                onChange={handleSortOrderChange}
-              >
-                <option value="less_than_1000">
-                  Less than 1000 characters
-                </option>
-                <option value="1000_to_2000">1000 to 2000 characters</option>
-                <option value="2000_and_above">
-                  2000 and above characters
-                </option>
-              </select>
-            </div>
+          <div className="flex flex-col justify-end py-4 lg:px-[180px] flex-shrink">
+            <label htmlFor="sortOrder2" className="text-white">
+              Sort by:
+            </label>
+            <select
+              id="sortOrder2"
+              className="ml-2 p-2 rounded w-fit ios-select"
+              value={sortOrder}
+              onChange={handleSortOrderChange}
+            >
+              <option value="less_than_1000">Less than 1000 characters</option>
+              <option value="1000_to_2000">1000 to 2000 characters</option>
+              <option value="2000_and_above">2000 and above characters</option>
+            </select>
           </div>
         </div>
       </div>
-
       <div className="articles-content flex-grow flex justify-center py-8 px-4 bg-inherit">
         <div className="bg-inherit posts-container w-full max-w-screen-lg mx-auto">
           {posts.length > 0 ? (
@@ -267,7 +302,7 @@ export default function Articles() {
               {posts.map((post) => (
                 <div
                   key={post.id}
-                  className="p-12 bg-inherit mx-auto text-card-foreground border border-r-0 border-l-0 rounded-none shadow-none w-full transition-transform"
+                  className="p-12 bg-inherit mx-auto text-card-foreground border border-r-0 border-l-0 rounded-none shadow-none w-full transition-transform ios-style"
                 >
                   <div className="flex flex-col h-full">
                     {post.imageUrl && (
@@ -395,4 +430,7 @@ function calculateReadingTime(text: string) {
   const wordsPerMinute = 200;
   const numberOfWords = text.split(/\s+/).length;
   return Math.ceil(numberOfWords / wordsPerMinute);
+}
+function setTagCounts(data: any) {
+  throw new Error("Function not implemented.");
 }

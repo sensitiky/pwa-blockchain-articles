@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { TextField, Button, Avatar, CircularProgress } from "@mui/material";
 import { FaEdit } from "react-icons/fa";
+import { motion } from "framer-motion";
+import styled from "styled-components";
 import api from "../../services/api";
 import { useAuth } from "../../context/authContext";
-import { Separator } from "@radix-ui/react-dropdown-menu";
 
 interface UserProfile {
   firstName?: string;
@@ -17,6 +18,47 @@ interface UserProfile {
   password?: string;
   confirmPassword?: string;
 }
+
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 1rem;
+  background-color: #f0f0f0;
+`;
+
+const Card = styled.div`
+  width: 100%;
+  max-width: 800px;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+`;
+
+const Section = styled.div`
+  margin-bottom: 2rem;
+`;
+
+const SectionTitle = styled.h2`
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+`;
+
+const FieldContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+`;
+
+const FieldLabel = styled.div`
+  font-size: 1rem;
+  font-weight: medium;
+  text-transform: capitalize;
+`;
 
 const SecuritySettings: React.FC = () => {
   const { isAuthenticated, user, setUser } = useAuth();
@@ -76,26 +118,22 @@ const SecuritySettings: React.FC = () => {
     }
   };
 
-  const handleSaveChangesPassWord = async () => {
-    try {
-      await api.put("http://localhost:4000/users/me", userInfo);
-      setEditMode(false);
-    } catch (error) {
-      console.error("Error saving profile information:", error);
-    }
-  };
-
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <Container>
         <CircularProgress />
-      </div>
+      </Container>
     );
   }
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="container mx-auto p-6 h-[700px] w-4xl bg-inherit shadow-none rounded-lg ">
+    <motion.div
+      className="flex items-center justify-center h-screen"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Card>
         <div className="flex items-center gap-4 mb-6">
           <Avatar
             src={user?.avatar}
@@ -109,62 +147,15 @@ const SecuritySettings: React.FC = () => {
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-6">
-          <div className="border-r-2">
-            <h2 className="text-2xl font-bold mb-4">Social Media</h2>
-            {["medium", "instagram", "facebook", "twitter", "linkedin"].map(
-              (field) => (
-                <div
-                  key={field}
-                  className="flex items-center justify-between mb-4"
-                >
-                  <div className="text-lg font-medium capitalize">{field}</div>
-                  {editMode ? (
-                    <TextField
-                      name={field}
-                      value={userInfo[field as keyof UserProfile] || ""}
-                      onChange={handleInputChange}
-                      variant="outlined"
-                      size="small"
-                    />
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`text-sm ${
-                          userInfo[field as keyof UserProfile]
-                            ? "text-green-500"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        {userInfo[field as keyof UserProfile]
-                          ? "Provided"
-                          : "Not Provided"}
-                      </span>
-                      <Button
-                        variant="text"
-                        size="small"
-                        onClick={() => setEditMode(true)}
-                      >
-                        <FaEdit />
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              )
-            )}
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold mb-4">Security</h2>
-            {["email", "password", "confirmPassword"].map((field) => (
-              <div
-                key={field}
-                className="flex items-center justify-between mb-4"
-              >
-                <div className="text-lg font-medium capitalize">{field}</div>
+        <Section>
+          <SectionTitle>Social Media</SectionTitle>
+          {["medium", "instagram", "facebook", "twitter", "linkedin"].map(
+            (field) => (
+              <FieldContainer key={field}>
+                <FieldLabel>{field}</FieldLabel>
                 {editMode ? (
                   <TextField
                     name={field}
-                    type={field.includes("password") ? "password" : "text"}
                     value={userInfo[field as keyof UserProfile] || ""}
                     onChange={handleInputChange}
                     variant="outlined"
@@ -192,10 +183,49 @@ const SecuritySettings: React.FC = () => {
                     </Button>
                   </div>
                 )}
-              </div>
-            ))}
-          </div>
-        </div>
+              </FieldContainer>
+            )
+          )}
+        </Section>
+        <Section>
+          <SectionTitle>Security</SectionTitle>
+          {["email", "password", "confirmPassword"].map((field) => (
+            <FieldContainer key={field}>
+              <FieldLabel>{field}</FieldLabel>
+              {editMode ? (
+                <TextField
+                  name={field}
+                  type={field.includes("password") ? "password" : "text"}
+                  value={userInfo[field as keyof UserProfile] || ""}
+                  onChange={handleInputChange}
+                  variant="outlined"
+                  size="small"
+                />
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`text-sm ${
+                      userInfo[field as keyof UserProfile]
+                        ? "text-green-500"
+                        : "text-gray-500"
+                    }`}
+                  >
+                    {userInfo[field as keyof UserProfile]
+                      ? "Provided"
+                      : "Not Provided"}
+                  </span>
+                  <Button
+                    variant="text"
+                    size="small"
+                    onClick={() => setEditMode(true)}
+                  >
+                    <FaEdit />
+                  </Button>
+                </div>
+              )}
+            </FieldContainer>
+          ))}
+        </Section>
         {editMode && (
           <Button
             variant="contained"
@@ -206,8 +236,8 @@ const SecuritySettings: React.FC = () => {
             Save Changes
           </Button>
         )}
-      </div>
-    </div>
+      </Card>
+    </motion.div>
   );
 };
 

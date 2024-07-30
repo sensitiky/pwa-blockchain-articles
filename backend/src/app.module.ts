@@ -13,6 +13,7 @@ import { FavoritesModule } from './auth/favorites/favorites.module';
 import { CategoriesModule } from './auth/category/category.module';
 import { TagsModule } from './auth/tag/tag.module';
 import { UsersModule } from './auth/users/user.module';
+import { SearchModule } from './auth/search/search.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UsersModule } from './auth/users/user.module';
     FavoritesModule,
     CategoriesModule,
     TagsModule,
+    SearchModule,
     TypeOrmModule.forFeature([Category, Tag]),
   ],
   controllers: [UsersController],

@@ -21,19 +21,30 @@ export class FavoritesService {
   ) {}
 
   async create(createFavoriteDto: CreateFavoriteDto): Promise<Favorite> {
-    const user = await this.usersRepository.findOne({ where: { id: createFavoriteDto.userId } });
+    const user = await this.usersRepository.findOne({
+      where: { id: createFavoriteDto.userId },
+    });
     let post = null;
     let comment = null;
 
     if (createFavoriteDto.postId) {
-      post = await this.postsRepository.findOne({ where: { id: createFavoriteDto.postId } });
+      post = await this.postsRepository.findOne({
+        where: { id: createFavoriteDto.postId },
+      });
     }
 
     if (createFavoriteDto.commentId) {
-      comment = await this.commentsRepository.findOne({ where: { id: createFavoriteDto.commentId } });
+      comment = await this.commentsRepository.findOne({
+        where: { id: createFavoriteDto.commentId },
+      });
     }
 
-    const favorite = this.favoritesRepository.create({ ...createFavoriteDto, user, post, comment });
+    const favorite = this.favoritesRepository.create({
+      ...createFavoriteDto,
+      user,
+      post,
+      comment,
+    });
     return this.favoritesRepository.save(favorite);
   }
 

@@ -10,4 +10,9 @@ export class CategoriesController {
   findAll(): Promise<Category[]> {
     return this.categoriesService.findAll();
   }
+
+  @Get('count')
+  countPostsByCategory() {
+    return this.categoriesService.countPostsByCategory();
+  }
 }

@@ -89,68 +89,64 @@
   }
 }
 
+/* Base styles */
 .perspective-1000 {
   perspective: 1000px;
 }
-
 .hover\:rotateX-12:hover {
   transform: rotateX(12deg);
+  transition: transform 0.3s ease;
 }
-
 .hover\:rotateY-12:hover {
   transform: rotateY(12deg);
+  transition: transform 0.3s ease;
 }
-
 .hover\:scale-110:hover {
   transform: scale(1.1);
+  transition: transform 0.3s ease;
 }
-
 .hover\:shadow-2xl:hover {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  transition: box-shadow 0.3s ease;
 }
-
 .hover\:shadow-black\/50:hover {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 0.3s ease;
 }
-
 .tags-container {
   opacity: 0;
   transform: translateY(-10px);
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
-
 .tags-container.visible {
   opacity: 1;
   transform: translateY(0);
 }
-
 .custom-dropdown-container {
   display: flex;
   justify-content: center;
   margin-bottom: 2rem;
   width: 100%;
 }
-
 .custom-dropdown {
   position: relative;
   width: 100%;
   max-width: 300px;
 }
-
 .custom-dropdown .selected-option {
   width: 100%;
   padding: 10px 15px;
   border: 1px solid transparent;
   border-top: 1px solid #000;
   border-bottom: 1px solid #000;
-  border-radius: 0;
+  border-radius: 0px;
   appearance: none;
   cursor: pointer;
   font-size: 16px;
   color: #333;
   padding: 20px;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
 }
-
 .custom-dropdown::after {
   content: "▼";
   position: absolute;
@@ -161,12 +157,10 @@
   font-size: 12px;
   color: #333;
 }
-
 .custom-dropdown select:hover,
 .custom-dropdown select:focus {
   border-color: #000;
 }
-
 .custom-options {
   position: absolute;
   width: 100%;
@@ -176,19 +170,146 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   z-index: 10;
   margin-top: 5px;
+  transition: box-shadow 0.3s ease;
 }
-
 .custom-options div {
   padding: 10px;
   cursor: pointer;
   color: #333;
   border-top: 1px solid #eee;
+  transition: background-color 0.3s ease;
 }
-
 .custom-options div:first-child {
   border-top: none;
 }
-
 .custom-options div:hover {
   background-color: #f5f5f5;
+}
+/* General styles for smooth transitions and rounded corners */
+.ios-style {
+  border-radius: 0px;
+  transition: all 0.3s ease;
+}
+/* Hover effect for smooth transition */
+.ios-style:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+}
+/* Specific styles for buttons */
+.ios-button {
+  border-radius: 12px;
+  padding: 10px 20px;
+  background-color: inherit;
+  border: 1px solid white;
+  color: white;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.ios-button.selected {
+  background-color: #ffd700; /* Yellow */
+  color: black;
+}
+.ios-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+/* Specific styles for tags */
+.ios-tag {
+  border-radius: 12px;
+  padding: 8px 16px;
+  background-color: #4b5563; /* Gray */
+  border: 1px solid white;
+  color: white;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.ios-tag:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+/* Specific styles for select elements */
+.ios-select {
+  border-radius: 12px;
+  padding: 8px;
+  background-color: inherit;
+  border: 1px solid white;
+  color: white;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.ios-select:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .custom-dropdown-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .custom-dropdown {
+    max-width: 100%;
+  }
+  .flex.items-center.space-x-4 {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .flex.items-center.space-x-1 {
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .custom-dropdown-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .custom-dropdown {
+    max-width: 100%;
+  }
+  .flex.items-center.space-x-4 {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .flex.items-center.space-x-1 {
+    margin-top: 8px;
+  }
+  .ios-button,
+  .ios-tag,
+  .ios-select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.05) rotate(1deg);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+.group:hover .group-hover\:scale-110 {
+  transform: scale(1.1);
+}
+
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+
+.transition-transform {
+  transition: transform 0.3s ease-in-out;
+}
+
+.transition-opacity {
+  transition: opacity 0.3s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
 }

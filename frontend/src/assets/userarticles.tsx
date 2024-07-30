@@ -20,8 +20,9 @@ import {
   PaginationLink,
   PaginationNext,
 } from "@/components/ui/pagination";
+import Link from "next/link";
 
-const POSTS_PER_PAGE = 10;
+const POSTS_PER_PAGE = 5; // Updated to 5
 
 type Category = {
   id: number;
@@ -45,33 +46,36 @@ const Posts: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [order, setOrder] = useState<string>("Date (newest first)");
   const [page, setPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    fetchUserPosts();
+    fetchUserPosts(page);
   }, [order, page]);
 
-  const fetchUserPosts = async () => {
+  const fetchUserPosts = async (page: number) => {
     try {
-      const response = await axios.get(`http://localhost:4000/users/me/posts`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.get(
+        `http://localhost:4000/users/me/posts?page=${page}&limit=${POSTS_PER_PAGE}&order=${order}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
-      console.log("API Response:", response.data); // Verificar la respuesta de la API
+      console.log("API Response:", response.data);
 
-      const postsData = response.data.map((post: any) => ({
+      const postsData = response.data.posts.map((post: any) => ({
         ...post,
         createdAt: new Date(post.createdAt),
         comments: post.comments || [],
         favorites: post.favorites || 0,
       }));
 
-      console.log("Deserialized Posts:", postsData); // Verificar los datos deserializados
+      console.log("Deserialized Posts:", postsData);
 
       setPosts(postsData || []);
-      setTotalPages(Math.ceil(response.data.length / POSTS_PER_PAGE)); // Asumiendo que response.data.length es el total de posts
+      setTotalPages(response.data.totalPages || 1);
     } catch (error) {
       console.error("Error fetching user posts", error);
     }
@@ -80,18 +84,21 @@ const Posts: React.FC = () => {
   const handleOrderChange = (newOrder: string) => {
     console.log("Order changed to:", newOrder);
     setOrder(newOrder);
-    setPage(1); // Reset page to 1 when order changes
-    fetchUserPosts();
+    setPage(1);
   };
 
   return (
-    <>
+    <div>
       <div className="flex items-center justify-between py-4">
         <h1 className="text-2xl font-bold">Your posts</h1>
         <div className="flex items-center gap-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-2 bg-inherit border-r-0 border-l-0 border-border border-black rounded-none">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 bg-inherit border-r-0 border-l-0 border-border border-black rounded-none"
+              >
                 <FontAwesomeIcon icon={faArrowsUpDown} className="h-4 w-4" />
                 Order
               </Button>
@@ -130,7 +137,7 @@ const Posts: React.FC = () => {
           posts.map((post) => (
             <div
               key={post.id}
-              className="relative group overflow-hidden rounded-lg shadow-lg"
+              className="relative group overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105"
             >
               <img
                 src={`http://localhost:4000${post.imageUrl}`}
@@ -138,14 +145,17 @@ const Posts: React.FC = () => {
                 className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-white p-4">
-                <Badge
-                  className="mb-2 bg-green-500 text-white">Published</Badge>
-                <Button
-                  variant="outline"
-                  className="text-white border-none hover:underline bg-transparent hover:bg-transparent hover:text-white"
-                >
-                  Read More
-                </Button>
+                <Badge className="mb-2 bg-green-500 text-white">
+                  Published
+                </Badge>
+                <Link href={`/posts/${post.id}`}>
+                  <Button
+                    variant="outline"
+                    className="text-white border-none hover:underline bg-transparent hover:bg-transparent hover:text-white"
+                  >
+                    Read More
+                  </Button>
+                </Link>
               </div>
               <h3 className="absolute top-0 left-0 right-0 text-lg mb-2 text-center text-black font-semibold backdrop-blur-lg bg-opacity-20 bg-black p-2 z-10">
                 {post.title}
@@ -181,7 +191,7 @@ const Posts: React.FC = () => {
           </PaginationContent>
         </Pagination>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -9,6 +9,7 @@ import {
   UploadedFile,
   Req,
   BadRequestException,
+  Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -66,6 +67,12 @@ export class PostsController {
     return this.postsService.findOne(id);
   }
 
+  @Delete(':id')
+  async remove(@Param('id') id: number) {
+    await this.postsService.deletePost(id);
+    return { message: 'Post deleted successfully' };
+  }
+
   @HttpPost()
   @UseInterceptors(
     FileInterceptor('image', {
@@ -90,5 +97,15 @@ export class PostsController {
     const authorId = parseInt(req.body.authorId, 10);
     const imageUrl = file ? `/uploads/${file.filename}` : null;
     return this.postsService.create({ ...createPostDto, imageUrl, authorId });
+  }
+
+  @Get('count/by-category')
+  async countByCategory() {
+    return this.postsService.countPostsByCategory();
+  }
+
+  @Get('count/by-tag')
+  async countByTag() {
+    return this.postsService.countPostsByTag();
   }
 }

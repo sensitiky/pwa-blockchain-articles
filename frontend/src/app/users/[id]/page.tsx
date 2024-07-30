@@ -85,7 +85,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
 
   if (loading) {
     return (
-      <div className="flex flex-col space-y-3">
+      <div className="flex flex-col space-y-3 animate-pulse">
         <Skeleton className="h-[125px] w-[250px] rounded-xl" />
         <div className="space-y-2">
           <Skeleton className="h-4 w-[250px]" />
@@ -97,7 +97,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
 
   if (error) {
     return (
-      <div className="flex flex-col space-y-3">
+      <div className="flex flex-col space-y-3 animate-pulse">
         <Skeleton className="h-[125px] w-[250px] rounded-xl" />
         <div className="space-y-2">
           <Skeleton className="h-4 w-[250px]" />
@@ -167,7 +167,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
           {posts.map((post) => (
             <div
               key={post.id}
-              className="bg-inherit rounded-none p-6 border-b-2"
+              className="bg-inherit rounded-none p-6 border-b-2 transition-transform duration-300 ease-in-out transform hover:scale-105"
             >
               <img
                 src={`http://localhost:4000${post.imageUrl}`}
