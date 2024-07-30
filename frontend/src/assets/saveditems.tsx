@@ -93,7 +93,7 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
                     <UserIcon className="w-4 h-4 mr-1" />
                     {favorite.author || "Unknown Author"}
                   </div>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 line-clamp-3">
                     {favorite.description ? (
                       <span
                         dangerouslySetInnerHTML={{

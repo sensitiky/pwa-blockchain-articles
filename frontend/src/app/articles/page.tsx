@@ -267,8 +267,8 @@ export default function Articles() {
             </div>
           </div>
         </div>
-        <div className="sort-order-container flex flex-col lg:flex-row text-center">
-          <div className="flex flex-col justify-start py-4 lg:px-[450px] flex-shrink">
+        <div className="sort-order-container flex flex-col lg:flex-row text-center lg:space-x-4">
+          <div className="flex flex-col justify-start py-4 lg:px-16 flex-shrink">
             <label htmlFor="sortOrder1" className="text-white">
               Sort by:
             </label>
@@ -283,7 +283,7 @@ export default function Articles() {
               <option value="comment">More Comments</option>
             </select>
           </div>
-          <div className="flex flex-col justify-end py-4 lg:px-[180px] flex-shrink">
+          <div className="flex flex-col justify-end py-4 lg:px-16 flex-shrink">
             <label htmlFor="sortOrder2" className="text-white">
               Sort by:
             </label>
@@ -303,98 +303,87 @@ export default function Articles() {
       <div className="articles-content flex-grow flex justify-center py-8 px-4 bg-inherit">
         <div className="bg-inherit posts-container w-full max-w-screen-lg mx-auto">
           {posts.length > 0 ? (
-            <div className="posts-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 bg-inherit shadow-none">
+            <div className="posts-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {posts.map((post) => (
                 <div
                   key={post.id}
-                  className="p-12 bg-inherit mx-auto text-card-foreground border border-r-0 border-l-0 rounded-none shadow-none w-full transition-transform ios-style"
+                  className="p-4 bg-white rounded shadow transition-transform hover:scale-105"
                 >
-                  <div className="flex flex-col h-full">
-                    {post.imageUrl && (
-                      <img
-                        src={
-                          post.imageUrl.startsWith("http")
-                            ? post.imageUrl
-                            : `https://blogchain.onrender.com${post.imageUrl}`
-                        }
-                        alt="Article image"
-                        className="w-full h-64 rounded-lg object-cover border-border border-gray-300"
-                        width={1920}
-                        height={1080}
-                      />
-                    )}
-                    <div className="flex justify-between mt-2">
-                      <div className="flex items-center">
-                        <Link href={`/users/${post.author?.id}`}>
-                          <img
-                            src={
-                              post.author?.avatar
-                                ? post.author.avatar.startsWith("http")
-                                  ? post.author.avatar
-                                  : `https://blogchain.onrender.com${post.author.avatar}`
-                                : "/default-avatar.jpg"
-                            }
-                            alt="Author image"
-                            className="w-10 h-10 rounded-full"
-                            width={40}
-                            height={40}
-                          />
-                        </Link>
-                        <div className="flex-col flex">
-                          <span className="ml-2 text-lg font-semibold">
-                            {post.author ? post.author.user : "Unknown Author"}
-                          </span>
-                          <span className="ml-2 text-sm text-muted-foreground">
-                            {post.author ? post.author.bio : "Unknown Author"}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center">
-                        <TagIcon className="w-4 h-4 mr-1" />
-                        {post.tags
-                          .slice(0, 3)
-                          .map((tag) => tag.name)
-                          .join(", ")}
-                      </div>
-                    </div>
-                    <div className="flex-1 mt-4">
-                      <h2 className="text-3xl font-bold mb-2 truncate">
-                        {post.title}
-                      </h2>
-                      <p
-                        className="text-muted-foreground mb-4 line-clamp-3"
-                        dangerouslySetInnerHTML={{
-                          __html: DOMPurify.sanitize(post.description),
-                        }}
-                      ></p>
-                    </div>
-                    <div className="flex items-center text-muted-foreground mt-4">
-                      <ClockIcon className="w-5 h-5 mr-1" />
-                      <span>
-                        {calculateReadingTime(post.description)} min read
-                      </span>
-                      <span className="mx-2">|</span>
-                      <MessageSquareIcon className="w-5 h-5 mr-1" />
-                      <span>
-                        {Array.isArray(post.comments)
-                          ? post.comments.length
-                          : 0}
-                      </span>
-                      <span className="mx-2">|</span>
-                      <HeartIcon className="w-5 h-5 mr-1" />
-                      <span>
-                        {Array.isArray(post.favorites)
-                          ? post.favorites.length
-                          : 0}
-                      </span>
-                    </div>
-                    <div className="flex justify-end">
-                      <Link href={`/posts/${post.id}`}>
-                        <button className="bg-primary text-primary-foreground px-4 py-2 rounded-full hover:bg-primary/80">
-                          Read More
-                        </button>
+                  {post.imageUrl && (
+                    <img
+                      src={
+                        post.imageUrl.startsWith("http")
+                          ? post.imageUrl
+                          : `https://blogchain.onrender.com${post.imageUrl}`
+                      }
+                      alt="Article image"
+                      className="w-full h-64 rounded-lg object-cover mb-4"
+                    />
+                  )}
+                  <div className="flex justify-between mt-2">
+                    <div className="flex items-center">
+                      <Link href={`/users/${post.author?.id}`}>
+                        <img
+                          src={
+                            post.author?.avatar
+                              ? post.author.avatar.startsWith("http")
+                                ? post.author.avatar
+                                : `https://blogchain.onrender.com${post.author.avatar}`
+                              : "/default-avatar.jpg"
+                          }
+                          alt="Author image"
+                          className="w-10 h-10 rounded-full"
+                        />
                       </Link>
+                      <div className="ml-2">
+                        <span className="text-lg font-semibold">
+                          {post.author ? post.author.user : "Unknown Author"}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {post.author ? post.author.bio : "Unknown Author"}
+                        </span>
+                      </div>
                     </div>
+                    <div className="flex items-center text-gray-500">
+                      <TagIcon className="w-4 h-4 mr-1" />
+                      {post.tags.slice(0, 3).map((tag) => (
+                        <span key={tag.id}>{tag.name}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <h2 className="text-2xl font-bold">{post.title}</h2>
+                    <p
+                      className="text-gray-700 mt-2"
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(post.description),
+                      }}
+                    ></p>
+                  </div>
+                  <div className="flex items-center mt-4 text-gray-500">
+                    <ClockIcon className="w-5 h-5 mr-1" />
+                    <span>
+                      {calculateReadingTime(post.description)} min read
+                    </span>
+                    <span className="mx-2">|</span>
+                    <MessageSquareIcon className="w-5 h-5 mr-1" />
+                    <span>
+                      {Array.isArray(post.comments) ? post.comments.length : 0}
+                    </span>
+                    <span className="mx-2">|</span>
+                    <HeartIcon className="w-5 h-5 mr-1" />
+                    <span>
+                      {Array.isArray(post.favorites)
+                        ? post.favorites.length
+                        : 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-end mt-4">
+                    <Link href={`/posts/${post.id}`}>
+                      <button className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark">
+                        Read More
+                      </button>
+                    </Link>
                   </div>
                 </div>
               ))}

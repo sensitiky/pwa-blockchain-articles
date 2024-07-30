@@ -214,7 +214,11 @@ const ArticleCarousel = () => {
                         onClick={() => handleFavorite(post.id)}
                       >
                         <FaRegHeart className="w-5 h-5" />
-                        <span>{post.favorites}</span>
+                        <span>
+                          {Array.isArray(post.favorites)
+                            ? post.favorites.length
+                            : 0}
+                        </span>
                       </button>
                     </div>
                   </div>

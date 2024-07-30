@@ -178,40 +178,6 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const handleFavorite = async (postId: number, commentId?: number) => {
-    if (!user) {
-      console.error("User is not logged in");
-      alert("You need to be authenticated in order to interact");
-      return;
-    }
-    try {
-      await axios.post(`${API_URL}/favorites`, {
-        userId: user.id,
-        postId: commentId ? undefined : postId,
-        commentId: commentId || undefined,
-        isFavorite: true,
-      });
-
-      if (commentId) {
-        const updatedComments = comments.map((comment) =>
-          comment.id === commentId
-            ? { ...comment, favorites: comment.favorites + 1 }
-            : comment
-        );
-        setComments(updatedComments);
-      } else {
-        setPosts((prevPosts) =>
-          prevPosts.map((post) =>
-            post.id === postId
-              ? { ...post, favorites: post.favorites + 1 }
-              : post
-          )
-        );
-      }
-    } catch (error) {
-      console.error("Error favoriting post or comment:", error);
-    }
-  };
 
   const handleCloseModal = () => {
     setShowLoginCard(false);
