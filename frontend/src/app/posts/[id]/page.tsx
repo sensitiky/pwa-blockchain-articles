@@ -268,11 +268,11 @@ const PostPage = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-white text-gray-900">
       <Header />
       <div className="px-4 py-2 md:px-6 lg:py-2">
         <div className="mx-auto max-w-4xl">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-6">
             <button
               className="hover:underline bg-inherit text-black inline-flex h-8 items-center justify-center rounded-md px-4 text-sm font-medium transition-colors hover:bg-inherit focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
               onClick={() => router.back()}
@@ -296,8 +296,8 @@ const PostPage = () => {
               </Avatar>
               <div>
                 <p className="text-sm font-medium text-black">
-                  {post.author?.firstName?.[0] ?? "Author"}{" "}
-                  {post.author?.lastName?.[0] ?? "Unknown"}
+                  {post.author?.firstName ?? "Author"}{" "}
+                  {post.author?.lastName ?? "Unknown"}
                 </p>
                 <p className="text-xs text-gray-500 line-clamp-2">
                   {post.author?.bio}
@@ -338,41 +338,39 @@ const PostPage = () => {
             {formatDate(post.createdAt)} •{" "}
             {calculateReadingTime(post.description)} min read
           </p>
-          <h1 className="text-3xl font-bold text-center mt-6">{post.title}</h1>
+          <h1 className="text-4xl font-serif font-bold text-center mt-6">
+            {post.title}
+          </h1>
           {post.imageUrl && (
-            <div className="mt-6 rounded-lg border">
+            <div className="mt-6 rounded-lg overflow-hidden">
               <Image
                 src={`https://blogchain.onrender.com${post.imageUrl}`}
                 alt="Banner"
                 width={1200}
                 height={300}
-                className="aspect-[4/1] w-full object-cover"
+                className="w-full object-cover"
               />
             </div>
           )}
-          <div className="prose prose-gray mx-auto mt-8 dark:prose-invert">
+          <div className="prose prose-lg mx-auto mt-8">
             <PostDescription description={post.description} />
           </div>
           {post.category && (
-            <div className="gap-6 p-6">
-              <h3 className="text-lg px-2 py-1 mb-8 bg-secondary rounded-full w-fit h-fit">
-                Category:
-              </h3>
-              <span className="px-2 py-1 bg-secondary text-secondary-foreground rounded-full">
+            <div className="mt-8">
+              <h3 className="text-lg font-medium">Category:</h3>
+              <span className="px-2 py-1 bg-gray-200 text-gray-700 rounded-full">
                 {post.category ? post.category.name : "Uncategorized"}
               </span>
             </div>
           )}
           {post.tags && (
-            <div className="gap-6 p-6">
-              <h3 className="text-lg px-2 py-1 mb-8 bg-secondary rounded-full w-fit h-fit">
-                Tags:
-              </h3>
+            <div className="mt-8">
+              <h3 className="text-lg font-medium">Tags:</h3>
               <ul className="flex flex-wrap gap-2">
                 {post.tags.map((tag, index) => (
                   <li
                     key={index}
-                    className="px-2 py-1 bg-secondary text-secondary-foreground rounded-full"
+                    className="px-2 py-1 bg-gray-200 text-gray-700 rounded-full"
                   >
                     {tag ? tag.name : "Uncategorized"}
                   </li>
@@ -380,8 +378,7 @@ const PostPage = () => {
               </ul>
             </div>
           )}
-
-          <div className="flex items-center mt-8">
+          <div className="flex items-center mt-8 space-x-4">
             <Button
               variant="ghost"
               className="w-fit flex items-center space-x-1"
@@ -392,7 +389,6 @@ const PostPage = () => {
                 {Array.isArray(post.favorites) ? post.favorites.length : 0}
               </span>
             </Button>
-
             <Button
               className="w-fit flex items-center space-x-1 text-gray-500"
               variant="ghost"
@@ -408,7 +404,7 @@ const PostPage = () => {
             {comments.map((comment) => (
               <div
                 key={comment.id}
-                className="border rounded-none border-none p-4 my-4 bg-gray-200"
+                className="border rounded-md p-4 my-4 bg-gray-100"
               >
                 <div className="flex items-center space-x-4">
                   <Avatar className="h-8 w-8">
@@ -431,7 +427,7 @@ const PostPage = () => {
                 <div className="flex items-center space-x-2 text-xs text-muted-foreground mt-2">
                   <Button
                     variant="ghost"
-                    className="flex w-fit items-center rounded-full  space-x-1 "
+                    className="flex w-fit items-center rounded-full space-x-1"
                     onClick={() => handleFavorite(post.id, comment.id)}
                   >
                     <FaHeart className="h-4 w-4" />
@@ -443,7 +439,7 @@ const PostPage = () => {
           </div>
           <form onSubmit={handleCommentSubmit} className="mt-4">
             <textarea
-              className="w-full border rounded-none p-2 resize-none"
+              className="w-full border rounded-md p-2 resize-none"
               placeholder="Add a comment"
               rows={5}
               value={commentContent}
@@ -451,7 +447,7 @@ const PostPage = () => {
             />
             <Button
               type="submit"
-              className="mt-2 border-none rounded-none bg-gray-200 text-black hover:bg-black hover:text-gray-200"
+              className="mt-2 border-none rounded-md bg-gray-200 text-black hover:bg-black hover:text-gray-200"
             >
               Submit
             </Button>
