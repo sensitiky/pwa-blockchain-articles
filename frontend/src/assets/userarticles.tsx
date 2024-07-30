@@ -21,6 +21,7 @@ import {
   PaginationLink,
   PaginationNext,
 } from "@/components/ui/pagination";
+import Link from "next/link";
 
 const POSTS_PER_PAGE = 10;
 
@@ -54,11 +55,14 @@ const Posts: React.FC = () => {
 
   const fetchUserPosts = async () => {
     try {
-      const response = await axios.get(`https://blogchain.onrender.com/users/me/posts`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.get(
+        `https://blogchain.onrender.com/users/me/posts`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       console.log("API Response:", response.data); // Verificar la respuesta de la API
 
@@ -149,12 +153,14 @@ const Posts: React.FC = () => {
                 <Badge className="mb-2 bg-green-500 text-white">
                   Published
                 </Badge>
-                <Button
-                  variant="outline"
-                  className="text-white border-none hover:underline bg-transparent hover:bg-transparent hover:text-white"
-                >
-                  Read More
-                </Button>
+                <Link href={`/posts/${post.id}`}>
+                  <Button
+                    variant="outline"
+                    className="text-white border-none hover:underline bg-transparent hover:bg-transparent hover:text-white"
+                  >
+                    Read More
+                  </Button>
+                </Link>
               </div>
               <h3 className="absolute top-0 left-0 right-0 text-lg mb-2 text-center text-black font-semibold backdrop-blur-lg bg-opacity-20 bg-black p-2 z-10">
                 {post.title}
