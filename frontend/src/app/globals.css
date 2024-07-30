@@ -236,7 +236,14 @@
 .ios-select:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
-
+.sort-order-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
+}
 /* Responsive styles */
 @media (max-width: 1024px) {
   .custom-dropdown-container {
@@ -366,16 +373,6 @@
   }
 }
 @media (min-width: 1024px) and (max-width: 1690px) {
-  .articles-container {
-    /* Adjust the width and padding */
-    padding: 0 20px;
-  }
-
-  .articles-header {
-    /* Adjust the padding and font size */
-    padding: 16px;
-    font-size: 1.2rem;
-  }
 
   .categories-container {
     /* Adjust the layout for categories */
@@ -391,7 +388,9 @@
 
   .sort-order-container {
     /* Adjust the flex direction and padding */
-    flex-direction: column;
+    flex-direction: row;
+    text-align: center;
+    justify-content: center;
     padding: 10px;
   }
 

@@ -81,6 +81,7 @@ export class PostsService {
       author,
       category,
       tags,
+      imageUrl: createPostDto.imageUrl,
     });
 
     await this.postsRepository.save(post);

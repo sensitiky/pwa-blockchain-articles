@@ -73,7 +73,7 @@ const PostPage = () => {
   const fetchPost = async (id: string) => {
     try {
       const response = await axios.get(
-        `https://blogchain.onrender.com/posts/${id}`
+        `http://localhost:4000/posts/${id}`
       );
       const postData = response.data;
       console.log("Fetched post data:", postData); // Debugging log
@@ -89,7 +89,7 @@ const PostPage = () => {
   const fetchComments = async (postId: string) => {
     try {
       const response = await axios.get(
-        `https://blogchain.onrender.com/comments/post/${postId}`
+        `http://localhost:4000/comments/post/${postId}`
       );
       const commentsWithAuthorInfo = response.data.map((comment: Comment) => ({
         ...comment,
@@ -116,7 +116,7 @@ const PostPage = () => {
     }
     try {
       const response = await axios.post(
-        `https://blogchain.onrender.com/comments`,
+        `http://localhost:4000/comments`,
         {
           content: commentContent,
           authorId: user.id,
@@ -148,7 +148,7 @@ const PostPage = () => {
       return;
     }
     try {
-      await axios.post(`https://blogchain.onrender.com/favorites`, {
+      await axios.post(`http://localhost:4000/favorites`, {
         userId: user.id,
         postId: commentId ? undefined : postId,
         commentId: commentId || undefined,
@@ -349,7 +349,7 @@ const PostPage = () => {
           {post.imageUrl && (
             <div className="mt-6 rounded-lg overflow-hidden">
               <Image
-                src={`https://blogchain.onrender.com${post.imageUrl}`}
+                src={`http://localhost:4000${post.imageUrl}`}
                 alt="Banner"
                 width={1200}
                 height={300}

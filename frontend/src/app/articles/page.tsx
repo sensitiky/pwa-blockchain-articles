@@ -14,9 +14,8 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ClockIcon, TagIcon, MessageSquareIcon, HeartIcon } from "lucide-react";
-import Image from "next/image";
-import api from "../../../services/api";
 import DOMPurify from "dompurify";
+import api from "../../../services/api";
 
 type Category = {
   id: number;
@@ -66,7 +65,7 @@ export default function Articles() {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(
-        "https://blogchain.onrender.com/categories"
+        "http://localhost:4000/categories"
       );
       setCategories(response.data);
     } catch (error) {
@@ -78,7 +77,7 @@ export default function Articles() {
   const fetchPost = async (id: string) => {
     try {
       const response = await axios.get(
-        `https://blogchain.onrender.com/posts/${id}`
+        `http://localhost:4000/posts/${id}`
       );
       const postData = response.data;
       setPosts(postData);
@@ -94,7 +93,7 @@ export default function Articles() {
   const fetchComments = async (postId: string) => {
     try {
       const response = await axios.get(
-        `https://blogchain.onrender.com/comments/post/${postId}`
+        `http://localhost:4000/comments/post/${postId}`
       );
       setComments(response.data);
     } catch (error) {
@@ -106,8 +105,8 @@ export default function Articles() {
   const fetchPosts = async (page: number, categoryId?: number) => {
     try {
       const url = categoryId
-        ? `https://blogchain.onrender.com/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
-        : `https://blogchain.onrender.com/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
+        ? `http://localhost:4000/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
+        : `http://localhost:4000/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
       const response = await axios.get(url);
       const postsData = response.data.data;
       setPosts(postsData || []);
@@ -121,7 +120,7 @@ export default function Articles() {
   const fetchPostCountsByCategory = async () => {
     try {
       const response = await axios.get(
-        "https://blogchain.onrender.com/posts/count/by-category"
+        "http://localhost:4000/posts/count/by-category"
       );
       setCategoryCounts(response.data);
     } catch (error) {
@@ -150,7 +149,7 @@ export default function Articles() {
   const fetchPostCountsByTag = async () => {
     try {
       const response = await api.get(
-        "https://blogchain.onrender.com/posts/count/by-tag"
+        "http://localhost:4000/posts/count/by-tag"
       );
       // Assuming you have a state to store tag counts
       setTagCounts(response.data);
@@ -163,7 +162,7 @@ export default function Articles() {
   const fetchTagsByCategory = async (categoryId: number) => {
     try {
       const response = await api.get(
-        `https://blogchain.onrender.com/tags/by-category/${categoryId}`
+        `http://localhost:4000/tags/by-category/${categoryId}`
       );
       setTags(response.data);
     } catch (error) {
@@ -213,7 +212,7 @@ export default function Articles() {
   };
 
   return (
-    <div className="articles-container flex flex-col min-h-screen w-screen">
+    <div className="articles-container flex flex-col min-h-screen w-screen z-auto">
       <Header />
       <div className="articles-header w-screen bg-customColor-header text-center py-8 px-4 tabular-nums ios-style">
         <div className="articles-title-container py-12">
@@ -268,7 +267,7 @@ export default function Articles() {
           </div>
         </div>
         <div className="sort-order-container flex flex-col lg:flex-row text-center">
-          <div className="flex flex-col justify-start py-4 lg:px-[450px] flex-shrink">
+          <div className="flex flex-col justify-start py-4 px-44 flex-shrink">
             <label htmlFor="sortOrder1" className="text-white">
               Sort by:
             </label>
@@ -283,7 +282,7 @@ export default function Articles() {
               <option value="comment">More Comments</option>
             </select>
           </div>
-          <div className="flex flex-col justify-end py-4 lg:px-[180px] flex-shrink">
+          <div className="flex flex-col justify-end py-4 px-44 flex-shrink">
             <label htmlFor="sortOrder2" className="text-white">
               Sort by:
             </label>
@@ -314,11 +313,7 @@ export default function Articles() {
                   <div className="flex flex-col h-full">
                     {post.imageUrl && (
                       <img
-                        src={
-                          post.imageUrl.startsWith("http")
-                            ? post.imageUrl
-                            : `https://blogchain.onrender.com${post.imageUrl}`
-                        }
+                        src={`https://blogchaing.onrender.com${post.imageUrl}`}
                         alt="Article image"
                         className="w-full h-48 sm:h-64 md:h-48 lg:h-64 rounded-lg object-cover border-border border-gray-300"
                       />
@@ -331,7 +326,7 @@ export default function Articles() {
                               post.author?.avatar
                                 ? post.author.avatar.startsWith("http")
                                   ? post.author.avatar
-                                  : `https://blogchain.onrender.com${post.author.avatar}`
+                                  : `http://localhost:4000${post.author.avatar}`
                                 : "/default-avatar.jpg"
                             }
                             alt="Author image"

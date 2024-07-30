@@ -40,9 +40,12 @@ const Header = () => {
 
   const performSearch = async (searchQuery: string) => {
     try {
-      const response = await axios.get(`https://blogchain.onrender.com/search`, {
-        params: { q: searchQuery },
-      });
+      const response = await axios.get(
+        `http://localhost:4000/search`,
+        {
+          params: { q: searchQuery },
+        }
+      );
       setResults(response.data);
     } catch (error) {
       console.error("Error fetching search results", error);
@@ -98,7 +101,7 @@ const Header = () => {
   const avatarUrl = user?.avatar
     ? user.avatar.startsWith("http")
       ? user.avatar
-      : `https://blogchain.onrender.com${user.avatar}`
+      : `http://localhost:4000${user.avatar}`
     : "default-avatar-url";
 
   return (
@@ -110,43 +113,61 @@ const Header = () => {
             <Link href="/">Blogchain</Link>
           </div>
           <div className="relative text-gray-400 focus-within:text-gray-600">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-2">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 animate-fade-in">
               <svg className="h-5 w-5 fill-current" viewBox="0 0 20 20">
                 <path d="M12.9 14.32l4.1 4.1-1.4 1.4-4.1-4.1c-1 .7-2.2 1.1-3.5 1.1C4.9 16.82 2 13.92 2 10.42S4.9 4 8.4 4s6.4 2.9 6.4 6.4c0 1.3-.4 2.5-1.1 3.5zM8.4 14c2 0 3.6-1.6 3.6-3.6S10.4 6.8 8.4 6.8 4.8 8.4 4.8 10.4s1.6 3.6 3.6 3.6z" />
               </svg>
             </span>
             <Input
               type="search"
-              className="py-2 text-sm text-customColor-innovatio3 bg-dark-blue rounded-full pl-10 focus:outline-none focus:bg-white focus:text-gray-900"
+              className="py-2 pl-10 pr-4 text-sm text-gray-900 bg-white rounded-full shadow transition-all duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-blue-500 focus:scale-105"
               placeholder="Search..."
             />
           </div>
-          <nav className="space-x-4 flex items-center">
-            <Link href="/" className="text-white hover:text-customColor-hueso">
+
+          <style jsx>{`
+            @keyframes fade-in {
+              from {
+                opacity: 0;
+              }
+              to {
+                opacity: 1;
+              }
+            }
+
+            .animate-fade-in {
+              animation: fade-in 0.5s ease-in-out;
+            }
+          `}</style>
+          <nav className="space-x-4 flex items-center p-4 bg-inherit  rounded-full">
+            <Link
+              href="/"
+              className="text-customColor-hueso hover:text-customColor-innovatio transition-colors duration-300"
+            >
               Home
             </Link>
             <Link
               href="/articles"
-              className="text-white hover:text-customColor-hueso"
+              className="text-customColor-hueso hover:text-customColor-innovatio transition-colors duration-300"
             >
               Articles
             </Link>
             <Link
               href="/about"
-              className="text-white hover:text-customColor-hueso"
+              className="text-customColor-hueso hover:text-customColor-innovatio transition-colors duration-300"
             >
               About Us
             </Link>
             <Link
               href="/support"
-              className="text-white hover:text-customColor-hueso"
+              className="text-customColor-hueso hover:text-customColor-innovatio transition-colors duration-300"
             >
               Support Us
             </Link>
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Avatar className="rounded-full cursor-pointer">
+                  <Avatar className="rounded-full cursor-pointer shadow-md transition-transform duration-300 hover:scale-105">
                     <AvatarImage
                       src={avatarUrl}
                       alt={`${user?.firstName}'s avatar`}
@@ -154,20 +175,34 @@ const Header = () => {
                     <AvatarFallback>{user?.user}</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuContent className="bg-white shadow-lg rounded-lg">
+                  <DropdownMenuLabel className="text-customColor-innovatio3">
+                    My Account
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push("/users")}>
+                  <DropdownMenuItem
+                    onClick={() => router.push("/users")}
+                    className="hover:bg-customColor-innovatio hover:text-white transition-colors duration-300"
+                  >
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push("/newarticles")}>
+                  <DropdownMenuItem
+                    onClick={() => router.push("/newarticles")}
+                    className="hover:bg-customColor-innovatio hover:text-white transition-colors duration-300"
+                  >
                     Create
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push("/articles")}>
+                  <DropdownMenuItem
+                    onClick={() => router.push("/articles")}
+                    className="hover:bg-customColor-innovatio hover:text-white transition-colors duration-300"
+                  >
                     Articles
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="hover:bg-customColor-innovatio hover:text-white transition-colors duration-300"
+                  >
                     Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -175,7 +210,7 @@ const Header = () => {
             ) : (
               <Button
                 onClick={handleStartNewCampaign}
-                className="rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio"
+                className="rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio transition-colors duration-300 shadow-md"
               >
                 Get Started
               </Button>

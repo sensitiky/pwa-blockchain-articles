@@ -55,8 +55,8 @@ export class Post {
   @Column({ nullable: true })
   savedAt: Date;
 
-  @Column({ nullable: true })
-  imageUrl: string;
+  @Column({ type: 'bytea', nullable: true })
+  imageUrl: Buffer;
 
   @OneToMany(() => Favorite, (favorite) => favorite.post)
   favorites: Favorite[];

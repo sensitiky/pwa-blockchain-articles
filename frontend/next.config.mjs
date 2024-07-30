@@ -13,7 +13,18 @@ export default {
     defaultLocale: 'en',
   },
   images: {
-    domains: ['localhost', 'blogchain.onrender.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'localhost',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'blogchain.onrender.com',
+        pathname: '/uploads/**',
+      },
+    ],
   },
   async rewrites() {
     return [
