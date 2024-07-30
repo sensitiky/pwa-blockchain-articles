@@ -16,6 +16,7 @@ import { useParams } from "next/navigation";
 import { ClockIcon, TagIcon, MessageSquareIcon, HeartIcon } from "lucide-react";
 import Image from "next/image";
 import api from "../../../services/api";
+import DOMPurify from "dompurify";
 
 type Category = {
   id: number;
@@ -64,7 +65,9 @@ export default function Articles() {
   // Fetch categories
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("https://blogchain.onrender.com/categories");
+      const response = await axios.get(
+        "https://blogchain.onrender.com/categories"
+      );
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories", error);
@@ -74,7 +77,9 @@ export default function Articles() {
   // Fetch posts by ID
   const fetchPost = async (id: string) => {
     try {
-      const response = await axios.get(`https://blogchain.onrender.com/posts/${id}`);
+      const response = await axios.get(
+        `https://blogchain.onrender.com/posts/${id}`
+      );
       const postData = response.data;
       setPosts(postData);
       setComments(postData.comments);
@@ -359,7 +364,7 @@ export default function Articles() {
                       <p
                         className="text-muted-foreground mb-4 line-clamp-3"
                         dangerouslySetInnerHTML={{
-                          __html: post.description,
+                          __html: DOMPurify.sanitize(post.description),
                         }}
                       ></p>
                     </div>
