@@ -10,13 +10,11 @@ import Select, { SingleValue } from "react-select";
 import countryList from "react-select-country-list";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { AiOutlinePlus } from "react-icons/ai";
 import { useAuth } from "../../context/authContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import api from "../../services/api";
 import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
 import Link from "next/link";
-import { ComputerIcon, PencilIcon } from "lucide-react";
 
 interface User {
   firstName?: string;
@@ -33,6 +31,7 @@ interface User {
   bio?: string;
   avatar?: string;
   postCount?: number;
+  role?: string;
 }
 
 const ProfileSettings: React.FC = () => {
@@ -44,16 +43,17 @@ const ProfileSettings: React.FC = () => {
   const [bio, setBio] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const cardRef = useRef<HTMLDivElement>(null);
+  const [role, setRole] = useState<string>("");
 
   const fetchProfile = async () => {
     if (isAuthenticated) {
       try {
-        const response = await api.get("http://localhost:4000/users/me");
+        const response = await api.get("https://blogchain.onrender.com/users/me");
         const profile = response.data;
         const avatarUrl = profile.avatar
-          ? `http://localhost:4000${profile.avatar}`
+          ? `https://blogchain.onrender.com${profile.avatar}`
           : "";
-        setUser({
+        const userData = {
           id: profile.id,
           firstName: profile.firstName,
           lastName: profile.lastName,
@@ -69,7 +69,10 @@ const ProfileSettings: React.FC = () => {
           bio: profile.bio,
           avatar: avatarUrl,
           postCount: profile.postCount,
-        });
+          role: profile.role,
+        };
+        setUser(userData);
+        setUserInfo(userData);
         setProfileImage(
           avatarUrl ? `${avatarUrl}?${new Date().getTime()}` : ""
         );
@@ -123,7 +126,7 @@ const ProfileSettings: React.FC = () => {
 
   const handleProfileSave = async () => {
     try {
-      await api.put("http://localhost:4000/users/me", userInfo);
+      await api.put("https://blogchain.onrender.com/users/me", userInfo);
       fetchProfile();
     } catch (error) {
       console.error("Error saving profile information:", error);
@@ -132,7 +135,7 @@ const ProfileSettings: React.FC = () => {
 
   const handleBioSave = async () => {
     try {
-      await api.put("http://localhost:4000/users/me", { ...userInfo, bio });
+      await api.put("https://blogchain.onrender.com/users/me", { ...userInfo, bio });
       setUserInfo({ ...userInfo, bio });
       fetchProfile();
     } catch (error) {
@@ -159,7 +162,7 @@ const ProfileSettings: React.FC = () => {
   };
 
   const uploadAvatar = async (formData: FormData) => {
-    return await api.put("http://localhost:4000/users/me", formData, {
+    return await api.put("https://blogchain.onrender.com/users/me", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -167,7 +170,7 @@ const ProfileSettings: React.FC = () => {
   };
 
   const formatAvatarUrl = (avatarPath: string): string => {
-    const baseUrl = "http://localhost:4000";
+    const baseUrl = "https://blogchain.onrender.com";
     return `${baseUrl}${avatarPath}`;
   };
 
@@ -180,6 +183,19 @@ const ProfileSettings: React.FC = () => {
   const refreshUserProfile = async () => {
     await fetchProfile();
   };
+
+  useEffect(() => {
+    const savedRole = localStorage.getItem("userRole");
+    if (savedRole) {
+      setRole(savedRole);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (role) {
+      localStorage.setItem("userRole", role);
+    }
+  }, [role]);
 
   const handleAvatarUploadError = (error: any) => {
     console.error("Error uploading avatar:", error);
@@ -197,6 +213,12 @@ const ProfileSettings: React.FC = () => {
     );
   }
 
+  const avatarUrl = user?.avatar
+    ? user.avatar.startsWith("http")
+      ? user.avatar
+      : `https://blogchain.onrender.com${user.avatar}`
+    : "default-avatar-url";
+
   return (
     <div className=" flex flex-col items-center justify-center md:flex-row md:space-x-8 px-4 md:px-6">
       <div className="flex-1 flex flex-col items-center md:items-start">
@@ -205,7 +227,7 @@ const ProfileSettings: React.FC = () => {
             <CardBody className="bg-inherit text-card-foreground border-none rounded-lg shadow-none w-full h-full transition-transform relative flex justify-center items-center">
               <CardItem translateZ="50" className="relative z-10">
                 <Avatar className="w-36 h-36 md:w-36 md:h-36">
-                  <AvatarImage src={user?.avatar} />
+                  <AvatarImage src={avatarUrl} />
                   <AvatarFallback>{user?.firstName}</AvatarFallback>
                 </Avatar>
               </CardItem>
@@ -268,6 +290,21 @@ const ProfileSettings: React.FC = () => {
               ) : (
                 <div className="flex items-center border-b-[1px]">
                   <span className="flex-grow">{user?.lastName}</span>
+                </div>
+              )}
+            </div>
+            <div className="grid gap-1">
+              <Label className="text-2xl">Rol</Label>
+              {editMode ? (
+                <Input
+                  name="role"
+                  value={userInfo.role}
+                  onChange={handleInputChange}
+                  className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
+                />
+              ) : (
+                <div className="flex items-center border-b-[1px]">
+                  <span className="flex-grow">{user?.role}</span>
                 </div>
               )}
             </div>
@@ -428,73 +465,70 @@ const ProfileSettings: React.FC = () => {
             <p className="font-semibold">Birthday</p>
             <p>{user?.date?.toLocaleDateString()}</p>
           </div>
-          <div className="mb-4 transform transition-transform duration-500 hover:scale-110 text-center">
-            <p className="font-semibold">Role</p>
-            <div className="flex items-center justify-center">
-              <p contentEditable="true" className="flex-grow text-center">
-                Full Stack Developer
-              </p>
-              <PencilIcon className="size-5 ml-2" />
+          <div className="grid gap-1">
+            <Label className="text-2xl">Rol</Label>
+            <div className="flex items-center border-b-[1px]">
+              <span className="flex-grow">{user?.role}</span>
             </div>
           </div>
-        </div>
-        <div className="mt-6 w-full">
-          <h3 className="font-semibold mb-2">SETTINGS</h3>
-          <div className="flex justify-between items-center mb-4 transform transition-transform duration-500 hover:scale-110">
-            <div className="flex items-center">
-              <div className="p-2 rounded-full">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={user?.avatar} />
-                  <AvatarFallback>{user?.firstName}</AvatarFallback>
-                </Avatar>
+          <div className="mt-6 w-full">
+            <h3 className="font-semibold mb-2">SETTINGS</h3>
+            <div className="flex justify-between items-center mb-4 transform transition-transform duration-500 hover:scale-110">
+              <div className="flex items-center">
+                <div className="p-2 rounded-full">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={user?.avatar} />
+                    <AvatarFallback>{user?.firstName}</AvatarFallback>
+                  </Avatar>
+                </div>
+                <p className="ml-2">Profile</p>
               </div>
-              <p className="ml-2">Profile</p>
+              <Button
+                className="bg-gray-800 px-4 py-2 rounded-full hover:bg-white hover:text-black"
+                onClick={() => {}}
+              >
+                Edit Profile
+              </Button>
             </div>
-            <Button
-              className="bg-gray-800 px-4 py-2 rounded-full hover:bg-white hover:text-black"
-              onClick={() => {}}
-            >
-              Edit Profile
-            </Button>
-          </div>
-          <h3 className="font-semibold mb-2">LINKS</h3>
-          <div className="flex items-center justify-center gap-4">
-            {user?.facebook && (
-              <Link
-                href={user?.facebook}
-                className="text-white"
-                prefetch={false}
-              >
-                <FaFacebook className="w-6 h-6" />
-              </Link>
-            )}
-            {user?.instagram && (
-              <Link
-                href={user?.instagram}
-                className="text-white"
-                prefetch={false}
-              >
-                <FaInstagram className="w-6 h-6" />
-              </Link>
-            )}
-            {user?.twitter && (
-              <Link
-                href={user?.twitter}
-                className="text-white"
-                prefetch={false}
-              >
-                <FaTwitter className="w-6 h-6" />
-              </Link>
-            )}
-            {user?.linkedin && (
-              <Link
-                href={user?.linkedin}
-                className="text-white"
-                prefetch={false}
-              >
-                <FaLinkedin className="w-6 h-6" />
-              </Link>
-            )}
+            <h3 className="font-semibold mb-2">LINKS</h3>
+            <div className="flex items-center justify-center gap-4">
+              {user?.facebook && (
+                <Link
+                  href={user?.facebook}
+                  className="text-white"
+                  prefetch={false}
+                >
+                  <FaFacebook className="w-6 h-6" />
+                </Link>
+              )}
+              {user?.instagram && (
+                <Link
+                  href={user?.instagram}
+                  className="text-white"
+                  prefetch={false}
+                >
+                  <FaInstagram className="w-6 h-6" />
+                </Link>
+              )}
+              {user?.twitter && (
+                <Link
+                  href={user?.twitter}
+                  className="text-white"
+                  prefetch={false}
+                >
+                  <FaTwitter className="w-6 h-6" />
+                </Link>
+              )}
+              {user?.linkedin && (
+                <Link
+                  href={user?.linkedin}
+                  className="text-white"
+                  prefetch={false}
+                >
+                  <FaLinkedin className="w-6 h-6" />
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -52,7 +52,12 @@ interface Comment {
   id: number;
   content: string;
   createdAt: string;
-  author: { id: number; firstName: string; lastName: string; user: string };
+  author: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    user: string;
+  };
   favorites: number;
 }
 
@@ -67,8 +72,9 @@ const PostPage = () => {
 
   const fetchPost = async (id: string) => {
     try {
-      const response = await axios.get(`http://localhost:4000/posts/${id}`);
+      const response = await axios.get(`https://blogchain.onrender.com/posts/${id}`);
       const postData = response.data;
+      console.log("Fetched post data:", postData); // Debugging log
       setPost(postData);
       setComments(postData.comments);
       setLoading(false);
@@ -81,9 +87,19 @@ const PostPage = () => {
   const fetchComments = async (postId: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/comments/post/${postId}`
+        `https://blogchain.onrender.com/comments/post/${postId}`
       );
-      setComments(response.data);
+      const commentsWithAuthorInfo = response.data.map((comment: Comment) => ({
+        ...comment,
+        author: {
+          id: comment.author.id,
+          firstName: comment.author.firstName,
+          lastName: comment.author.lastName,
+          user: comment.author.user,
+        },
+      }));
+      console.log("Fetched comments:", commentsWithAuthorInfo); // Debugging log
+      setComments(commentsWithAuthorInfo);
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
@@ -97,7 +113,7 @@ const PostPage = () => {
       return;
     }
     try {
-      const response = await axios.post(`http://localhost:4000/comments`, {
+      const response = await axios.post(`https://blogchain.onrender.com/comments`, {
         content: commentContent,
         authorId: user.id,
         postId: post?.id,
@@ -127,7 +143,7 @@ const PostPage = () => {
       return;
     }
     try {
-      await axios.post(`http://localhost:4000/favorites`, {
+      await axios.post(`https://blogchain.onrender.com/favorites`, {
         userId: user.id,
         postId: commentId ? undefined : postId,
         commentId: commentId || undefined,
@@ -157,6 +173,10 @@ const PostPage = () => {
       fetchComments(id as string);
     }
   }, [id]);
+
+  useEffect(() => {
+    console.log("Comments state:", comments); // Debugging log
+  }, [comments]);
 
   if (loading) {
     return (
@@ -264,8 +284,14 @@ const PostPage = () => {
               <Avatar className="h-10 w-10">
                 <AvatarImage src="/shadcn.jpg" />
                 <AvatarFallback>
-                  {post.author?.firstName?.[0] ?? "Author"}
-                  {post.author?.lastName?.[0] ?? "Unknown"}
+                  {post.author ? (
+                    <>
+                      {post.author.firstName?.[0] ?? "A"}
+                      {post.author.lastName?.[0] ?? "U"}
+                    </>
+                  ) : (
+                    "AU"
+                  )}
                 </AvatarFallback>
               </Avatar>
               <div>
@@ -316,7 +342,7 @@ const PostPage = () => {
           {post.imageUrl && (
             <div className="mt-6 rounded-lg border">
               <Image
-                src={`http://localhost:4000${post.imageUrl}`}
+                src={`https://blogchain.onrender.com${post.imageUrl}`}
                 alt="Banner"
                 width={1200}
                 height={300}
@@ -379,17 +405,17 @@ const PostPage = () => {
           </div>
           <div className="mt-8">
             <h3 className="text-lg font-medium">Comments</h3>
-            {comments.map((comment, index) => (
+            {comments.map((comment) => (
               <div
-                key={index}
+                key={comment.id}
                 className="border rounded-none border-none p-4 my-4 bg-gray-200"
               >
                 <div className="flex items-center space-x-4">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="/placeholder-user.jpg" />
                     <AvatarFallback>
-                      {comment.author?.firstName?.[0]}
-                      {comment.author?.lastName?.[0]}
+                      {comment.author?.firstName?.[0] ?? ""}
+                      {comment.author?.lastName?.[0] ?? ""}
                     </AvatarFallback>
                   </Avatar>
                   <div>

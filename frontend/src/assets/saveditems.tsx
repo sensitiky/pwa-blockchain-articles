@@ -21,7 +21,7 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
   const [liked, setLiked] = useState<boolean[]>([]);
 
   useEffect(() => {
-    axios.get(`http://localhost:4000/users/${userId}/favorites`).then((res) => {
+    axios.get(`https://blogchain.onrender.com/users/${userId}/favorites`).then((res) => {
       setFavorites(res.data);
       setLiked(res.data.map(() => false));
     });
@@ -31,6 +31,12 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
     const newLiked = [...liked];
     newLiked[index] = !newLiked[index];
     setLiked(newLiked);
+  };
+
+  const handleImageError = (
+    event: React.SyntheticEvent<HTMLImageElement, Event>
+  ) => {
+    event.currentTarget.src = "/test.jpg"; // Ruta de la imagen de reemplazo
   };
 
   return (
@@ -45,7 +51,7 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2 rounded-lg bg-inherit border-r-0 border-l-0 border-border border-black shadow-md"
+                className="gap-2 rounded-lg bg-inherit border-border border-black shadow-md"
               >
                 <FontAwesomeIcon icon={faArrowsUpDown} className="h-4 w-4" />
                 Order
@@ -72,9 +78,12 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
                 className="card border-t-[1px] border-b-[1px] border-r-0 border-l-0 flex flex-col md:flex-row items-center justify-between p-4 sm:p-6 bg-inherit shadow-md rounded-lg mb-4"
               >
                 <img
-                  src={favorite.imageUrl || "/test.jpg"}
+                  src={
+                    `https://blogchain.onrender.com${favorite.imageUrl}` || "/test.jpg"
+                  }
                   alt={favorite.title || "Placeholder"}
                   className="m-5 h-40 w-full md:w-auto md:h-44 rounded-lg border border-gray-300 mr-4"
+                  onError={handleImageError}
                 />
                 <div className="flex flex-col items-start mb-4 md:mb-0">
                   <h3 className="text-lg font-bold text-gray-900">

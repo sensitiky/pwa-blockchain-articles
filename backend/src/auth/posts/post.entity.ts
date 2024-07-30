@@ -39,8 +39,7 @@ export class Post {
   @OneToMany(() => Comment, (comment) => comment.post)
   comments: Comment[];
 
-  @CreateDateColumn({ name: 'created_at' })
-  @Column({ name: 'created_at' })
+  @CreateDateColumn()
   createdAt: Date;
 
   @ManyToMany(() => Tag, (tag) => tag.posts)

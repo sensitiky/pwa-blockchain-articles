@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Badge } from "@/components/ui/badge";
@@ -20,9 +21,8 @@ import {
   PaginationLink,
   PaginationNext,
 } from "@/components/ui/pagination";
-import Link from "next/link";
 
-const POSTS_PER_PAGE = 5; // Updated to 5
+const POSTS_PER_PAGE = 10;
 
 type Category = {
   id: number;
@@ -46,36 +46,33 @@ const Posts: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [order, setOrder] = useState<string>("Date (newest first)");
   const [page, setPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
-    fetchUserPosts(page);
+    fetchUserPosts();
   }, [order, page]);
 
-  const fetchUserPosts = async (page: number) => {
+  const fetchUserPosts = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:4000/users/me/posts?page=${page}&limit=${POSTS_PER_PAGE}&order=${order}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await axios.get(`https://blogchain.onrender.com/users/me/posts`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
-      console.log("API Response:", response.data);
+      console.log("API Response:", response.data); // Verificar la respuesta de la API
 
-      const postsData = response.data.posts.map((post: any) => ({
+      const postsData = response.data.map((post: any) => ({
         ...post,
         createdAt: new Date(post.createdAt),
         comments: post.comments || [],
         favorites: post.favorites || 0,
       }));
 
-      console.log("Deserialized Posts:", postsData);
+      console.log("Deserialized Posts:", postsData); // Verificar los datos deserializados
 
       setPosts(postsData || []);
-      setTotalPages(response.data.totalPages || 1);
+      setTotalPages(Math.ceil(response.data.length / POSTS_PER_PAGE)); // Asumiendo que response.data.length es el total de posts
     } catch (error) {
       console.error("Error fetching user posts", error);
     }
@@ -84,11 +81,12 @@ const Posts: React.FC = () => {
   const handleOrderChange = (newOrder: string) => {
     console.log("Order changed to:", newOrder);
     setOrder(newOrder);
-    setPage(1);
+    setPage(1); // Reset page to 1 when order changes
+    fetchUserPosts();
   };
 
   return (
-    <div>
+    <>
       <div className="flex items-center justify-between py-4">
         <h1 className="text-2xl font-bold">Your posts</h1>
         <div className="flex items-center gap-4">
@@ -97,30 +95,33 @@ const Posts: React.FC = () => {
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2 bg-inherit border-r-0 border-l-0 border-border border-black rounded-none"
+                className="gap-2 bg-inherit border-border border-black rounded-full"
               >
                 <FontAwesomeIcon icon={faArrowsUpDown} className="h-4 w-4" />
                 Order
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="rounded-lg shadow-lg">
               <DropdownMenuLabel>Order by</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuCheckboxItem
                 checked={order === "Date (newest first)"}
                 onCheckedChange={() => handleOrderChange("Date (newest first)")}
+                className="rounded-lg"
               >
                 Date (newest first)
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 checked={order === "Date (oldest first)"}
                 onCheckedChange={() => handleOrderChange("Date (oldest first)")}
+                className="rounded-lg"
               >
                 Date (oldest first)
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 checked={order === "Title"}
                 onCheckedChange={() => handleOrderChange("Title")}
+                className="rounded-lg"
               >
                 Title
               </DropdownMenuCheckboxItem>
@@ -137,10 +138,10 @@ const Posts: React.FC = () => {
           posts.map((post) => (
             <div
               key={post.id}
-              className="relative group overflow-hidden rounded-lg shadow-lg transition-transform duration-300 hover:scale-105"
+              className="relative group overflow-hidden rounded-lg shadow-lg"
             >
               <img
-                src={`http://localhost:4000${post.imageUrl}`}
+                src={`https://blogchain.onrender.com${post.imageUrl}`}
                 alt={post.title}
                 className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
               />
@@ -148,14 +149,12 @@ const Posts: React.FC = () => {
                 <Badge className="mb-2 bg-green-500 text-white">
                   Published
                 </Badge>
-                <Link href={`/posts/${post.id}`}>
-                  <Button
-                    variant="outline"
-                    className="text-white border-none hover:underline bg-transparent hover:bg-transparent hover:text-white"
-                  >
-                    Read More
-                  </Button>
-                </Link>
+                <Button
+                  variant="outline"
+                  className="text-white border-none hover:underline bg-transparent hover:bg-transparent hover:text-white"
+                >
+                  Read More
+                </Button>
               </div>
               <h3 className="absolute top-0 left-0 right-0 text-lg mb-2 text-center text-black font-semibold backdrop-blur-lg bg-opacity-20 bg-black p-2 z-10">
                 {post.title}
@@ -191,7 +190,7 @@ const Posts: React.FC = () => {
           </PaginationContent>
         </Pagination>
       </div>
-    </div>
+    </>
   );
 };
 

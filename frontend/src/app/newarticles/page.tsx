@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState, ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/assets/footer";
@@ -10,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import dynamic from "next/dynamic";
 import { FaUpload } from "react-icons/fa";
 import { useAuth } from "../../../context/authContext";
+import { motion } from "framer-motion";
 
 interface Category {
   id: number;
@@ -44,17 +44,15 @@ export default function NewArticles() {
     const fetchCategoriesAndTags = async () => {
       try {
         const [categoriesResponse, tagsResponse] = await Promise.all([
-          axios.get("http://localhost:4000/categories"),
-          axios.get("http://localhost:4000/tags"),
+          axios.get("https://blogchain.onrender.com/categories"),
+          axios.get("https://blogchain.onrender.com/tags"),
         ]);
         setCategories(categoriesResponse.data);
         setTags(tagsResponse.data);
-        console.log("Tags", tagsResponse.data);
       } catch (error) {
         console.error("Error fetching categories and tags", error);
       }
     };
-
     fetchCategoriesAndTags();
   }, []);
 
@@ -101,15 +99,11 @@ export default function NewArticles() {
       console.error("User not authenticated");
       return;
     }
-
     if (!selectedCategory) {
       console.error("Category not selected");
       return;
     }
-
     const tags = selectedTags.map((tag) => ({ id: tag.id, name: tag.name }));
-    console.log("Tags being sent:", tags);
-
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
@@ -117,14 +111,13 @@ export default function NewArticles() {
     formData.append("publish", JSON.stringify(publish));
     formData.append("categoryId", selectedCategory.id.toString());
     formData.append("tags", JSON.stringify(tags));
-    console.log("Form", formData);
     if (imageFile) {
       formData.append("image", imageFile);
     }
-
+    formData.append("created_at", new Date().toISOString());
     try {
       const response = await axios.post(
-        "http://localhost:4000/posts",
+        "https://blogchain.onrender.com/posts",
         formData,
         {
           headers: {
@@ -132,7 +125,6 @@ export default function NewArticles() {
           },
         }
       );
-      console.log("Post created successfully:", response.data);
       router.push("/articles");
     } catch (error) {
       console.error("Error creating post:", error);
@@ -140,7 +132,7 @@ export default function NewArticles() {
   };
 
   return (
-    <div className="max-h-screen">
+    <div className="max-h-screen bg-gray-100">
       <Header />
       <div className="flex flex-col min-h-screen">
         <main className="flex-1 py-8 px-4 md:px-6 flex justify-center">
@@ -152,16 +144,17 @@ export default function NewArticles() {
                 </div>
                 <div className="grid grid-cols-1 gap-2">
                   {categories.map((category) => (
-                    <Button
+                    <motion.button
                       key={category.id}
-                      variant="outline"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       className={`text-lg hover:bg-inherit rounded-full border-gray-500 w-fit ${
                         selectedCategory === category ? "bg-gray-300" : ""
                       }`}
                       onClick={() => handleCategorySelect(category)}
                     >
                       {category.name}
-                    </Button>
+                    </motion.button>
                   ))}
                 </div>
               </div>
@@ -171,9 +164,10 @@ export default function NewArticles() {
                 </div>
                 <div className="grid grid-cols-1 gap-2">
                   {tags.slice(0, 5).map((tag) => (
-                    <Button
+                    <motion.button
                       key={tag.id}
-                      variant="outline"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       className={`text-lg hover:bg-inherit rounded-full border-gray-500 w-fit ${
                         selectedTags.some((t) => t.id === tag.id)
                           ? "bg-gray-300"
@@ -182,7 +176,7 @@ export default function NewArticles() {
                       onClick={() => handleTagSelect(tag)}
                     >
                       {tag.name}
-                    </Button>
+                    </motion.button>
                   ))}
                 </div>
                 <Input
@@ -204,27 +198,34 @@ export default function NewArticles() {
               </div>
             </div>
             <div className="w-full md:w-3/4 pl-0 md:pl-4">
-              <div
-                className={`p-6 bg-inherit text-black rounded-lg ${
+              <motion.div
+                className={`p-6 bg-white text-black rounded-lg shadow-lg ${
                   selectedCategory && selectedTags.length >= 2
                     ? ""
                     : "opacity-50 pointer-events-none"
                 }`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
               >
                 <div className="flex justify-between items-center">
                   <div className="space-x-4">
-                    <button
+                    <motion.button
                       onClick={() => handleSubmit(false)}
-                      className="text-white bg-gray-700 px-4 py-2 rounded-full hover:bg-gray-600"
+                      className="text-white bg-gray-700 px-4 py-2 rounded-full hover:bg-gray-600 transition-all duration-300"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       Save Draft
-                    </button>
-                    <button
+                    </motion.button>
+                    <motion.button
                       onClick={() => handleSubmit(true)}
-                      className="text-white bg-green-600 px-4 py-2 rounded-full hover:bg-green-500"
+                      className="text-white bg-green-600 px-4 py-2 rounded-full hover:bg-green-500 transition-all duration-300"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       Publish
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
                 <div className="mt-6">
@@ -236,7 +237,7 @@ export default function NewArticles() {
                     placeholder="Title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full mt-4 p-2 bg-inherit rounded-full border border-gray-400 text-black placeholder:text-gray-700"
+                    className="w-full mt-4 p-2 bg-white rounded-full border border-gray-400 text-black placeholder:text-gray-700"
                     maxLength={300}
                   />
                   <p className="text-right text-gray-500 text-sm mt-1">
@@ -272,7 +273,7 @@ export default function NewArticles() {
                     <CustomEditor onChange={setDescription} />
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </main>

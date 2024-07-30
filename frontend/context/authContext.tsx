@@ -26,6 +26,7 @@ interface User {
   bio?: string;
   avatar?: string;
   postCount?: number;
+  role?: string;
 }
 
 interface AuthContextType {
@@ -64,7 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const token = localStorage.getItem("token");
         if (token) {
-          const response = await api.get("http://localhost:4000/users/me");
+          const response = await api.get("https://blogchain.onrender.com/users/me");
           setUser(response.data);
         }
       } catch (error) {
