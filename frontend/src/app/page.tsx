@@ -16,7 +16,7 @@ import parse from "html-react-parser";
 import { FaRegComment, FaRegHeart } from "react-icons/fa";
 import { Separator } from "@/components/ui/separator";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 const cookies = new Cookie();
 
 interface Post {
