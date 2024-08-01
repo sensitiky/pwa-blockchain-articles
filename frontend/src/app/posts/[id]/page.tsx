@@ -110,6 +110,8 @@ const CommentComponent = memo(
   )
 );
 
+CommentComponent.displayName = "CommentComponent";
+
 const PostPage = () => {
   const { user } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
