@@ -311,8 +311,9 @@ export default function Articles() {
                       <Image
                         width={1200}
                         height={300}
-                        src={decodeURI(post.imageUrl)}
+                        src={post.imageUrl}
                         alt="Article image"
+                        className="w-full"
                       />
                     )}
                     <div className="flex justify-between mt-2">

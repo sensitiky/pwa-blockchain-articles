@@ -34,13 +34,11 @@ export class AuthController {
       res.status(401).json({ message: 'Login failed' });
     }
   }
-  //
   @Post('facebook')
   async facebookLogin(
     @Body() body: { accessToken: string },
     @Res() res: Response,
   ): Promise<void> {
-    // Asegúrate de que el secreto se está obteniendo correctamente
     const appSecret = this.configService.get<string>('FACEBOOK_CLIENT_SECRET');
     if (!appSecret) {
       this.logger.error('FACEBOOK_CLIENT_SECRET is not defined');
@@ -77,7 +75,6 @@ export class AuthController {
       res.status(401).json({ message: 'Facebook login failed' });
     }
   }
-  //
 
   @Post('forgot-password')
   async forgotPassword(

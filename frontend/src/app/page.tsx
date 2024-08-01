@@ -336,9 +336,11 @@ const HomePage: React.FC = () => {
                 className="flex flex-col border-b border-customColor-innovatio3 pb-4 mb-4 rounded-none shadow-none bg-inherit"
               >
                 <div className="flex flex-col sm:flex-row mb-4">
-                  {post.imageUrl && (
+                  {post.imageUrl && typeof post.imageUrl === "string" && (
                     <img
-                    src={post.imageUrl}
+                      src={post.imageUrl}
+                      width={1920}
+                      height={1080}
                       alt={post.title}
                       className="rounded-md w-full sm:w-1/3 h-auto"
                     />
@@ -347,9 +349,15 @@ const HomePage: React.FC = () => {
                     <div className="flex items-start mb-4">
                       {post.author?.avatar && (
                         <img
-                          src={`http://localhost:4000`}
-                          alt={post.author.firstName[0] ?? "Author"}
-                          className="rounded-full w-12 h-12"
+                          src={
+                            post.author?.avatar
+                              ? post.author.avatar.startsWith("http")
+                                ? post.author.avatar
+                                : `http://localhost:4000${post.author.avatar}`
+                              : "/default-avatar.jpg"
+                          }
+                          alt="Author image"
+                          className="w-10 h-10 rounded-full"
                         />
                       )}
                       <div className="ml-4">

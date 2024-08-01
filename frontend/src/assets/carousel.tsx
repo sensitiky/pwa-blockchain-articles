@@ -161,7 +161,7 @@ const ArticleCarousel = () => {
             <div key={index} className="p-4 flex justify-center">
               <div className="bg-opacity-50 backdrop-blur-3xl bg-white p-6 rounded-xl border-[1px] border-black min-h-[250px] max-h-[250px] overflow-hidden grid grid-rows-[auto,auto,1fr,auto] gap-2 w-full max-w-md">
                 <div className="overflow-hidden">
-                  {post.imageUrl && (
+                  {post.imageUrl && typeof post.imageUrl === "string" && (
                     <div className="relative w-full h-40">
                       <Image
                         src={post.imageUrl}
@@ -169,6 +169,8 @@ const ArticleCarousel = () => {
                         layout="fill"
                         objectFit="cover"
                         className="rounded-lg"
+                        width={1920}
+                        height={1080}
                       />
                     </div>
                   )}

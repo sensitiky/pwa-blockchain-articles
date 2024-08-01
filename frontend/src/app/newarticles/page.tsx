@@ -133,7 +133,7 @@ export default function NewArticles() {
   return (
     <div className="max-h-screen bg-gray-100">
       <Header />
-      <div className="flex flex-col min-h-screen">
+      <div className="bg-gray-100 lex flex-col min-h-screen">
         <main className="flex-1 py-8 px-4 md:px-6 flex justify-center">
           <div className="w-full max-w-6xl flex flex-col md:flex-row">
             <div className="w-full md:w-1/4 pr-4 mb-4 md:mb-0">

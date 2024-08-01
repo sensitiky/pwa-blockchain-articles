@@ -37,7 +37,6 @@ export class PostsService {
 
     return favoritePosts;
   }
-  //Crear posts
   async create(createPostDto: CreatePostDto): Promise<Post> {
     console.log('Received createPostDto:', createPostDto);
   
@@ -90,9 +89,6 @@ export class PostsService {
   
     return post;
   }
-  
-
-  //Fin creacion posts
 
   async deletePost(postId: number): Promise<void> {
     const post = await this.postsRepository.findOne({

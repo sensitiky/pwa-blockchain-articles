@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -16,7 +16,7 @@ import {
   FaHeart,
 } from "react-icons/fa";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, HandHeart } from "lucide-react";
 import parse from "html-react-parser";
 import { useAuth } from "../../../../context/authContext";
 
@@ -36,6 +36,7 @@ interface Post {
     twitter?: string;
     linkedin?: string;
     facebook?: string;
+    avatar?: string;
   };
   category?: { name: string };
   tags: Tag[];
@@ -57,9 +58,57 @@ interface Comment {
     firstName: string;
     lastName: string;
     user: string;
+    avatar?: string;
   };
   favorites: number;
 }
+
+const CommentComponent = memo(
+  ({
+    comment,
+    handleFavorite,
+  }: {
+    comment: Comment;
+    handleFavorite: (postId: number, commentId?: number) => void;
+  }) => (
+    <div className="border rounded-md p-4 my-4 bg-gray-100">
+      <div className="flex items-center space-x-4">
+        <Avatar className="h-8 w-8">
+          <AvatarImage
+            src={
+              comment.author?.avatar
+                ? `http://localhost:4000${comment.author.avatar}`
+                : "/shadcn.jpg"
+            }
+            alt="Author avatar"
+          />
+          <AvatarFallback>
+            {`${comment.author?.firstName ?? ""}${
+              comment.author?.lastName ?? ""
+            }`}
+          </AvatarFallback>
+        </Avatar>
+        <div>
+          <p className="text-sm font-medium">{comment.author?.user}</p>
+          <div className="text-xs text-gray-500">
+            {formatDate(comment.createdAt)}
+          </div>
+        </div>
+      </div>
+      <p className="mt-2 ml-5 text-sm">{comment.content}</p>
+      <div className="flex items-center space-x-2 text-xs text-muted-foreground mt-2">
+        <Button
+          variant="ghost"
+          className="flex w-fit items-center rounded-full space-x-1"
+          onClick={() => handleFavorite(comment.id)}
+        >
+          <HandHeart className="size-4" />
+          <span className="ml-2">Favorite</span>
+        </Button>
+      </div>
+    </div>
+  )
+);
 
 const PostPage = () => {
   const { user } = useAuth();
@@ -72,9 +121,7 @@ const PostPage = () => {
 
   const fetchPost = async (id: string) => {
     try {
-      const response = await axios.get(
-        `http://localhost:4000/posts/${id}`
-      );
+      const response = await axios.get(`http://localhost:4000/posts/${id}`);
       const postData = response.data;
       console.log("Fetched post data:", postData); // Debugging log
       setPost(postData);
@@ -115,14 +162,11 @@ const PostPage = () => {
       return;
     }
     try {
-      const response = await axios.post(
-        `http://localhost:4000/comments`,
-        {
-          content: commentContent,
-          authorId: user.id,
-          postId: post?.id,
-        }
-      );
+      const response = await axios.post(`http://localhost:4000/comments`, {
+        content: commentContent,
+        authorId: user.id,
+        postId: post?.id,
+      });
 
       const newComment = {
         ...response.data,
@@ -287,7 +331,9 @@ const PostPage = () => {
             </button>
             <div className="flex items-center space-x-4">
               <Avatar className="h-10 w-10">
-                <AvatarImage src="/shadcn.jpg" />
+                <AvatarImage
+                  src={`http://localhost:4000${post.author?.avatar}`}
+                />
                 <AvatarFallback>
                   {post.author ? (
                     <>
@@ -409,41 +455,14 @@ const PostPage = () => {
           <div className="mt-8">
             <h3 className="text-lg font-medium">Comments</h3>
             {comments.map((comment) => (
-              <div
+              <CommentComponent
                 key={comment.id}
-                className="border rounded-md p-4 my-4 bg-gray-100"
-              >
-                <div className="flex items-center space-x-4">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="/placeholder-user.jpg" />
-                    <AvatarFallback>
-                      {comment.author?.firstName?.[0] ?? ""}
-                      {comment.author?.lastName?.[0] ?? ""}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="text-sm font-medium">
-                      {comment.author?.user}
-                    </p>
-                    <div className="text-xs text-gray-500">
-                      {formatDate(comment.createdAt)}
-                    </div>
-                  </div>
-                </div>
-                <p className="mt-2 text-sm">{comment.content}</p>
-                <div className="flex items-center space-x-2 text-xs text-muted-foreground mt-2">
-                  <Button
-                    variant="ghost"
-                    className="flex w-fit items-center rounded-full space-x-1"
-                    onClick={() => handleFavorite(post.id, comment.id)}
-                  >
-                    <FaHeart className="h-4 w-4" />
-                    <span className="ml-2">Favorite</span>
-                  </Button>
-                </div>
-              </div>
+                comment={comment}
+                handleFavorite={handleFavorite}
+              />
             ))}
           </div>
+
           <form onSubmit={handleCommentSubmit} className="mt-4">
             <textarea
               className="w-full border rounded-md p-2 resize-none"
@@ -467,3 +486,12 @@ const PostPage = () => {
 };
 
 export default PostPage;
+
+function formatDate(dateString: string) {
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+}
