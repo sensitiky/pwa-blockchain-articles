@@ -16,7 +16,7 @@ import { useParams } from "next/navigation";
 import { ClockIcon, TagIcon, MessageSquareIcon, HeartIcon } from "lucide-react";
 import DOMPurify from "dompurify";
 import api from "../../../services/api";
-
+import Image from "next/image";
 type Category = {
   id: number;
   name: string;
@@ -26,7 +26,7 @@ type Post = {
   id: number;
   title: string;
   content: string;
-  imageUrl?: string;
+  imageUrl: string | null;
   createdAt: string;
   description: string;
   author?: { id: number; user: string; avatar?: string; bio: string };
@@ -64,9 +64,7 @@ export default function Articles() {
   // Fetch categories
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:4000/categories"
-      );
+      const response = await axios.get("http://localhost:4000/categories");
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories", error);
@@ -76,9 +74,7 @@ export default function Articles() {
   // Fetch posts by ID
   const fetchPost = async (id: string) => {
     try {
-      const response = await axios.get(
-        `http://localhost:4000/posts/${id}`
-      );
+      const response = await axios.get(`http://localhost:4000/posts/${id}`);
       const postData = response.data;
       setPosts(postData);
       setComments(postData.comments);
@@ -311,11 +307,12 @@ export default function Articles() {
                   className="p-4 sm:p-6 bg-inherit mx-auto text-card-foreground border border-r-0 border-l-0 rounded-none shadow-none transition-transform ios-style"
                 >
                   <div className="flex flex-col h-full">
-                    {post.imageUrl && (
-                      <img
-                        src={`https://blogchaing.onrender.com${post.imageUrl}`}
+                    {post.imageUrl && typeof post.imageUrl === "string" && (
+                      <Image
+                        width={1200}
+                        height={300}
+                        src={decodeURI(post.imageUrl)}
                         alt="Article image"
-                        className="w-full h-48 sm:h-64 md:h-48 lg:h-64 rounded-lg object-cover border-border border-gray-300"
                       />
                     )}
                     <div className="flex justify-between mt-2">

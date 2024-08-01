@@ -1,12 +1,3 @@
-import { join } from 'path';
-import { existsSync, mkdirSync } from 'fs';
-
-const uploadsDir = join(process.cwd(), 'uploads');
-
-if (!existsSync(uploadsDir)) {
-  mkdirSync(uploadsDir);
-}
-
 export default {
   i18n: {
     locales: ['en'],
@@ -16,22 +7,19 @@ export default {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'localhost',
-        pathname: '/uploads/**',
-      },
-      {
-        protocol: 'https',
         hostname: 'blogchain.onrender.com',
         pathname: '/uploads/**',
       },
+      // Puedes agregar más patrones de imagen remota aquí si es necesario
     ],
   },
-  async rewrites() {
-    return [
-      {
-        source: '/uploads/:path*',
-        destination: '/api/uploads/:path*',
-      },
-    ];
-  },
+  // Si no necesitas reescribir rutas, puedes eliminar esta sección
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: '/uploads/:path*',
+  //       destination: '/api/uploads/:path*',
+  //     },
+  //   ];
+  // },
 };

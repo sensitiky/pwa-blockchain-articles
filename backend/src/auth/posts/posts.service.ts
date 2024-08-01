@@ -37,28 +37,29 @@ export class PostsService {
 
     return favoritePosts;
   }
+  //Crear posts
   async create(createPostDto: CreatePostDto): Promise<Post> {
     console.log('Received createPostDto:', createPostDto);
-
+  
     const author = await this.usersRepository.findOne({
       where: { id: createPostDto.authorId },
     });
-
+  
     if (!author) {
       throw new Error('Author not found');
     }
-
+  
     const category = createPostDto.categoryId
       ? await this.categoriesRepository.findOne({
           where: { id: createPostDto.categoryId },
         })
       : null;
-
+  
     let tags = [];
     if (typeof createPostDto.tags === 'string') {
       tags = JSON.parse(createPostDto.tags);
     }
-
+  
     tags = Array.isArray(tags)
       ? await Promise.all(
           tags.map(async (tag) => {
@@ -73,23 +74,25 @@ export class PostsService {
           }),
         )
       : [];
-
+  
     console.log('Tags processed:', tags);
-
+  
     const post = this.postsRepository.create({
       ...createPostDto,
       author,
       category,
       tags,
-      imageUrl: createPostDto.imageUrl,
     });
-
+  
     await this.postsRepository.save(post);
     author.postCount += 1;
     await this.usersRepository.save(author);
-
+  
     return post;
   }
+  
+
+  //Fin creacion posts
 
   async deletePost(postId: number): Promise<void> {
     const post = await this.postsRepository.findOne({

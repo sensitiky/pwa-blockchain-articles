@@ -62,7 +62,12 @@ export class PostsController {
 
   @Get(':id')
   async findOne(@Param('id') id: number) {
-    return this.postsService.findOne(id);
+    const post = await this.postsService.findOne(id);
+    const postDto = {
+      ...post,
+      imageUrl: post.imageUrl ? `data:image/jpeg;base64,${post.imageUrl.toString('base64')}` : null,
+    };
+    return postDto;
   }
 
   @Delete(':id')
@@ -80,9 +85,10 @@ export class PostsController {
   ) {
     console.log('Received CreatePostDto:', createPostDto);
     const authorId = parseInt(req.body.authorId, 10);
-    const image = file ? file.buffer : null;
-    const { imageUrl, ...rest } = createPostDto;
-    return this.postsService.create({ ...rest, imageUrl, authorId });
+    if (file) {
+      createPostDto.imageUrl = file.buffer;
+    }
+    return this.postsService.create({ ...createPostDto, authorId });
   }
 
   @Get('count/by-category')

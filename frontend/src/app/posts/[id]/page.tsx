@@ -349,7 +349,7 @@ const PostPage = () => {
           {post.imageUrl && (
             <div className="mt-6 rounded-lg overflow-hidden">
               <Image
-                src={`http://localhost:4000${post.imageUrl}`}
+                src={post.imageUrl}
                 alt="Banner"
                 width={1200}
                 height={300}

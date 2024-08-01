@@ -112,8 +112,7 @@ export default function NewArticles() {
     formData.append("categoryId", selectedCategory.id.toString());
     formData.append("tags", JSON.stringify(tags));
     if (imageFile) {
-      const buffer = await imageFile.arrayBuffer();
-      formData.append("image", new Blob([buffer], { type: imageFile.type }));
+      formData.append("image", imageFile);
     }
     formData.append("created_at", new Date().toISOString());
     try {

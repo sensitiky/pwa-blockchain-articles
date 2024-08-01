@@ -373,7 +373,6 @@
   }
 }
 @media (min-width: 1024px) and (max-width: 1690px) {
-
   .categories-container {
     /* Adjust the layout for categories */
     flex-direction: column;
@@ -408,5 +407,49 @@
   .pagination-container {
     /* Adjust the margin */
     margin-top: 20px;
+  }
+}
+@media (min-width: 2560px) {
+  .text-xl {
+    font-size: 2rem; /* Adjust font size for 2K and 4K monitors */
+  }
+
+  .text-2xl {
+    font-size: 2.5rem; /* Adjust font size for 2K and 4K monitors */
+  }
+
+  #main-about {
+    padding-top: 10rem;
+    padding-bottom: 50rem;
+    padding-left: 50rem;
+  }
+
+  #main-about-2 {
+    padding-top: 19rem;
+    padding-bottom: 40rem;
+    padding-right: 30rem;
+  }
+}
+
+@media (min-width: 3500px) {
+  #about-text-2 {
+    font-size: 2rem;
+  }
+
+  #about-text-1 {
+    font-size: 2.8rem; /* Adjust font size for 2K and 4K monitors */
+  }
+
+  #main-about {
+    padding-top: 10rem;
+    size: 100rem;
+    padding-bottom: 80rem;
+    padding-left: 80rem;
+  }
+
+  #main-about-2 {
+    padding-top: 25rem;
+    padding-bottom: 40rem;
+    padding-right: 70rem;
   }
 }

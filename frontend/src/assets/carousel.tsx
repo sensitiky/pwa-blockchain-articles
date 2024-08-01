@@ -164,7 +164,7 @@ const ArticleCarousel = () => {
                   {post.imageUrl && (
                     <div className="relative w-full h-40">
                       <Image
-                        src={`http://localhost:4000${post.imageUrl}`}
+                        src={post.imageUrl}
                         alt={post.title}
                         layout="fill"
                         objectFit="cover"
