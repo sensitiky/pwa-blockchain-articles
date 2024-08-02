@@ -69,10 +69,10 @@ const SecuritySettings: React.FC = () => {
   const fetchProfile = async () => {
     if (isAuthenticated) {
       try {
-        const response = await api.get("https://blogchain.onrender.com/users/me");
+        const response = await api.get("http://localhost:4000/users/me");
         const profile = response.data;
         const avatarUrl = profile.avatar
-          ? `https://blogchain.onrender.com${profile.avatar}`
+          ? `http://localhost:4000${profile.avatar}`
           : "";
         setUser({
           id: profile.id,
@@ -111,7 +111,7 @@ const SecuritySettings: React.FC = () => {
 
   const handleSaveChanges = async () => {
     try {
-      await api.put("https://blogchain.onrender.com/users/me", userInfo);
+      await api.put("http://localhost:4000/users/me", userInfo);
       setEditMode(false);
     } catch (error) {
       console.error("Error saving profile information:", error);
