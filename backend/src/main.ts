@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import * as path from 'path';
 import * as express from 'express';
 import { join } from 'path';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
@@ -15,6 +16,8 @@ async function bootstrap() {
     credentials: true,
   });
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
+  app.use(bodyParser.json({ limit: '50mb' }));
+  app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
   await app.listen(4000);
 }
 bootstrap();

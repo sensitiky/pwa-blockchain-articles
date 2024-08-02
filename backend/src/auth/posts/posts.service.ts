@@ -7,6 +7,7 @@ import { User } from '../users/user.entity';
 import { Tag } from '../tag/tag.entity';
 import { Category } from '../category/category.entity';
 import { Favorite } from '../favorites/favorite.entity';
+import { Comment } from '../comments/comment.entity';
 
 @Injectable()
 export class PostsService {
@@ -19,6 +20,8 @@ export class PostsService {
     private tagsRepository: Repository<Tag>,
     @InjectRepository(Category)
     private categoriesRepository: Repository<Category>,
+    @InjectRepository(Comment)
+    private commentsRepository: Repository<Comment>,
   ) {}
   async findUserFavorites(userId: number): Promise<Post[]> {
     const user = await this.usersRepository.findOne({
@@ -39,26 +42,26 @@ export class PostsService {
   }
   async create(createPostDto: CreatePostDto): Promise<Post> {
     console.log('Received createPostDto:', createPostDto);
-  
+
     const author = await this.usersRepository.findOne({
       where: { id: createPostDto.authorId },
     });
-  
+
     if (!author) {
       throw new Error('Author not found');
     }
-  
+
     const category = createPostDto.categoryId
       ? await this.categoriesRepository.findOne({
           where: { id: createPostDto.categoryId },
         })
       : null;
-  
+
     let tags = [];
     if (typeof createPostDto.tags === 'string') {
       tags = JSON.parse(createPostDto.tags);
     }
-  
+
     tags = Array.isArray(tags)
       ? await Promise.all(
           tags.map(async (tag) => {
@@ -73,31 +76,40 @@ export class PostsService {
           }),
         )
       : [];
-  
+
     console.log('Tags processed:', tags);
-  
+
     const post = this.postsRepository.create({
       ...createPostDto,
       author,
       category,
       tags,
     });
-  
+
     await this.postsRepository.save(post);
     author.postCount += 1;
     await this.usersRepository.save(author);
-  
+
     return post;
   }
 
   async deletePost(postId: number): Promise<void> {
     const post = await this.postsRepository.findOne({
       where: { id: postId },
-      relations: ['author'],
+      relations: ['author', 'comments'],
     });
+
     if (post) {
+      // Delete associated comments
+      if (post.comments && post.comments.length > 0) {
+        await this.commentsRepository.remove(
+          post.comments as unknown as Comment[],
+        );
+      }
+
       const author = post.author;
       await this.postsRepository.remove(post);
+
       if (author) {
         author.postCount -= 1;
         await this.usersRepository.save(author);
@@ -211,5 +223,72 @@ export class PostsService {
       .addSelect('COUNT(post.id)', 'count')
       .groupBy('tag.id')
       .getRawMany();
+  }
+
+  async updatePost(
+    postId: number,
+    updatePostDto: CreatePostDto,
+  ): Promise<Post> {
+    const post = await this.postsRepository.findOne({
+      where: { id: postId },
+      relations: ['author', 'category', 'tags'],
+    });
+
+    if (!post) {
+      throw new Error('Post not found');
+    }
+
+    if (updatePostDto.authorId) {
+      const author = await this.usersRepository.findOne({
+        where: { id: updatePostDto.authorId },
+      });
+      if (!author) {
+        throw new Error('Author not found');
+      }
+      post.author = author;
+    }
+
+    if (updatePostDto.categoryId) {
+      const category = await this.categoriesRepository.findOne({
+        where: { id: updatePostDto.categoryId },
+      });
+      post.category = category;
+    }
+
+    if (updatePostDto.tags) {
+      let tags = [];
+      if (typeof updatePostDto.tags === 'string') {
+        tags = JSON.parse(updatePostDto.tags);
+      }
+
+      tags = Array.isArray(tags)
+        ? await Promise.all(
+            tags.map(async (tag) => {
+              let existingTag = await this.tagsRepository.findOne({
+                where: { name: tag.name },
+              });
+              if (!existingTag) {
+                existingTag = this.tagsRepository.create({ name: tag.name });
+                await this.tagsRepository.save(existingTag);
+              }
+              return existingTag;
+            }),
+          )
+        : [];
+
+      post.tags = tags;
+    }
+
+    // Update other post properties directly
+    post.title = updatePostDto.title;
+    post.content = updatePostDto.content;
+    post.description = updatePostDto.description;
+
+    // Handle the imageUrl update if present
+    if (updatePostDto.imageUrl) {
+      post.imageUrl = updatePostDto.imageUrl;
+    }
+
+    return await this.postsRepository.save(post);
   }
 }

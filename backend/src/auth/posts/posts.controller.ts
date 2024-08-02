@@ -10,6 +10,7 @@ import {
   Req,
   BadRequestException,
   Delete,
+  Patch,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PostsService } from './posts.service';
@@ -65,7 +66,9 @@ export class PostsController {
     const post = await this.postsService.findOne(id);
     const postDto = {
       ...post,
-      imageUrl: post.imageUrl ? `data:image/jpeg;base64,${post.imageUrl.toString('base64')}` : null,
+      imageUrl: post.imageUrl
+        ? `data:image/jpeg;base64,${post.imageUrl.toString('base64')}`
+        : null,
     };
     return postDto;
   }
@@ -74,6 +77,20 @@ export class PostsController {
   async remove(@Param('id') id: number) {
     await this.postsService.deletePost(id);
     return { message: 'Post deleted successfully' };
+  }
+
+  @Patch(':id')
+  @UseInterceptors(FileInterceptor('image'))
+  async update(
+    @Param('id') id: number,
+    @Body() updatePostDto: CreatePostDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: Request,
+  ) {
+    if (file) {
+      updatePostDto.imageUrl = file.buffer;
+    }
+    return this.postsService.updatePost(id, updatePostDto);
   }
 
   @HttpPost()

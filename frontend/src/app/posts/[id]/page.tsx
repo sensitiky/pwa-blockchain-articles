@@ -14,11 +14,14 @@ import {
   FaLinkedin,
   FaComment,
   FaHeart,
+  FaEdit,
+  FaTrash,
 } from "react-icons/fa";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeftIcon, HandHeart } from "lucide-react";
 import parse from "html-react-parser";
 import { useAuth } from "../../../../context/authContext";
+import DeletePostModal from "@/assets/deletepost";
 
 interface Post {
   id: number;
@@ -77,7 +80,7 @@ const CommentComponent = memo(
           <AvatarImage
             src={
               comment.author?.avatar
-                ? `http://localhost:4000${comment.author.avatar}`
+                ? `https://blogchain.onrender.com${comment.author.avatar}`
                 : "/shadcn.jpg"
             }
             alt="Author avatar"
@@ -118,12 +121,13 @@ const PostPage = () => {
   const [loading, setLoading] = useState(true);
   const [commentContent, setCommentContent] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const { id } = useParams();
 
   const fetchPost = async (id: string) => {
     try {
-      const response = await axios.get(`http://localhost:4000/posts/${id}`);
+      const response = await axios.get(`https://blogchain.onrender.com/posts/${id}`);
       const postData = response.data;
       console.log("Fetched post data:", postData); // Debugging log
       setPost(postData);
@@ -138,7 +142,7 @@ const PostPage = () => {
   const fetchComments = async (postId: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/comments/post/${postId}`
+        `https://blogchain.onrender.com/comments/post/${postId}`
       );
       const commentsWithAuthorInfo = response.data.map((comment: Comment) => ({
         ...comment,
@@ -164,7 +168,7 @@ const PostPage = () => {
       return;
     }
     try {
-      const response = await axios.post(`http://localhost:4000/comments`, {
+      const response = await axios.post(`https://blogchain.onrender.com/comments`, {
         content: commentContent,
         authorId: user.id,
         postId: post?.id,
@@ -194,7 +198,7 @@ const PostPage = () => {
       return;
     }
     try {
-      await axios.post(`http://localhost:4000/favorites`, {
+      await axios.post(`https://blogchain.onrender.com/favorites`, {
         userId: user.id,
         postId: commentId ? undefined : postId,
         commentId: commentId || undefined,
@@ -215,6 +219,22 @@ const PostPage = () => {
       }
     } catch (error) {
       console.error("Error favoriting post or comment:", error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!user) {
+      console.error("User is not logged in");
+      alert("You need to be authenticated to delete the post");
+      return;
+    }
+    try {
+      await axios.delete(`https://blogchain.onrender.com/posts/${id}`);
+      alert("Post deleted successfully!");
+      router.push("/articles");
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      alert("Error deleting post");
     }
   };
 
@@ -334,7 +354,7 @@ const PostPage = () => {
             <div className="flex items-center space-x-4">
               <Avatar className="h-10 w-10">
                 <AvatarImage
-                  src={`http://localhost:4000${post.author?.avatar}`}
+                  src={`https://blogchain.onrender.com${post.author?.avatar}`}
                 />
                 <AvatarFallback>
                   {post.author ? (
@@ -385,6 +405,26 @@ const PostPage = () => {
                   </Link>
                 )}
               </div>
+              {user?.id === post.author?.id && (
+                <>
+                  <Button
+                    variant="ghost"
+                    className="w-fit flex items-center space-x-1 text-gray-500"
+                    onClick={() => router.push(`/posts/edit/${post.id}`)}
+                  >
+                    <FaEdit className="h-5 w-5" />
+                    <span>Edit</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-fit flex items-center space-x-1 text-gray-500"
+                    onClick={() => setIsModalOpen(true)}
+                  >
+                    <FaTrash className="h-5 w-5" />
+                    <span>Delete</span>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
           <p className="text-gray-500 mt-4">
@@ -483,6 +523,13 @@ const PostPage = () => {
         </div>
       </div>
       <Footer />
+      {isModalOpen && (
+        <DeletePostModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onDelete={handleDelete}
+        />
+      )}
     </div>
   );
 };

@@ -56,7 +56,7 @@ const Posts: React.FC = () => {
   const fetchUserPosts = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/users/me/posts`,
+        `https://blogchain.onrender.com/users/me/posts`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -145,7 +145,7 @@ const Posts: React.FC = () => {
               className="relative group overflow-hidden rounded-lg shadow-lg"
             >
               <img
-                src={`http://localhost:4000${post.imageUrl}`}
+                src={`https://blogchain.onrender.com${post.imageUrl}`}
                 alt={post.title}
                 className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
               />
