@@ -34,7 +34,7 @@ const SupportSection: FC = () => {
               want to support us, choose the channel that suits better and
               contribute to keep this forum alive:
             </p>
-            <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
+            <div className="justify-center flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
               <Button className="px-6 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition duration-300">
                 Wallet Address List
               </Button>
