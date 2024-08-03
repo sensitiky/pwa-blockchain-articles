@@ -153,7 +153,6 @@ const PostPage = () => {
           user: comment.author.user,
         },
       }));
-      console.log("Fetched comments:", commentsWithAuthorInfo); // Debugging log
       setComments(commentsWithAuthorInfo);
     } catch (error) {
       console.error("Error fetching comments:", error);
@@ -246,7 +245,6 @@ const PostPage = () => {
   }, [id]);
 
   useEffect(() => {
-    console.log("Comments state:", comments); // Debugging log
   }, [comments]);
 
   if (loading) {
@@ -346,7 +344,7 @@ const PostPage = () => {
           <div className="flex items-center justify-between mb-6">
             <button
               className="hover:underline bg-inherit text-black inline-flex h-8 items-center justify-center rounded-md px-4 text-sm font-medium transition-colors hover:bg-inherit focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-              onClick={() => router.back()}
+              onClick={() => router.push("/articles")}
             >
               <ArrowLeftIcon className="mr-2 h-4 w-4" />
               Go Back

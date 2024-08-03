@@ -100,7 +100,6 @@ export class PostsService {
     });
 
     if (post) {
-      // Delete associated comments
       if (post.comments && post.comments.length > 0) {
         await this.commentsRepository.remove(
           post.comments as unknown as Comment[],
@@ -120,6 +119,19 @@ export class PostsService {
   async findAll(page: number, limit: number, sortOrder: string) {
     const order = this.getSortOrder(sortOrder);
 
+    const transformImageToBase64 = (posts: Post[]) => {
+      return posts.map((post) => {
+        if (post.imageUrl) {
+          const base64Image = `data:image/jpeg;base64,${post.imageUrl.toString('base64')}`;
+          return {
+            ...post,
+            imageUrlBase64: base64Image,
+          };
+        }
+        return post;
+      });
+    };
+
     if (sortOrder === 'comments') {
       const [result, total] = await this.postsRepository
         .createQueryBuilder('post')
@@ -131,9 +143,11 @@ export class PostsService {
         .skip((page - 1) * limit)
         .take(limit)
         .getManyAndCount();
-      console.log(sortOrder);
+
+      const transformedResult = transformImageToBase64(result);
+
       return {
-        data: result,
+        data: transformedResult,
         totalPages: Math.ceil(total / limit),
       };
     } else {
@@ -144,8 +158,10 @@ export class PostsService {
         relations: ['author', 'category', 'tags', 'comments', 'favorites'],
       });
 
+      const transformedResult = transformImageToBase64(result);
+
       return {
-        data: result,
+        data: transformedResult,
         totalPages: Math.ceil(total / limit),
       };
     }

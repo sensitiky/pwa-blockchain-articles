@@ -5,13 +5,17 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "../../../../../context/authContext";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import CustomEditor from "@/components/ui/editor";
+import Image from "next/image";
+import Header from "@/assets/header";
+import Footer from "@/assets/footer";
 
 interface EditPostDto {
   title: string;
   content: string;
   description: string;
-  imageUrl: string | null;
+  imageUrl: string | null | File;
+  imagePreviewUrl?: string | null;
 }
 
 const EditPostPage = () => {
@@ -29,7 +33,8 @@ const EditPostPage = () => {
         title: postData.title,
         content: postData.content,
         description: postData.description,
-        imageUrl: postData.imageUrl || null,
+        imageUrl: postData.imageUrl ? postData.imageUrl : null,
+        imagePreviewUrl: postData.imageUrl ? postData.imageUrl : null,
       });
       setLoading(false);
     } catch (error) {
@@ -57,6 +62,31 @@ const EditPostPage = () => {
     });
   };
 
+  const handleEditorChange = (value: string) => {
+    setPost((prevPost) => {
+      if (!prevPost) return null;
+      return {
+        ...prevPost,
+        description: value,
+      };
+    });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const imagePreviewUrl = URL.createObjectURL(file);
+      setPost((prevPost) => {
+        if (!prevPost) return null;
+        return {
+          ...prevPost,
+          imageUrl: file,
+          imagePreviewUrl,
+        };
+      });
+    }
+  };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
@@ -64,8 +94,21 @@ const EditPostPage = () => {
       alert("You need to be authenticated to edit the post");
       return;
     }
+
+    const formData = new FormData();
+    formData.append("title", post?.title || "");
+    formData.append("content", post?.content || "");
+    formData.append("description", post?.description || "");
+    if (post && post.imageUrl instanceof File) {
+      formData.append("image", post.imageUrl);
+    }
+
     try {
-      await axios.patch(`https://blogchain.onrender.com/posts/${id}`, post);
+      await axios.patch(`https://blogchain.onrender.com/posts/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       alert("Post updated successfully!");
       router.push(`/posts/${id}`);
     } catch (error) {
@@ -83,65 +126,64 @@ const EditPostPage = () => {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Edit Post</h1>
-      <form onSubmit={handleFormSubmit} className="space-y-4">
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Title
-          </label>
-          <Input
-            type="text"
-            name="title"
-            value={post.title}
-            onChange={handleInputChange}
-            required
-            className="rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Content
-          </label>
-          <Textarea
-            name="content"
-            value={post.content}
-            onChange={handleInputChange}
-            required
-            className="rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Description
-          </label>
-          <Textarea
-            name="description"
-            value={post.description}
-            onChange={handleInputChange}
-            required
-            className="rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Image URL
-          </label>
-          <Input
-            type="text"
-            name="imageUrl"
-            value={post.imageUrl || ""}
-            onChange={handleInputChange}
-            className="rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-        <Button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+    <div>
+      <Header />
+      <div className="container mx-auto p-8 flex flex-col items-center">
+        <h1 className="text-2xl font-bold mb-4">Edit Post</h1>
+        <form
+          onSubmit={handleFormSubmit}
+          className="space-y-4 w-full max-w-2xl"
         >
-          Update Post
-        </Button>
-      </form>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Title
+            </label>
+            <Input
+              type="text"
+              name="title"
+              value={post.title}
+              onChange={handleInputChange}
+              required
+              className="rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 w-full"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Image
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
+          </div>
+          {post.imagePreviewUrl && (
+            <div className="mt-6 rounded-lg overflow-hidden w-full">
+              <Image
+                src={post.imagePreviewUrl}
+                alt="Banner"
+                width={1920}
+                height={600}
+                className="w-full object-cover"
+              />
+            </div>
+          )}
+          <div className="mt-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Description
+            </label>
+            <CustomEditor onChange={handleEditorChange} />
+          </div>
+          <Button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 w-full"
+          >
+            Update Post
+          </Button>
+        </form>
+      </div>
+      <Footer />
     </div>
   );
 };

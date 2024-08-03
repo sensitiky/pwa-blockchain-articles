@@ -1,10 +1,10 @@
+"use client"
 import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import Image from "next/image";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { FaRegComment, FaRegHeart } from "react-icons/fa";
-import Link from "next/link";
 import axios from "axios";
 import parse from "html-react-parser";
 import { useAuth } from "../../context/authContext";
@@ -18,7 +18,7 @@ type Post = {
   id: number;
   title: string;
   content: string;
-  imageUrl?: string;
+  imageUrlBase64?: string;
   createdAt: string;
   description: string;
   author?: {
@@ -161,16 +161,14 @@ const ArticleCarousel = () => {
             <div key={index} className="p-4 flex justify-center">
               <div className="bg-opacity-50 backdrop-blur-3xl bg-white p-6 rounded-xl border-[1px] border-black min-h-[250px] max-h-[250px] overflow-hidden grid grid-rows-[auto,auto,1fr,auto] gap-2 w-full max-w-md">
                 <div className="overflow-hidden">
-                  {post.imageUrl && typeof post.imageUrl === "string" && (
+                  {post.imageUrlBase64 && (
                     <div className="relative w-full h-40">
                       <Image
-                        src={post.imageUrl}
+                        src={post.imageUrlBase64}
                         alt={post.title}
                         layout="fill"
                         objectFit="cover"
                         className="rounded-lg"
-                        width={1920}
-                        height={1080}
                       />
                     </div>
                   )}

@@ -14,14 +14,14 @@ import Footer from "@/assets/footer";
 import axios from "axios";
 import parse from "html-react-parser";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 const cookies = new Cookie();
 
 interface Post {
   id: number;
   title: string;
   content: string;
-  imageUrl: string | null;
+  imageUrlBase64: string | null;
   createdAt: string;
   description: string | object;
   author?: Author;
@@ -336,9 +336,9 @@ const HomePage: React.FC = () => {
                 className="flex flex-col border-b border-customColor-innovatio3 pb-4 mb-4 rounded-none shadow-none bg-inherit"
               >
                 <div className="flex flex-col sm:flex-row mb-4">
-                  {post.imageUrl && typeof post.imageUrl === "string" && (
+                  {post.imageUrlBase64 && (
                     <img
-                      src={post.imageUrl}
+                      src={post.imageUrlBase64}
                       width={1920}
                       height={1080}
                       alt={post.title}

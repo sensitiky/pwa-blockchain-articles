@@ -15,18 +15,19 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ClockIcon, TagIcon, MessageSquareIcon, HeartIcon } from "lucide-react";
 import DOMPurify from "dompurify";
-import api from "../../../services/api";
 import Image from "next/image";
+import api from "../../../services/api";
+
 type Category = {
   id: number;
   name: string;
 };
 
-type Post = {
+interface Post {
   id: number;
   title: string;
   content: string;
-  imageUrl: string | null;
+  imageUrlBase64: string | null;
   createdAt: string;
   description: string;
   author?: { id: number; user: string; avatar?: string; bio: string };
@@ -34,7 +35,7 @@ type Post = {
   comments: Comment[];
   favorites: number;
   tags: Tag[];
-};
+}
 
 interface Tag {
   id: number;
@@ -61,7 +62,6 @@ export default function Articles() {
     { categoryId: number; count: number }[]
   >([]);
 
-  // Fetch categories
   const fetchCategories = async () => {
     try {
       const response = await axios.get("https://blogchain.onrender.com/categories");
@@ -71,7 +71,6 @@ export default function Articles() {
     }
   };
 
-  // Fetch posts by ID
   const fetchPost = async (id: string) => {
     try {
       const response = await axios.get(`https://blogchain.onrender.com/posts/${id}`);
@@ -85,7 +84,6 @@ export default function Articles() {
     }
   };
 
-  // Fetch comments for a post
   const fetchComments = async (postId: string) => {
     try {
       const response = await axios.get(
@@ -97,7 +95,6 @@ export default function Articles() {
     }
   };
 
-  // Fetch posts by category or page
   const fetchPosts = async (page: number, categoryId?: number) => {
     try {
       const url = categoryId
@@ -112,7 +109,6 @@ export default function Articles() {
     }
   };
 
-  // Fetch post counts by category
   const fetchPostCountsByCategory = async () => {
     try {
       const response = await axios.get(
@@ -124,7 +120,6 @@ export default function Articles() {
     }
   };
 
-  // Count posts by category
   const countPostsByCategory = (posts: Post[]) => {
     const counts = posts.reduce((acc, post) => {
       const categoryId = post.category?.id;
@@ -141,20 +136,17 @@ export default function Articles() {
     );
   };
 
-  // Fetch post counts by tag
   const fetchPostCountsByTag = async () => {
     try {
       const response = await api.get(
         "https://blogchain.onrender.com/posts/count/by-tag"
       );
-      // Assuming you have a state to store tag counts
       setTagCounts(response.data);
     } catch (error) {
       console.error("Error fetching post counts by tag", error);
     }
   };
 
-  // Fetch tags by category
   const fetchTagsByCategory = async (categoryId: number) => {
     try {
       const response = await api.get(
@@ -166,7 +158,6 @@ export default function Articles() {
     }
   };
 
-  // Effect for fetching data based on params
   useEffect(() => {
     if (id) {
       fetchPost(id as string);
@@ -174,7 +165,6 @@ export default function Articles() {
     }
   }, [id]);
 
-  // Effect for fetching categories, and posts
   useEffect(() => {
     fetchCategories();
     fetchPosts(currentPage, selectedCategoryId || undefined);
@@ -185,7 +175,7 @@ export default function Articles() {
   useEffect(() => {
     countPostsByCategory(posts);
   }, [posts]);
-  // Handle category click to fetch tags and posts
+
   const handleCategoryClick = (categoryId: number) => {
     const newCategoryId = selectedCategoryId === categoryId ? null : categoryId;
     setSelectedCategoryId(newCategoryId);
@@ -200,12 +190,14 @@ export default function Articles() {
     }
   };
 
-  // Handle sort order change
   const handleSortOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortOrder(e.target.value);
     setCurrentPage(1);
     fetchPosts(1, selectedCategoryId || undefined);
   };
+
+  const imageUrl = (post: Post) =>
+    post.imageUrlBase64 ? post.imageUrlBase64 : ""; // Use the new property here
 
   return (
     <div className="articles-container flex flex-col min-h-screen w-screen z-auto">
@@ -307,13 +299,13 @@ export default function Articles() {
                   className="p-4 sm:p-6 bg-inherit mx-auto text-card-foreground border border-r-0 border-l-0 rounded-none shadow-none transition-transform ios-style"
                 >
                   <div className="flex flex-col h-full">
-                    {post.imageUrl && typeof post.imageUrl === "string" && (
+                    {post.imageUrlBase64 && (
                       <Image
+                        src={imageUrl(post)}
+                        alt="Post Image"
                         width={1200}
                         height={300}
-                        src={post.imageUrl}
-                        alt="Article image"
-                        className="w-full"
+                        className="w-full h-full object-cover"
                       />
                     )}
                     <div className="flex justify-between mt-2">
@@ -438,6 +430,7 @@ function calculateReadingTime(text: string) {
   const numberOfWords = text.split(/\s+/).length;
   return Math.ceil(numberOfWords / wordsPerMinute);
 }
+
 function setTagCounts(data: any) {
   throw new Error("Function not implemented.");
 }
