@@ -23,7 +23,7 @@ const EditPostPage = () => {
 
   const fetchPost = async (id: string) => {
     try {
-      const response = await axios.get(`http://localhost:4000/posts/${id}`);
+      const response = await axios.get(`https://blogchain.onrender.com/posts/${id}`);
       const postData = response.data;
       setPost({
         title: postData.title,
@@ -65,7 +65,7 @@ const EditPostPage = () => {
       return;
     }
     try {
-      await axios.patch(`http://localhost:4000/posts/${id}`, post);
+      await axios.patch(`https://blogchain.onrender.com/posts/${id}`, post);
       alert("Post updated successfully!");
       router.push(`/posts/${id}`);
     } catch (error) {

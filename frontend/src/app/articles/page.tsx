@@ -64,7 +64,7 @@ export default function Articles() {
   // Fetch categories
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/categories");
+      const response = await axios.get("https://blogchain.onrender.com/categories");
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories", error);
@@ -74,7 +74,7 @@ export default function Articles() {
   // Fetch posts by ID
   const fetchPost = async (id: string) => {
     try {
-      const response = await axios.get(`http://localhost:4000/posts/${id}`);
+      const response = await axios.get(`https://blogchain.onrender.com/posts/${id}`);
       const postData = response.data;
       setPosts(postData);
       setComments(postData.comments);
@@ -89,7 +89,7 @@ export default function Articles() {
   const fetchComments = async (postId: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/comments/post/${postId}`
+        `https://blogchain.onrender.com/comments/post/${postId}`
       );
       setComments(response.data);
     } catch (error) {
@@ -101,8 +101,8 @@ export default function Articles() {
   const fetchPosts = async (page: number, categoryId?: number) => {
     try {
       const url = categoryId
-        ? `http://localhost:4000/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
-        : `http://localhost:4000/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
+        ? `https://blogchain.onrender.com/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
+        : `https://blogchain.onrender.com/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
       const response = await axios.get(url);
       const postsData = response.data.data;
       setPosts(postsData || []);
@@ -116,7 +116,7 @@ export default function Articles() {
   const fetchPostCountsByCategory = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/posts/count/by-category"
+        "https://blogchain.onrender.com/posts/count/by-category"
       );
       setCategoryCounts(response.data);
     } catch (error) {
@@ -145,7 +145,7 @@ export default function Articles() {
   const fetchPostCountsByTag = async () => {
     try {
       const response = await api.get(
-        "http://localhost:4000/posts/count/by-tag"
+        "https://blogchain.onrender.com/posts/count/by-tag"
       );
       // Assuming you have a state to store tag counts
       setTagCounts(response.data);
@@ -158,7 +158,7 @@ export default function Articles() {
   const fetchTagsByCategory = async (categoryId: number) => {
     try {
       const response = await api.get(
-        `http://localhost:4000/tags/by-category/${categoryId}`
+        `https://blogchain.onrender.com/tags/by-category/${categoryId}`
       );
       setTags(response.data);
     } catch (error) {
@@ -324,7 +324,7 @@ export default function Articles() {
                               post.author?.avatar
                                 ? post.author.avatar.startsWith("http")
                                   ? post.author.avatar
-                                  : `http://localhost:4000${post.author.avatar}`
+                                  : `https://blogchain.onrender.com${post.author.avatar}`
                                 : "/default-avatar.jpg"
                             }
                             alt="Author image"
