@@ -41,7 +41,7 @@ const Header = () => {
   const performSearch = async (searchQuery: string) => {
     try {
       const response = await axios.get(
-        `https://blogchain.onrender.com/search`,
+        `http://localhost:4000/search`,
         {
           params: { q: searchQuery },
         }
@@ -101,7 +101,7 @@ const Header = () => {
   const avatarUrl = user?.avatar
     ? user.avatar.startsWith("http")
       ? user.avatar
-      : `https://blogchain.onrender.com${user.avatar}`
+      : `http://localhost:4000${user.avatar}`
     : "default-avatar-url";
 
   return (

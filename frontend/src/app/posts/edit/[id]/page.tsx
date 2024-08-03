@@ -27,7 +27,7 @@ const EditPostPage = () => {
 
   const fetchPost = async (id: string) => {
     try {
-      const response = await axios.get(`https://blogchain.onrender.com/posts/${id}`);
+      const response = await axios.get(`http://localhost:4000/posts/${id}`);
       const postData = response.data;
       setPost({
         title: postData.title,
@@ -104,7 +104,7 @@ const EditPostPage = () => {
     }
 
     try {
-      await axios.patch(`https://blogchain.onrender.com/posts/${id}`, formData, {
+      await axios.patch(`http://localhost:4000/posts/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

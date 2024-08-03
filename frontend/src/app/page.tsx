@@ -353,7 +353,7 @@ const HomePage: React.FC = () => {
                             post.author?.avatar
                               ? post.author.avatar.startsWith("http")
                                 ? post.author.avatar
-                                : `https://blogchain.onrender.com${post.author.avatar}`
+                                : `http://localhost:4000${post.author.avatar}`
                               : "/default-avatar.jpg"
                           }
                           alt="Author image"

@@ -80,7 +80,7 @@ const CommentComponent = memo(
           <AvatarImage
             src={
               comment.author?.avatar
-                ? `https://blogchain.onrender.com${comment.author.avatar}`
+                ? `http://localhost:4000${comment.author.avatar}`
                 : "/shadcn.jpg"
             }
             alt="Author avatar"
@@ -127,7 +127,7 @@ const PostPage = () => {
 
   const fetchPost = async (id: string) => {
     try {
-      const response = await axios.get(`https://blogchain.onrender.com/posts/${id}`);
+      const response = await axios.get(`http://localhost:4000/posts/${id}`);
       const postData = response.data;
       console.log("Fetched post data:", postData); // Debugging log
       setPost(postData);
@@ -142,7 +142,7 @@ const PostPage = () => {
   const fetchComments = async (postId: string) => {
     try {
       const response = await axios.get(
-        `https://blogchain.onrender.com/comments/post/${postId}`
+        `http://localhost:4000/comments/post/${postId}`
       );
       const commentsWithAuthorInfo = response.data.map((comment: Comment) => ({
         ...comment,
@@ -167,7 +167,7 @@ const PostPage = () => {
       return;
     }
     try {
-      const response = await axios.post(`https://blogchain.onrender.com/comments`, {
+      const response = await axios.post(`http://localhost:4000/comments`, {
         content: commentContent,
         authorId: user.id,
         postId: post?.id,
@@ -197,7 +197,7 @@ const PostPage = () => {
       return;
     }
     try {
-      await axios.post(`https://blogchain.onrender.com/favorites`, {
+      await axios.post(`http://localhost:4000/favorites`, {
         userId: user.id,
         postId: commentId ? undefined : postId,
         commentId: commentId || undefined,
@@ -228,7 +228,7 @@ const PostPage = () => {
       return;
     }
     try {
-      await axios.delete(`https://blogchain.onrender.com/posts/${id}`);
+      await axios.delete(`http://localhost:4000/posts/${id}`);
       alert("Post deleted successfully!");
       router.push("/articles");
     } catch (error) {
@@ -352,7 +352,7 @@ const PostPage = () => {
             <div className="flex items-center space-x-4">
               <Avatar className="h-10 w-10">
                 <AvatarImage
-                  src={`https://blogchain.onrender.com${post.author?.avatar}`}
+                  src={`http://localhost:4000${post.author?.avatar}`}
                 />
                 <AvatarFallback>
                   {post.author ? (
