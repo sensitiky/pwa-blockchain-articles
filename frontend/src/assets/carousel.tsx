@@ -99,8 +99,8 @@ const ArticleCarousel = () => {
   const fetchPosts = async (page: number, categoryId?: number) => {
     try {
       const url = categoryId
-        ? `http://localhost:4000/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
-        : `http://localhost:4000/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
+        ? `http://149.50.141.173:4000/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
+        : `http://149.50.141.173:4000/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
       const response = await axios.get(url);
       const postsData = response.data.data;
       setPosts(postsData || []);
@@ -117,7 +117,7 @@ const ArticleCarousel = () => {
       return;
     }
     try {
-      await axios.post(`http://localhost:4000/favorites`, {
+      await axios.post(`http://149.50.141.173:4000/favorites`, {
         userId: user.id,
         postId: commentId ? undefined : postId,
         commentId: commentId || undefined,

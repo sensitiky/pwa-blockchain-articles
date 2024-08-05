@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const token = localStorage.getItem("token");
         if (token) {
-          const response = await api.get("http://localhost:4000/users/me");
+          const response = await api.get("http://149.50.141.173:4000/users/me");
           setUser(response.data);
         }
       } catch (error) {

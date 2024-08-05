@@ -14,7 +14,7 @@ import Footer from "@/assets/footer";
 import axios from "axios";
 import parse from "html-react-parser";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 const cookies = new Cookie();
 
 interface Post {
@@ -353,7 +353,7 @@ const HomePage: React.FC = () => {
                             post.author?.avatar
                               ? post.author.avatar.startsWith("http")
                                 ? post.author.avatar
-                                : `http://localhost:4000${post.author.avatar}`
+                                : `http://149.50.141.173:4000${post.author.avatar}`
                               : "/default-avatar.jpg"
                           }
                           alt="Author image"

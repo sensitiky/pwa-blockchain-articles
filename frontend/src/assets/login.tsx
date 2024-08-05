@@ -65,7 +65,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/login",
+        "http://149.50.141.173:4000/auth/login",
         { email, password },
         { withCredentials: true }
       );
@@ -104,7 +104,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/register",
+        "http://149.50.141.173:4000/auth/register",
         { user, password, email, code: verificationCode },
         { withCredentials: true }
       );
@@ -134,7 +134,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/send-verification-code",
+        "http://149.50.141.173:4000/auth/send-verification-code",
         { email },
         { withCredentials: true }
       );
@@ -163,7 +163,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     setError(null);
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/verify-code",
+        "http://149.50.141.173:4000/auth/verify-code",
         { email, code: verificationCode },
         { withCredentials: true }
       );
@@ -191,7 +191,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/forgot-password",
+        "http://149.50.141.173:4000/auth/forgot-password",
         { email },
         { withCredentials: true }
       );
@@ -221,7 +221,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/reset-password",
+        "http://149.50.141.173:4000/auth/reset-password",
         { email, code: resetCode, newPassword },
         { withCredentials: true }
       );
@@ -250,7 +250,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   ) => {
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/google",
+        "http://149.50.141.173:4000/auth/google",
         { token: credentialResponse.credential },
         { withCredentials: true }
       );
@@ -285,7 +285,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const handleFacebookResponse = async (accessToken: string) => {
     try {
       const res = await axios.post(
-        "http://localhost:4000/auth/facebook",
+        "http://149.50.141.173:4000/auth/facebook",
         { accessToken },
         { withCredentials: true }
       );

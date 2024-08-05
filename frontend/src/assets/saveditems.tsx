@@ -21,7 +21,7 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
   const [liked, setLiked] = useState<boolean[]>([]);
 
   useEffect(() => {
-    axios.get(`http://localhost:4000/users/${userId}/favorites`).then((res) => {
+    axios.get(`http://149.50.141.173:4000/users/${userId}/favorites`).then((res) => {
       setFavorites(res.data);
       setLiked(res.data.map(() => false));
     });
@@ -79,7 +79,7 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
               >
                 <img
                   src={
-                    `http://localhost:4000${favorite.imageUrl}` || "/test.jpg"
+                    `http://149.50.141.173:4000${favorite.imageUrl}` || "/test.jpg"
                   }
                   alt={favorite.title || "Placeholder"}
                   className="m-5 h-40 w-full md:w-auto md:h-44 rounded-lg border border-gray-300 mr-4"

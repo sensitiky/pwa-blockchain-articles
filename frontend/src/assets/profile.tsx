@@ -48,10 +48,10 @@ const ProfileSettings: React.FC = () => {
   const fetchProfile = async () => {
     if (isAuthenticated) {
       try {
-        const response = await api.get("http://localhost:4000/users/me");
+        const response = await api.get("http://149.50.141.173:4000/users/me");
         const profile = response.data;
         const avatarUrl = profile.avatar
-          ? `http://localhost:4000${profile.avatar}`
+          ? `http://149.50.141.173:4000${profile.avatar}`
           : "";
         const userData = {
           id: profile.id,
@@ -126,7 +126,7 @@ const ProfileSettings: React.FC = () => {
 
   const handleProfileSave = async () => {
     try {
-      await api.put("http://localhost:4000/users/me", userInfo);
+      await api.put("http://149.50.141.173:4000/users/me", userInfo);
       fetchProfile();
     } catch (error) {
       console.error("Error saving profile information:", error);
@@ -135,7 +135,7 @@ const ProfileSettings: React.FC = () => {
 
   const handleBioSave = async () => {
     try {
-      await api.put("http://localhost:4000/users/me", { ...userInfo, bio });
+      await api.put("http://149.50.141.173:4000/users/me", { ...userInfo, bio });
       setUserInfo({ ...userInfo, bio });
       fetchProfile();
     } catch (error) {
@@ -162,7 +162,7 @@ const ProfileSettings: React.FC = () => {
   };
 
   const uploadAvatar = async (formData: FormData) => {
-    return await api.put("http://localhost:4000/users/me", formData, {
+    return await api.put("http://149.50.141.173:4000/users/me", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -170,7 +170,7 @@ const ProfileSettings: React.FC = () => {
   };
 
   const formatAvatarUrl = (avatarPath: string): string => {
-    const baseUrl = "http://localhost:4000";
+    const baseUrl = "http://149.50.141.173:4000";
     return `${baseUrl}${avatarPath}`;
   };
 
@@ -216,7 +216,7 @@ const ProfileSettings: React.FC = () => {
   const avatarUrl = user?.avatar
     ? user.avatar.startsWith("http")
       ? user.avatar
-      : `http://localhost:4000${user.avatar}`
+      : `http://149.50.141.173:4000${user.avatar}`
     : "default-avatar-url";
 
   return (
