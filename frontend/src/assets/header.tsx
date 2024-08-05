@@ -37,11 +37,11 @@ const Header = () => {
       performSearch(query);
     }
   }, [query]);
-
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
   const performSearch = async (searchQuery: string) => {
     try {
       const response = await axios.get(
-        `http://149.50.141.173:4000/search`,
+        `${API_URL}/search`,
         {
           params: { q: searchQuery },
         }
@@ -101,7 +101,7 @@ const Header = () => {
   const avatarUrl = user?.avatar
     ? user.avatar.startsWith("http")
       ? user.avatar
-      : `http://149.50.141.173:4000${user.avatar}`
+      : `${API_URL}${user.avatar}`
     : "default-avatar-url";
 
   return (

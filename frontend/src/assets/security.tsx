@@ -18,7 +18,7 @@ interface UserProfile {
   password?: string;
   confirmPassword?: string;
 }
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 const Container = styled.div`
   display: flex;
   justify-content: center;
@@ -69,10 +69,10 @@ const SecuritySettings: React.FC = () => {
   const fetchProfile = async () => {
     if (isAuthenticated) {
       try {
-        const response = await api.get("http://149.50.141.173:4000/users/me");
+        const response = await api.get(`${API_URL}/users/me`);
         const profile = response.data;
         const avatarUrl = profile.avatar
-          ? `http://149.50.141.173:4000${profile.avatar}`
+          ? `${API_URL}${profile.avatar}`
           : "";
         setUser({
           id: profile.id,
@@ -111,7 +111,7 @@ const SecuritySettings: React.FC = () => {
 
   const handleSaveChanges = async () => {
     try {
-      await api.put("http://149.50.141.173:4000/users/me", userInfo);
+      await api.put(`${API_URL}/users/me`, userInfo);
       setEditMode(false);
     } catch (error) {
       console.error("Error saving profile information:", error);

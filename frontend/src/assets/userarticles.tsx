@@ -24,7 +24,7 @@ import {
 import Link from "next/link";
 
 const POSTS_PER_PAGE = 10;
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 type Category = {
   id: number;
   name: string;
@@ -55,14 +55,11 @@ const Posts: React.FC = () => {
 
   const fetchUserPosts = async () => {
     try {
-      const response = await axios.get(
-        `http://149.50.141.173:4000/users/me/posts`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await axios.get(`${API_URL}/users/me/posts`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       console.log("API Response:", response.data); // Verificar la respuesta de la API
 
@@ -145,7 +142,7 @@ const Posts: React.FC = () => {
               className="relative group overflow-hidden rounded-lg shadow-lg"
             >
               <img
-                src={`http://149.50.141.173:4000${post.imageUrl}`}
+                src={`${API_URL}${post.imageUrl}`}
                 alt={post.title}
                 className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
               />

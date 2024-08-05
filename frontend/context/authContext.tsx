@@ -28,7 +28,7 @@ interface User {
   postCount?: number;
   role?: string;
 }
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 interface AuthContextType {
   user: User | null;
   setUser: (user: User) => void;
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const token = localStorage.getItem("token");
         if (token) {
-          const response = await api.get("http://149.50.141.173:4000/users/me");
+          const response = await api.get(`${API_URL}/users/me`);
           setUser(response.data);
         }
       } catch (error) {

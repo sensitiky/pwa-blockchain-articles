@@ -80,7 +80,7 @@ const CommentComponent = memo(
           <AvatarImage
             src={
               comment.author?.avatar
-                ? `http://149.50.141.173:4000${comment.author.avatar}`
+                ? `${API_URL}${comment.author.avatar}`
                 : "/shadcn.jpg"
             }
             alt="Author avatar"
@@ -112,7 +112,7 @@ const CommentComponent = memo(
     </div>
   )
 );
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 CommentComponent.displayName = "CommentComponent";
 
 const PostPage = () => {
@@ -124,12 +124,11 @@ const PostPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const { id } = useParams();
-
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
   const fetchPost = async (id: string) => {
     try {
-      const response = await axios.get(`http://149.50.141.173:4000/posts/${id}`);
+      const response = await axios.get(`${API_URL}/posts/${id}`);
       const postData = response.data;
-      console.log("Fetched post data:", postData); // Debugging log
       setPost(postData);
       setComments(postData.comments);
       setLoading(false);
@@ -141,9 +140,7 @@ const PostPage = () => {
 
   const fetchComments = async (postId: string) => {
     try {
-      const response = await axios.get(
-        `http://149.50.141.173:4000/comments/post/${postId}`
-      );
+      const response = await axios.get(`${API_URL}/comments/post/${postId}`);
       const commentsWithAuthorInfo = response.data.map((comment: Comment) => ({
         ...comment,
         author: {
@@ -167,7 +164,7 @@ const PostPage = () => {
       return;
     }
     try {
-      const response = await axios.post(`http://149.50.141.173:4000/comments`, {
+      const response = await axios.post(`${API_URL}/comments`, {
         content: commentContent,
         authorId: user.id,
         postId: post?.id,
@@ -197,7 +194,7 @@ const PostPage = () => {
       return;
     }
     try {
-      await axios.post(`http://149.50.141.173:4000/favorites`, {
+      await axios.post(`${API_URL}/favorites`, {
         userId: user.id,
         postId: commentId ? undefined : postId,
         commentId: commentId || undefined,
@@ -228,7 +225,7 @@ const PostPage = () => {
       return;
     }
     try {
-      await axios.delete(`http://149.50.141.173:4000/posts/${id}`);
+      await axios.delete(`${API_URL}/posts/${id}`);
       alert("Post deleted successfully!");
       router.push("/articles");
     } catch (error) {
@@ -244,8 +241,7 @@ const PostPage = () => {
     }
   }, [id]);
 
-  useEffect(() => {
-  }, [comments]);
+  useEffect(() => {}, [comments]);
 
   if (loading) {
     return (
@@ -351,9 +347,7 @@ const PostPage = () => {
             </button>
             <div className="flex items-center space-x-4">
               <Avatar className="h-10 w-10">
-                <AvatarImage
-                  src={`http://149.50.141.173:4000${post.author?.avatar}`}
-                />
+                <AvatarImage src={`${API_URL}${post.author?.avatar}`} />
                 <AvatarFallback>
                   {post.author ? (
                     <>

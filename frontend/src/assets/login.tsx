@@ -14,7 +14,7 @@ import {
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 export default function LoginCard({ onClose }: { onClose: () => void }) {
   const [showRegister, setShowRegister] = useState(false);
   const [user, setuser] = useState("");
@@ -65,7 +65,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "http://149.50.141.173:4000/auth/login",
+        `${API_URL}/auth/login`,
         { email, password },
         { withCredentials: true }
       );
@@ -104,7 +104,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "http://149.50.141.173:4000/auth/register",
+        `${API_URL}/auth/register`,
         { user, password, email, code: verificationCode },
         { withCredentials: true }
       );
@@ -134,7 +134,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "http://149.50.141.173:4000/auth/send-verification-code",
+        `${API_URL}/auth/send-verification-code`,
         { email },
         { withCredentials: true }
       );
@@ -163,7 +163,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     setError(null);
     try {
       const response = await axios.post(
-        "http://149.50.141.173:4000/auth/verify-code",
+        `${API_URL}/auth/verify-code`,
         { email, code: verificationCode },
         { withCredentials: true }
       );
@@ -191,7 +191,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "http://149.50.141.173:4000/auth/forgot-password",
+        `${API_URL}/auth/forgot-password`,
         { email },
         { withCredentials: true }
       );
@@ -221,7 +221,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     try {
       const response = await axios.post(
-        "http://149.50.141.173:4000/auth/reset-password",
+        `${API_URL}/auth/reset-password`,
         { email, code: resetCode, newPassword },
         { withCredentials: true }
       );
@@ -250,7 +250,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   ) => {
     try {
       const response = await axios.post(
-        "http://149.50.141.173:4000/auth/google",
+        `${API_URL}/auth/google`,
         { token: credentialResponse.credential },
         { withCredentials: true }
       );
@@ -285,7 +285,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const handleFacebookResponse = async (accessToken: string) => {
     try {
       const res = await axios.post(
-        "http://149.50.141.173:4000/auth/facebook",
+        `${API_URL}/auth/facebook`,
         { accessToken },
         { withCredentials: true }
       );

@@ -353,7 +353,7 @@ const HomePage: React.FC = () => {
                             post.author?.avatar
                               ? post.author.avatar.startsWith("http")
                                 ? post.author.avatar
-                                : `http://149.50.141.173:4000${post.author.avatar}`
+                                : `${API_URL}${post.author.avatar}`
                               : "/default-avatar.jpg"
                           }
                           alt="Author image"

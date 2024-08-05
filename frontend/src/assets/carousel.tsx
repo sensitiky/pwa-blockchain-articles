@@ -76,6 +76,7 @@ const settings = {
   ],
 };
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 const countWords = (text: string) => {
   if (!text) return 0;
   return text.split(/\s+/).filter((word) => word.length > 0).length;
@@ -99,8 +100,8 @@ const ArticleCarousel = () => {
   const fetchPosts = async (page: number, categoryId?: number) => {
     try {
       const url = categoryId
-        ? `http://149.50.141.173:4000/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
-        : `http://149.50.141.173:4000/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
+        ? `${API_URL}/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
+        : `${API_URL}/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
       const response = await axios.get(url);
       const postsData = response.data.data;
       setPosts(postsData || []);
@@ -117,7 +118,7 @@ const ArticleCarousel = () => {
       return;
     }
     try {
-      await axios.post(`http://149.50.141.173:4000/favorites`, {
+      await axios.post(`${API_URL}/favorites`, {
         userId: user.id,
         postId: commentId ? undefined : postId,
         commentId: commentId || undefined,

@@ -24,10 +24,10 @@ const EditPostPage = () => {
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const router = useRouter();
-
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
   const fetchPost = async (id: string) => {
     try {
-      const response = await axios.get(`http://149.50.141.173:4000/posts/${id}`);
+      const response = await axios.get(`${API_URL}/posts/${id}`);
       const postData = response.data;
       setPost({
         title: postData.title,
@@ -104,7 +104,7 @@ const EditPostPage = () => {
     }
 
     try {
-      await axios.patch(`http://149.50.141.173:4000/posts/${id}`, formData, {
+      await axios.patch(`${API_URL}/posts/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

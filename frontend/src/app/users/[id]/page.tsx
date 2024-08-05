@@ -52,19 +52,17 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(
-          `http://149.50.141.173:4000/users/${userId}`
-        );
+        const response = await axios.get(`${API_URL}/users/${userId}`);
         const userData = response.data;
         console.log(response.data);
         setUser(userData);
 
         const postsResponse = await axios.get(
-          `http://149.50.141.173:4000/posts?authorId=${userData.id}`
+          `${API_URL}/posts?authorId=${userData.id}`
         );
         setPosts(postsResponse.data.data);
       } catch (err) {
@@ -112,7 +110,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
       <div className="container max-w-5xl grid grid-cols-1 md:grid-cols-5 gap-2 px-4 md:px-0">
         <div className="rounded-2xl p-6 flex flex-col items-center gap-4 col-span-1 shadow-none border-none bg-inherit">
           <Avatar className="w-32 h-32 border-4 border-gray-300">
-            <AvatarImage src={`http://149.50.141.173:4000${user?.avatar}`} />
+            <AvatarImage src={`${API_URL}${user?.avatar}`} />
             <AvatarFallback>
               {user?.firstName && user.firstName[0]}
             </AvatarFallback>
@@ -170,7 +168,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
               className="bg-inherit rounded-none p-6 border-b-2 transition-transform duration-300 ease-in-out transform hover:scale-105"
             >
               <img
-                src={`http://149.50.141.173:4000${post.imageUrl}`}
+                src={`${API_URL}${post.imageUrl}`}
                 width={400}
                 height={225}
                 alt="Article Image"

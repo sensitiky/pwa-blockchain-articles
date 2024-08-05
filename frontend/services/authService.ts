@@ -13,11 +13,13 @@ interface UserInfo {
   bio: string;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+
 import axios from "axios";
 import api from "./api";
 
 export const login = async (email: string, password: string) => {
-  const response = await api.post("http://149.50.141.173:4000/auth/login", { email, password });
+  const response = await api.post(`${API_URL}/auth/login`, { email, password });
   const { token } = response.data;
   if (token) {
     localStorage.setItem("token", token);
@@ -27,7 +29,7 @@ export const login = async (email: string, password: string) => {
 
 export const getProfile = async () => {
   try {
-    const response = await api.get("http://149.50.141.173:4000/users/me");
+    const response = await api.get(`${API_URL}/users/me`);
     return response.data;
   } catch (error) {
     console.error("Error fetching profile data", error);
@@ -39,7 +41,7 @@ export const updateProfile = async (userInfo: UserInfo) => {
   try {
     const token = localStorage.getItem("token");
     const response = await axios.put(
-      "http://149.50.141.173:4000/users/me",
+      `${API_URL}/users/me`,
       userInfo,
       {
         headers: {

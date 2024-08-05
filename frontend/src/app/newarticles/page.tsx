@@ -39,13 +39,13 @@ export default function NewArticles() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [newTag, setNewTag] = useState<string>("");
   const router = useRouter();
-
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
   useEffect(() => {
     const fetchCategoriesAndTags = async () => {
       try {
         const [categoriesResponse, tagsResponse] = await Promise.all([
-          axios.get("http://149.50.141.173:4000/categories"),
-          axios.get("http://149.50.141.173:4000/tags"),
+          axios.get(`${API_URL}/categories`),
+          axios.get(`${API_URL}/tags`),
         ]);
         setCategories(categoriesResponse.data);
         setTags(tagsResponse.data);
@@ -116,15 +116,11 @@ export default function NewArticles() {
     }
     formData.append("created_at", new Date().toISOString());
     try {
-      const response = await axios.post(
-        "http://149.50.141.173:4000/posts",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post(`${API_URL}/posts`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       router.push("/articles");
     } catch (error) {
       console.error("Error creating post:", error);
