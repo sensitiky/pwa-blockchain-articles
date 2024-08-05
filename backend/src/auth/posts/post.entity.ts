@@ -60,4 +60,6 @@ export class Post {
 
   @OneToMany(() => Favorite, (favorite) => favorite.post)
   favorites: Favorite[];
+  
+  imageUrlBase64: string;
 }

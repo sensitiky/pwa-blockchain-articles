@@ -125,6 +125,7 @@ export class PostsService {
           const base64Image = `data:image/jpeg;base64,${post.imageUrl.toString('base64')}`;
           return {
             ...post,
+            imageUrl: undefined,
             imageUrlBase64: base64Image,
           };
         }
@@ -197,15 +198,17 @@ export class PostsService {
   }
 
   async findOne(id: number): Promise<Post> {
-    return this.postsRepository.findOne({
+    const post = await this.postsRepository.findOne({
       where: { id },
       relations: ['author', 'category', 'tags', 'comments', 'favorites'],
     });
-	if (Post && Post.imageUrl){
-	Post.imageUrlBase64 = `data:image/jpeg;base64,${post.imageUrl.toString('base64')}`;
+
+    if (post && post.imageUrl) {
+      post.imageUrlBase64 = `data:image/jpeg;base64,${post.imageUrl.toString('base64')}`;
+    }
+
+    return post;
   }
-return Post;
-}
 
   async searchPosts(query: string): Promise<Post[]> {
     return this.postsRepository.find({
