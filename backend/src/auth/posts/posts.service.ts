@@ -201,7 +201,11 @@ export class PostsService {
       where: { id },
       relations: ['author', 'category', 'tags', 'comments', 'favorites'],
     });
+	if (Post && Post.imageUrl){
+	Post.imageUrlBase64 = `data:image/jpeg;base64,${post.imageUrl.toString('base64')}`;
   }
+return Post;
+}
 
   async searchPosts(query: string): Promise<Post[]> {
     return this.postsRepository.find({
