@@ -43,6 +43,7 @@ export class PostsService {
 
     return favoritePosts;
   }
+
   async create(createPostDto: CreatePostDto): Promise<Post> {
     console.log('Received createPostDto:', createPostDto);
 
@@ -133,8 +134,12 @@ export class PostsService {
     }
   }
 
-  async findAll(page: number, limit: number, sortOrder: string) {
-    const order = this.getSortOrder(sortOrder);
+  async findAll(page: number, limit: number) {
+    const [result, total] = await this.postsRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+      relations: ['author', 'category', 'tags', 'comments', 'favorites'],
+    });
 
     const transformImageToBase64 = (posts: Post[]) => {
       return posts.map((post) => {
@@ -150,39 +155,12 @@ export class PostsService {
       });
     };
 
-    if (sortOrder === 'comments') {
-      const [result, total] = await this.postsRepository
-        .createQueryBuilder('post')
-        .leftJoinAndSelect('post.comments', 'comment')
-        .leftJoinAndSelect('post.tags', 'tag')
-        .groupBy('post.id')
-        .addSelect('COUNT(comment.id)', 'commentsCount')
-        .orderBy('commentsCount', 'DESC')
-        .skip((page - 1) * limit)
-        .take(limit)
-        .getManyAndCount();
+    const transformedResult = transformImageToBase64(result);
 
-      const transformedResult = transformImageToBase64(result);
-
-      return {
-        data: transformedResult,
-        totalPages: Math.ceil(total / limit),
-      };
-    } else {
-      const [result, total] = await this.postsRepository.findAndCount({
-        skip: (page - 1) * limit,
-        take: limit,
-        order,
-        relations: ['author', 'category', 'tags', 'comments', 'favorites'],
-      });
-
-      const transformedResult = transformImageToBase64(result);
-
-      return {
-        data: transformedResult,
-        totalPages: Math.ceil(total / limit),
-      };
-    }
+    return {
+      data: transformedResult,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async findByTag(limit: number, tagId: number): Promise<Post[]> {
@@ -194,18 +172,11 @@ export class PostsService {
       .getMany();
   }
 
-  async findAllByCategory(
-    page: number,
-    limit: number,
-    categoryId: number,
-    sortOrder: string,
-  ) {
-    const order = this.getSortOrder(sortOrder);
+  async findAllByCategory(page: number, limit: number, categoryId: number) {
     const [result, total] = await this.postsRepository.findAndCount({
       where: { category: { id: categoryId } },
       skip: (page - 1) * limit,
       take: limit,
-      order,
       relations: ['author', 'category', 'tags', 'comments', 'favorites'],
     });
     return {
@@ -238,19 +209,6 @@ export class PostsService {
       where: { author: { id: userId } },
       relations: ['author', 'category', 'tags', 'comments', 'favorites'],
     });
-  }
-
-  private getSortOrder(sortOrder: string): { [key: string]: 'ASC' | 'DESC' } {
-    switch (sortOrder) {
-      case 'saved':
-        return { 'favorites.length': 'DESC' };
-      case 'createdAt':
-        return { createdAt: 'DESC' };
-      case 'comments':
-        return {};
-      default:
-        return { createdAt: 'DESC' };
-    }
   }
 
   async countPostsByCategory() {
@@ -326,12 +284,10 @@ export class PostsService {
       post.tags = tags;
     }
 
-    // Update other post properties directly
     post.title = updatePostDto.title;
     post.content = updatePostDto.content;
     post.description = updatePostDto.description;
 
-    // Handle the imageUrl update if present
     if (updatePostDto.imageUrl) {
       post.imageUrl = updatePostDto.imageUrl;
     }

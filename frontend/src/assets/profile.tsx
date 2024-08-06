@@ -17,7 +17,7 @@ import Link from "next/link";
 import { styled } from "styled-components";
 import { CircularProgress } from "@mui/material";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
 interface User {
   firstName?: string;
@@ -229,7 +229,7 @@ const ProfileSettings: React.FC = () => {
 
   return (
     <div className=" flex flex-col items-center justify-center md:flex-row md:space-x-8 px-4 md:px-6">
-      <div className="flex-1 flex flex-col items-center md:items-start">
+      <div className="flex-1 flex flex-col items-center md:items-center">
         <div className="flex items-center gap-6 flex-col md:flex-row">
           <CardContainer className="inter-var mx-auto">
             <CardBody className="bg-inherit text-card-foreground border-none rounded-lg shadow-none w-full h-full transition-transform relative flex justify-center items-center">
@@ -430,116 +430,7 @@ const ProfileSettings: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
-
-      <div
-        ref={cardRef}
-        className="w-full max-w-md bg-customColor-header p-6 rounded-2xl text-white transform transition-transform duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-black/50 relative flex flex-col items-center mt-6 md:mt-0"
-      >
-        <div className="bg-customColor-innovatio2 p-3 rounded-full mb-4 transform transition-transform duration-500 hover:scale-110">
-          <img
-            alt="Banner"
-            src={user?.avatar}
-            width={1920}
-            height={1080}
-            className="text-customColor-innovatio3 rounded-full h-24 w-24"
-          />
-        </div>
-        <h2 className="text-xl font-bold mb-2 transform transition-transform duration-500 hover:scale-110">
-          {user?.firstName}
-        </h2>
-        <button className="flex items-center bg-gray-800 px-4 py-2 rounded-full mb-4 transform transition-transform duration-500 hover:scale-110">
-          <FaShareAlt className="text-white mr-2" />
-          Share
-        </button>
-        <div className="mt-4 text-center w-full">
-          <div className="flex justify-between mb-4">
-            <div className="text-center w-1/2 transform transition-transform duration-500 hover:scale-110">
-              <p className="font-semibold">Posts</p>
-              <p>{user?.postCount}</p>
-            </div>
-            <div className="text-center w-1/2 transform transition-transform duration-500 hover:scale-110">
-              <p className="font-semibold">Comments</p>
-              <p>1</p>
-            </div>
-          </div>
-          <div className="flex justify-between mb-4">
-            <div className="text-center w-1/2 transform transition-transform duration-500 hover:scale-110">
-              <p className="font-semibold">Favorites</p>
-              <p>1</p>
-            </div>
-          </div>
-          <div className="mb-4 transform transition-transform duration-500 hover:scale-110">
-            <p className="font-semibold">Birthday</p>
-            <p>{user?.date?.toLocaleDateString()}</p>
-          </div>
-          <div className="grid gap-1">
-            <Label className="text-2xl">Rol</Label>
-            <div className="flex items-center border-b-[1px]">
-              <span className="flex-grow">{user?.role}</span>
-            </div>
-          </div>
-          <div className="mt-6 w-full">
-            <h3 className="font-semibold mb-2">SETTINGS</h3>
-            <div className="flex justify-between items-center mb-4 transform transition-transform duration-500 hover:scale-110">
-              <div className="flex items-center">
-                <div className="p-2 rounded-full">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={user?.avatar} />
-                    <AvatarFallback>{user?.firstName}</AvatarFallback>
-                  </Avatar>
-                </div>
-                <p className="ml-2">Profile</p>
-              </div>
-              <Button
-                className="bg-gray-800 px-4 py-2 rounded-full hover:bg-white hover:text-black"
-                onClick={() => {}}
-              >
-                Edit Profile
-              </Button>
-            </div>
-            <h3 className="font-semibold mb-2">LINKS</h3>
-            <div className="flex items-center justify-center gap-4">
-              {user?.facebook && (
-                <Link
-                  href={user?.facebook}
-                  className="text-white"
-                  prefetch={false}
-                >
-                  <FaFacebook className="w-6 h-6" />
-                </Link>
-              )}
-              {user?.instagram && (
-                <Link
-                  href={user?.instagram}
-                  className="text-white"
-                  prefetch={false}
-                >
-                  <FaInstagram className="w-6 h-6" />
-                </Link>
-              )}
-              {user?.twitter && (
-                <Link
-                  href={user?.twitter}
-                  className="text-white"
-                  prefetch={false}
-                >
-                  <FaTwitter className="w-6 h-6" />
-                </Link>
-              )}
-              {user?.linkedin && (
-                <Link
-                  href={user?.linkedin}
-                  className="text-white"
-                  prefetch={false}
-                >
-                  <FaLinkedin className="w-6 h-6" />
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+      </div>  
     </div>
   );
 };

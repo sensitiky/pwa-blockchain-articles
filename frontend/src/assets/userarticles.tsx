@@ -26,7 +26,7 @@ import { CircularProgress } from "@mui/material";
 import styled from "styled-components";
 
 const POSTS_PER_PAGE = 10;
-const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
 type Category = {
   id: number;

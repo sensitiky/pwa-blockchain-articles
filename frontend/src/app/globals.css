@@ -244,6 +244,14 @@
   text-align: center;
   padding: 10px;
 }
+#sortOrder1{
+  color: #000;
+  background-color: white;
+}
+#sortOrder2{
+  color: #000;
+  background-color: white;
+}
 /* Responsive styles */
 @media (max-width: 1024px) {
   .custom-dropdown-container {

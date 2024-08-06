@@ -57,6 +57,7 @@ const Container = styled.div`
 export default function Articles() {
   const categoriesRef = useRef<HTMLDivElement>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -64,7 +65,7 @@ export default function Articles() {
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const [tags, setTags] = useState<Tag[]>([]);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
   );
@@ -102,15 +103,16 @@ export default function Articles() {
     }
   };
 
-  const fetchPosts = async (page: number, categoryId?: number) => {
+  const fetchPosts = async () => {
     try {
-      const url = categoryId
-        ? `${API_URL}/posts/by-category?page=${page}&limit=${POSTS_PER_PAGE}&categoryId=${categoryId}&sortOrder=${sortOrder}`
-        : `${API_URL}/posts?page=${page}&limit=${POSTS_PER_PAGE}&sortOrder=${sortOrder}`;
+      const url = selectedCategoryId
+        ? `${API_URL}/posts/by-category?categoryId=${selectedCategoryId}`
+        : `${API_URL}/posts`;
       const response = await axios.get(url);
       const postsData = response.data.data;
-      setPosts(postsData || []);
-      setTotalPages(response.data.totalPages || 1);
+      setAllPosts(postsData || []);
+      setTotalPages(Math.ceil(postsData.length / POSTS_PER_PAGE));
+      updatePosts(postsData, currentPage, sortOrder);
     } catch (error) {
       console.error("Error fetching posts", error);
     }
@@ -136,6 +138,38 @@ export default function Articles() {
     }
   };
 
+  const updatePosts = (postsData: Post[], page: number, sortOrder: string) => {
+    let sortedPosts = [...postsData];
+    if (sortOrder === "recent") {
+      sortedPosts.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    } else if (sortOrder === "saved") {
+      sortedPosts.sort((a, b) => b.favorites - a.favorites);
+    } else if (sortOrder === "comment") {
+      sortedPosts.sort((a, b) => b.comments.length - a.comments.length);
+    } else if (sortOrder === "less_than_1000") {
+      sortedPosts = sortedPosts.filter(
+        (post) => post.content && post.content.length < 1000
+      );
+    } else if (sortOrder === "1000_to_2000") {
+      sortedPosts = sortedPosts.filter(
+        (post) =>
+          post.content &&
+          post.content.length >= 1000 &&
+          post.content.length <= 2000
+      );
+    } else if (sortOrder === "2000_and_above") {
+      sortedPosts = sortedPosts.filter(
+        (post) => post.content && post.content.length > 2000
+      );
+    }
+    setPosts(
+      sortedPosts.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE)
+    );
+  };
+
   useEffect(() => {
     if (id) {
       setLoading(true);
@@ -150,12 +184,16 @@ export default function Articles() {
   useEffect(() => {
     setLoading(true);
     fetchCategories();
-    fetchPosts(currentPage, selectedCategoryId || undefined);
+    fetchPosts();
     fetchPostCountsByCategory();
     setTimeout(() => {
       setLoading(false);
     }, 2000);
-  }, [currentPage, selectedCategoryId, sortOrder]);
+  }, [selectedCategoryId]);
+
+  useEffect(() => {
+    updatePosts(allPosts, currentPage, sortOrder);
+  }, [currentPage, sortOrder, allPosts]);
 
   const handleCategoryClick = (categoryId: number) => {
     const newCategoryId = selectedCategoryId === categoryId ? null : categoryId;
@@ -165,20 +203,21 @@ export default function Articles() {
 
     if (newCategoryId) {
       fetchTagsByCategory(newCategoryId);
-      fetchPosts(1, newCategoryId);
-    } else {
-      fetchPosts(1);
     }
   };
 
   const handleSortOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortOrder(e.target.value);
     setCurrentPage(1);
-    fetchPosts(1, selectedCategoryId || undefined);
+  };
+
+  const handleResetSortOrder = () => {
+    setSortOrder("recent");
+    setCurrentPage(1);
   };
 
   const imageUrl = (post: Post) =>
-    post.imageUrlBase64 ? post.imageUrlBase64 : ""; // Use the new property here
+    post.imageUrlBase64 ? post.imageUrlBase64 : "";
 
   return (
     <div className="articles-container flex flex-col min-h-screen w-screen z-auto">
@@ -235,14 +274,14 @@ export default function Articles() {
             </div>
           </div>
         </div>
-        <div className="sort-order-container flex flex-col lg:flex-row text-center">
-          <div className="flex flex-col justify-start py-4 px-44 flex-shrink">
+        <div className="sort-order-container flex flex-col lg:flex-row items-center text-center">
+          <div className="flex flex-col justify-start py-4 px-4 lg:px-44 flex-shrink w-full lg:w-auto">
             <label htmlFor="sortOrder1" className="text-white">
               Sort by:
             </label>
             <select
               id="sortOrder1"
-              className="ml-2 p-2 rounded w-fit ios-select"
+              className="ml-2 p-2 rounded w-full lg:w-fit ios-select text-black"
               value={sortOrder}
               onChange={handleSortOrderChange}
             >
@@ -251,13 +290,39 @@ export default function Articles() {
               <option value="comment">More Comments</option>
             </select>
           </div>
-          <div className="flex flex-col justify-end py-4 px-44 flex-shrink">
+          <div className="flex justify-center w-full lg:w-auto py-4">
+            <button
+              className="p-2 bg-inherit text-white rounded w-full lg:w-fit hover:bg-white hover:text-black transition-colors duration-300"
+              onClick={handleResetSortOrder}
+            >
+              <svg
+                className="fill-current text-white hover:text-black"
+                width="24"
+                height="24"
+                viewBox="0 0 21 21"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g
+                  fill="none"
+                  fill-rule="evenodd"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  transform="matrix(0 1 1 0 2.5 2.5)"
+                >
+                  <path d="m3.98652376 1.07807068c-2.38377179 1.38514556-3.98652376 3.96636605-3.98652376 6.92192932 0 4.418278 3.581722 8 8 8s8-3.581722 8-8-3.581722-8-8-8" />
+                  <path d="m4 1v4h-4" transform="matrix(1 0 0 -1 0 6)" />
+                </g>
+              </svg>
+            </button>
+          </div>
+          <div className="flex flex-col justify-start py-4 px-4 lg:px-44 flex-shrink w-full lg:w-auto">
             <label htmlFor="sortOrder2" className="text-white">
               Sort by:
             </label>
             <select
               id="sortOrder2"
-              className="ml-2 p-2 rounded w-fit ios-select"
+              className="ml-2 p-2 rounded w-full lg:w-fit ios-select text-black"
               value={sortOrder}
               onChange={handleSortOrderChange}
             >

@@ -27,9 +27,8 @@ export class PostsController {
   async findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 5,
-    @Query('sortOrder') sortOrder: string = 'recent',
   ) {
-    return this.postsService.findAll(page, limit, sortOrder);
+    return this.postsService.findAll(page, limit);
   }
 
   @Get('by-tag')
@@ -53,12 +52,7 @@ export class PostsController {
       throw new BadRequestException('Invalid categoryId');
     }
 
-    return this.postsService.findAllByCategory(
-      page,
-      limit,
-      categoryIdNumber,
-      sortOrder,
-    );
+    return this.postsService.findAllByCategory(page, limit, categoryIdNumber);
   }
 
   @Get(':id')
