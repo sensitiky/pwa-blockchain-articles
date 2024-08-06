@@ -14,8 +14,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowsUpDown } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import DOMPurify from "dompurify";
+import { CircularProgress } from "@mui/material";
+import styled from "styled-components";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 1rem;
+  background-color: inherit;
+`;
 
 const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
   const [favorites, setFavorites] = useState<
@@ -27,20 +38,30 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
     }[]
   >([]);
   const [liked, setLiked] = useState<boolean[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    axios.get(`${API_URL}/users/${userId}/favorites`).then((res) => {
-      const favoritesData = res.data.map((favorite: any) => ({
-        ...favorite,
-        imageUrlBase64: favorite.imageUrl
-          ? `data:image/jpeg;base64,${Buffer.from(
-              favorite.imageUrl.data
-            ).toString("base64")}`
-          : null,
-      }));
-      setFavorites(favoritesData);
-      setLiked(favoritesData.map(() => false));
-    });
+    const fetchFavorites = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/users/${userId}/favorites`);
+        const favoritesData = res.data.map((favorite: any) => ({
+          ...favorite,
+          imageUrlBase64: favorite.imageUrl
+            ? `data:image/jpeg;base64,${Buffer.from(
+                favorite.imageUrl.data
+              ).toString("base64")}`
+            : null,
+        }));
+        setFavorites(favoritesData);
+        setLiked(favoritesData.map(() => false));
+      } catch (error) {
+        console.error("Error fetching favorites", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFavorites();
   }, [userId]);
 
   const toggleLike = (index: number) => {
@@ -82,7 +103,11 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
         </div>
 
         <div className="mt-4">
-          {Array.isArray(favorites) &&
+          {loading ? (
+            <Container>
+              <CircularProgress />
+            </Container>
+          ) : (
             favorites.map((favorite, index) => (
               <div
                 key={index}
@@ -127,7 +152,8 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
                   </button>
                 </div>
               </div>
-            ))}
+            ))
+          )}
         </div>
       </div>
     </section>
