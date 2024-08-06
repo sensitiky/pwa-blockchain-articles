@@ -15,7 +15,7 @@ import { faArrowsUpDown } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import DOMPurify from "dompurify";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 
 const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
   const [favorites, setFavorites] = useState<

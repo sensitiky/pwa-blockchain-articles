@@ -14,7 +14,7 @@ import {
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 export default function LoginCard({ onClose }: { onClose: () => void }) {
   const [showRegister, setShowRegister] = useState(false);
   const [user, setuser] = useState("");

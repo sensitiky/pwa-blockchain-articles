@@ -24,7 +24,7 @@ import {
 import Link from "next/link";
 
 const POSTS_PER_PAGE = 10;
-const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 
 type Category = {
   id: number;
