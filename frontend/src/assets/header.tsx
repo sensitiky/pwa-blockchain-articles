@@ -22,34 +22,59 @@ import {
   useMotionValueEvent,
   useScroll,
 } from "framer-motion";
+import DOMPurify from "dompurify";
+
+interface SearchResult {
+  id: string;
+  title?: string;
+  name?: string;
+  description?: string;
+}
+
 const Header = () => {
   const router = useRouter();
   const [showLoginCard, setShowLoginCard] = useState(false);
   const { user, setUser, isAuthenticated, login, logout } = useAuth();
   const prevIsAuthenticated = useRef(isAuthenticated);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [loading, setLoading] = useState(false);
   const { scrollYProgress } = useScroll();
   const [visible, setVisible] = useState(false);
   const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
+
   useEffect(() => {
-    if (query.length > 2) {
-      performSearch(query);
-    }
+    const delayDebounceFn = setTimeout(() => {
+      if (query.length > 2) {
+        performSearch(query);
+      } else {
+        setResults([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
   }, [query]);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+
   const performSearch = async (searchQuery: string) => {
+    setLoading(true);
     try {
-      const response = await axios.get(
-        `${API_URL}/search`,
-        {
-          params: { q: searchQuery },
-        }
-      );
+      const response = await axios.get<SearchResult[]>(`${API_URL}/search`, {
+        params: { q: searchQuery },
+      });
       setResults(response.data);
     } catch (error) {
       console.error("Error fetching search results", error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleResultClick = (id: string) => {
+    router.push(`/posts/${id}`);
+    setResults([]);
+    setQuery("");
   };
 
   useMotionValueEvent(scrollYProgress, "change", (current) => {
@@ -69,6 +94,7 @@ const Header = () => {
       }
     }
   });
+
   useEffect(() => {
     if (!prevIsAuthenticated.current && isAuthenticated) {
       router.push("/");
@@ -98,6 +124,7 @@ const Header = () => {
       setShowLoginCard(false);
     }
   };
+
   const avatarUrl = user?.avatar
     ? user.avatar.startsWith("http")
       ? user.avatar
@@ -105,14 +132,17 @@ const Header = () => {
     : "default-avatar-url";
 
   return (
-    <div className="bg-customColor-header">
+    <div id="header" className="bg-customColor-header">
       {/* Desktop Header */}
-      <header className="p-4 hidden lg:block">
+      <header id="desktop-header" className="p-4 hidden lg:block">
         <div className="container mx-auto flex justify-between items-center">
-          <div className="text-white text-lg font-semibold">
+          <div id="logo" className="text-white text-lg font-semibold">
             <Link href="/">Blogchain</Link>
           </div>
-          <div className="relative text-gray-400 focus-within:text-gray-600">
+          <div
+            id="search-container"
+            className="relative text-gray-400 focus-within:text-gray-600"
+          >
             <span className="absolute inset-y-0 left-0 flex items-center pl-3 animate-fade-in">
               <svg className="h-5 w-5 fill-current" viewBox="0 0 20 20">
                 <path d="M12.9 14.32l4.1 4.1-1.4 1.4-4.1-4.1c-1 .7-2.2 1.1-3.5 1.1C4.9 16.82 2 13.92 2 10.42S4.9 4 8.4 4s6.4 2.9 6.4 6.4c0 1.3-.4 2.5-1.1 3.5zM8.4 14c2 0 3.6-1.6 3.6-3.6S10.4 6.8 8.4 6.8 4.8 8.4 4.8 10.4s1.6 3.6 3.6 3.6z" />
@@ -120,9 +150,38 @@ const Header = () => {
             </span>
             <Input
               type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               className="py-2 pl-10 pr-4 text-sm text-gray-900 bg-white rounded-full shadow transition-all duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-blue-500 focus:scale-105"
               placeholder="Search..."
             />
+            {loading && <div id="loading">Loading...</div>}
+            {results.length > 0 && (
+              <div
+                id="results-dropdown"
+                className="absolute z-50 mt-2 w-full bg-white shadow-lg rounded-lg"
+              >
+                {results.map((result) => (
+                  <div
+                    key={result.id}
+                    className="p-2 border-b last:border-0 cursor-pointer hover:bg-gray-200 flex"
+                    onClick={() => handleResultClick(result.id)}
+                  >
+                    <div>
+                      <div className="font-semibold">
+                        {result.title || result.name}
+                      </div>
+                      <div
+                        className="text-sm text-gray-600 line-clamp-2"
+                        dangerouslySetInnerHTML={{
+                          __html: DOMPurify.sanitize(result.description ?? ""),
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <style jsx>{`
@@ -138,8 +197,42 @@ const Header = () => {
             .animate-fade-in {
               animation: fade-in 0.5s ease-in-out;
             }
+
+            #results-dropdown {
+              max-height: 300px;
+              overflow-y: auto;
+            }
+
+            #results-dropdown .mini-preview {
+              display: flex;
+              align-items: center;
+            }
+
+            #results-dropdown .mini-preview img {
+              width: 50px;
+              height: 50px;
+              object-fit: cover;
+              border-radius: 8px;
+              margin-right: 10px;
+            }
+
+            #results-dropdown .mini-preview .preview-text {
+              flex: 1;
+            }
+
+            #results-dropdown .mini-preview .preview-text .title {
+              font-weight: bold;
+            }
+
+            #results-dropdown .mini-preview .preview-text .description {
+              color: gray;
+              font-size: 0.875rem;
+            }
           `}</style>
-          <nav className="space-x-4 flex items-center p-4 bg-inherit  rounded-full">
+          <nav
+            id="nav"
+            className="space-x-4 flex items-center p-4 bg-inherit rounded-full"
+          >
             <Link
               href="/"
               className="text-customColor-hueso hover:text-customColor-innovatio transition-colors duration-300"
@@ -228,7 +321,7 @@ const Header = () => {
           className="fixed top-0 left-0 w-screen z-50 p-4 backdrop-blur-xl bg-customColor-header lg:hidden md:hidden"
         >
           <div className="container mx-auto flex justify-between items-center">
-            <div className="text-lg text-white font-semibold">
+            <div id="mobile-logo" className="text-lg text-white font-semibold">
               <Link href="/">Blogchain</Link>
             </div>
             <button
@@ -245,7 +338,7 @@ const Header = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.2 }}
-                className="mt-4 space-y-2 "
+                className="mt-4 space-y-2"
               >
                 <Link
                   href="/"
@@ -308,6 +401,7 @@ const Header = () => {
 
       {showLoginCard && (
         <div
+          id="login-modal"
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
           onClick={handleCloseModalOnClick}
           onKeyDown={handleCloseModalOnKeyDown}

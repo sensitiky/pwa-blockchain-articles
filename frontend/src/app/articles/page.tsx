@@ -16,7 +16,8 @@ import { useParams } from "next/navigation";
 import { ClockIcon, TagIcon, MessageSquareIcon, HeartIcon } from "lucide-react";
 import DOMPurify from "dompurify";
 import Image from "next/image";
-import api from "../../../services/api";
+import { styled } from "styled-components";
+import { CircularProgress } from "@mui/material";
 
 type Category = {
   id: number;
@@ -44,6 +45,15 @@ interface Tag {
 
 const POSTS_PER_PAGE = 7;
 
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 1rem;
+  background-color: inherit;
+`;
+
 export default function Articles() {
   const categoriesRef = useRef<HTMLDivElement>(null);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -54,7 +64,7 @@ export default function Articles() {
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const [tags, setTags] = useState<Tag[]>([]);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
   );
@@ -76,12 +86,10 @@ export default function Articles() {
     try {
       const response = await axios.get(`${API_URL}/posts/${id}`);
       const postData = response.data;
-      setPosts(postData);
+      setPosts([postData]);
       setComments(postData.comments);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching post data:", error);
-      setLoading(false);
     }
   };
 
@@ -117,34 +125,9 @@ export default function Articles() {
     }
   };
 
-  const countPostsByCategory = (posts: Post[]) => {
-    const counts = posts.reduce((acc, post) => {
-      const categoryId = post.category?.id;
-      if (categoryId) {
-        acc[categoryId] = (acc[categoryId] || 0) + 1;
-      }
-      return acc;
-    }, {} as { [key: number]: number });
-    setCategoryCounts(
-      Object.entries(counts).map(([categoryId, count]) => ({
-        categoryId: Number(categoryId),
-        count,
-      }))
-    );
-  };
-
-  const fetchPostCountsByTag = async () => {
-    try {
-      const response = await api.get(`${API_URL}/posts/count/by-tag`);
-      setTagCounts(response.data);
-    } catch (error) {
-      console.error("Error fetching post counts by tag", error);
-    }
-  };
-
   const fetchTagsByCategory = async (categoryId: number) => {
     try {
-      const response = await api.get(
+      const response = await axios.get(
         `${API_URL}/tags/by-category/${categoryId}`
       );
       setTags(response.data);
@@ -155,21 +138,24 @@ export default function Articles() {
 
   useEffect(() => {
     if (id) {
+      setLoading(true);
       fetchPost(id as string);
       fetchComments(id as string);
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
     }
   }, [id]);
 
   useEffect(() => {
+    setLoading(true);
     fetchCategories();
     fetchPosts(currentPage, selectedCategoryId || undefined);
     fetchPostCountsByCategory();
-    fetchPostCountsByTag();
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
   }, [currentPage, selectedCategoryId, sortOrder]);
-
-  useEffect(() => {
-    countPostsByCategory(posts);
-  }, [posts]);
 
   const handleCategoryClick = (categoryId: number) => {
     const newCategoryId = selectedCategoryId === categoryId ? null : categoryId;
@@ -285,7 +271,11 @@ export default function Articles() {
 
       <div className="articles-content flex-grow flex justify-center py-8 px-4 bg-inherit">
         <div className="bg-inherit posts-container w-full max-w-screen-lg mx-auto px-2 sm:px-4">
-          {posts.length > 0 ? (
+          {loading ? (
+            <Container>
+              <CircularProgress />
+            </Container>
+          ) : posts.length > 0 ? (
             <div className="posts-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 gap-6 bg-inherit shadow-none">
               {posts.map((post) => (
                 <div
@@ -361,6 +351,7 @@ export default function Articles() {
                       <span className="mx-2">|</span>
                       <HeartIcon className="w-5 h-5 mr-1" />
                       <span>
+                        {" "}
                         {Array.isArray(post.favorites)
                           ? post.favorites.length
                           : 0}
@@ -378,7 +369,9 @@ export default function Articles() {
               ))}
             </div>
           ) : (
-            <div className="text-center text-gray-500">No posts available</div>
+            <Container>
+              <CircularProgress />
+            </Container>
           )}
           <div className="pagination-container flex justify-center mt-8">
             <Pagination>
@@ -424,8 +417,4 @@ function calculateReadingTime(text: string) {
   const wordsPerMinute = 200;
   const numberOfWords = text.split(/\s+/).length;
   return Math.ceil(numberOfWords / wordsPerMinute);
-}
-
-function setTagCounts(data: any) {
-  throw new Error("Function not implemented.");
 }

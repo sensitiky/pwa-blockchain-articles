@@ -18,7 +18,8 @@ interface UserProfile {
   password?: string;
   confirmPassword?: string;
 }
-const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+
 const Container = styled.div`
   display: flex;
   justify-content: center;

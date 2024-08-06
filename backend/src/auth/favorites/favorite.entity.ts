@@ -8,13 +8,19 @@ export class Favorite {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, user => user.favorites)
+  @ManyToOne(() => User, (user) => user.favorites, { onDelete: 'CASCADE' })
   user: User;
 
-  @ManyToOne(() => Post, post => post.favorites, { nullable: true })
+  @ManyToOne(() => Post, (post) => post.favorites, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   post: Post;
 
-  @ManyToOne(() => Comment, comment => comment.favorites, { nullable: true })
+  @ManyToOne(() => Comment, (comment) => comment.favorites, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   comment: Comment;
 
   @Column()

@@ -1,5 +1,6 @@
+"use client";
 import React, { useState, useEffect } from "react";
-import { BookMarkedIcon, UserIcon } from "lucide-react";
+import { BookMarkedIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -13,17 +14,32 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowsUpDown } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import DOMPurify from "dompurify";
-const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+
 const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
   const [favorites, setFavorites] = useState<
-    { imageUrl: string; title: string; author: string; description: string }[]
+    {
+      imageUrlBase64: string | null;
+      title: string;
+      author: string;
+      description: string;
+    }[]
   >([]);
   const [liked, setLiked] = useState<boolean[]>([]);
 
   useEffect(() => {
     axios.get(`${API_URL}/users/${userId}/favorites`).then((res) => {
-      setFavorites(res.data);
-      setLiked(res.data.map(() => false));
+      const favoritesData = res.data.map((favorite: any) => ({
+        ...favorite,
+        imageUrlBase64: favorite.imageUrl
+          ? `data:image/jpeg;base64,${Buffer.from(
+              favorite.imageUrl.data
+            ).toString("base64")}`
+          : null,
+      }));
+      setFavorites(favoritesData);
+      setLiked(favoritesData.map(() => false));
     });
   }, [userId]);
 
@@ -31,12 +47,6 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
     const newLiked = [...liked];
     newLiked[index] = !newLiked[index];
     setLiked(newLiked);
-  };
-
-  const handleImageError = (
-    event: React.SyntheticEvent<HTMLImageElement, Event>
-  ) => {
-    event.currentTarget.src = "/test.jpg"; // Ruta de la imagen de reemplazo
   };
 
   return (
@@ -70,6 +80,7 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+
         <div className="mt-4">
           {Array.isArray(favorites) &&
             favorites.map((favorite, index) => (
@@ -77,22 +88,19 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
                 key={index}
                 className="card border-t-[1px] border-b-[1px] border-r-0 border-l-0 flex flex-col md:flex-row items-center justify-between p-4 sm:p-6 bg-inherit shadow-md rounded-lg mb-4"
               >
-                <img
-                  src={
-                    `${API_URL}${favorite.imageUrl}` || "/test.jpg"
-                  }
-                  alt={favorite.title || "Placeholder"}
-                  className="m-5 h-40 w-full md:w-auto md:h-44 rounded-lg border border-gray-300 mr-4"
-                  onError={handleImageError}
-                />
+                {favorite.imageUrlBase64 ? (
+                  <img
+                    src={favorite.imageUrlBase64}
+                    alt={favorite.title || "Placeholder"}
+                    className="m-5 h-40 w-full md:w-auto md:h-44 rounded-lg border border-gray-300 mr-4"
+                  />
+                ) : (
+                  <div className="m-5 h-40 w-full md:w-auto md:h-44 rounded-lg border border-gray-300 mr-4 bg-gray-200"></div>
+                )}
                 <div className="flex flex-col items-start mb-4 md:mb-0">
                   <h3 className="text-lg font-bold text-gray-900">
                     {favorite.title || "Untitled"}
                   </h3>
-                  <div className="text-muted-foreground flex items-center">
-                    <UserIcon className="w-4 h-4 mr-1" />
-                    {favorite.author || "Unknown Author"}
-                  </div>
                   <p className="text-gray-600 line-clamp-3">
                     {favorite.description ? (
                       <span

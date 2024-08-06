@@ -22,7 +22,10 @@ export class PostsService {
     private categoriesRepository: Repository<Category>,
     @InjectRepository(Comment)
     private commentsRepository: Repository<Comment>,
+    @InjectRepository(Favorite)
+    private favoritesRepository: Repository<Favorite>,
   ) {}
+
   async findUserFavorites(userId: number): Promise<Post[]> {
     const user = await this.usersRepository.findOne({
       where: { id: userId },
@@ -96,13 +99,27 @@ export class PostsService {
   async deletePost(postId: number): Promise<void> {
     const post = await this.postsRepository.findOne({
       where: { id: postId },
-      relations: ['author', 'comments'],
+      relations: ['author', 'comments', 'favorites'],
     });
 
     if (post) {
       if (post.comments && post.comments.length > 0) {
+        for (const comment of post.comments) {
+          const favoritesForComment = await this.favoritesRepository.find({
+            where: { comment },
+          });
+          if (favoritesForComment.length > 0) {
+            await this.favoritesRepository.remove(favoritesForComment);
+          }
+        }
         await this.commentsRepository.remove(
           post.comments as unknown as Comment[],
+        );
+      }
+
+      if (post.favorites && post.favorites.length > 0) {
+        await this.favoritesRepository.remove(
+          post.favorites as unknown as Favorite[],
         );
       }
 
@@ -213,6 +230,13 @@ export class PostsService {
   async searchPosts(query: string): Promise<Post[]> {
     return this.postsRepository.find({
       where: { title: Like(`%${query}%`) },
+    });
+  }
+
+  async findPostsByUserId(userId: number): Promise<Post[]> {
+    return this.postsRepository.find({
+      where: { author: { id: userId } },
+      relations: ['author', 'category', 'tags', 'comments', 'favorites'],
     });
   }
 

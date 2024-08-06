@@ -8,10 +8,7 @@ import { PostsModule } from '../posts/posts.module';
 import { UsersModule } from '../users/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Post]),
-  PostsModule,  
-  UsersModule,
-],
+  imports: [TypeOrmModule.forFeature([User, Post]), PostsModule, UsersModule],
   controllers: [SearchController],
   providers: [SearchService],
 })

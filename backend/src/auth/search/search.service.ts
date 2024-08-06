@@ -24,4 +24,21 @@ export class SearchService {
 
     return results;
   }
+
+  async searchById(id: string) {
+    const postId = parseInt(id, 10);
+    const post = await this.postsService.findOne(postId);
+    if (post) {
+      return { type: 'post', data: post };
+    }
+
+    const userId = parseInt(id, 10);
+    const user = await this.usersService.findOneById(userId);
+    if (user) {
+      const userPosts = await this.postsService.findPostsByUserId(userId);
+      return { type: 'user', data: { user, posts: userPosts } };
+    }
+
+    return null;
+  }
 }

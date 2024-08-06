@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import api from "../../services/api";
 import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
 import Link from "next/link";
-const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 interface User {
   firstName?: string;
   lastName?: string;

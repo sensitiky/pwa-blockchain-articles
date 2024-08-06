@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import {
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowsUpDown, faFilter } from "@fortawesome/free-solid-svg-icons";
+import { faArrowsUpDown } from "@fortawesome/free-solid-svg-icons";
 import {
   Pagination,
   PaginationContent,
@@ -24,7 +24,8 @@ import {
 import Link from "next/link";
 
 const POSTS_PER_PAGE = 10;
-const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+
 type Category = {
   id: number;
   name: string;
@@ -36,7 +37,7 @@ type Post = {
   content: string | null;
   description: string | null;
   createdAt: Date;
-  imageUrl: string | null;
+  imageUrlBase64: string | null;
   author: { id: number; user: string; avatar: string | null };
   category: Category | null;
   comments: any[];
@@ -49,11 +50,7 @@ const Posts: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
 
-  useEffect(() => {
-    fetchUserPosts();
-  }, [order, page]);
-
-  const fetchUserPosts = async () => {
+  const fetchUserPosts = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/users/me/posts`, {
         headers: {
@@ -61,29 +58,33 @@ const Posts: React.FC = () => {
         },
       });
 
-      console.log("API Response:", response.data); // Verificar la respuesta de la API
-
       const postsData = response.data.map((post: any) => ({
         ...post,
         createdAt: new Date(post.createdAt),
         comments: post.comments || [],
         favorites: post.favorites || 0,
+        imageUrlBase64: post.imageUrl
+          ? `data:image/jpeg;base64,${Buffer.from(post.imageUrl.data).toString(
+              "base64"
+            )}`
+          : null,
       }));
 
-      console.log("Deserialized Posts:", postsData); // Verificar los datos deserializados
-
+      console.log(postsData);
       setPosts(postsData || []);
-      setTotalPages(Math.ceil(response.data.length / POSTS_PER_PAGE)); // Asumiendo que response.data.length es el total de posts
+      setTotalPages(Math.ceil(response.data.length / POSTS_PER_PAGE));
     } catch (error) {
       console.error("Error fetching user posts", error);
     }
-  };
+  }, [order, page]);
+
+  useEffect(() => {
+    fetchUserPosts();
+  }, [fetchUserPosts]);
 
   const handleOrderChange = (newOrder: string) => {
-    console.log("Order changed to:", newOrder);
     setOrder(newOrder);
-    setPage(1); // Reset page to 1 when order changes
-    fetchUserPosts();
+    setPage(1);
   };
 
   return (
@@ -141,11 +142,17 @@ const Posts: React.FC = () => {
               key={post.id}
               className="relative group overflow-hidden rounded-lg shadow-lg"
             >
-              <img
-                src={`${API_URL}${post.imageUrl}`}
-                alt={post.title}
-                className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
-              />
+              {post.imageUrlBase64 ? (
+                <img
+                  src={post.imageUrlBase64}
+                  alt={post.title}
+                  width={600}
+                  height={400}
+                  className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
+                />
+              ) : (
+                <div className="w-full h-64 bg-gray-200"></div>
+              )}
               <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-white p-4">
                 <Badge className="mb-2 bg-green-500 text-white">
                   Published
