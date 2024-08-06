@@ -11,11 +11,14 @@ import countryList from "react-select-country-list";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuth } from "../../context/authContext";
-import { Skeleton } from "@/components/ui/skeleton";
 import api from "../../services/api";
 import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
 import Link from "next/link";
+import { styled } from "styled-components";
+import { CircularProgress } from "@mui/material";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+
 interface User {
   firstName?: string;
   lastName?: string;
@@ -33,6 +36,15 @@ interface User {
   postCount?: number;
   role?: string;
 }
+
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 1rem;
+  background-color: inherit;
+`;
 
 const ProfileSettings: React.FC = () => {
   const { isAuthenticated, user, setUser } = useAuth();
@@ -203,13 +215,9 @@ const ProfileSettings: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col space-y-3">
-        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-[250px]" />
-          <Skeleton className="h-4 w-[200px]" />
-        </div>
-      </div>
+      <Container>
+              <CircularProgress />
+            </Container>
     );
   }
 
