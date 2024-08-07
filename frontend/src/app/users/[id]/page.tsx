@@ -174,13 +174,15 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
               key={post.id}
               className="bg-inherit rounded-none p-6 border-b-2 transition-transform duration-300 ease-in-out transform hover:scale-105"
             >
-              <Image
-                src={post.imageUrlBase64 || ""}
-                width={400}
-                height={225}
-                alt="Article Image"
-                className="w-full h-48 object-cover rounded-lg"
-              />
+              {post.imageUrlBase64 && (
+                <Image
+                  src={post.imageUrlBase64}
+                  width={400}
+                  height={225}
+                  alt="Article Image"
+                  className="w-full h-48 object-cover rounded-lg"
+                />
+              )}
 
               <div className="mt-4 space-y-2">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
