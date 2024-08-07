@@ -85,7 +85,7 @@ export default function Articles() {
 
   const fetchPost = async (id: string) => {
     try {
-      const response = await axios.get(`${API_URL}/posts/${id}`);
+      const response = await axios.get(`${API_URL}/posts`);
       const postData = response.data;
       setPosts([postData]);
       setComments(postData.comments);
