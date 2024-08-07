@@ -19,6 +19,7 @@ import {
   FaTwitter,
 } from "react-icons/fa";
 import { ClockIcon, MessageCircleIcon, TagIcon, UserIcon } from "lucide-react";
+import Image from "next/image";
 
 const Container = styled.div`
   display: flex;
@@ -173,7 +174,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
               key={post.id}
               className="bg-inherit rounded-none p-6 border-b-2 transition-transform duration-300 ease-in-out transform hover:scale-105"
             >
-              <img
+              <Image
                 src={post.imageUrlBase64 || ""}
                 width={400}
                 height={225}
