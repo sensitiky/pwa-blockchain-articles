@@ -112,7 +112,7 @@ const CommentComponent = memo(
     </div>
   )
 );
-const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 CommentComponent.displayName = "CommentComponent";
 
 const PostPage = () => {
@@ -124,7 +124,7 @@ const PostPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const { id } = useParams();
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
   const fetchPost = async (id: string) => {
     try {
       const response = await axios.get(`${API_URL}/posts/${id}`);

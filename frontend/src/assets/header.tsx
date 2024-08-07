@@ -55,7 +55,7 @@ const Header = () => {
     return () => clearTimeout(delayDebounceFn);
   }, [query]);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 
   const performSearch = async (searchQuery: string) => {
     setLoading(true);
