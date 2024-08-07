@@ -1,6 +1,6 @@
 "use client";
 
-import React, { SVGProps, useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import Header from "@/assets/header";
 import Footer from "@/assets/footer";
 import { useParams } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
+import { CircularProgress } from "@mui/material";
+import styled from "styled-components";
 import {
   FaFacebook,
   FaHeart,
@@ -18,6 +19,15 @@ import {
   FaTwitter,
 } from "react-icons/fa";
 import { ClockIcon, MessageCircleIcon, TagIcon, UserIcon } from "lucide-react";
+
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 1rem;
+  background-color: inherit;
+`;
 
 interface User {
   firstName?: string;
@@ -40,7 +50,7 @@ interface Post {
   id: number;
   title: string;
   content: string;
-  imageUrl?: string;
+  imageUrlBase64?: string;
   category: { name: string };
   comments: { id: number; content: string }[];
   favorites: { id: number }[];
@@ -53,18 +63,26 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(`${API_URL}/users/${userId}`);
         const userData = response.data;
-        console.log(response.data);
         setUser(userData);
 
         const postsResponse = await axios.get(
           `${API_URL}/posts?authorId=${userData.id}`
         );
-        setPosts(postsResponse.data.data);
+        const postsData = postsResponse.data.data.map((post: any) => ({
+          ...post,
+          imageUrlBase64: post.imageUrl
+            ? `data:image/jpeg;base64,${Buffer.from(
+                post.imageUrl.data
+              ).toString("base64")}`
+            : null,
+        }));
+        setPosts(postsData);
       } catch (err) {
         if (axios.isAxiosError(err)) {
           console.error("Error fetching user data:", err.message);
@@ -83,26 +101,14 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
 
   if (loading) {
     return (
-      <div className="flex flex-col space-y-3 animate-pulse">
-        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-[250px]" />
-          <Skeleton className="h-4 w-[200px]" />
-        </div>
-      </div>
+      <Container>
+        <CircularProgress />
+      </Container>
     );
   }
 
   if (error) {
-    return (
-      <div className="flex flex-col space-y-3 animate-pulse">
-        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-[250px]" />
-          <Skeleton className="h-4 w-[200px]" />
-        </div>
-      </div>
-    );
+    return <div className="text-red-500">{error}</div>;
   }
 
   return (
@@ -168,7 +174,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
               className="bg-inherit rounded-none p-6 border-b-2 transition-transform duration-300 ease-in-out transform hover:scale-105"
             >
               <img
-                src={`${API_URL}${post.imageUrl}`}
+                src={post.imageUrlBase64 || ""}
                 width={400}
                 height={225}
                 alt="Article Image"
