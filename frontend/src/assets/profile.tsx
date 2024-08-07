@@ -59,6 +59,7 @@ const ProfileSettings: React.FC = () => {
   const [role, setRole] = useState<string>("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const router = useRouter();
 
   const fetchProfile = async () => {
     if (isAuthenticated) {
@@ -227,8 +228,6 @@ const ProfileSettings: React.FC = () => {
       ? user.avatar
       : `${API_URL}${user.avatar}`
     : "default-avatar-url";
-
-  const router = useRouter();
 
   const handleDeleteProfile = async () => {
     if (deleteConfirmation === "Delete") {
