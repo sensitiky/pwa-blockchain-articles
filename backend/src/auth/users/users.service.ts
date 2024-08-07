@@ -4,7 +4,7 @@ import { Like, Repository } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto, UserDto } from './user.dto';
 import { Post } from '../posts/post.entity';
-
+import { Comment } from '../comments/comment.entity';
 @Injectable()
 export class UsersService {
   constructor(
@@ -12,6 +12,8 @@ export class UsersService {
     private userRepository: Repository<User>,
     @InjectRepository(Post)
     private postRepository: Repository<Post>,
+    @InjectRepository(Comment)
+    private commentRepository: Repository<Comment>,
   ) {}
   async findUserFavorites(userId: number): Promise<Post[]> {
     const user = await this.userRepository.findOne({
@@ -21,13 +23,13 @@ export class UsersService {
     if (!user) {
       throw new Error('User not found');
     }
-  
+
     const favoritePostIds = user.favorites
-      .filter(favorite => favorite.post)
-      .map(favorite => favorite.post.id);
-  
+      .filter((favorite) => favorite.post)
+      .map((favorite) => favorite.post.id);
+
     const favoritePosts = await this.postRepository.findByIds(favoritePostIds);
-  
+
     return favoritePosts;
   }
   async findOneById(id: number): Promise<User> {
@@ -104,5 +106,22 @@ export class UsersService {
       postCount: user.postCount,
     };
     return userDto;
+  }
+
+  async deleteUser(userId: number): Promise<void> {
+    if (!userId) {
+      throw new Error('User ID is required for deleting user.');
+    }
+
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new Error('User not found.');
+    }
+
+    await this.commentRepository.delete({ author: { id: userId } });
+    
+    await this.postRepository.delete({ author: { id: userId } });
+
+    await this.userRepository.delete(userId);
   }
 }

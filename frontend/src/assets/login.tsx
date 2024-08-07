@@ -14,7 +14,9 @@ import {
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+
 export default function LoginCard({ onClose }: { onClose: () => void }) {
   const [showRegister, setShowRegister] = useState(false);
   const [user, setuser] = useState("");
@@ -35,7 +37,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     numberOrSymbol: false,
   });
   const router = useRouter();
-  const { setUser, login } = useAuth();
+  const { setUser, login, loginWithGoogle } = useAuth();
 
   useFacebookSDK();
 
@@ -249,21 +251,30 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     credentialResponse: CredentialResponse
   ) => {
     try {
+      const token = credentialResponse.credential;
+      if (!token) {
+        console.error("No token provided");
+        return;
+      }
+
       const response = await axios.post(
         `${API_URL}/auth/google`,
-        { token: credentialResponse.credential },
+        { token },
         { withCredentials: true }
       );
 
       if (response.status === 200) {
-        setUser(response.data.user);
+        const { user, token } = response.data;
+        setUser(user);
         login(response.data);
+        localStorage.setItem("token", token); 
+        router.push("/users");
         onClose();
       } else {
-        setError("Google login failed");
+        console.error("Google login failed");
       }
     } catch (err) {
-      setError("Google login failed");
+      console.error("Google login failed:", err);
     }
   };
 

@@ -7,6 +7,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { UsersService } from './users.service';
@@ -78,5 +79,11 @@ export class UsersController {
   @Get(':id/favorites')
   async getUserFavorites(@Param('id') id: number): Promise<Post[]> {
     return this.usersService.findUserFavorites(id);
+  }
+  @Delete('me')
+  @UseGuards(JwtAuthGuard)
+  async deleteUser(@CurrentUser() user: User): Promise<{ message: string }> {
+    await this.usersService.deleteUser(user.id);
+    return { message: 'User deleted successfully' };
   }
 }

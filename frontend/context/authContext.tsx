@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, {
   createContext,
   useContext,
@@ -34,6 +34,7 @@ interface AuthContextType {
   setUser: (user: User) => void;
   isAuthenticated: boolean;
   login: (data: any) => void;
+  loginWithGoogle: (token: string) => void;
   logout: () => void;
 }
 
@@ -53,6 +54,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = useCallback((userData: any) => {
     localStorage.setItem("token", userData.token);
     setUser(userData.user);
+  }, []);
+
+  const loginWithGoogle = useCallback(async (token: string) => {
+    try {
+      const response = await api.post(`${API_URL}/auth/google`, { token });
+      if (response.status === 200) {
+        localStorage.setItem("token", response.data.token);
+        setUser(response.data.user);
+      } else {
+        throw new Error("Google login failed");
+      }
+    } catch (error) {
+      console.error("Google login failed", error);
+    }
   }, []);
 
   const logout = useCallback(() => {
@@ -79,8 +94,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const isAuthenticated = !!user;
 
   const contextValue = useMemo(
-    () => ({ user, setUser, isAuthenticated, login, logout }),
-    [user, isAuthenticated, login, logout]
+    () => ({ user, setUser, isAuthenticated, login, loginWithGoogle, logout }),
+    [user, isAuthenticated, login, loginWithGoogle, logout]
   );
 
   return (

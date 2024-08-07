@@ -79,16 +79,24 @@ export class AuthService {
   }
 
   async validateGoogleToken(token: string): Promise<UserDto> {
-    const ticket = await this.googleClient.verifyIdToken({
-      idToken: token,
-      audience: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-    });
+    console.log(`Validating Google token: ${token}`);
+
+    let ticket;
+    try {
+      ticket = await this.googleClient.verifyIdToken({
+        idToken: token,
+        audience: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+      });
+    } catch (error) {
+      console.error(`Error verifying Google token: ${error.message}`);
+      throw new UnauthorizedException('Invalid token');
+    }
 
     const payload = ticket.getPayload();
     const email = payload?.email;
 
     if (!email) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Email not found in token payload');
     }
 
     let user = await this.usersService.findByEmail(email);
@@ -111,7 +119,11 @@ export class AuthService {
     return this.usersService.transformToDto(user);
   }
 
-  async findOrCreateFacebookUser(facebookId: string, email: string, name: string): Promise<UserDto> {
+  async findOrCreateFacebookUser(
+    facebookId: string,
+    email: string,
+    name: string,
+  ): Promise<UserDto> {
     let user = await this.usersService.findByFacebookId(facebookId);
     if (!user) {
       user = await this.usersService.findByEmail(email);
@@ -123,7 +135,7 @@ export class AuthService {
           firstName,
           lastName,
           nombre: firstName + ' ' + lastName,
-          user: email, 
+          user: email,
           password: '',
           code: '',
         };
@@ -210,5 +222,36 @@ export class AuthService {
 
   public deleteVerificationCode(email: string): void {
     this.verificationCodes.delete(email);
+  }
+
+  async googleLogin(req) {
+    if (!req.user) {
+      return { message: 'No user from Google', token: null };
+    }
+
+    const { email, firstName, lastName, picture } = req.user.user;
+
+    let user = await this.usersService.findByEmail(email);
+    if (!user) {
+      user = await this.usersService.create({
+        email,
+        firstName,
+        lastName,
+        avatar: picture,
+        nombre: '',
+        user: '',
+        password: '',
+        code: '',
+      });
+    }
+
+    const userDto = this.usersService.transformToDto(user);
+    const token = this.generateJwtToken(userDto);
+
+    return {
+      message: 'User information from Google',
+      user: userDto,
+      token,
+    };
   }
 }

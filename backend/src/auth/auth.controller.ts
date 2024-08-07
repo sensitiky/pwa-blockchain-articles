@@ -1,10 +1,20 @@
-import { Controller, Post, Body, Res, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  Logger,
+  UseGuards,
+  Get,
+  Req,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import axios from 'axios';
 import * as crypto from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from './users/user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -188,14 +198,40 @@ export class AuthController {
     @Body() body: { token: string },
     @Res() res: Response,
   ): Promise<void> {
+    this.logger.log(`Received Google token: ${body.token}`);
     try {
-      const userDto = await this.authService.validateGoogleToken(body.token);
+      const token = body.token;
+      if (!token || typeof token !== 'string') {
+        this.logger.error('Invalid token format');
+        res.status(400).json({ message: 'Invalid token format' });
+        return;
+      }
+
+      const userDto = await this.authService.validateGoogleToken(token);
+      const jwtToken = this.authService.generateJwtToken(userDto);
+
       res
         .status(200)
-        .json({ message: 'Google login successful', user: userDto });
+        .json({
+          message: 'Google login successful',
+          token: jwtToken,
+          user: userDto,
+        });
     } catch (error) {
       this.logger.error(`Error with Google login: ${error.message}`);
       res.status(401).json({ message: 'Google login failed' });
+    }
+  }
+
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  async googleAuthRedirect(@Req() req, @Res() res: Response) {
+    const result = await this.authService.googleLogin(req);
+    if (result.token) {
+      res.cookie('jwt', result.token, { httpOnly: true });
+      res.redirect('/');
+    } else {
+      res.redirect('/login');
     }
   }
 }
