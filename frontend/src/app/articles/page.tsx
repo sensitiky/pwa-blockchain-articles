@@ -18,6 +18,7 @@ import DOMPurify from "dompurify";
 import Image from "next/image";
 import { styled } from "styled-components";
 import { CircularProgress } from "@mui/material";
+import { useAuth } from "../../../context/authContext";
 
 type Category = {
   id: number;
@@ -73,33 +74,18 @@ export default function Articles() {
   const [categoryCounts, setCategoryCounts] = useState<
     { categoryId: number; count: number }[]
   >([]);
+  const { token } = useAuth();
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${API_URL}/categories`);
+      const response = await axios.get(`${API_URL}/categories`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories", error);
-    }
-  };
-
-  const fetchPost = async (id: string) => {
-    try {
-      const response = await axios.get(`${API_URL}/posts`);
-      const postData = response.data;
-      setPosts([postData]);
-      setComments(postData.comments);
-    } catch (error) {
-      console.error("Error fetching post data:", error);
-    }
-  };
-
-  const fetchComments = async (postId: string) => {
-    try {
-      const response = await axios.get(`${API_URL}/comments/post/${postId}`);
-      setComments(response.data);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
     }
   };
 
@@ -108,7 +94,11 @@ export default function Articles() {
       const url = selectedCategoryId
         ? `${API_URL}/posts/by-category?categoryId=${selectedCategoryId}`
         : `${API_URL}/posts`;
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const postsData = response.data.data;
       setAllPosts(postsData || []);
       setTotalPages(Math.ceil(postsData.length / POSTS_PER_PAGE));
@@ -120,7 +110,11 @@ export default function Articles() {
 
   const fetchPostCountsByCategory = async () => {
     try {
-      const response = await axios.get(`${API_URL}/posts/count/by-category`);
+      const response = await axios.get(`${API_URL}/posts/count/by-category`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setCategoryCounts(response.data);
     } catch (error) {
       console.error("Error fetching post counts by category", error);
@@ -130,7 +124,12 @@ export default function Articles() {
   const fetchTagsByCategory = async (categoryId: number) => {
     try {
       const response = await axios.get(
-        `${API_URL}/tags/by-category/${categoryId}`
+        `${API_URL}/tags/by-category/${categoryId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       setTags(response.data);
     } catch (error) {
@@ -171,17 +170,6 @@ export default function Articles() {
   };
 
   useEffect(() => {
-    if (id) {
-      setLoading(true);
-      fetchPost(id as string);
-      fetchComments(id as string);
-      setTimeout(() => {
-        setLoading(false);
-      }, 2000);
-    }
-  }, [id]);
-
-  useEffect(() => {
     setLoading(true);
     fetchCategories();
     fetchPosts();
@@ -189,11 +177,15 @@ export default function Articles() {
     setTimeout(() => {
       setLoading(false);
     }, 2000);
-  }, [selectedCategoryId]);
+  }, [selectedCategoryId, currentPage, sortOrder]);
 
   useEffect(() => {
-    updatePosts(allPosts, currentPage, sortOrder);
-  }, [currentPage, sortOrder, allPosts]);
+    const interval = setInterval(() => {
+      fetchPosts();
+    }, 10000); // Actualizar cada 10 segundos
+
+    return () => clearInterval(interval);
+  }, [selectedCategoryId, sortOrder]);
 
   const handleCategoryClick = (categoryId: number) => {
     const newCategoryId = selectedCategoryId === categoryId ? null : categoryId;

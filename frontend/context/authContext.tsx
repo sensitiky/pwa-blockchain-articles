@@ -28,9 +28,12 @@ interface User {
   postCount?: number;
   role?: string;
 }
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+
 interface AuthContextType {
   user: User | null;
+  token: string | null;
   setUser: (user: User) => void;
   isAuthenticated: boolean;
   login: (data: any) => void;
@@ -50,9 +53,11 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
   const login = useCallback((userData: any) => {
     localStorage.setItem("token", userData.token);
+    setToken(userData.token);
     setUser(userData.user);
   }, []);
 
@@ -61,6 +66,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const response = await api.post(`${API_URL}/auth/google`, { token });
       if (response.status === 200) {
         localStorage.setItem("token", response.data.token);
+        setToken(response.data.token);
         setUser(response.data.user);
       } else {
         throw new Error("Google login failed");
@@ -72,6 +78,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = useCallback(() => {
     localStorage.removeItem("token");
+    setToken(null);
     setUser(null);
   }, []);
 
@@ -80,6 +87,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const token = localStorage.getItem("token");
         if (token) {
+          setToken(token);
           const response = await api.get(`${API_URL}/users/me`);
           setUser(response.data);
         }
@@ -94,8 +102,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const isAuthenticated = !!user;
 
   const contextValue = useMemo(
-    () => ({ user, setUser, isAuthenticated, login, loginWithGoogle, logout }),
-    [user, isAuthenticated, login, loginWithGoogle, logout]
+    () => ({
+      user,
+      token,
+      setUser,
+      isAuthenticated,
+      login,
+      loginWithGoogle,
+      logout,
+    }),
+    [user, token, isAuthenticated, login, loginWithGoogle, logout]
   );
 
   return (
