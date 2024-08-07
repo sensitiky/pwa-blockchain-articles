@@ -28,7 +28,7 @@ interface User {
   postCount?: number;
   role?: string;
 }
-const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 interface AuthContextType {
   user: User | null;
   setUser: (user: User) => void;

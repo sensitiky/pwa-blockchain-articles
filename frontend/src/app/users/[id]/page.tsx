@@ -63,26 +63,29 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        console.log("Fetching user data...");
         const response = await axios.get(`${API_URL}/users/${userId}`);
         const userData = response.data;
+        console.log("User data fetched:", userData);
         setUser(userData);
 
+        console.log("Fetching posts data...");
         const postsResponse = await axios.get(
           `${API_URL}/posts?authorId=${userData.id}`
         );
-        const postsData = postsResponse.data.data.map((post: any) => ({
-          ...post,
-          imageUrlBase64: post.imageUrl
-            ? `data:image/jpeg;base64,${Buffer.from(
-                post.imageUrl.data
-              ).toString("base64")}`
-            : null,
-        }));
+        const postsData = postsResponse.data.data.map((post: any) => {
+          console.log("Post fetched:", post); // Verifica el contenido del post
+          return {
+            ...post,
+            imageUrl: post.imageUrl ? `${API_URL}${post.imageUrl}` : null,
+          };
+        });
+        console.log("Posts data transformed:", postsData);
         setPosts(postsData);
       } catch (err) {
         if (axios.isAxiosError(err)) {
@@ -174,14 +177,16 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
               key={post.id}
               className="bg-inherit rounded-none p-6 border-b-2 transition-transform duration-300 ease-in-out transform hover:scale-105"
             >
-              {post.imageUrlBase64 && (
-                <Image
+              {post.imageUrlBase64 ? (
+                <img
                   src={post.imageUrlBase64}
                   width={400}
                   height={225}
                   alt="Article Image"
                   className="w-full h-48 object-cover rounded-lg"
                 />
+              ) : (
+                <div className="w-full h-48 bg-gray-200 rounded-lg"></div>
               )}
 
               <div className="mt-4 space-y-2">
