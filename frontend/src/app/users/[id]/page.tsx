@@ -76,10 +76,10 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
 
         console.log("Fetching posts data...");
         const postsResponse = await axios.get(
-          `${API_URL}/posts?authorId=${userData.id}`
+          `${API_URL}/posts?authorId=${userId}`
         );
         const postsData = postsResponse.data.data.map((post: any) => {
-          console.log("Post fetched:", post); // Verifica el contenido del post
+          console.log("Post fetched:", post);
           return {
             ...post,
             imageUrl: post.imageUrl ? `${API_URL}${post.imageUrl}` : null,
