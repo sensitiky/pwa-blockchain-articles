@@ -1,10 +1,11 @@
+"use client"
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import { AuthProvider, useAuth } from "../../context/authContext";
+import { useAuth } from "../../context/authContext";
 import useFacebookSDK from "@/hooks/MetaSDK";
 import {
   GoogleOAuthProvider,
@@ -322,352 +323,350 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     <GoogleOAuthProvider
       clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
     >
-      <AuthProvider>
-        <div className="mx-auto max-w-sm space-y-6">
-          {!showRegister && !forgotPassword && (
-            <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-bold">Login</h1>
-              <p className="text-muted-foreground">
-                Enter your email and password to access your account.
-              </p>
-            </div>
-          )}
-          {showRegister && !forgotPassword && (
-            <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-bold">Register</h1>
-              <p className="text-muted-foreground">
-                Enter your details to create an account.
-              </p>
-            </div>
-          )}
-          {!showRegister && forgotPassword && (
-            <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-bold">Reset Password</h1>
-              <p className="text-muted-foreground">
-                Enter your email to receive a password reset code.
-              </p>
-            </div>
-          )}
+      <div className="mx-auto max-w-sm space-y-6">
+        {!showRegister && !forgotPassword && (
+          <div className="space-y-2 text-center">
+            <h1 className="text-3xl font-bold">Login</h1>
+            <p className="text-muted-foreground">
+              Enter your email and password to access your account.
+            </p>
+          </div>
+        )}
+        {showRegister && !forgotPassword && (
+          <div className="space-y-2 text-center">
+            <h1 className="text-3xl font-bold">Register</h1>
+            <p className="text-muted-foreground">
+              Enter your details to create an account.
+            </p>
+          </div>
+        )}
+        {!showRegister && forgotPassword && (
+          <div className="space-y-2 text-center">
+            <h1 className="text-3xl font-bold">Reset Password</h1>
+            <p className="text-muted-foreground">
+              Enter your email to receive a password reset code.
+            </p>
+          </div>
+        )}
 
-          {!showRegister && !forgotPassword && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                  required
-                />
-              </div>
-              {error && <div className="text-red-500">{error}</div>}
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  className="rounded-full w-44 bg-customColor-header"
-                  onClick={handleLogin}
-                  disabled={loading}
-                >
-                  {loading ? "Logging in..." : "Login"}
-                </Button>
-              </div>
-              <div className="flex justify-center">
-                <Button
-                  className="rounded-full w-44 bg-customColor-header flex items-center justify-center"
-                  onClick={handleFacebookLogin}
-                >
-                  <i className="fab fa-facebook mr-2"></i>
-                  Login with Facebook
-                </Button>
-              </div>
-              <div className="flex justify-center">
-                <Button className="rounded-full w-44 bg-customColor-header">
-                  <i className="fab fa-apple mr-2"></i>
-                  Login with Apple ID
-                </Button>
-              </div>
-
-              <div className="space-y-2 flex flex-col items-center">
-                <GoogleLogin
-                  onSuccess={handleGoogleLoginSuccess}
-                  onError={() => setError("Google login failed")}
-                />
-              </div>
-              <div className="mt-4 text-center text-sm">
-                <div>
-                  Don't have an account?{" "}
-                  <button
-                    onClick={() => setShowRegister(true)}
-                    className="underline"
-                  >
-                    Create one
-                  </button>
-                </div>
-              </div>
+        {!showRegister && !forgotPassword && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
-          )}
-
-          {showRegister && !forgotPassword && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  placeholder="Enter your username"
-                  value={user}
-                  onChange={(e) => setuser(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <p>Password must contain:</p>
-                <ul>
-                  <li
-                    className={
-                      passwordCriteria.length
-                        ? "text-green-500"
-                        : "text-muted-foreground"
-                    }
-                  >
-                    💪🏽 At least 8 characters
-                  </li>
-                  <li
-                    className={
-                      passwordCriteria.uppercase
-                        ? "text-green-500"
-                        : "text-muted-foreground"
-                    }
-                  >
-                    🤳🏽 Lowercase or uppercase letter
-                  </li>
-                  <li
-                    className={
-                      passwordCriteria.numberOrSymbol
-                        ? "text-green-500"
-                        : "text-muted-foreground"
-                    }
-                  >
-                    👨🏽‍💻 Number or symbol
-                  </li>
-                </ul>
-              </div>
-              {!passwordCriteria.length ||
-              !passwordCriteria.uppercase ||
-              !passwordCriteria.numberOrSymbol ? (
-                <div className="text-red-500">
-                  Please complete all the password criteria.
-                </div>
-              ) : null}
-              {codeSent && !codeVerified && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="verification-code">Verification Code</Label>
-                    <Input
-                      id="verification-code"
-                      type="text"
-                      placeholder="Enter verification code"
-                      value={verificationCode}
-                      onChange={(e) => setVerificationCode(e.target.value)}
-                      required
-                    />
-                    <div className="flex justify-center">
-                      <Button
-                        type="button"
-                        className="mt-2 rounded-sm w-44 bg-customColor-header"
-                        onClick={handleVerifyCode}
-                        disabled={loading}
-                      >
-                        {loading ? "Verifying..." : "Verify Code"}
-                      </Button>
-                    </div>
-                  </div>
-                </>
-              )}
-              {!codeSent && (
-                <div className="flex justify-center">
-                  <Button
-                    type="button"
-                    className="mt-2 rounded-full w-44 bg-customColor-header"
-                    onClick={handleSendVerificationCode}
-                    disabled={loading}
-                  >
-                    {loading ? "Sending..." : "Send Verification Code"}
-                  </Button>
-                </div>
-              )}
-              {codeVerified && (
-                <>
-                  {error && <div className="text-red-500">{error}</div>}
-                  <div className="flex justify-center">
-                    <Button
-                      type="button"
-                      className="rounded-sm w-44"
-                      onClick={handleRegister}
-                      disabled={loading}
-                    >
-                      {loading ? "Registering..." : "Register"}
-                    </Button>
-                  </div>
-                </>
-              )}
-              <div className="space-y-2 flex items-center">
-                <Checkbox id="terms" className="mr-4" required />
-                <Label
-                  htmlFor="terms"
-                  className="text-sm text-gray-600 dark:text-gray-400"
-                >
-                  I confirmed that I have read and agree to the{" "}
-                  <Link href="#" className="underline" prefetch={false}>
-                    Terms and Conditions
-                  </Link>
-                  ,{" "}
-                  <Link href="#" className="underline" prefetch={false}>
-                    Services Terms
-                  </Link>
-                  ,{" "}
-                  <Link href="#" className="underline" prefetch={false}>
-                    Earn Terms
-                  </Link>
-                  ,{" "}
-                  <Link href="#" className="underline" prefetch={false}>
-                    Exchange Terms
-                  </Link>
-                  , and{" "}
-                  <Link href="#" className="underline" prefetch={false}>
-                    Privacy Policy
-                  </Link>{" "}
-                  of Blogchain.
-                </Label>
-              </div>
-              <div className="mt-4 text-center text-sm">
-                <div>
-                  Already have an account?{" "}
-                  <button
-                    onClick={() => setShowRegister(false)}
-                    className="underline"
-                  >
-                    Sign in
-                  </button>
-                </div>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={handlePasswordChange}
+                required
+              />
             </div>
-          )}
+            {error && <div className="text-red-500">{error}</div>}
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                className="rounded-full w-44 bg-customColor-header"
+                onClick={handleLogin}
+                disabled={loading}
+              >
+                {loading ? "Logging in..." : "Login"}
+              </Button>
+            </div>
+            <div className="flex justify-center">
+              <Button
+                className="rounded-full w-44 bg-customColor-header flex items-center justify-center"
+                onClick={handleFacebookLogin}
+              >
+                <i className="fab fa-facebook mr-2"></i>
+                Login with Facebook
+              </Button>
+            </div>
+            <div className="flex justify-center">
+              <Button className="rounded-full w-44 bg-customColor-header">
+                <i className="fab fa-apple mr-2"></i>
+                Login with Apple ID
+              </Button>
+            </div>
 
-          {!showRegister && forgotPassword && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  className="rounded-full w-44 bg-customColor-header"
-                  onClick={handleForgotPassword}
-                  disabled={loading}
-                >
-                  {loading ? "Sending..." : "Send Reset Code"}
-                </Button>
-              </div>
-              {error && <div className="text-red-500">{error}</div>}
-              {codeSent && (
-                <div className="space-y-2 text-center">
-                  <p className="text-muted-foreground">
-                    Enter the code sent to your email and your new password.
-                  </p>
-                  <Input
-                    id="reset-code"
-                    type="text"
-                    placeholder="Enter reset code"
-                    value={resetCode}
-                    onChange={(e) => setResetCode(e.target.value)}
-                    required
-                  />
-                  <Input
-                    id="new-password"
-                    type="password"
-                    placeholder="Enter new password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    required
-                  />
-                  <div className="flex justify-center">
-                    <Button
-                      type="button"
-                      className="rounded-full w-44 bg-customColor-header"
-                      onClick={handleResetPassword}
-                      disabled={loading}
-                    >
-                      {loading ? "Resetting..." : "Reset Password"}
-                    </Button>
-                  </div>
-                </div>
-              )}
-              <div className="mt-4 text-center text-sm">
+            <div className="space-y-2 flex flex-col items-center">
+              <GoogleLogin
+                onSuccess={handleGoogleLoginSuccess}
+                onError={() => setError("Google login failed")}
+              />
+            </div>
+            <div className="mt-4 text-center text-sm">
+              <div>
+                Don't have an account?{" "}
                 <button
-                  onClick={() => setForgotPassword(false)}
+                  onClick={() => setShowRegister(true)}
                   className="underline"
                 >
-                  Back to Login
+                  Create one
                 </button>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {!showRegister && !forgotPassword && (
-            <div className="text-center">
-              <Link
-                href="#"
-                passHref
-                onClick={toggleForgotPassword}
-                className="text-sm text-muted-foreground hover:underline"
-              >
-                Forgot your password?
-              </Link>
+        {showRegister && !forgotPassword && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                placeholder="Enter your username"
+                value={user}
+                onChange={(e) => setuser(e.target.value)}
+                required
+              />
             </div>
-          )}
-        </div>
-      </AuthProvider>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={handlePasswordChange}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <p>Password must contain:</p>
+              <ul>
+                <li
+                  className={
+                    passwordCriteria.length
+                      ? "text-green-500"
+                      : "text-muted-foreground"
+                  }
+                >
+                  💪🏽 At least 8 characters
+                </li>
+                <li
+                  className={
+                    passwordCriteria.uppercase
+                      ? "text-green-500"
+                      : "text-muted-foreground"
+                  }
+                >
+                  🤳🏽 Lowercase or uppercase letter
+                </li>
+                <li
+                  className={
+                    passwordCriteria.numberOrSymbol
+                      ? "text-green-500"
+                      : "text-muted-foreground"
+                  }
+                >
+                  👨🏽‍💻 Number or symbol
+                </li>
+              </ul>
+            </div>
+            {!passwordCriteria.length ||
+            !passwordCriteria.uppercase ||
+            !passwordCriteria.numberOrSymbol ? (
+              <div className="text-red-500">
+                Please complete all the password criteria.
+              </div>
+            ) : null}
+            {codeSent && !codeVerified && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="verification-code">Verification Code</Label>
+                  <Input
+                    id="verification-code"
+                    type="text"
+                    placeholder="Enter verification code"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                    required
+                  />
+                  <div className="flex justify-center">
+                    <Button
+                      type="button"
+                      className="mt-2 rounded-sm w-44 bg-customColor-header"
+                      onClick={handleVerifyCode}
+                      disabled={loading}
+                    >
+                      {loading ? "Verifying..." : "Verify Code"}
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+            {!codeSent && (
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  className="mt-2 rounded-full w-44 bg-customColor-header"
+                  onClick={handleSendVerificationCode}
+                  disabled={loading}
+                >
+                  {loading ? "Sending..." : "Send Verification Code"}
+                </Button>
+              </div>
+            )}
+            {codeVerified && (
+              <>
+                {error && <div className="text-red-500">{error}</div>}
+                <div className="flex justify-center">
+                  <Button
+                    type="button"
+                    className="rounded-sm w-44"
+                    onClick={handleRegister}
+                    disabled={loading}
+                  >
+                    {loading ? "Registering..." : "Register"}
+                  </Button>
+                </div>
+              </>
+            )}
+            <div className="space-y-2 flex items-center">
+              <Checkbox id="terms" className="mr-4" required />
+              <Label
+                htmlFor="terms"
+                className="text-sm text-gray-600 dark:text-gray-400"
+              >
+                I confirmed that I have read and agree to the{" "}
+                <Link href="#" className="underline" prefetch={false}>
+                  Terms and Conditions
+                </Link>
+                ,{" "}
+                <Link href="#" className="underline" prefetch={false}>
+                  Services Terms
+                </Link>
+                ,{" "}
+                <Link href="#" className="underline" prefetch={false}>
+                  Earn Terms
+                </Link>
+                ,{" "}
+                <Link href="#" className="underline" prefetch={false}>
+                  Exchange Terms
+                </Link>
+                , and{" "}
+                <Link href="#" className="underline" prefetch={false}>
+                  Privacy Policy
+                </Link>{" "}
+                of Blogchain.
+              </Label>
+            </div>
+            <div className="mt-4 text-center text-sm">
+              <div>
+                Already have an account?{" "}
+                <button
+                  onClick={() => setShowRegister(false)}
+                  className="underline"
+                >
+                  Sign in
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!showRegister && forgotPassword && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                className="rounded-full w-44 bg-customColor-header"
+                onClick={handleForgotPassword}
+                disabled={loading}
+              >
+                {loading ? "Sending..." : "Send Reset Code"}
+              </Button>
+            </div>
+            {error && <div className="text-red-500">{error}</div>}
+            {codeSent && (
+              <div className="space-y-2 text-center">
+                <p className="text-muted-foreground">
+                  Enter the code sent to your email and your new password.
+                </p>
+                <Input
+                  id="reset-code"
+                  type="text"
+                  placeholder="Enter reset code"
+                  value={resetCode}
+                  onChange={(e) => setResetCode(e.target.value)}
+                  required
+                />
+                <Input
+                  id="new-password"
+                  type="password"
+                  placeholder="Enter new password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                />
+                <div className="flex justify-center">
+                  <Button
+                    type="button"
+                    className="rounded-full w-44 bg-customColor-header"
+                    onClick={handleResetPassword}
+                    disabled={loading}
+                  >
+                    {loading ? "Resetting..." : "Reset Password"}
+                  </Button>
+                </div>
+              </div>
+            )}
+            <div className="mt-4 text-center text-sm">
+              <button
+                onClick={() => setForgotPassword(false)}
+                className="underline"
+              >
+                Back to Login
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!showRegister && !forgotPassword && (
+          <div className="text-center">
+            <Link
+              href="#"
+              passHref
+              onClick={toggleForgotPassword}
+              className="text-sm text-muted-foreground hover:underline"
+            >
+              Forgot your password?
+            </Link>
+          </div>
+        )}
+      </div>
     </GoogleOAuthProvider>
   );
 }
