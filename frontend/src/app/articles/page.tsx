@@ -362,7 +362,12 @@ export default function Articles() {
                       </span>
                       <span className="mx-2">|</span>
                       <HeartIcon className="w-5 h-5 mr-1" />
-                      <span> {post.favorites}</span>
+                      <span>
+                        {" "}
+                        {Array.isArray(post.favorites)
+                          ? post.favorites.length
+                          : 0}
+                      </span>
                     </div>
                     <div className="flex justify-end mt-4">
                       <Link href={`/posts/${post.id}`}>
