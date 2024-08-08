@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import Header from "@/assets/header";
 import Footer from "@/assets/footer";
@@ -16,7 +16,7 @@ import { useParams } from "next/navigation";
 import { ClockIcon, TagIcon, MessageSquareIcon, HeartIcon } from "lucide-react";
 import DOMPurify from "dompurify";
 import Image from "next/image";
-import { styled } from "styled-components";
+import styled from "styled-components";
 import { CircularProgress } from "@mui/material";
 import { useAuth } from "../../../context/authContext";
 
@@ -58,11 +58,9 @@ const Container = styled.div`
 export default function Articles() {
   const categoriesRef = useRef<HTMLDivElement>(null);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const [tags, setTags] = useState<Tag[]>([]);
@@ -76,140 +74,94 @@ export default function Articles() {
   >([]);
   const { token } = useAuth();
 
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/categories`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setCategories(response.data);
-    } catch (error) {
-      console.error("Error fetching categories", error);
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [categoriesResponse, postCountsResponse] = await Promise.all([
+          axios.get(`${API_URL}/categories`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${API_URL}/posts/count/by-category`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+        setCategories(categoriesResponse.data);
+        setCategoryCounts(postCountsResponse.data);
+        fetchPosts();
+      } catch (error) {
+        console.error("Error fetching data", error);
+      }
+    };
 
-  const fetchPosts = async () => {
+    fetchData();
+  }, [token, selectedCategoryId, sortOrder, currentPage]);
+
+  const fetchPosts = useCallback(async () => {
+    setLoading(true);
     try {
       const url = selectedCategoryId
-        ? `${API_URL}/posts/by-category?categoryId=${selectedCategoryId}`
-        : `${API_URL}/posts`;
+        ? `${API_URL}/posts/by-category?categoryId=${selectedCategoryId}&page=${currentPage}&limit=${POSTS_PER_PAGE}&sort=${sortOrder}`
+        : `${API_URL}/posts?page=${currentPage}&limit=${POSTS_PER_PAGE}&sort=${sortOrder}`;
       const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       const postsData = response.data.data;
-      setAllPosts(postsData || []);
-      setTotalPages(Math.ceil(postsData.length / POSTS_PER_PAGE));
-      updatePosts(postsData, currentPage, sortOrder);
+      setPosts(postsData || []);
+      setTotalPages(response.data.totalPages);
     } catch (error) {
       console.error("Error fetching posts", error);
-    }
-  };
-
-  const fetchPostCountsByCategory = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/posts/count/by-category`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setCategoryCounts(response.data);
-    } catch (error) {
-      console.error("Error fetching post counts by category", error);
-    }
-  };
-
-  const fetchTagsByCategory = async (categoryId: number) => {
-    try {
-      const response = await axios.get(
-        `${API_URL}/tags/by-category/${categoryId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setTags(response.data);
-    } catch (error) {
-      console.error("Error fetching tags", error);
-    }
-  };
-
-  const updatePosts = (postsData: Post[], page: number, sortOrder: string) => {
-    let sortedPosts = [...postsData];
-    if (sortOrder === "recent") {
-      sortedPosts.sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-    } else if (sortOrder === "saved") {
-      sortedPosts.sort((a, b) => b.favorites - a.favorites);
-    } else if (sortOrder === "comment") {
-      sortedPosts.sort((a, b) => b.comments.length - a.comments.length);
-    } else if (sortOrder === "less_than_1000") {
-      sortedPosts = sortedPosts.filter(
-        (post) => post.content && post.content.length < 1000
-      );
-    } else if (sortOrder === "1000_to_2000") {
-      sortedPosts = sortedPosts.filter(
-        (post) =>
-          post.content &&
-          post.content.length >= 1000 &&
-          post.content.length <= 2000
-      );
-    } else if (sortOrder === "2000_and_above") {
-      sortedPosts = sortedPosts.filter(
-        (post) => post.content && post.content.length > 2000
-      );
-    }
-    setPosts(
-      sortedPosts.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE)
-    );
-  };
-
-  useEffect(() => {
-    setLoading(true);
-    fetchCategories();
-    fetchPosts();
-    fetchPostCountsByCategory();
-    setTimeout(() => {
+    } finally {
       setLoading(false);
-    }, 2000);
-  }, [selectedCategoryId, currentPage, sortOrder]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchPosts();
-    }, 10000); // Actualizar cada 10 segundos
-
-    return () => clearInterval(interval);
-  }, [selectedCategoryId, sortOrder]);
-
-  const handleCategoryClick = (categoryId: number) => {
-    const newCategoryId = selectedCategoryId === categoryId ? null : categoryId;
-    setSelectedCategoryId(newCategoryId);
-    setCurrentPage(1);
-    setTags([]);
-
-    if (newCategoryId) {
-      fetchTagsByCategory(newCategoryId);
     }
-  };
+  }, [selectedCategoryId, sortOrder, currentPage, token]);
 
-  const handleSortOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSortOrder(e.target.value);
-    setCurrentPage(1);
-  };
+  const fetchTagsByCategory = useCallback(
+    async (categoryId: number) => {
+      try {
+        const response = await axios.get(
+          `${API_URL}/tags/by-category/${categoryId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setTags(response.data);
+      } catch (error) {
+        console.error("Error fetching tags", error);
+      }
+    },
+    [token]
+  );
 
-  const handleResetSortOrder = () => {
+  const handleCategoryClick = useCallback(
+    (categoryId: number) => {
+      setSelectedCategoryId((prev) =>
+        prev === categoryId ? null : categoryId
+      );
+      setCurrentPage(1);
+      setTags([]);
+      if (selectedCategoryId !== categoryId) fetchTagsByCategory(categoryId);
+    },
+    [fetchTagsByCategory]
+  );
+
+  const handleSortOrderChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setSortOrder(e.target.value);
+      setCurrentPage(1);
+    },
+    []
+  );
+
+  const handleResetSortOrder = useCallback(() => {
     setSortOrder("recent");
     setCurrentPage(1);
-  };
+  }, []);
 
-  const imageUrl = (post: Post) =>
-    post.imageUrlBase64 ? post.imageUrlBase64 : "";
+  const imageUrl = useCallback((post: Post) => post.imageUrlBase64 || "", []);
+
+  const calculateReadingTime = useCallback((text: string) => {
+    const wordsPerMinute = 200;
+    const numberOfWords = text.split(/\s+/).length;
+    return Math.ceil(numberOfWords / wordsPerMinute);
+  }, []);
 
   return (
     <div className="articles-container flex flex-col min-h-screen w-screen z-auto">
@@ -251,20 +203,22 @@ export default function Articles() {
               )}
             </div>
           </div>
-          <div
-            className={`categories-tags-container text-center py-4 w-full tags-container ${
-              tags.length > 0 ? "visible" : ""
-            } ios-style`}
-          >
-            <h3 className="tags-title text-xl font-medium text-white">Tags</h3>
-            <div className="flex flex-wrap justify-center gap-4 mt-4">
-              {tags.map((tag) => (
-                <span key={tag.id} className="ios-tag">
-                  {tag.name}
-                </span>
-              ))}
+          {tags.length > 0 && (
+            <div
+              className={`categories-tags-container text-center py-4 w-full tags-container ios-style`}
+            >
+              <h3 className="tags-title text-xl font-medium text-white">
+                Tags
+              </h3>
+              <div className="flex flex-wrap justify-center gap-4 mt-4">
+                {tags.map((tag) => (
+                  <span key={tag.id} className="ios-tag">
+                    {tag.name}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
         <div className="sort-order-container flex flex-col lg:flex-row items-center text-center">
           <div className="flex flex-col justify-start py-4 px-4 lg:px-44 flex-shrink w-full lg:w-auto">
@@ -348,6 +302,7 @@ export default function Articles() {
                         width={1200}
                         height={300}
                         className="w-full h-full object-cover"
+                        loading="lazy"
                       />
                     )}
                     <div className="flex justify-between mt-2">
@@ -407,12 +362,7 @@ export default function Articles() {
                       </span>
                       <span className="mx-2">|</span>
                       <HeartIcon className="w-5 h-5 mr-1" />
-                      <span>
-                        {" "}
-                        {Array.isArray(post.favorites)
-                          ? post.favorites.length
-                          : 0}
-                      </span>
+                      <span> {post.favorites}</span>
                     </div>
                     <div className="flex justify-end mt-4">
                       <Link href={`/posts/${post.id}`}>
@@ -426,9 +376,7 @@ export default function Articles() {
               ))}
             </div>
           ) : (
-            <Container>
-              <CircularProgress />
-            </Container>
+            <div className="text-center text-white">No posts available</div>
           )}
           <div className="pagination-container flex justify-center mt-8">
             <Pagination>
@@ -464,14 +412,7 @@ export default function Articles() {
           </div>
         </div>
       </div>
-
       <Footer />
     </div>
   );
-}
-
-function calculateReadingTime(text: string) {
-  const wordsPerMinute = 200;
-  const numberOfWords = text.split(/\s+/).length;
-  return Math.ceil(numberOfWords / wordsPerMinute);
 }
