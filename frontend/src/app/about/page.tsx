@@ -1,6 +1,5 @@
 import Footer from "@/assets/footer";
 import Header from "@/assets/header";
-import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import Image from "next/image";
 import { FC } from "react";
 
@@ -14,9 +13,12 @@ const LandingSection: FC = () => {
             Know, learn{" "}
             <span className="text-customColor-innovatio3">and criticize.</span>
           </h1>
-          <main id="main-about" className="h-full py-40 flex flex-col justify-center bg-customColor-header px-6 sm:px-12 sm:py-40">
-            <div className="space-y-8">
-              <div className="ml-10 mt-10 flex items-start space-x-4">
+          <main
+            id="main-about"
+            className="h-full py-40 flex flex-col justify-center bg-customColor-header px-6 sm:px-12 sm:py-40"
+          >
+            <div className="space-y-8 relative">
+              <div className="ml-64 flex items-start space-x-4 relative z-10">
                 <Image
                   src="/logo about us.png"
                   alt="Logo"
@@ -25,35 +27,41 @@ const LandingSection: FC = () => {
                   className="max-w-full"
                 />
               </div>
-              <div className="relative">
+              <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center z-0">
                 <Image
                   src="/luz.png"
                   alt="Light Effect"
-                  width={400}
-                  height={400}
-                  className="absolute top-0 left-0 z-0"
+                  width={1000}
+                  height={1000}
+                  className="max-w-full"
                   style={{ filter: "blur(100px)", opacity: 0.5 }}
                 />
-                <p id="about-text-1" className="ml-10 mt-10 relative text-xl sm:text-2xl text-white z-50 leading-snug">
-                  <span className="font-bold">
-                    Empowering Web3 education
-                    <br />
-                  </span>
-                  <span className="font-bold">and adoption </span>
-                  through
-                  <br />
-                  <span className="font-bold">
-                    {" "}
-                    community-driven content
-                    <br />
-                  </span>
-                  and
-                  <span className="font-bold"> critical thinking.</span>
-                </p>
               </div>
+              <p
+                id="about-text-1"
+                className="ml-64 mt-10 relative text-xl sm:text-2xl text-white z-20 leading-snug"
+              >
+                <span className="font-bold">
+                  Empowering Web3 education
+                  <br />
+                </span>
+                <span className="font-bold">and adoption </span>
+                through
+                <br />
+                <span className="font-bold">
+                  {" "}
+                  community-driven content
+                  <br />
+                </span>
+                and
+                <span className="font-bold"> critical thinking.</span>
+              </p>
             </div>
           </main>
-          <main id="main-about-2" className="flex py-80 justify-center bg-gradient-to-b from-white to-cyan-100 text-black px-6 sm:px-12 sm:py-80">
+          <main
+            id="main-about-2"
+            className="flex py-80 justify-center bg-gradient-to-b from-white to-cyan-100 text-black px-6 sm:px-12 sm:py-80"
+          >
             <div className="space-y-8">
               <p id="about-text-2" className="text-xl sm:text-2xl leading-snug">
                 Are you an enthusiast of blockchain{" "}

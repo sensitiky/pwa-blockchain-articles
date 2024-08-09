@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, memo } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -17,11 +17,21 @@ import {
   FaEdit,
   FaTrash,
 } from "react-icons/fa";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeftIcon, HandHeart } from "lucide-react";
 import parse from "html-react-parser";
 import { useAuth } from "../../../../context/authContext";
 import DeletePostModal from "@/assets/deletepost";
+import styled from "styled-components";
+import { CircularProgress } from "@mui/material";
+
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 1rem;
+  background-color: inherit;
+`;
 
 interface Post {
   id: number;
@@ -66,33 +76,31 @@ interface Comment {
   favorites: number;
 }
 
-const CommentComponent = memo(
-  ({
-    comment,
-    handleFavorite,
-  }: {
-    comment: Comment;
-    handleFavorite: (postId: number, commentId?: number) => void;
-  }) => (
+const CommentComponent = ({
+  comment,
+  handleFavorite,
+}: {
+  comment: Comment;
+  handleFavorite: (postId: number, commentId?: number) => void;
+}) => {
+  console.log("Rendering comment:", comment);
+  const author = comment.author || {};
+  const avatarUrl = author.avatar
+    ? `${API_URL}${author.avatar}`
+    : "/shadcn.jpg";
+  const authorName = `${author.firstName || "Unknown"} ${
+    author.lastName || ""
+  }`;
+
+  return (
     <div className="border rounded-md p-4 my-4 bg-gray-100">
       <div className="flex items-center space-x-4">
         <Avatar className="h-8 w-8">
-          <AvatarImage
-            src={
-              comment.author?.avatar
-                ? `${API_URL}${comment.author.avatar}`
-                : "/shadcn.jpg"
-            }
-            alt="Author avatar"
-          />
-          <AvatarFallback>
-            {`${comment.author?.firstName ?? ""}${
-              comment.author?.lastName ?? ""
-            }`}
-          </AvatarFallback>
+          <AvatarImage src={avatarUrl} alt="Author avatar" />
+          <AvatarFallback>{authorName}</AvatarFallback>
         </Avatar>
         <div>
-          <p className="text-sm font-medium">{comment.author?.user}</p>
+          <p className="text-sm font-medium">{authorName}</p>
           <div className="text-xs text-gray-500">
             {formatDate(comment.createdAt)}
           </div>
@@ -110,10 +118,10 @@ const CommentComponent = memo(
         </Button>
       </div>
     </div>
-  )
-);
-const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
-CommentComponent.displayName = "CommentComponent";
+  );
+};
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
 const PostPage = () => {
   const { user } = useAuth();
@@ -124,7 +132,7 @@ const PostPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const { id } = useParams();
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+
   const fetchPost = async (id: string) => {
     try {
       const response = await axios.get(`${API_URL}/posts/${id}`);
@@ -141,16 +149,11 @@ const PostPage = () => {
   const fetchComments = async (postId: string) => {
     try {
       const response = await axios.get(`${API_URL}/comments/post/${postId}`);
-      const commentsWithAuthorInfo = response.data.map((comment: Comment) => ({
+      const commentsWithAuthor = response.data.map((comment: Comment) => ({
         ...comment,
-        author: {
-          id: comment.author.id,
-          firstName: comment.author.firstName,
-          lastName: comment.author.lastName,
-          user: comment.author.user,
-        },
+        author: comment.author || {},
       }));
-      setComments(commentsWithAuthorInfo);
+      setComments(commentsWithAuthor);
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
@@ -177,6 +180,7 @@ const PostPage = () => {
           firstName: user.firstName,
           lastName: user.lastName,
           user: user.user,
+          avatar: user.avatar,
         },
       };
 
@@ -241,16 +245,12 @@ const PostPage = () => {
     }
   }, [id]);
 
-  useEffect(() => {}, [comments]);
-
   if (loading) {
     return (
       <div className="flex flex-col space-y-3">
-        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-[250px]" />
-          <Skeleton className="h-4 w-[200px]" />
-        </div>
+        <Container>
+          <CircularProgress />
+        </Container>
       </div>
     );
   }
@@ -258,11 +258,9 @@ const PostPage = () => {
   if (!post) {
     return (
       <div className="flex flex-col space-y-3">
-        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-[250px]" />
-          <Skeleton className="h-4 w-[200px]" />
-        </div>
+        <Container>
+          <CircularProgress />
+        </Container>
       </div>
     );
   }
@@ -345,6 +343,7 @@ const PostPage = () => {
               <ArrowLeftIcon className="mr-2 h-4 w-4" />
               Go Back
             </button>
+
             <div className="flex items-center space-x-4">
               <Avatar className="h-10 w-10">
                 <AvatarImage src={`${API_URL}${post.author?.avatar}`} />
@@ -401,19 +400,17 @@ const PostPage = () => {
                 <>
                   <Button
                     variant="ghost"
-                    className="w-fit flex items-center space-x-1 text-gray-500"
+                    className="w-fit flex items-center space-x-1 text-gray-500 hover:bg-inherit"
                     onClick={() => router.push(`/posts/edit/${post.id}`)}
                   >
-                    <FaEdit className="h-5 w-5" />
-                    <span>Edit</span>
+                    <FaEdit className="size-5" />
                   </Button>
                   <Button
                     variant="ghost"
-                    className="w-fit flex items-center space-x-1 text-gray-500"
+                    className="w-fit flex items-center space-x-1 text-gray-500 hover:bg-inherit"
                     onClick={() => setIsModalOpen(true)}
                   >
-                    <FaTrash className="h-5 w-5" />
-                    <span>Delete</span>
+                    <FaTrash className="size-5" />
                   </Button>
                 </>
               )}
@@ -488,13 +485,19 @@ const PostPage = () => {
           </div>
           <div className="mt-8">
             <h3 className="text-lg font-medium">Comments</h3>
-            {comments.map((comment) => (
-              <CommentComponent
-                key={comment.id}
-                comment={comment}
-                handleFavorite={handleFavorite}
-              />
-            ))}
+            {comments.map((comment) => {
+              console.log(
+                "Comment before passing to CommentComponent:",
+                comment
+              );
+              return (
+                <CommentComponent
+                  key={comment.id}
+                  comment={comment}
+                  handleFavorite={handleFavorite}
+                />
+              );
+            })}
           </div>
 
           <form onSubmit={handleCommentSubmit} className="mt-4">

@@ -9,6 +9,9 @@ import CustomEditor from "@/components/ui/editor";
 import Image from "next/image";
 import Header from "@/assets/header";
 import Footer from "@/assets/footer";
+import { ArrowLeftIcon } from "lucide-react";
+import { CircularProgress } from "@mui/material";
+import styled from "styled-components";
 
 interface EditPostDto {
   title: string;
@@ -18,13 +21,21 @@ interface EditPostDto {
   imagePreviewUrl?: string | null;
 }
 
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 1rem;
+  background-color: inherit;
+`;
 const EditPostPage = () => {
   const { user } = useAuth();
   const [post, setPost] = useState<EditPostDto | null>(null);
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const router = useRouter();
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
   const fetchPost = async (id: string) => {
     try {
       const response = await axios.get(`${API_URL}/posts/${id}`);
@@ -118,7 +129,13 @@ const EditPostPage = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <Container>
+          <CircularProgress />
+        </Container>
+      </div>
+    );
   }
 
   if (!post) {
@@ -128,60 +145,74 @@ const EditPostPage = () => {
   return (
     <div>
       <Header />
-      <div className="container mx-auto p-8 flex flex-col items-center">
-        <h1 className="text-2xl font-bold mb-4">Edit Post</h1>
-        <form
-          onSubmit={handleFormSubmit}
-          className="space-y-4 w-full max-w-2xl"
-        >
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Title
-            </label>
-            <Input
-              type="text"
-              name="title"
-              value={post.title}
-              onChange={handleInputChange}
-              required
-              className="rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 w-full"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Image
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-            />
-          </div>
-          {post.imagePreviewUrl && (
-            <div className="mt-6 rounded-lg overflow-hidden w-full">
-              <Image
-                src={post.imagePreviewUrl}
-                alt="Banner"
-                width={1920}
-                height={600}
-                className="w-full object-cover"
+      <div className="container mx-auto p-8">
+        <div className="flex flex-col items-center">
+          <form
+            onSubmit={handleFormSubmit}
+            className="space-y-4 w-full max-w-2xl"
+          >
+            <div className="flex justify-start mb-4">
+              <button
+                className="flex hover:underline bg-inherit text-black h-8 items-center justify-start rounded-md text-sm font-medium transition-colors hover:bg-inherit focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+                onClick={() => router.back()}
+              >
+                <ArrowLeftIcon className="mr-2 h-4 w-4" />
+                Go Back
+              </button>
+            </div>
+            <div className="flex flex-col items-center">
+              <h1 className="text-2xl font-bold mb-4">Edit Post</h1>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Title
+              </label>
+              <Input
+                type="text"
+                name="title"
+                value={post.title}
+                onChange={handleInputChange}
+                required
+                className="rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 w-full"
               />
             </div>
-          )}
-          <div className="mt-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Description
-            </label>
-            <CustomEditor onChange={handleEditorChange} />
-          </div>
-          <Button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 w-full"
-          >
-            Update Post
-          </Button>
-        </form>
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Image
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+            </div>
+            {post.imagePreviewUrl && (
+              <div className="mt-6 rounded-lg overflow-hidden w-full">
+                <Image
+                  src={post.imagePreviewUrl}
+                  alt="Banner"
+                  width={1920}
+                  height={600}
+                  className="w-full object-cover"
+                />
+              </div>
+            )}
+            <div className="mt-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Description
+              </label>
+              <CustomEditor onChange={handleEditorChange} />
+            </div>
+            <Button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 w-full"
+            >
+              Update Post
+            </Button>
+          </form>
+        </div>
       </div>
       <Footer />
     </div>

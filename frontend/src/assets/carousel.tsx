@@ -76,7 +76,7 @@ const settings = {
   ],
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 const countWords = (text: string) => {
   if (!text) return 0;
   return text.split(/\s+/).filter((word) => word.length > 0).length;
@@ -180,9 +180,9 @@ const ArticleCarousel = () => {
                   </h2>
                 </div>
                 <div className="overflow-hidden">
-                  <p className="text-sm text-gray-900 line-clamp-3">
+                  <div className="text-sm text-gray-900 line-clamp-3">
                     {parse(post.description)}
-                  </p>
+                  </div>
                 </div>
                 <div>
                   <div className="flex justify-between items-center">

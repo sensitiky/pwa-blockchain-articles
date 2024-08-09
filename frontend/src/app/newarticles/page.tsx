@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import dynamic from "next/dynamic";
 import { FaUpload } from "react-icons/fa";
 import { useAuth } from "../../../context/authContext";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Category {
   id: number;
@@ -25,6 +25,16 @@ const CustomEditor = dynamic(() => import("@/components/ui/editor"), {
   ssr: false,
 });
 
+const categoryDescriptions: { [key: number]: string } = {
+  1: "In-depth analysis of Web3 projects, trends and technologies. Get expert opinions, critical reviews and thought-provoking perspectives.",
+  2: "Step-by-step guides and instructions to help you navigate the Web3 world. Learn how to use tools, platforms, and protocols, and acquire new skills.",
+  3: "Evaluations of Web3 products, services, and platforms. Get the information you need to make informed decisions about your investments and interactions.",
+  4: "Real-world examples of Web3 applications across various industries. Learn how blockchain, cryptocurrencies, and NFTs are transforming businesses and solving problems.",
+  5: "Stay up-to-date with the latest developments in the Web3 space. Get breaking news, project updates, regulatory changes, and market trends.",
+  6: "Discover essential tools, platforms, and educational resources for navigating the Web3 ecosystem.",
+  7: "Exclusive conversations with Web3 leaders, innovators, and influencers. Gain unique insights into their journeys, visions, and the future of the decentralized web.",
+};
+
 export default function NewArticles() {
   const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
@@ -39,7 +49,8 @@ export default function NewArticles() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [newTag, setNewTag] = useState<string>("");
   const router = useRouter();
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+
   useEffect(() => {
     const fetchCategoriesAndTags = async () => {
       try {
@@ -58,6 +69,10 @@ export default function NewArticles() {
 
   const handleCategorySelect = (category: Category) => {
     setSelectedCategory(category);
+  };
+
+  const handleCategoryRemove = () => {
+    setSelectedCategory(null);
   };
 
   const handleTagSelect = (tag: Tag) => {
@@ -126,11 +141,12 @@ export default function NewArticles() {
       console.error("Error creating post:", error);
     }
   };
+
   return (
     <div className="max-h-screen bg-gray-100">
       <Header />
-      <div className="bg-gray-100 lex flex-col min-h-screen">
-        <main className="flex-1 py-8 px-4 md:px-6 flex justify-center">
+      <div className="bg-gray-100 flex flex-col min-h-screen">
+        <main className="flex-1 py-8 px-4 md:px-6 justify-center flex">
           <div className="w-full max-w-6xl flex flex-col md:flex-row">
             <div className="w-full md:w-1/4 pr-4 mb-4 md:mb-0">
               <div className="mb-6">
@@ -138,20 +154,46 @@ export default function NewArticles() {
                   Category
                 </div>
                 <div className="grid grid-cols-1 gap-2">
-                  {categories.map((category) => (
-                    <motion.button
-                      key={category.id}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`text-lg hover:bg-inherit rounded-full border-gray-500 w-fit ${
-                        selectedCategory === category ? "bg-gray-300" : ""
-                      }`}
-                      onClick={() => handleCategorySelect(category)}
-                    >
-                      {category.name}
-                    </motion.button>
-                  ))}
+                  {!selectedCategory &&
+                    categories.map((category) => (
+                      <motion.button
+                        key={category.id}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`text-lg hover:bg-inherit rounded-full border-gray-500 w-fit ${
+                          selectedCategory === category ? "bg-gray-300" : ""
+                        }`}
+                        onClick={() => handleCategorySelect(category)}
+                      >
+                        {category.name}
+                      </motion.button>
+                    ))}
                 </div>
+                <AnimatePresence>
+                  {selectedCategory && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 0, transition: { duration: 0 } }}
+                      className="bg-gray-100 mt-4"
+                    >
+                      <div className="flex justify-between">
+                        <h2 className="text-xl font-semibold text-gray-800">
+                          {selectedCategory.name}
+                        </h2>
+                        <button
+                          className="text-red-500 hover:text-red-700 text-xl"
+                          onClick={handleCategoryRemove}
+                        >
+                          x
+                        </button>
+                      </div>
+                      <p className="text-gray-600 mt-2">
+                        {categoryDescriptions[selectedCategory.id]}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
               <div>
                 <div className="text-black font-semibold text-xl mb-2">
@@ -203,7 +245,7 @@ export default function NewArticles() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="flex justify-between items-center">
+                <div className="flex justify-end items-center">
                   <div className="space-x-4">
                     <motion.button
                       onClick={() => handleSubmit(false)}

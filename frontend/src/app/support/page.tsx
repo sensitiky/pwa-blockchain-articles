@@ -13,8 +13,8 @@ const SupportSection: FC = () => {
             <Image
               src="/luz.png"
               alt="Light Effect"
-              width={400}
-              height={400}
+              width={1000}
+              height={1000}
               className="z-0"
               style={{ filter: "blur(100px)", opacity: 0.5 }}
             />

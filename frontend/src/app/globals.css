@@ -114,7 +114,7 @@
   transition: box-shadow 0.3s ease;
 }
 .tags-container {
-  opacity: 0;
+  opacity: 1;
   transform: translateY(-10px);
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
@@ -214,16 +214,31 @@
 }
 /* Specific styles for tags */
 .ios-tag {
+  display: inline-block;
   border-radius: 12px;
   padding: 8px 16px;
   background-color: #4b5563; /* Gray */
   border: 1px solid white;
   color: white;
   transition: background-color 0.3s ease, color 0.3s ease;
+  visibility: visible;
 }
+
+/* Add margin to ensure spacing between tags */
+.ios-tag:not(:last-child) {
+  margin-right: 8px;
+}
+
 .ios-tag:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
+
+/* Ensure the tags container is on top */
+.tags-container {
+  position: relative;
+  z-index: 50;
+}
+
 /* Specific styles for select elements */
 .ios-select {
   border-radius: 12px;
@@ -244,11 +259,11 @@
   text-align: center;
   padding: 10px;
 }
-#sortOrder1{
+#sortOrder1 {
   color: #000;
   background-color: white;
 }
-#sortOrder2{
+#sortOrder2 {
   color: #000;
   background-color: white;
 }
