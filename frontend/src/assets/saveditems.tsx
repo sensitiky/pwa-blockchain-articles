@@ -17,7 +17,7 @@ import DOMPurify from "dompurify";
 import { CircularProgress } from "@mui/material";
 import styled from "styled-components";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 
 const Container = styled.div`
   display: flex;

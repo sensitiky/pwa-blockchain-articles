@@ -63,7 +63,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 
   useEffect(() => {
     const fetchUserData = async () => {
