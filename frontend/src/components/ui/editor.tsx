@@ -13,7 +13,9 @@ const CustomEditor: React.FC<CustomEditorProps> = ({ onChange }) => {
 
   const handleEditorChange = () => {
     if (editorRef.current) {
-      onChange(editorRef.current.getContent());
+      const content = editorRef.current.getContent();
+      console.log("Content from editor:", content);
+      onChange(content);
     }
   };
 
@@ -60,9 +62,41 @@ const CustomEditor: React.FC<CustomEditorProps> = ({ onChange }) => {
           "undo redo | blocks | " +
           "bold italic forecolor | alignleft aligncenter " +
           "alignright alignjustify | bullist numlist outdent indent | " +
-          "removeformat | help",
+          "image media | removeformat | help",
         content_style:
           "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+        image_title: true,
+        automatic_uploads: true,
+        file_picker_types: "image media",
+        file_picker_callback: (cb, value, meta) => {
+          const input = document.createElement("input");
+          input.setAttribute("type", "file");
+          input.setAttribute(
+            "accept",
+            meta.filetype === "image" ? "image/*" : "video/*"
+          );
+
+          input.onchange = () => {
+            const file = input.files?.[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = () => {
+                const base64 = reader.result?.toString();
+                if (base64) {
+                  const id = "blobid" + new Date().getTime();
+                  const blobCache = editorRef.current?.editorUpload.blobCache;
+                  const blobInfo = blobCache?.create(id, file, base64.split(",")[1]);
+                  blobCache?.add(blobInfo as any);
+
+                  cb(blobInfo?.blobUri() || "", { title: file.name });
+                }
+              };
+              reader.readAsDataURL(file);
+            }
+          };
+
+          input.click();
+        },
       }}
       onChange={handleEditorChange}
     />

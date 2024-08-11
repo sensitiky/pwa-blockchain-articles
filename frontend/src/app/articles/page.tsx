@@ -365,7 +365,10 @@ export default function Articles() {
                       <p
                         className="text-muted-foreground mb-4 line-clamp-3"
                         dangerouslySetInnerHTML={{
-                          __html: DOMPurify.sanitize(post.description),
+                          __html: DOMPurify.sanitize(post.description, {
+                            ALLOWED_TAGS: ["b", "i", "em", "strong", "a", "p"],
+                            ALLOWED_ATTR: ["href"],
+                          }),
                         }}
                       ></p>
                     </div>

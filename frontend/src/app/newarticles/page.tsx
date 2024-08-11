@@ -49,6 +49,7 @@ export default function NewArticles() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [newTag, setNewTag] = useState<string>("");
   const router = useRouter();
+
   const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 
   useEffect(() => {
@@ -118,6 +119,14 @@ export default function NewArticles() {
       console.error("Category not selected");
       return;
     }
+
+    console.log("Description:", description);
+
+    if (!description) {
+      console.error("Description is empty");
+      return;
+    }
+
     const tags = selectedTags.map((tag) => ({ id: tag.id, name: tag.name }));
     const formData = new FormData();
     formData.append("title", title);

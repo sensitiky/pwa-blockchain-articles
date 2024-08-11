@@ -86,15 +86,15 @@ const ModalUserDelete: React.FC<ModalUserDeleteProps> = ({
           className="mb-4"
           placeholder="Type 'Delete' here"
         />
+        <Button onClick={handleClose} variant="outline" className="p-4 m-4">
+          Cancel
+        </Button>
         <Button
           onClick={handleDeleteProfile}
-          className="mb-2"
+          className="mb-2 p-4"
           disabled={deleteConfirmation !== "Delete"}
         >
           Confirm
-        </Button>
-        <Button onClick={handleClose} variant="outline">
-          Cancel
         </Button>
       </ModalContent>
     </ModalContainer>

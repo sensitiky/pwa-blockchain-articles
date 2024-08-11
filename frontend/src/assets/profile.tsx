@@ -55,7 +55,6 @@ const ProfileSettings: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string>("");
   const [bio, setBio] = useState<string>("");
   const [loading, setLoading] = useState(true);
-  const cardRef = useRef<HTMLDivElement>(null);
   const [role, setRole] = useState<string>("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
