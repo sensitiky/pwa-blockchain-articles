@@ -5,7 +5,6 @@ import { FaUpload } from "react-icons/fa";
 
 const Upload = () => {
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    console.log(acceptedFiles);
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({

@@ -83,7 +83,6 @@ const Posts: React.FC = () => {
           : null,
       }));
 
-      console.log(postsData);
       setPosts(postsData || []);
       setTotalPages(Math.ceil(response.data.length / POSTS_PER_PAGE));
     } catch (error) {

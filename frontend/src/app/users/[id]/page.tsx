@@ -68,24 +68,19 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        console.log("Fetching user data...");
         const response = await axios.get(`${API_URL}/users/${userId}`);
         const userData = response.data;
-        console.log("User data fetched:", userData);
         setUser(userData);
 
-        console.log("Fetching posts data...");
         const postsResponse = await axios.get(
           `${API_URL}/posts?authorId=${userId}`
         );
         const postsData = postsResponse.data.data.map((post: any) => {
-          console.log("Post fetched:", post);
           return {
             ...post,
             imageUrl: post.imageUrl ? `${API_URL}${post.imageUrl}` : null,
           };
         });
-        console.log("Posts data transformed:", postsData);
         setPosts(postsData);
       } catch (err) {
         if (axios.isAxiosError(err)) {

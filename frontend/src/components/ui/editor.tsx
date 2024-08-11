@@ -14,7 +14,6 @@ const CustomEditor: React.FC<CustomEditorProps> = ({ onChange }) => {
   const handleEditorChange = () => {
     if (editorRef.current) {
       const content = editorRef.current.getContent();
-      console.log("Content from editor:", content);
       onChange(content);
     }
   };

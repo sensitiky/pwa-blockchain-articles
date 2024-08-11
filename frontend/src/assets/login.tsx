@@ -284,7 +284,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       (response: any) => {
         if (response.authResponse) {
           const accessToken = response.authResponse.accessToken;
-          console.log("Facebook Access Token:", accessToken);
           handleFacebookResponse(accessToken);
         } else {
           setError("User cancelled login or did not fully authorize.");

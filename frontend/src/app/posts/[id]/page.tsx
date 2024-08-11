@@ -83,7 +83,6 @@ const CommentComponent = ({
   comment: Comment;
   handleFavorite: (postId: number, commentId?: number) => void;
 }) => {
-  console.log("Rendering comment:", comment);
   const author = comment.author || {};
   const avatarUrl = author.avatar
     ? `${API_URL}${author.avatar}`
@@ -486,10 +485,6 @@ const PostPage = () => {
           <div className="mt-8">
             <h3 className="text-lg font-medium">Comments</h3>
             {comments.map((comment) => {
-              console.log(
-                "Comment before passing to CommentComponent:",
-                comment
-              );
               return (
                 <CommentComponent
                   key={comment.id}

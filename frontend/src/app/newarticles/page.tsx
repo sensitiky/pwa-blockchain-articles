@@ -120,7 +120,6 @@ export default function NewArticles() {
       return;
     }
 
-    console.log("Description:", description);
 
     if (!description) {
       console.error("Description is empty");
