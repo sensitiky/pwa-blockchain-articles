@@ -48,6 +48,7 @@ export default function NewArticles() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [newTag, setNewTag] = useState<string>("");
+  const [showPopup, setShowPopup] = useState(false);
   const router = useRouter();
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
@@ -115,11 +116,10 @@ export default function NewArticles() {
       console.error("User not authenticated");
       return;
     }
-    if (!selectedCategory) {
-      console.error("Category not selected");
+    if (!selectedCategory || selectedTags.length < 2) {
+      setShowPopup(true);
       return;
     }
-
 
     if (!description) {
       console.error("Description is empty");
@@ -155,7 +155,7 @@ export default function NewArticles() {
       <Header />
       <div className="bg-gray-100 flex flex-col min-h-screen">
         <main className="flex-1 py-8 px-4 md:px-6 justify-center flex">
-          <div className="w-full max-w-6xl flex flex-col md:flex-row">
+          <div className="w-full max-w-6xl flex flex-col md:flex-row relative">
             <div className="w-full md:w-1/4 pr-4 mb-4 md:mb-0">
               <div className="mb-6">
                 <div className="text-black font-semibold text-xl mb-2">
@@ -208,7 +208,24 @@ export default function NewArticles() {
                   Tags
                 </div>
                 <div className="grid grid-cols-1 gap-2">
+                  {/* Mostrar los primeros 5 tags del backend */}
                   {tags.slice(0, 5).map((tag) => (
+                    <motion.button
+                      key={tag.id}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className={`text-lg hover:bg-inherit rounded-full border-gray-500 w-fit ${
+                        selectedTags.some((t) => t.id === tag.id)
+                          ? "bg-gray-300"
+                          : ""
+                      }`}
+                      onClick={() => handleTagSelect(tag)}
+                    >
+                      {tag.name}
+                    </motion.button>
+                  ))}
+                  {/* Mostrar los tags seleccionados */}
+                  {selectedTags.map((tag) => (
                     <motion.button
                       key={tag.id}
                       whileHover={{ scale: 1.05 }}
@@ -245,29 +262,27 @@ export default function NewArticles() {
             <div className="w-full md:w-3/4 pl-0 md:pl-4">
               <motion.div
                 className={`p-6 bg-white text-black rounded-lg shadow-lg ${
-                  selectedCategory && selectedTags.length >= 2
-                    ? ""
-                    : "opacity-50 pointer-events-none"
+                  !selectedCategory || selectedTags.length < 2
+                    ? "bg-gray-300"
+                    : "bg-gray-300"
                 }`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
+                onClick={() => {
+                  if (!selectedCategory || selectedTags.length < 2) {
+                    setShowPopup(true);
+                  }
+                }}
               >
                 <div className="flex justify-end items-center">
                   <div className="space-x-4">
-                    <motion.button
-                      onClick={() => handleSubmit(false)}
-                      className="text-white bg-gray-700 px-4 py-2 rounded-full hover:bg-gray-600 transition-all duration-300"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      Save Draft
-                    </motion.button>
                     <motion.button
                       onClick={() => handleSubmit(true)}
                       className="text-white bg-green-600 px-4 py-2 rounded-full hover:bg-green-500 transition-all duration-300"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
+                      disabled={!selectedCategory || selectedTags.length < 2}
                     >
                       Publish
                     </motion.button>
@@ -284,6 +299,7 @@ export default function NewArticles() {
                     onChange={(e) => setTitle(e.target.value)}
                     className="w-full mt-4 p-2 bg-white rounded-full border border-gray-400 text-black placeholder:text-gray-700"
                     maxLength={300}
+                    disabled={!selectedCategory || selectedTags.length < 2}
                   />
                   <p className="text-right text-gray-500 text-sm mt-1">
                     {title.length}/300
@@ -308,6 +324,7 @@ export default function NewArticles() {
                         type="file"
                         className="absolute inset-0 opacity-0 cursor-pointer"
                         onChange={handleImageUpload}
+                        disabled={!selectedCategory || selectedTags.length < 2}
                       />
                     </div>
                     <span className="text-center flex justify-center text-gray-500">
@@ -315,11 +332,33 @@ export default function NewArticles() {
                     </span>
                   </div>
                   <div className="mt-4">
-                    <CustomEditor onChange={setDescription} />
+                    <CustomEditor
+                      onChange={setDescription}
+                      disabled={!selectedCategory || selectedTags.length < 2}
+                    />
                   </div>
                 </div>
               </motion.div>
             </div>
+            {/* Popup */}
+            <AnimatePresence>
+              {showPopup && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute inset-0 flex items-center justify-center bg-transparent bg-opacity-75 z-50"
+                >
+                  <div className="backdrop-blur bg-white border border-black p-6 rounded-lg shadow-lg text-center">
+                    <h2 className="text-2xl font-bold mb-4 text-red-600">
+                      Select 1 category and 2 tags first
+                    </h2>
+                    <Button onClick={() => setShowPopup(false)}>Close</Button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </main>
       </div>

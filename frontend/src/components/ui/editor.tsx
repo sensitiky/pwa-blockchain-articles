@@ -6,9 +6,10 @@ import { Editor as TinyMCEEditor } from "tinymce";
 
 interface CustomEditorProps {
   onChange: (content: string) => void;
+  disabled?: boolean;
 }
 
-const CustomEditor: React.FC<CustomEditorProps> = ({ onChange }) => {
+const CustomEditor: React.FC<CustomEditorProps> = ({ onChange, disabled }) => {
   const editorRef = useRef<TinyMCEEditor | null>(null);
 
   const handleEditorChange = () => {
@@ -96,8 +97,10 @@ const CustomEditor: React.FC<CustomEditorProps> = ({ onChange }) => {
 
           input.click();
         },
+        disabled: disabled,
       }}
       onChange={handleEditorChange}
+      disabled={disabled}
     />
   );
 };

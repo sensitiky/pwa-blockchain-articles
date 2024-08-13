@@ -120,7 +120,7 @@ const CommentComponent = ({
   );
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
 const PostPage = () => {
   const { user } = useAuth();

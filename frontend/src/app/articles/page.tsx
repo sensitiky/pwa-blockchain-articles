@@ -64,7 +64,7 @@ export default function Articles() {
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const [tags, setTags] = useState<Tag[]>([]);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
   );
