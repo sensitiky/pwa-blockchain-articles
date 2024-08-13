@@ -58,10 +58,10 @@ const CustomEditor: React.FC<CustomEditorProps> = ({ onChange }) => {
           "wordcount",
         ],
         toolbar:
-          "undo redo | blocks | " +
+          "undo redo | blocks | image media | " +
           "bold italic forecolor | alignleft aligncenter " +
           "alignright alignjustify | bullist numlist outdent indent | " +
-          "image media | removeformat | help",
+          " removeformat | help",
         content_style:
           "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
         image_title: true,
