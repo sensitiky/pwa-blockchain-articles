@@ -189,12 +189,12 @@ export default function NewArticles() {
                         <h2 className="text-xl font-semibold text-gray-800">
                           {selectedCategory.name}
                         </h2>
-                        <button
-                          className="text-red-500 hover:text-red-700 text-xl"
+                        <img
+                          src="/close-circle-svgrepo-com.png"
+                          alt="Remove"
                           onClick={handleCategoryRemove}
-                        >
-                          x
-                        </button>
+                          className="size-8 cursor-pointer hover:animate-pulse"
+                        />
                       </div>
                       <p className="text-gray-600 mt-2">
                         {categoryDescriptions[selectedCategory.id]}
@@ -209,28 +209,33 @@ export default function NewArticles() {
                 </div>
                 <div className="grid grid-cols-1 gap-2">
                   {/* Mostrar los primeros 5 tags del backend */}
-                  {tags.slice(0, 5).map((tag) => (
-                    <motion.button
-                      key={tag.id}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`text-lg hover:bg-inherit rounded-full border-gray-500 w-fit ${
-                        selectedTags.some((t) => t.id === tag.id)
-                          ? "bg-gray-300"
-                          : ""
-                      }`}
-                      onClick={() => handleTagSelect(tag)}
-                    >
-                      {tag.name}
-                    </motion.button>
-                  ))}
+                  {tags
+                    .filter(
+                      (taga) => !selectedTags.some((t) => t.id === taga.id)
+                    )
+                    .slice(0, 5)
+                    .map((tag) => (
+                      <motion.button
+                        key={tag.id}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`text-lg hover:bg-inherit rounded-full border-gray-500 w-fit ${
+                          selectedTags.some((t) => t.id === tag.id)
+                            ? "bg-gray-300"
+                            : ""
+                        }`}
+                        onClick={() => handleTagSelect(tag)}
+                      >
+                        {tag.name}
+                      </motion.button>
+                    ))}
                   {/* Mostrar los tags seleccionados */}
                   {selectedTags.map((tag) => (
                     <motion.button
                       key={tag.id}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className={`text-lg hover:bg-inherit rounded-full border-gray-500 w-fit ${
+                      className={`text-lg hover:bg-gray-300 rounded-full border-gray-500 w-full ${
                         selectedTags.some((t) => t.id === tag.id)
                           ? "bg-gray-300"
                           : ""
@@ -259,7 +264,14 @@ export default function NewArticles() {
                 Must select 1 category and 2 to 5 tags.
               </div>
             </div>
-            <div className="w-full md:w-3/4 pl-0 md:pl-4">
+            <div
+              className={`w-full md:w-3/4 pl-0 md:pl-4 ${
+                !selectedCategory || selectedTags.length < 2
+                  ? "animate-pulse"
+                  : ""
+              }`}
+            >
+              {" "}
               <motion.div
                 className={`p-6 bg-white text-black rounded-lg shadow-lg ${
                   !selectedCategory || selectedTags.length < 2
@@ -275,14 +287,26 @@ export default function NewArticles() {
                   }
                 }}
               >
+                {(!selectedCategory || selectedTags.length < 2) && (
+                  <div className="flex justify-between items-center flex-col">
+                    <span className="text-gray-400 text-xl justify-center items-center">
+                      Select 1 category and 2 tags first
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-end items-center">
                   <div className="space-x-4">
                     <motion.button
-                      onClick={() => handleSubmit(true)}
+                      onClick={() => {
+                        if (!selectedCategory || selectedTags.length < 2) {
+                          setShowPopup(true);
+                        } else {
+                          handleSubmit(true);
+                        }
+                      }}
                       className="text-white bg-green-600 px-4 py-2 rounded-full hover:bg-green-500 transition-all duration-300"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      disabled={!selectedCategory || selectedTags.length < 2}
                     >
                       Publish
                     </motion.button>
