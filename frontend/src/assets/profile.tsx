@@ -240,7 +240,7 @@ const ProfileSettings: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="justify-center flex">
       <Button
         variant="outline"
         className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black"
