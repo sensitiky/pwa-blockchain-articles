@@ -84,7 +84,7 @@ const CommentComponent = ({
   handleFavorite: (postId: number, commentId?: number) => void;
 }) => {
   const author = comment.author || {};
-  const avatarUrl = author.avatar
+  const avatarUrl = author
     ? `${API_URL}${author.avatar}`
     : "/shadcn.jpg";
   const authorName = `${author.firstName || "Unknown"} ${

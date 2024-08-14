@@ -9,9 +9,9 @@ const LandingSection: FC = () => {
       <Header />
       <div className="bg-customColor-header min-h-screen flex flex-col">
         <div className="flex-grow grid grid-cols-1 md:grid-cols-2 bg-background text-foreground relative">
-          <h1 className="absolute text-center w-full text-4xl sm:text-5xl font-bold text-white top-11 transform -translate-y-1/2">
+          <h1 className="absolute text-center w-full text-4xl sm:text-5xl font-bold text-white top-11 transform -translate-y-1/2 ml-2">
             Know, learn{" "}
-            <span className="text-customColor-innovatio3">and criticize.</span>
+            <span className="text-customColor-innovatio3 ml-2"> and criticize.</span>
           </h1>
           <main
             id="main-about"

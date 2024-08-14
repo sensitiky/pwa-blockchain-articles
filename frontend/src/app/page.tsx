@@ -201,7 +201,7 @@ const HomePage: React.FC = () => {
     <div className="h-full">
       <Header />
       <div className="py-16 relative h-fit flex items-center justify-center bg-customColor-header">
-        <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-white to-transparent z-0"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[#ffffff] to-transparent z-0"></div>
         <div
           className="relative z-10 px-4 sm:px-6 md:px-8"
           data-aos="fade-in"
@@ -218,13 +218,13 @@ const HomePage: React.FC = () => {
             <br />
             for discussion
           </h2>
-          <div className="text-center mt-8 flex justify-center">
+          <div className="text-center flex justify-center lg:mt-[-50px] mb-[6rem]">
             <Image
               src="/Hero.png"
               alt="Hero Image"
               height={1000}
               width={1000}
-              className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg"
+              className="w-full max-w-sm sm:max-w-sm md:max-w-md lg:max-w-lg"
             />
           </div>
         </div>
