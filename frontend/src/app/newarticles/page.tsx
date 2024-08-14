@@ -273,7 +273,7 @@ export default function NewArticles() {
             >
               {" "}
               <motion.div
-                className={`p-6 bg-white text-black rounded-lg shadow-lg ${
+                className={`p-6 bg-[#F3F4F6] text-black rounded-lg ${
                   !selectedCategory || selectedTags.length < 2
                     ? "bg-gray-300"
                     : "bg-gray-300"
@@ -375,7 +375,7 @@ export default function NewArticles() {
                   className="absolute inset-0 flex items-center justify-center bg-transparent bg-opacity-75 z-50"
                 >
                   <div className="backdrop-blur bg-white border border-black p-6 rounded-lg shadow-lg text-center">
-                    <h2 className="text-2xl font-bold mb-4 text-red-600">
+                    <h2 className="text-2xl mb-4 text-black">
                       Select 1 category and 2 tags first
                     </h2>
                     <Button onClick={() => setShowPopup(false)}>Close</Button>
