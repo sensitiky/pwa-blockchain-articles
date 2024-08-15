@@ -35,7 +35,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({ onChange, disabled }) => {
       apiKey="y0at2od14wcly7jbdqpjh9vy4b12oxnf64jkpq1cu7v13k65"
       onInit={(_evt, editor) => (editorRef.current = editor)}
       init={{
-        height: 500,
+        height: 200,
         menubar: false,
         placeholder: "Introduce your story",
         plugins: [

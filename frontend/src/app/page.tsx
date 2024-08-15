@@ -384,7 +384,7 @@ const HomePage: React.FC = () => {
           </div>
           <div className="text-center mt-8">
             <Link href="/articles">
-              <Button className="px-6 py-2 border-2 text-black bg-inherit border-black hover:bg-customColor-innovatio3 hover:text-customColor-innovatio rounded-full">
+              <Button className="px-6 py-2 text-white bg-primary hover:bg-primary/80 rounded-full">
                 View All
               </Button>
             </Link>

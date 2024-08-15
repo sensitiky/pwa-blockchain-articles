@@ -156,7 +156,7 @@ export default function NewArticles() {
       <div className="bg-gray-100 flex flex-col min-h-screen">
         <main className="flex-1 py-8 px-4 md:px-6 justify-center flex">
           <div className="w-full max-w-6xl flex flex-col md:flex-row relative">
-            <div className="w-full md:w-1/4 pr-4 mb-4 md:mb-0">
+            <div className="w-full md:w-1/3 pr-4 mb-4 md:mb-0">
               <div className="mb-6">
                 <div className="text-black font-semibold text-xl mb-2">
                   Category
@@ -183,7 +183,7 @@ export default function NewArticles() {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 0, transition: { duration: 0 } }}
-                      className="bg-gray-100 mt-4"
+                      className="bg-gray-100 mt-4 flex-col"
                     >
                       <div className="flex justify-between">
                         <h2 className="text-xl font-semibold text-gray-800">
@@ -203,6 +203,7 @@ export default function NewArticles() {
                   )}
                 </AnimatePresence>
               </div>
+              <div className="mb-4 w-[8rem] bg-black h-[0.05rem]"></div>
               <div>
                 <div className="text-black font-semibold text-xl mb-2">
                   Tags
@@ -265,7 +266,7 @@ export default function NewArticles() {
               </div>
             </div>
             <div
-              className={`w-full md:w-3/4 pl-0 md:pl-4 ${
+              className={`w-full md:w-3/4 pl-0 md:pl-4 bg-white rounded-xl ${
                 !selectedCategory || selectedTags.length < 2
                   ? "animate-pulse"
                   : ""
@@ -321,7 +322,7 @@ export default function NewArticles() {
                     placeholder="Title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full mt-4 p-2 bg-white rounded-full border border-gray-400 text-black placeholder:text-gray-700"
+                    className="w-full mt-4 p-2 bg-white rounded-lg border border-gray-400 text-black placeholder:text-gray-700"
                     maxLength={300}
                     disabled={!selectedCategory || selectedTags.length < 2}
                   />
@@ -337,7 +338,7 @@ export default function NewArticles() {
                         <img
                           src={imageUrl}
                           alt="Banner"
-                          className="w-full h-52 object-cover rounded-lg mb-4"
+                          className="w-full h-[20rem] object-cover rounded-lg mb-4"
                         />
                       ) : (
                         <div className="w-full h-52 flex items-center justify-center border-2 border-dashed border-gray-400 rounded-lg mb-4">

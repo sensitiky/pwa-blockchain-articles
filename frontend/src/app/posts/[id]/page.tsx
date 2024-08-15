@@ -12,12 +12,10 @@ import {
   FaFacebook,
   FaTwitter,
   FaLinkedin,
-  FaComment,
-  FaHeart,
   FaEdit,
   FaTrash,
 } from "react-icons/fa";
-import { ArrowLeftIcon, HandHeart } from "lucide-react";
+import { ArrowLeftIcon } from "lucide-react";
 import parse from "html-react-parser";
 import { useAuth } from "../../../../context/authContext";
 import DeletePostModal from "@/assets/deletepost";
@@ -84,9 +82,7 @@ const CommentComponent = ({
   handleFavorite: (postId: number, commentId?: number) => void;
 }) => {
   const author = comment.author || {};
-  const avatarUrl = author
-    ? `${API_URL}${author.avatar}`
-    : "/shadcn.jpg";
+  const avatarUrl = author ? `${API_URL}${author.avatar}` : "/shadcn.jpg";
   const authorName = `${author.firstName || "Unknown"} ${
     author.lastName || ""
   }`;
@@ -112,8 +108,7 @@ const CommentComponent = ({
           className="flex w-fit items-center rounded-full space-x-1"
           onClick={() => handleFavorite(comment.id)}
         >
-          <HandHeart className="size-4" />
-          <span className="ml-2">Favorite</span>
+          <img src="/saved-svgrepo-com.png" alt="Saved" className="w-4 h-4" />
         </Button>
       </div>
     </div>
@@ -297,7 +292,7 @@ const PostPage = () => {
     }
 
     const transformedDescription = description
-      .replace(/\.(?!\d)/g, ".<br/>")
+      .replace(/\.(?!\d)/g, ".")
       .replace(/\[(\w+)\](.*?)\[\/\1\]/g, (match, tagName, content) => {
         const htmlTagName =
           tagMap[tagName.toLowerCase() as keyof typeof tagMap];
@@ -440,21 +435,25 @@ const PostPage = () => {
           </div>
           {post.category && (
             <div className="mt-8">
-              <h3 className="text-lg font-medium">Category:</h3>
-              <span className="px-2 py-1 bg-gray-200 text-gray-700 rounded-full">
+              <span className="px-2 py-1 bg-primary text-white rounded-full">
+                <span className="text-white">#</span>
                 {post.category ? post.category.name : "Uncategorized"}
               </span>
             </div>
           )}
           {post.tags && (
             <div className="mt-8">
-              <h3 className="text-lg font-medium">Tags:</h3>
               <ul className="flex flex-wrap gap-2">
                 {post.tags.map((tag, index) => (
                   <li
                     key={index}
-                    className="px-2 py-1 bg-gray-200 text-gray-700 rounded-full"
+                    className="flex items-center px-2 py-1 bg-primary text-white rounded-full"
                   >
+                    <img
+                      className="w-4 h-4 mr-2 filter invert"
+                      src="/tag-svgrepo-com.png"
+                      alt="Tag icon"
+                    />
                     {tag ? tag.name : "Uncategorized"}
                   </li>
                 ))}
@@ -462,28 +461,30 @@ const PostPage = () => {
             </div>
           )}
           <div className="flex items-center mt-8 space-x-4">
-            <Button
-              variant="ghost"
+            <button
               className="w-fit flex items-center space-x-1"
               onClick={() => handleFavorite(post.id)}
             >
-              <FaHeart className="h-5 w-5 text-gray-500" />
+              <img
+                src="/saved-svgrepo-com.png"
+                alt="Saved"
+                className="w-5 h-5"
+              />
               <span>
                 {Array.isArray(post.favorites) ? post.favorites.length : 0}
               </span>
-            </Button>
-            <Button
-              className="w-fit flex items-center space-x-1 text-gray-500"
-              variant="ghost"
-            >
-              <FaComment className="w-5 h-5" />
+            </button>
+            <button className="w-fit flex items-center space-x-1 text-gray-500">
+              <img src="/comment.png" alt="Comment" className="w-5 h-5" />
               <span>
                 {Array.isArray(post.comments) ? post.comments.length : 0}
               </span>
-            </Button>
+            </button>
+          </div>
+          <div className="flex w-full justify-center">
+            <div className="mt-20 w-[30rem] justify-center bg-primary/20 h-[0.1rem]"></div>
           </div>
           <div className="mt-8">
-            <h3 className="text-lg font-medium">Comments</h3>
             {comments.map((comment) => {
               return (
                 <CommentComponent
@@ -505,7 +506,7 @@ const PostPage = () => {
             />
             <Button
               type="submit"
-              className="mt-2 border-none rounded-md bg-gray-200 text-black hover:bg-black hover:text-gray-200"
+              className="mt-2 border-none rounded-full bg-primary text-white hover:bg-primary/80"
             >
               Submit
             </Button>

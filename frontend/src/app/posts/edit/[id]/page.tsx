@@ -12,6 +12,7 @@ import Footer from "@/assets/footer";
 import { ArrowLeftIcon } from "lucide-react";
 import { CircularProgress } from "@mui/material";
 import styled from "styled-components";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface EditPostDto {
   title: string;
@@ -29,13 +30,17 @@ const Container = styled.div`
   padding: 1rem;
   background-color: inherit;
 `;
+
 const EditPostPage = () => {
   const { user } = useAuth();
   const [post, setPost] = useState<EditPostDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showPopup, setShowPopup] = useState(false);
+
   const { id } = useParams();
   const router = useRouter();
   const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+
   const fetchPost = async (id: string) => {
     try {
       const response = await axios.get(`${API_URL}/posts/${id}`);
@@ -106,11 +111,16 @@ const EditPostPage = () => {
       return;
     }
 
+    if (!post?.title || !post?.description || !post?.imageUrl) {
+      setShowPopup(true);
+      return;
+    }
+
     const formData = new FormData();
-    formData.append("title", post?.title || "");
-    formData.append("content", post?.content || "");
-    formData.append("description", post?.description || "");
-    if (post && post.imageUrl instanceof File) {
+    formData.append("title", post.title);
+    formData.append("content", post.content);
+    formData.append("description", post.description);
+    if (post.imageUrl instanceof File) {
       formData.append("image", post.imageUrl);
     }
 
@@ -139,32 +149,33 @@ const EditPostPage = () => {
   }
 
   if (!post) {
-    return <div>Error loading post data.</div>;
+    return <div>Error loading post data</div>;
   }
 
   return (
-    <div>
+    <div className="bg-white">
       <Header />
       <div className="container mx-auto p-8">
         <div className="flex flex-col items-center">
           <form
             onSubmit={handleFormSubmit}
-            className="space-y-4 w-full max-w-2xl"
+            className="space-y-4 w-full max-w-3xl shadow-2xl bg-gray-300 rounded-lg"
           >
-            <div className="flex justify-start mb-4">
+            <div className="flex justify-start ml-4 mt-2 w-full">
               <button
+                type="button"
                 className="flex hover:underline bg-inherit text-black h-8 items-center justify-start rounded-md text-sm font-medium transition-colors hover:bg-inherit focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                 onClick={() => router.back()}
               >
-                <ArrowLeftIcon className="mr-2 h-4 w-4" />
+                <ArrowLeftIcon className="h-4 w-4" />
                 Go Back
               </button>
             </div>
             <div className="flex flex-col items-center">
-              <h1 className="text-2xl font-bold mb-4">Edit Post</h1>
+              <h1 className="text-2xl font-bold">Edit Post</h1>
             </div>
 
-            <div className="mb-4">
+            <div className="m-4 p-4">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Title
               </label>
@@ -174,10 +185,10 @@ const EditPostPage = () => {
                 value={post.title}
                 onChange={handleInputChange}
                 required
-                className="rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 w-full"
+                className="rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-            <div className="mb-4">
+            <div className="m-4 p-4">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Image
               </label>
@@ -185,33 +196,56 @@ const EditPostPage = () => {
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-primary file:text-white hover:file:bg-primary/80"
               />
             </div>
+            <div></div>
             {post.imagePreviewUrl && (
-              <div className="mt-6 rounded-lg overflow-hidden w-full">
+              <div className="m-6 rounded-lg overflow-hidden">
                 <Image
                   src={post.imagePreviewUrl}
                   alt="Banner"
                   width={1920}
-                  height={600}
-                  className="w-full object-cover"
+                  height={1080}
+                  className="w-full h-[15rem] mb-4 object-contain"
                 />
               </div>
             )}
-            <div className="mt-4">
+            <div className="m-4 p-4">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Description
               </label>
               <CustomEditor onChange={handleEditorChange} />
             </div>
-            <Button
-              type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 w-full"
-            >
-              Update Post
-            </Button>
+            <div className="w-full justify-end flex">
+              <Button
+                type="submit"
+                className="p-10 mr-4 mb-4 bg-primary text-white px-4 py-2 rounded-full shadow-md hover:bg-primary/80"
+              >
+                Update Post
+              </Button>
+            </div>
           </form>
+        </div>
+        <div>
+          <AnimatePresence>
+            {showPopup && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="absolute inset-0 flex items-center justify-center bg-transparent bg-opacity-75 z-50"
+              >
+                <div className="backdrop-blur bg-white border border-black p-6 rounded-lg shadow-lg text-center">
+                  <h2 className="text-2xl mb-4 text-black">
+                    Complete all fields
+                  </h2>
+                  <Button onClick={() => setShowPopup(false)}>Close</Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
       <Footer />

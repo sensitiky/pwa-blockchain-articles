@@ -245,11 +245,11 @@ export default function Articles() {
         )}
         <div className="flex justify-center w-full lg:w-auto py-4">
           <button
-            className="p-2 bg-inherit text-white rounded w-full lg:w-fit hover:bg-white hover:text-black transition-colors duration-300"
+            className="p-2 bg-inherit text-white rounded w-full lg:w-fit hover:text-black transition-colors duration-300"
             onClick={handleResetSortOrder}
           >
             <svg
-              className="fill-current text-white hover:text-black"
+              className="fill-current text-gray-300 hover:text-white"
               width="24"
               height="24"
               viewBox="0 0 21 21"
@@ -378,14 +378,22 @@ export default function Articles() {
                         {calculateReadingTime(post.description)} min read
                       </span>
                       <span className="mx-2">|</span>
-                      <MessageSquareIcon className="w-5 h-5 mr-1" />
+                      <img
+                        src="/comment.png"
+                        alt="Comment"
+                        className="w-5 h-5 mr-1"
+                      />
                       <span>
                         {Array.isArray(post.comments)
                           ? post.comments.length
                           : 0}
                       </span>
                       <span className="mx-2">|</span>
-                      <HeartIcon className="w-5 h-5 mr-1" />
+                      <img
+                        src="/saved-svgrepo-com.png"
+                        alt="Saved"
+                        className="w-5 h-5 mr-1"
+                      />
                       <span>
                         {Array.isArray(post.favorites)
                           ? post.favorites.length

@@ -1,10 +1,10 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import Image from "next/image";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { FaRegComment, FaRegHeart } from "react-icons/fa";
+import { FaRegComment } from "react-icons/fa";
 import axios from "axios";
 import parse from "html-react-parser";
 import { useAuth } from "../../context/authContext";
@@ -192,7 +192,11 @@ const ArticleCarousel = () => {
                       </span>
                       <span className="bg-gray-500 w-px h-6"></span>
                       <button className="flex items-center space-x-1 text-gray-500">
-                        <FaRegComment className="w-5 h-5" />
+                        <img
+                          src="/comment.png"
+                          alt="Comment"
+                          className="w-5 h-5 mr-1"
+                        />
                         <span>
                           {Array.isArray(post.comments)
                             ? post.comments.length
@@ -203,7 +207,11 @@ const ArticleCarousel = () => {
                         className="flex items-center space-x-1 text-gray-500"
                         onClick={() => handleFavorite(post.id)}
                       >
-                        <FaRegHeart className="w-5 h-5" />
+                        <img
+                          src="/saved-svgrepo-com.png"
+                          alt="Saved"
+                          className="w-5 h-5 mr-1"
+                        />
                         <span>
                           {Array.isArray(post.favorites)
                             ? post.favorites.length
