@@ -275,8 +275,8 @@ export default function NewArticles() {
               <motion.div
                 className={`p-6 bg-[#d9dbdf] text-black rounded-lg ${
                   !selectedCategory || selectedTags.length < 2
-                    ? "bg-gray-300"
-                    : "bg-gray-300"
+                    ? "bg-[#d9dbdf]"
+                    : "bg-[#d9dbdf]"
                 }`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
