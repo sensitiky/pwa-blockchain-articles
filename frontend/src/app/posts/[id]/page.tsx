@@ -81,18 +81,27 @@ const CommentComponent = ({
   comment: Comment;
   handleFavorite: (postId: number, commentId?: number) => void;
 }) => {
-  const author = comment.author || {};
-  const avatarUrl = author ? `${API_URL}${author.avatar}` : "/shadcn.jpg";
-  const authorName = `${author.firstName || "Unknown"} ${
-    author.lastName || ""
-  }`;
+  const author = comment.author || {
+    firstName: "Unknown",
+    lastName: "User",
+    avatar: "/default-avatar.png",
+  };
+
+  const avatarUrl = author.avatar?.startsWith("/")
+    ? `${API_URL}${author.avatar}`
+    : author.avatar;
+
+  const authorName = `${author.firstName} ${author.lastName}`;
 
   return (
     <div className="border rounded-md p-4 my-4 bg-gray-100">
       <div className="flex items-center space-x-4">
         <Avatar className="h-8 w-8">
           <AvatarImage src={avatarUrl} alt="Author avatar" />
-          <AvatarFallback>{authorName}</AvatarFallback>
+          <AvatarFallback>
+            {author.firstName[0]}
+            {author.lastName[0]}
+          </AvatarFallback>
         </Avatar>
         <div>
           <p className="text-sm font-medium">{authorName}</p>
@@ -143,11 +152,9 @@ const PostPage = () => {
   const fetchComments = async (postId: string) => {
     try {
       const response = await axios.get(`${API_URL}/comments/post/${postId}`);
-      const commentsWithAuthor = response.data.map((comment: Comment) => ({
-        ...comment,
-        author: comment.author || {},
-      }));
-      setComments(commentsWithAuthor);
+      const commentsData: Comment[] = response.data;
+      console.log("Comments data:", commentsData);
+      setComments(commentsData);
     } catch (error) {
       console.error("Error fetching comments:", error);
     }

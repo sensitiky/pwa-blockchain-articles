@@ -19,7 +19,7 @@ const SupportSection: FC = () => {
               style={{ filter: "blur(100px)", opacity: 0.5 }}
             />
           </div>
-          <div className="flex flex-col items-center justify-center z-10 space-y-8 text-center px-6 h-full">
+          <div className="font-medium flex flex-col items-center justify-center z-10 space-y-8 text-center px-6 h-full">
             <p className="text-xl sm:text-2xl text-white leading-snug">
               Remember that Blogchain is maintained thanks to the donations of
               its readers, if you have the opportunity, do not hesitate to
@@ -28,7 +28,7 @@ const SupportSection: FC = () => {
           </div>
         </aside>
         <main className="flex flex-col justify-center items-center bg-gradient-to-b from-white to-cyan-100 text-black px-6 sm:px-12 py-10 sm:py-16">
-          <div className="space-y-8 text-center px-6 flex flex-col justify-center h-full">
+          <div className="font-medium space-y-8 text-center px-6 flex flex-col justify-center h-full">
             <p className="text-xl sm:text-2xl leading-snug">
               We are accepting donations in fiat and cryptocurrencies. If you
               want to support us, choose the channel that suits better and

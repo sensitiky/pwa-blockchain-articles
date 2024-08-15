@@ -16,6 +16,31 @@
     font-weight: 800;
     font-style: normal;
   }
+  @font-face {
+    font-family: "Gilroy";
+    src: url("/fonts/Gilroy-Bold.ttf") format("opentype");
+    font-weight: 700;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "Gilroy";
+    src: url("/fonts/Gilroy-Medium.ttf") format("opentype");
+    font-weight: 500;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "Gilroy";
+    src: url("/fonts/Gilroy-Regular.ttf") format("opentype");
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "Gilroy";
+    src: url("/fonts/Gilroy-Heavy.ttf") format("opentype");
+    font-weight: 900;
+    font-style: normal;
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;

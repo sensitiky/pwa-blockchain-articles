@@ -35,7 +35,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({ onChange, disabled }) => {
       apiKey="y0at2od14wcly7jbdqpjh9vy4b12oxnf64jkpq1cu7v13k65"
       onInit={(_evt, editor) => (editorRef.current = editor)}
       init={{
-        height: 200,
+        height: 800,
         menubar: false,
         placeholder: "Introduce your story",
         plugins: [
@@ -64,7 +64,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({ onChange, disabled }) => {
           "alignright alignjustify | bullist numlist outdent indent | " +
           " removeformat | help",
         content_style:
-          "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+          "body { font-family:Helvetica,Arial,sans-serif; font-size:14px; border: none; }",
         image_title: true,
         automatic_uploads: true,
         file_picker_types: "image media",

@@ -102,7 +102,6 @@ export default function Articles() {
       const response = await axios.get(url);
       const postsData = response.data.data || [];
       setPosts(postsData);
-      setTotalPages(Math.ceil(postsData.length / POSTS_PER_PAGE));
     } catch (error) {
       console.error("Error fetching posts", error);
     } finally {

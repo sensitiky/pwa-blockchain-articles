@@ -42,9 +42,10 @@ export class CommentsService {
   async findAllByPost(postId: number): Promise<Comment[]> {
     return this.commentsRepository.find({
       where: { post: { id: postId }, parentComment: null },
-      relations: ['author', 'replies', 'replies.author'],
+      relations: [ 'author' ],
     });
   }
+  
 
   async findAllReplies(commentId: number): Promise<Comment[]> {
     return this.commentsRepository.find({

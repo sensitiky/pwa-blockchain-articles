@@ -9,9 +9,12 @@ const LandingSection: FC = () => {
       <Header />
       <div className="bg-customColor-header min-h-screen flex flex-col">
         <div className="flex-grow grid grid-cols-1 md:grid-cols-2 bg-background text-foreground relative">
-          <h1 className="absolute text-center w-full text-4xl sm:text-5xl font-bold text-white top-11 transform -translate-y-1/2 ml-2">
+          <h1 className="absolute text-center w-full text-4xl sm:text-5xl font-extrabold text-white top-11 transform -translate-y-1/2 ml-2 mt-10">
             Know, learn{" "}
-            <span className="text-customColor-innovatio3 ml-2"> and criticize.</span>
+            <span className="text-customColor-innovatio3 ml-2">
+              {" "}
+              and criticize.
+            </span>
           </h1>
           <main
             id="main-about"
@@ -39,28 +42,28 @@ const LandingSection: FC = () => {
               </div>
               <p
                 id="about-text-1"
-                className="ml-64 mt-10 relative text-xl sm:text-2xl text-white z-20 leading-snug"
+                className="ml-64 mt-10 relative text-xl sm:text-2xl text-white z-20 leading-snug font-medium"
               >
-                <span className="font-bold">
+                <span className="font-extrabold">
                   Empowering Web3 education
                   <br />
                 </span>
-                <span className="font-bold">and adoption </span>
+                <span className="font-extrabold">and adoption </span>
                 through
                 <br />
-                <span className="font-bold">
+                <span className="font-extrabold">
                   {" "}
                   community-driven content
                   <br />
                 </span>
                 and
-                <span className="font-bold"> critical thinking.</span>
+                <span className="font-extrabold"> critical thinking.</span>
               </p>
             </div>
           </main>
           <main
             id="main-about-2"
-            className="flex py-80 justify-center bg-gradient-to-b from-white to-cyan-100 text-black px-6 sm:px-12 sm:py-80"
+            className="flex py-80 justify-center bg-gradient-to-b from-white to-cyan-100 text-black px-6 sm:px-12 sm:py-80 font-medium"
           >
             <div className="space-y-8">
               <p id="about-text-2" className="text-xl sm:text-2xl leading-snug">
@@ -69,7 +72,7 @@ const LandingSection: FC = () => {
                 technology and new opportunities in{" "}
                 <br className="hidden sm:block" />
                 the web3 world?{" "}
-                <span className="font-bold">
+                <span className="font-extrabold">
                   Join our <br className="hidden sm:block" />
                   community
                 </span>{" "}
@@ -82,10 +85,10 @@ const LandingSection: FC = () => {
               </p>
               <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
                 <button className="px-6 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition duration-300">
-                  Discord Community
+                  Innovatio Social Media
                 </button>
                 <button className="px-6 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition duration-300">
-                  Innovatio Social Media
+                  Discord Community
                 </button>
               </div>
             </div>

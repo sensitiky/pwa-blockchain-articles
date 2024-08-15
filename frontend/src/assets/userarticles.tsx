@@ -84,13 +84,12 @@ const Posts: React.FC = () => {
       }));
 
       setPosts(postsData || []);
-      setTotalPages(Math.ceil(response.data.length / POSTS_PER_PAGE));
     } catch (error) {
       console.error("Error fetching user posts", error);
     } finally {
       setLoading(false);
     }
-  }, [order, page]);
+  }, []);
 
   useEffect(() => {
     fetchUserPosts();
@@ -99,6 +98,33 @@ const Posts: React.FC = () => {
   const handleOrderChange = (newOrder: string) => {
     setOrder(newOrder);
     setPage(1);
+  };
+
+  const sortPosts = (posts: Post[]) => {
+    switch (order) {
+      case "Date (newest first)":
+        return posts.sort(
+          (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+        );
+      case "Date (oldest first)":
+        return posts.sort(
+          (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+        );
+      case "Title":
+        return posts.sort((a, b) => a.title.localeCompare(b.title));
+      default:
+        return posts;
+    }
+  };
+
+  const sortedPosts = sortPosts(posts);
+  const paginatedPosts = sortedPosts.slice(
+    (page - 1) * POSTS_PER_PAGE,
+    page * POSTS_PER_PAGE
+  );
+
+  const removeSpecialCharacters = (str: string): string => {
+    return str.replace(/[^a-zA-Z0-9 ]/g, "");
   };
 
   return (
@@ -111,7 +137,7 @@ const Posts: React.FC = () => {
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2 bg-inherit border-border border-black rounded-full"
+                className="gap-2 bg-inherit border-border border-black rounded-lg"
               >
                 <FontAwesomeIcon icon={faArrowsUpDown} className="h-4 w-4" />
                 Order
@@ -152,12 +178,12 @@ const Posts: React.FC = () => {
       ) : (
         <>
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
-            {posts.length === 0 ? (
+            {paginatedPosts.length === 0 ? (
               <p className="text-center col-span-3 text-gray-500">
                 No posts available
               </p>
             ) : (
-              posts.map((post) => (
+              paginatedPosts.map((post) => (
                 <div
                   key={post.id}
                   className="relative group overflow-hidden rounded-lg shadow-lg"
@@ -187,7 +213,7 @@ const Posts: React.FC = () => {
                     </Link>
                   </div>
                   <h3 className="absolute top-0 left-0 right-0 text-lg mb-2 text-center text-black font-semibold backdrop-blur-lg bg-opacity-20 bg-black p-2 z-10">
-                    {post.title}
+                    {removeSpecialCharacters(post.title)}
                   </h3>
                 </div>
               ))

@@ -49,6 +49,8 @@ export default function NewArticles() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [newTag, setNewTag] = useState<string>("");
   const [showPopup, setShowPopup] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const router = useRouter();
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
@@ -91,7 +93,11 @@ export default function NewArticles() {
   };
 
   const handleAddNewTag = () => {
-    if (newTag.trim() !== "" && selectedTags.length < 5) {
+    if (
+      newTag.trim() !== "" &&
+      newTag.length <= 24 &&
+      selectedTags.length < 5
+    ) {
       const newTagObject = { id: tags.length + 1, name: newTag };
       setTags((prevTags) => [...prevTags, newTagObject]);
       setSelectedTags((prevTags) => [...prevTags, newTagObject]);
@@ -111,9 +117,9 @@ export default function NewArticles() {
     }
   };
 
-  const handleSubmit = async (publish: boolean) => {
+  const handleSubmit = async (publish: boolean) => {  
     if (!user) {
-      console.error("User not authenticated");
+      alert("User not authenticated");
       return;
     }
     if (!selectedCategory || selectedTags.length < 2) {
@@ -122,12 +128,28 @@ export default function NewArticles() {
     }
 
     if (!description) {
-      console.error("Description is empty");
+      alert("Description is empty");
       return;
     }
 
     const tags = selectedTags.map((tag) => ({ id: tag.id, name: tag.name }));
+
     const formData = new FormData();
+    if (title.length > 140) {
+      alert("Title exceeds the maximum length of 140 characters.");
+      return;
+    }
+
+    if (/[^a-zA-Z\s]/.test(title)) {
+      alert("Title contains special characters.");
+      return;
+    }
+
+    if (/\d/.test(title)) {
+      alert("Title contains numbers.");
+      return;
+    }
+
     formData.append("title", title);
     formData.append("description", description);
     formData.append("authorId", user.id.toString());
@@ -138,6 +160,9 @@ export default function NewArticles() {
       formData.append("image", imageFile);
     }
     formData.append("created_at", new Date().toISOString());
+
+    setIsSubmitting(true);
+
     try {
       const response = await axios.post(`${API_URL}/posts`, formData, {
         headers: {
@@ -147,6 +172,7 @@ export default function NewArticles() {
       router.push("/articles");
     } catch (error) {
       console.error("Error creating post:", error);
+      setIsSubmitting(false);
     }
   };
 
@@ -252,7 +278,11 @@ export default function NewArticles() {
                   value={newTag}
                   onChange={(e) => setNewTag(e.target.value)}
                   className="w-full mt-2"
+                  maxLength={24}
                 />
+                <p className="justify-end flex text-gray-500">
+                  {newTag.length}/24
+                </p>
                 <Button
                   variant="outline"
                   className="mt-2"
@@ -275,9 +305,7 @@ export default function NewArticles() {
               {" "}
               <motion.div
                 className={`p-6 text-black rounded-lg ${
-                  !selectedCategory || selectedTags.length < 2
-                    ? ""
-                    : ""
+                  !selectedCategory || selectedTags.length < 2 ? "" : ""
                 }`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -308,6 +336,7 @@ export default function NewArticles() {
                       className="text-white bg-green-600 px-4 py-2 rounded-full hover:bg-green-500 transition-all duration-300"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
+                      disabled={isSubmitting}
                     >
                       Publish
                     </motion.button>
@@ -323,11 +352,11 @@ export default function NewArticles() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     className="w-full mt-4 p-2 bg-white rounded-lg border border-gray-400 text-black placeholder:text-gray-700"
-                    maxLength={300}
+                    maxLength={140}
                     disabled={!selectedCategory || selectedTags.length < 2}
                   />
                   <p className="text-right text-gray-500 text-sm mt-1">
-                    {title.length}/300
+                    {title.length}/140
                   </p>
                   <div className="mt-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -338,7 +367,7 @@ export default function NewArticles() {
                         <img
                           src={imageUrl}
                           alt="Banner"
-                          className="w-full h-[20rem] object-cover rounded-lg mb-4"
+                          className="w-full h-[20rem] object-contain rounded-lg mb-4"
                         />
                       ) : (
                         <div className="w-full h-52 flex items-center justify-center border-2 border-dashed border-gray-400 rounded-lg mb-4">

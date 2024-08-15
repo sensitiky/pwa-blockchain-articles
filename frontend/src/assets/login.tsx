@@ -391,12 +391,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                 Login with Facebook
               </Button>
             </div>
-            <div className="flex justify-center">
-              <Button className="rounded-full w-44 bg-customColor-header">
-                <i className="fab fa-apple mr-2"></i>
-                Login with Apple ID
-              </Button>
-            </div>
 
             <div className="space-y-2 flex flex-col items-center">
               <GoogleLogin

@@ -136,7 +136,7 @@ const Header = () => {
       {/* Desktop Header */}
       <header id="desktop-header" className="p-4 hidden lg:block">
         <div className="container mx-auto flex justify-between items-center">
-          <div id="logo" className="text-white text-lg font-semibold">
+          <div id="logo" className="text-white text-lg font-bold">
             <Link href="/">Blogchain</Link>
           </div>
           <div
@@ -238,7 +238,7 @@ const Header = () => {
           `}</style>
           <nav
             id="nav"
-            className="space-x-4 flex items-center p-4 bg-inherit rounded-full"
+            className="space-x-4 flex items-center p-4 bg-inherit rounded-full font-medium"
           >
             <Link
               href="/"
@@ -310,7 +310,7 @@ const Header = () => {
             ) : (
               <Button
                 onClick={handleStartNewCampaign}
-                className="rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio transition-colors duration-300 shadow-md"
+                className="font-medium rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio transition-colors duration-300 shadow-md"
               >
                 Get Started
               </Button>

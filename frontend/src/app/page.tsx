@@ -230,7 +230,7 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      <section className="flex flex-col py-4 px-4 md:px-8">
+      <section className="flex flex-col py-4 px-4 md:px-8 font-medium">
         <div
           className="container mx-auto text-center"
           data-aos="fade-in"
@@ -240,12 +240,12 @@ const HomePage: React.FC = () => {
         >
           <div className="grid gap-8 mb-24 sm:grid-cols-1 md:grid-cols-2">
             <div className="text-center flex flex-col justify-center">
-              <h1 className="text-2xl sm:text-3xl md:text-5xl font-semibold mb-4 text-customColor-innovatio3">
+              <h1 className="text-2xl sm:text-3xl md:text-5xl font-semibold mb-4 text-primary">
                 Read, write, share and discuss blockchain
               </h1>
             </div>
             <div className="text-left">
-              <p className="text-base sm:text-lg md:text-lg mb-12 text-customColor-innovatio3">
+              <p className="sm:text-lg md:text-xl mb-12 text-primary">
                 Blogchain is an educational space to connect web content and
                 readers interested in blockchain technology and its adoption. We
                 seek to fill with educational, journalistic and informative
@@ -260,7 +260,7 @@ const HomePage: React.FC = () => {
               <h2 className="text-right text-2xl sm:text-3xl md:text-4xl text-customColor-letras">
                 Blogchainer Redactor
               </h2>
-              <p className="text-right mt-4 text-base sm:text-lg md:text-lg text-customColor-innovatio3">
+              <p className="text-right mt-4 text-base sm:text-lg md:text-lg text-primary">
                 Are you a writer of educational, academic, informational,
                 review, tutorial content and want to expand your readership?
                 Write or import your articles in our blog, make yourself known
@@ -280,7 +280,7 @@ const HomePage: React.FC = () => {
               <h2 className="text-2xl sm:text-3xl md:text-4xl text-customColor-letras">
                 Web3 Lector
               </h2>
-              <p className="mt-4 text-base sm:text-lg md:text-lg text-customColor-innovatio3">
+              <p className="mt-4 text-base sm:text-lg md:text-lg text-primary">
                 Are you an avid reader of blockchain technology and Web3
                 applications? Soak up the knowledge of many content creators,
                 follow your influencers and stay tuned to all the news in this
@@ -296,7 +296,7 @@ const HomePage: React.FC = () => {
       <section className="py-16 px-4 md:px-8">
         <div className="container mx-auto">
           <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-customColor-innovatio3 mb-14">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-14">
               Discover Articles
             </h2>
           </div>
