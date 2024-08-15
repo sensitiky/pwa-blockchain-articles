@@ -155,7 +155,14 @@ const Header = () => {
               className="py-2 pl-10 pr-4 text-sm text-gray-900 bg-white rounded-full shadow transition-all duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-blue-500 focus:scale-105"
               placeholder="Search..."
             />
-            {loading && <div id="loading">Loading...</div>}
+            {loading && (
+              <div
+                className="bg-white rounded-lg shadow-lg mt-2 p-2 absolute z-50 w-full"
+                id="loading"
+              >
+                Loading...
+              </div>
+            )}
             {results.length > 0 && (
               <div
                 id="results-dropdown"
