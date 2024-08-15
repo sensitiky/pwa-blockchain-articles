@@ -266,10 +266,10 @@
 
 /* Specific styles for select elements */
 .ios-select {
-  border-radius: 12px;
   padding: 8px;
   background-color: inherit;
-  border: 1px solid white;
+  border-top: 1px solid white;
+  border-bottom: 1px solid white;
   color: white;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -285,12 +285,26 @@
   padding: 10px;
 }
 #sortOrder1 {
+  margin: 1rem;
   color: #000;
   background-color: white;
+  border-top: #000 1px solid;
+  border-left: none;
+  border-right: none;
+  width: 10rem;
+  height: 5rem;
+  border-bottom: #000 1px solid;
 }
 #sortOrder2 {
+  margin: 1rem;
   color: #000;
   background-color: white;
+  border-top: #000 1px solid;
+  border-left: none;
+  border-right: none;
+  width: 10rem;
+  height: 5rem;
+  border-bottom: #000 1px solid;
 }
 /* Responsive styles */
 @media (max-width: 1024px) {

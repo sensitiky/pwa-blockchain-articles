@@ -38,17 +38,7 @@ interface Post {
   imageUrl: string | null;
   createdAt: string;
   description: string;
-  author?: {
-    id: number;
-    user: string;
-    firstName: string;
-    lastName: string;
-    bio: string;
-    twitter?: string;
-    linkedin?: string;
-    facebook?: string;
-    avatar?: string;
-  };
+  author?: Author;
   category?: { name: string };
   tags: Tag[];
   comments: Comment[];
@@ -58,6 +48,18 @@ interface Post {
 interface Tag {
   id: number;
   name: string;
+}
+
+interface Author {
+  id: number;
+  user: string;
+  firstName: string;
+  lastName: string;
+  bio: string;
+  twitter?: string;
+  linkedin?: string;
+  facebook?: string;
+  avatar?: string;
 }
 
 interface Comment {
@@ -73,56 +75,6 @@ interface Comment {
   };
   favorites: number;
 }
-
-const CommentComponent = ({
-  comment,
-  handleFavorite,
-}: {
-  comment: Comment;
-  handleFavorite: (postId: number, commentId?: number) => void;
-}) => {
-  const author = comment.author || {
-    firstName: "Unknown",
-    lastName: "User",
-    avatar: "/default-avatar.png",
-  };
-
-  const avatarUrl = author.avatar?.startsWith("/")
-    ? `${API_URL}${author.avatar}`
-    : author.avatar;
-
-  const authorName = `${author.firstName} ${author.lastName}`;
-
-  return (
-    <div className="border rounded-md p-4 my-4 bg-gray-100">
-      <div className="flex items-center space-x-4">
-        <Avatar className="h-8 w-8">
-          <AvatarImage src={avatarUrl} alt="Author avatar" />
-          <AvatarFallback>
-            {author.firstName[0]}
-            {author.lastName[0]}
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <p className="text-sm font-medium">{authorName}</p>
-          <div className="text-xs text-gray-500">
-            {formatDate(comment.createdAt)}
-          </div>
-        </div>
-      </div>
-      <p className="mt-2 ml-5 text-sm">{comment.content}</p>
-      <div className="flex items-center space-x-2 text-xs text-muted-foreground mt-2">
-        <Button
-          variant="ghost"
-          className="flex w-fit items-center rounded-full space-x-1"
-          onClick={() => handleFavorite(comment.id)}
-        >
-          <img src="/saved-svgrepo-com.png" alt="Saved" className="w-4 h-4" />
-        </Button>
-      </div>
-    </div>
-  );
-};
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 
@@ -493,12 +445,53 @@ const PostPage = () => {
           </div>
           <div className="mt-8">
             {comments.map((comment) => {
+              const author = comment.author || {
+                firstName: "Unknown",
+                lastName: "User",
+                avatar: "/default-avatar.png",
+              };
+
+              const avatarUrl = author.avatar?.startsWith("/")
+                ? `${API_URL}${author.avatar}`
+                : author.avatar;
+
+              const authorName = `${author.firstName} ${author.lastName}`;
+
               return (
-                <CommentComponent
+                <div
                   key={comment.id}
-                  comment={comment}
-                  handleFavorite={handleFavorite}
-                />
+                  className="border rounded-md p-4 my-4 bg-gray-100"
+                >
+                  <div className="flex items-center space-x-4">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={avatarUrl} alt="Author avatar" />
+                      <AvatarFallback>
+                        {author.firstName[0]}
+                        {author.lastName[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-sm font-medium">{authorName}</p>
+                      <div className="text-xs text-gray-500">
+                        {formatDate(comment.createdAt)}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="mt-2 ml-5 text-sm">{comment.content}</p>
+                  <div className="flex items-center space-x-2 text-xs text-muted-foreground mt-2">
+                    <Button
+                      variant="ghost"
+                      className="flex w-fit items-center rounded-full space-x-1"
+                      onClick={() => handleFavorite(post.id, comment.id)}
+                    >
+                      <img
+                        src="/saved-svgrepo-com.png"
+                        alt="Saved"
+                        className="w-4 h-4"
+                      />
+                    </Button>
+                  </div>
+                </div>
               );
             })}
           </div>
