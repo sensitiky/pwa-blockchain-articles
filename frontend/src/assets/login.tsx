@@ -375,7 +375,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
             <div className="flex justify-center">
               <Button
                 type="button"
-                className="rounded-full w-44 bg-customColor-header"
+                className="rounded-full w-44 bg-[#000916]"
                 onClick={handleLogin}
                 disabled={loading}
               >
@@ -384,7 +384,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
             </div>
             <div className="flex justify-center">
               <Button
-                className="rounded-full w-44 bg-customColor-header flex items-center justify-center"
+                className="rounded-full w-44 bg-[#000916] flex items-center justify-center"
                 onClick={handleFacebookLogin}
               >
                 <i className="fab fa-facebook mr-2"></i>
@@ -500,7 +500,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   <div className="flex justify-center">
                     <Button
                       type="button"
-                      className="mt-2 rounded-sm w-44 bg-customColor-header"
+                      className="mt-2 rounded-sm w-44 bg-[#000916]"
                       onClick={handleVerifyCode}
                       disabled={loading}
                     >
@@ -514,7 +514,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
               <div className="flex justify-center">
                 <Button
                   type="button"
-                  className="mt-2 rounded-full w-44 bg-customColor-header"
+                  className="mt-2 rounded-full w-44 bg-[#000916]"
                   onClick={handleSendVerificationCode}
                   disabled={loading}
                 >
@@ -595,7 +595,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
             <div className="flex justify-center">
               <Button
                 type="button"
-                className="rounded-full w-44 bg-customColor-header"
+                className="rounded-full w-44 bg-[#000916]"
                 onClick={handleForgotPassword}
                 disabled={loading}
               >
@@ -627,7 +627,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                 <div className="flex justify-center">
                   <Button
                     type="button"
-                    className="rounded-full w-44 bg-customColor-header"
+                    className="rounded-full w-44 bg-[#000916]"
                     onClick={handleResetPassword}
                     disabled={loading}
                   >

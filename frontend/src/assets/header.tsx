@@ -132,7 +132,7 @@ const Header = () => {
     : "default-avatar-url";
 
   return (
-    <div id="header" className="bg-customColor-header">
+    <div id="header" className="bg-[#000916]">
       {/* Desktop Header */}
       <header id="desktop-header" className="p-4 hidden lg:block">
         <div className="container mx-auto flex justify-between items-center">
@@ -292,12 +292,6 @@ const Header = () => {
                   >
                     Create
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => router.push("/articles")}
-                    className="hover:bg-customColor-innovatio hover:text-white transition-colors duration-300"
-                  >
-                    Articles
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={handleLogout}
@@ -325,7 +319,7 @@ const Header = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ opacity: 0, y: -100 }}
           transition={{ duration: 0.3 }}
-          className="fixed top-0 left-0 w-screen z-50 p-4 backdrop-blur-xl bg-customColor-header lg:hidden md:hidden"
+          className="fixed top-0 left-0 w-screen z-50 p-4 backdrop-blur-xl bg-[#000916] lg:hidden md:hidden"
         >
           <div className="container mx-auto flex justify-between items-center">
             <div id="mobile-logo" className="text-lg text-white font-semibold">

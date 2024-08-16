@@ -13,8 +13,6 @@ import { getProfile, updateProfile } from "../../../services/authService";
 import {
   UserIcon,
   LockIcon,
-  BookMarkedIcon,
-  FilePenIcon,
   PencilIcon,
 } from "lucide-react";
 import { BookmarkIcon } from "lucide-react";
@@ -175,7 +173,7 @@ const Users = () => {
       <div className="grid min-h-screen grid-cols-1 md:grid-cols-[400px_1fr] bg-inherit text-foreground">
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden p-4 fixed top-4 right-4 z-50 bg-customColor-header text-white rounded-full shadow-lg"
+          className="md:hidden p-4 fixed top-4 right-4 z-50 bg-[#000916] text-white rounded-full shadow-lg"
           onClick={() => setIsSidebarVisible(!isSidebarVisible)}
         >
           {isSidebarVisible ? "✕" : "☰"}
@@ -183,7 +181,7 @@ const Users = () => {
 
         {/* Mobile Sidebar */}
         <aside
-          className={`fixed inset-y-0 left-0 z-40 w-64 bg-customColor-header p-4 transform ${
+          className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#000916] p-4 transform ${
             isSidebarVisible ? "translate-x-0" : "-translate-x-full"
           } transition-transform duration-300 md:hidden`}
         >
@@ -229,7 +227,7 @@ const Users = () => {
 
         {/* Desktop Sidebar */}
         <aside
-          className={`hidden md:block border-r border-border bg-customColor-header px-2 py-8 w-full md:w-16 md:hover:w-64 md:transition-all md:duration-300 group`}
+          className={`hidden md:block border-r border-border bg-[#000916] px-2 py-8 w-full md:w-16 md:hover:w-64 md:transition-all md:duration-300 group`}
         >
           <div className="flex flex-col gap-8">
             <div className="space-y-2">

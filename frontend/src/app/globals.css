@@ -229,12 +229,24 @@
   color: white;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+.ios-button2 {
+  border-radius: 12px;
+  padding: 10px 20px;
+  background-color: inherit;
+  border: 1px solid white;
+  color: white;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.ios-button2.selected {
+  background-color: #ffd700; /* Yellow */
+  color: white;
+}
 .ios-button.selected {
   background-color: #ffd700; /* Yellow */
   color: black;
 }
 .ios-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 215, 0, 0.8); /* Gold color with 80% opacity */
   color: white;
 }
 /* Specific styles for tags */
@@ -287,7 +299,7 @@
 #sortOrder1 {
   margin: 1rem;
   color: #000;
-  background-color: white;
+  background-color: transparent;
   border-top: #000 1px solid;
   border-left: none;
   border-right: none;
@@ -298,11 +310,11 @@
 #sortOrder2 {
   margin: 1rem;
   color: #000;
-  background-color: white;
+  background-color: transparent;
   border-top: #000 1px solid;
   border-left: none;
   border-right: none;
-  width: 10rem;
+  width: 16rem;
   height: 5rem;
   border-bottom: #000 1px solid;
 }

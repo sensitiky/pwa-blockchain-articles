@@ -394,7 +394,7 @@ const PostPage = () => {
           </div>
           {post.category && (
             <div className="mt-8">
-              <span className="px-2 py-1 bg-primary text-white rounded-full">
+              <span className="px-2 py-1 bg-[#000916] text-white rounded-full">
                 <span className="text-white">#</span>
                 {post.category ? post.category.name : "Uncategorized"}
               </span>
@@ -406,7 +406,7 @@ const PostPage = () => {
                 {post.tags.map((tag, index) => (
                   <li
                     key={index}
-                    className="flex items-center px-2 py-1 bg-primary text-white rounded-full"
+                    className="flex items-center px-2 py-1 bg-[#000916] text-white rounded-full"
                   >
                     <img
                       className="w-4 h-4 mr-2 filter invert"
@@ -441,7 +441,7 @@ const PostPage = () => {
             </button>
           </div>
           <div className="flex w-full justify-center">
-            <div className="mt-20 w-[30rem] justify-center bg-primary/20 h-[0.1rem]"></div>
+            <div className="mt-20 w-[30rem] justify-center bg-[#000916]/20 h-[0.1rem]"></div>
           </div>
           <div className="mt-8">
             {comments.map((comment) => {
@@ -506,7 +506,7 @@ const PostPage = () => {
             />
             <Button
               type="submit"
-              className="mt-2 border-none rounded-full bg-primary text-white hover:bg-primary/80"
+              className="mt-2 border-none rounded-full bg-[#000916] text-white hover:bg-[#000916]/80"
             >
               Submit
             </Button>

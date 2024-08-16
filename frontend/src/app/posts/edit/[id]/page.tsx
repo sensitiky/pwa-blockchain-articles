@@ -196,7 +196,7 @@ const EditPostPage = () => {
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-primary file:text-white hover:file:bg-primary/80"
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-[#000916] file:text-white hover:file:bg-[#000916]/80"
               />
             </div>
             <div></div>
@@ -220,7 +220,7 @@ const EditPostPage = () => {
             <div className="w-full justify-end flex">
               <Button
                 type="submit"
-                className="p-10 mr-4 mb-4 bg-primary text-white px-4 py-2 rounded-full shadow-md hover:bg-primary/80"
+                className="p-10 mr-4 mb-4 bg-[#000916] text-white px-4 py-2 rounded-full shadow-md hover:bg-[#000916]/80"
               >
                 Update Post
               </Button>

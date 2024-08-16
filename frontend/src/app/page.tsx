@@ -200,7 +200,7 @@ const HomePage: React.FC = () => {
   return (
     <div className="h-full">
       <Header />
-      <div className="py-16 relative h-fit flex items-center justify-center bg-customColor-header">
+      <div className="py-16 relative h-fit flex items-center justify-center bg-[#000916]">
         <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[#ffffff] to-transparent z-0"></div>
         <div
           className="relative z-10 px-4 sm:px-6 md:px-8"
@@ -240,12 +240,12 @@ const HomePage: React.FC = () => {
         >
           <div className="grid gap-8 mb-24 sm:grid-cols-1 md:grid-cols-2">
             <div className="text-center flex flex-col justify-center">
-              <h1 className="text-2xl sm:text-3xl md:text-5xl font-semibold mb-4 text-primary">
+              <h1 className="text-2xl sm:text-3xl md:text-5xl font-semibold mb-4 text-[#263238]">
                 Read, write, share and discuss blockchain
               </h1>
             </div>
             <div className="text-left">
-              <p className="sm:text-lg md:text-xl mb-12 text-primary">
+              <p className="sm:text-lg md:text-xl mb-12 text-[#263238]">
                 Blogchain is an educational space to connect web content and
                 readers interested in blockchain technology and its adoption. We
                 seek to fill with educational, journalistic and informative
@@ -260,7 +260,7 @@ const HomePage: React.FC = () => {
               <h2 className="text-right text-2xl sm:text-3xl md:text-4xl text-customColor-letras">
                 Blogchainer Redactor
               </h2>
-              <p className="text-right mt-4 text-base sm:text-lg md:text-lg text-primary">
+              <p className="text-right mt-4 text-base sm:text-lg md:text-lg text-[#263238]">
                 Are you a writer of educational, academic, informational,
                 review, tutorial content and want to expand your readership?
                 Write or import your articles in our blog, make yourself known
@@ -280,7 +280,7 @@ const HomePage: React.FC = () => {
               <h2 className="text-2xl sm:text-3xl md:text-4xl text-customColor-letras">
                 Web3 Lector
               </h2>
-              <p className="mt-4 text-base sm:text-lg md:text-lg text-primary">
+              <p className="mt-4 text-base sm:text-lg md:text-lg text-[#263238]">
                 Are you an avid reader of blockchain technology and Web3
                 applications? Soak up the knowledge of many content creators,
                 follow your influencers and stay tuned to all the news in this
@@ -296,7 +296,7 @@ const HomePage: React.FC = () => {
       <section className="py-16 px-4 md:px-8">
         <div className="container mx-auto">
           <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-14">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#263238] mb-14">
               Discover Articles
             </h2>
           </div>
@@ -361,7 +361,7 @@ const HomePage: React.FC = () => {
                         />
                       )}
                       <div className="ml-4">
-                        <p className="text-lg font-semibold">
+                        <p className="text-lg font-semibold text-[#263238]">
                           {post.author?.firstName} {post.author?.lastName}
                         </p>
                         <p className="text-sm text-gray-500">
@@ -370,7 +370,9 @@ const HomePage: React.FC = () => {
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold mb-2">{post.title}</h3>
+                      <h3 className="text-xl font-bold mb-2 text-[#263238]">
+                        {post.title}
+                      </h3>
                       <p className="text-gray-600 line-clamp-3">
                         {typeof post.description === "string"
                           ? parse(post.description)
@@ -384,7 +386,7 @@ const HomePage: React.FC = () => {
           </div>
           <div className="text-center mt-8">
             <Link href="/articles">
-              <Button className="px-6 py-2 text-white bg-primary hover:bg-primary/80 rounded-full">
+              <Button className="px-6 py-2 text-white bg-[#000916] hover:bg-[#000916]/80 rounded-full">
                 View All
               </Button>
             </Link>

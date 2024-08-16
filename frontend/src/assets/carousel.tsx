@@ -154,7 +154,7 @@ const ArticleCarousel = () => {
         data-aos-anchor-placement="top-bottom"
         data-aos-offset="200"
       >
-        <h2 className="text-3xl font-bold text-center text-customColor-innovatio3 mb-8">
+        <h2 className="text-3xl font-bold text-center text-[#263238] mb-8">
           Last published articles
         </h2>
         <Slider {...settings}>
@@ -175,7 +175,7 @@ const ArticleCarousel = () => {
                   )}
                 </div>
                 <div className="overflow-hidden">
-                  <h2 className="text-xl font-semibold truncate">
+                  <h2 className="text-xl font-semibold truncate text-[#263238]">
                     {post.title}
                   </h2>
                 </div>
