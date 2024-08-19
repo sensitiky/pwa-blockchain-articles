@@ -39,7 +39,7 @@ const EditPostPage = () => {
 
   const { id } = useParams();
   const router = useRouter();
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 
   const fetchPost = async (id: string) => {
     try {

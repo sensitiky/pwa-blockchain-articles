@@ -53,7 +53,7 @@ export default function NewArticles() {
 
   const router = useRouter();
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 
   useEffect(() => {
     const fetchCategoriesAndTags = async () => {

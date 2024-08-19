@@ -76,7 +76,7 @@ const settings = {
   ],
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 const countWords = (text: string) => {
   if (!text) return 0;
   return text.split(/\s+/).filter((word) => word.length > 0).length;

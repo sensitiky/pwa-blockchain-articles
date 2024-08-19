@@ -14,7 +14,7 @@ import Footer from "@/assets/footer";
 import axios from "axios";
 import parse from "html-react-parser";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
 const cookies = new Cookie();
 
 interface Post {
