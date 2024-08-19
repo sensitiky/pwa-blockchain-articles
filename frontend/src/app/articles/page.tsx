@@ -53,12 +53,20 @@ const Articles = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
   );
+  const [selectedTagId, setSelectedTagId] = useState<number | null>(null);
   const [sortOrder, setSortOrder] = useState<string>("recent");
+  const [sortOrder2, setSortOrder2] = useState<string>("short");
   const { token } = useAuth();
+  const [categoryCounts, setCategoryCounts] = useState<
+    { categoryId: number; count: number }[]
+  >([]);
+  const [tags, setTags] = useState<
+    { tagId: number; name: string; count: number }[]
+  >([]);
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -72,14 +80,42 @@ const Articles = () => {
   }, [API_URL, token]);
 
   const fetchPosts = useCallback(
-    async (page: number, order: string, categoryId: number | null = null) => {
+    async (
+      page: number,
+      order: string,
+      categoryId: number | null = null,
+      tagId: number | null = null
+    ) => {
       setLoading(true);
       try {
-        const url = categoryId
-          ? `${API_URL}/posts/by-category?categoryId=${categoryId}&page=${page}&order=${order}`
-          : `${API_URL}/posts?page=${page}&limit=${POSTS_PER_PAGE}&order=${order}`;
+        let url = `${API_URL}/posts?page=${page}&limit=${POSTS_PER_PAGE}&order=${order}`;
+        if (categoryId) {
+          url = `${API_URL}/posts/by-category?categoryId=${categoryId}&page=${page}&order=${order}`;
+        }
+        if (tagId) {
+          url = `${API_URL}/posts/by-tag?tagId=${tagId}&categoryId=${categoryId}&page=${page}&order=${order}`;
+        }
+
         const response = await axios.get(url);
-        const postsData = response.data.data || [];
+        let postsData = response.data.data || [];
+
+        // Apply sortOrder2 logic after fetching the posts
+        if (sortOrder2 === "short") {
+          postsData = postsData.filter(
+            (post: { description: string | any[] }) =>
+              post.description.length <= 1000
+          );
+        } else if (sortOrder2 === "medium") {
+          postsData = postsData.filter(
+            (post: { description: string | any[] }) =>
+              post.description.length > 1000 && post.description.length <= 3000
+          );
+        } else if (sortOrder2 === "long") {
+          postsData = postsData.filter(
+            (post: { description: string | any[] }) =>
+              post.description.length > 3000
+          );
+        }
 
         setPosts((prevPosts) =>
           page === 1 ? postsData : [...prevPosts, ...postsData]
@@ -92,22 +128,80 @@ const Articles = () => {
         setLoading(false);
       }
     },
-    [API_URL]
+    [API_URL, sortOrder2]
   );
+
+  const fetchCategoryCounts = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:4000/posts/count-by-category"
+      );
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const result = response.data;
+      setCategoryCounts(result);
+    } catch (error) {
+      console.error("Error fetching category counts:", error);
+    }
+  }, []);
+
+  const fetchTags = useCallback(async (categoryId: number) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/posts/count-by-tag?categoryId=${categoryId}`
+      );
+
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // The response should now include the correct structure with name
+      // console.log("Raw Tags Response:", response.data);
+
+      const tags = response.data.map((tag: any) => ({
+        tagId: tag.tagId, // The 'tagId' should now be correctly populated
+        name: tag.name, // The 'name' should now be correctly populated
+        count: tag.count,
+      }));
+
+      // console.log("Processed Tags:", tags); // Verify the processed tags
+      setTags(tags);
+    } catch (error: any) {
+      console.error("Error fetching tags:", error.message || error);
+    }
+  }, []);
 
   useEffect(() => {
     fetchCategories();
+    fetchCategoryCounts();
     fetchPosts(1, sortOrder);
-  }, [fetchCategories, fetchPosts, sortOrder]);
+  }, [fetchCategories, fetchCategoryCounts, fetchPosts, sortOrder]);
 
   const handleCategoryChange = useCallback(
     (categoryId: number | null) => {
       setSelectedCategoryId(categoryId);
+      setSelectedTagId(null); // Reset selected tag when category changes
       setSortOrder("recent"); // Reset sort order to default when category changes
       setPosts([]);
       fetchPosts(1, "recent", categoryId);
+      if (categoryId !== null) {
+        fetchTags(categoryId);
+      } else {
+        setTags([]);
+      }
     },
-    [fetchPosts]
+    [fetchPosts, fetchTags]
+  );
+
+  const handleTagChange = useCallback(
+    (tagId: number | null) => {
+      // Toggle the selection: if the tag is already selected, deselect it.
+      setSelectedTagId((prevTagId) => (prevTagId === tagId ? null : tagId));
+      setPosts([]);
+      fetchPosts(1, "recent", selectedCategoryId, tagId);
+    },
+    [fetchPosts, selectedCategoryId]
   );
 
   const handleSortOrderChange = useCallback(
@@ -115,11 +209,20 @@ const Articles = () => {
       const newSortOrder = e.target.value;
       setSortOrder(newSortOrder);
       setPosts([]);
-      fetchPosts(1, newSortOrder, selectedCategoryId);
+      fetchPosts(1, newSortOrder, selectedCategoryId, selectedTagId);
     },
-    [fetchPosts, selectedCategoryId]
+    [fetchPosts, selectedCategoryId, selectedTagId]
   );
 
+  const handleSortOrder2Change = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const newSortOrder2 = e.target.value;
+      setSortOrder2(newSortOrder2);
+      setPosts([]); // Reset posts to refetch based on the new sort order
+      fetchPosts(1, sortOrder, selectedCategoryId, selectedTagId); // Fetch with the updated sortOrder2
+    },
+    [fetchPosts, sortOrder, selectedCategoryId, selectedTagId]
+  );
   const calculateReadingTime = useCallback((text: string) => {
     const wordsPerMinute = 200;
     const numberOfWords = text.split(/\s+/).length;
@@ -134,7 +237,7 @@ const Articles = () => {
     return posts.map((post) => (
       <div
         key={post.id}
-        className="w-[50rem] p-4 sm:p-6 bg-inherit mx-auto text-card-foreground border border-r-0 border-l-0 rounded-none shadow-none transition-transform ios-style"
+        className="w-full p-4 sm:p-6 bg-inherit mx-auto text-card-foreground border border-r-0 border-l-0 rounded-none shadow-none transition-transform ios-style"
       >
         <div className="flex flex-col h-full">
           {post.imageUrlBase64 && (
@@ -253,21 +356,46 @@ const Articles = () => {
           </button>
           <div className="flex flex-wrap justify-center mt-4 space-x-4">
             {categories.length > 0 ? (
-              categories.map((category) => (
-                <button
-                  key={category.id}
-                  className={`ios-button ${
-                    selectedCategoryId === category.id ? "selected" : ""
-                  }`}
-                  onClick={() => handleCategoryChange(category.id)}
-                >
-                  {category.name}
-                </button>
-              ))
+              categories.map((category) => {
+                const categoryCount =
+                  categoryCounts.find((item) => item.categoryId === category.id)
+                    ?.count || 0;
+                return (
+                  <button
+                    key={category.id}
+                    className={`ios-button ${
+                      selectedCategoryId === category.id ? "selected" : ""
+                    }`}
+                    onClick={() => handleCategoryChange(category.id)}
+                  >
+                    {category.name} ({categoryCount})
+                  </button>
+                );
+              })
             ) : (
               <div className="text-white">No categories available</div>
             )}
           </div>
+          {selectedCategoryId !== null && tags.length > 0 && (
+            <div className="tags-container text-center py-4 w-full">
+              <h3 className="tags-title text-lg font-medium text-white mb-4">
+                Tags
+              </h3>
+              <div className="flex flex-wrap justify-center mt-2 space-x-4">
+                {tags.map((tag) => (
+                  <button
+                    key={tag.tagId}
+                    className={`ios-button ${
+                      selectedTagId === tag.tagId ? "selected" : ""
+                    }`}
+                    onClick={() => handleTagChange(tag.tagId)}
+                  >
+                    {tag.name} ({tag.count})
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
       <div className="sort-order-container flex flex-col lg:flex-row items-center text-center">
@@ -287,21 +415,22 @@ const Articles = () => {
           </select>
         </div>
         <div className="flex flex-col justify-start py-4 px-4 lg:px-44 flex-shrink w-full lg:w-auto">
-          <label htmlFor="sortOrder1" className="text-[#263238] font-bold">
-            Sort by:
+          <label htmlFor="sortOrder2" className="text-[#263238] font-bold">
+            Sort by Length:
           </label>
           <select
             id="sortOrder2"
             className="ml-2 p-2 border w-full lg:w-fit ios-select text-black"
-            value={sortOrder}
-            onChange={handleSortOrderChange}
+            value={sortOrder2}
+            onChange={handleSortOrder2Change}
           >
-            <option value="less_than_1000">Less than 1000 characters</option>
-            <option value="1000_to_2000">1000 to 2000 characters</option>
-            <option value="2000_and_above">2000 and above characters</option>
+            <option value="short">Short (≤ 1000 characters)</option>
+            <option value="medium">Medium (1000-3000 characters)</option>
+            <option value="long">Long (≥ 3000 characters)</option>
           </select>
         </div>
       </div>
+
       <div className="articles-content flex-grow flex justify-center py-8 px-4 bg-inherit">
         <div className="bg-inherit posts-container w-full max-w-screen-lg mx-auto px-2 sm:px-4">
           {loading ? (

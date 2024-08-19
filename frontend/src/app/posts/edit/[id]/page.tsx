@@ -39,7 +39,7 @@ const EditPostPage = () => {
 
   const { id } = useParams();
   const router = useRouter();
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
   const fetchPost = async (id: string) => {
     try {
@@ -185,9 +185,13 @@ const EditPostPage = () => {
                 value={post.title}
                 onChange={handleInputChange}
                 required
+                maxLength={140}
                 className="rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
+            <p className="text-right text-gray-500 text-sm mt-1 mr-10">
+              {post.title.length}/140
+            </p>
             <div className="m-4 p-4">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Image

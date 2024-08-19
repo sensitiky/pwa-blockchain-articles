@@ -18,7 +18,7 @@ import { CircularProgress } from "@mui/material";
 import { useRouter } from "next/navigation";
 import ModalUserDelete from "@/assets/userdelete";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
 interface User {
   firstName?: string;

@@ -63,24 +63,23 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`${API_URL}/users/${userId}`);
-        const userData = response.data;
-        setUser(userData);
+        // Fetch user data
+        const userResponse = await axios.get(`${API_URL}/users/${userId}`);
+        setUser(userResponse.data);
 
+        // Fetch posts filtered by userId
         const postsResponse = await axios.get(
-          `${API_URL}/posts?authorId=${userId}`
+          `${API_URL}/posts/by-user/${userId}` // Asegúrate de que el endpoint esté correcto
         );
-        const postsData = postsResponse.data.data.map((post: any) => {
-          return {
-            ...post,
-            imageUrl: post.imageUrl ? `${API_URL}${post.imageUrl}` : null,
-          };
-        });
+        const postsData = postsResponse.data.map((post: any) => ({
+          ...post,
+          imageUrl: post.imageUrl ? `${API_URL}${post.imageUrl}` : null,
+        }));
         setPosts(postsData);
       } catch (err) {
         if (axios.isAxiosError(err)) {
@@ -96,7 +95,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
     };
 
     fetchUserData();
-  }, [userId]);
+  }, [userId, API_URL]);
 
   if (loading) {
     return (

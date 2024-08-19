@@ -163,11 +163,17 @@ export class PostsService {
     };
   }
 
-  async findByTag(limit: number, tagId: number): Promise<Post[]> {
+  async findByTag(
+    limit: number,
+    tagId: number,
+    categoryId: number,
+  ): Promise<Post[]> {
     return this.postsRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.tags', 'tag')
+      .leftJoinAndSelect('post.category', 'category')
       .where('tag.id = :tagId', { tagId })
+      .andWhere('category.id = :categoryId', { categoryId })
       .take(limit)
       .getMany();
   }
@@ -188,7 +194,14 @@ export class PostsService {
   async findOne(id: number): Promise<Post> {
     const post = await this.postsRepository.findOne({
       where: { id },
-      relations: ['author', 'category', 'tags', 'comments', 'favorites'],
+      relations: [
+        'author',
+        'category',
+        'tags',
+        'comments',
+        'comments.author',
+        'favorites',
+      ],
     });
 
     if (post && post.imageUrl) {
@@ -220,13 +233,16 @@ export class PostsService {
       .getRawMany();
   }
 
-  async countPostsByTag() {
+  async countPostsByTag(categoryId: number) {
     return this.postsRepository
       .createQueryBuilder('post')
-      .leftJoin('post.tags', 'tag')
+      .leftJoinAndSelect('post.tags', 'tag')
       .select('tag.id')
+      .addSelect('tag.name', 'name')
       .addSelect('COUNT(post.id)', 'count')
+      .where('post.categoryId = :categoryId', { categoryId })
       .groupBy('tag.id')
+      .addGroupBy('tag.name')
       .getRawMany();
   }
 

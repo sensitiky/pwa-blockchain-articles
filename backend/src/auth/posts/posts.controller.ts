@@ -18,6 +18,7 @@ import { CreatePostDto } from './posts.dto';
 import { Request } from 'express';
 import { Express } from 'express';
 import { Post } from './post.entity';
+import { parse } from 'path';
 
 @Controller('posts')
 export class PostsController {
@@ -31,12 +32,33 @@ export class PostsController {
     return this.postsService.findAll(page, limit);
   }
 
+  @Get('count-by-category')
+  async countByCategory() {
+    return this.postsService.countPostsByCategory();
+  }
+
+  @Get('count-by-tag')
+  async countByTag(@Query('categoryId') categoryId: number) {
+    if (!categoryId) {
+      throw new BadRequestException('categoryId is required');
+    }
+
+    const tagsWithCount = await this.postsService.countPostsByTag(categoryId);
+
+    return tagsWithCount.map((tag) => ({
+      tagId: tag.tagId,
+      name: tag.name,
+      count: parseInt(tag.count, 10),
+    }));
+  }
+
   @Get('by-tag')
   findByTag(
     @Query('limit') limit: number,
     @Query('tagId') tagId: number,
+    @Query('categoryId') categoryId: number,
   ): Promise<Post[]> {
-    return this.postsService.findByTag(limit, tagId);
+    return this.postsService.findByTag(limit, tagId, categoryId);
   }
 
   @Get('by-category')
@@ -53,6 +75,11 @@ export class PostsController {
     }
 
     return this.postsService.findAllByCategory(page, limit, categoryIdNumber);
+  }
+
+  @Get('by-user/:userId')
+  async findPostsByUserId(@Param('userId') userId: number) {
+    return this.postsService.findPostsByUserId(userId);
   }
 
   @Get(':id')
@@ -100,15 +127,5 @@ export class PostsController {
       createPostDto.imageUrl = file.buffer;
     }
     return this.postsService.create({ ...createPostDto, authorId });
-  }
-
-  @Get('count/by-category')
-  async countByCategory() {
-    return this.postsService.countPostsByCategory();
-  }
-
-  @Get('count/by-tag')
-  async countByTag() {
-    return this.postsService.countPostsByTag();
   }
 }
