@@ -133,9 +133,7 @@ const Articles = () => {
 
   const fetchCategoryCounts = useCallback(async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:4000/posts/count-by-category"
-      );
+      const response = await axios.get(`${API_URL}/posts/count-by-category`);
       if (response.status !== 200) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -149,7 +147,7 @@ const Articles = () => {
   const fetchTags = useCallback(async (categoryId: number) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/posts/count-by-tag?categoryId=${categoryId}`
+        `${API_URL}/posts/count-by-tag?categoryId=${categoryId}`
       );
 
       if (response.status !== 200) {
