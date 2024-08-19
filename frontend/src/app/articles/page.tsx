@@ -59,7 +59,7 @@ const Articles = () => {
   );
   const [selectedTagId, setSelectedTagId] = useState<number | null>(null);
   const [sortOrder, setSortOrder] = useState<string>("recent");
-  const [sortOrder2, setSortOrder2] = useState<string>("short");
+  const [sortOrder2, setSortOrder2] = useState<string>("All");
   const { token } = useAuth();
   const [categoryCounts, setCategoryCounts] = useState<
     { categoryId: number; count: number }[]
@@ -422,6 +422,7 @@ const Articles = () => {
             value={sortOrder2}
             onChange={handleSortOrder2Change}
           >
+            <option value="All">All</option>
             <option value="short">Short (≤ 1000 characters)</option>
             <option value="medium">Medium (1000-3000 characters)</option>
             <option value="long">Long (≥ 3000 characters)</option>
