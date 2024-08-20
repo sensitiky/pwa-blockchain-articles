@@ -51,6 +51,7 @@ interface Post {
   id: number;
   title: string;
   content: string;
+  imageUrl: { type: string; data: number[] } | null;
   imageUrlBase64?: string;
   category: { name: string };
   comments: { id: number; content: string }[];
@@ -67,6 +68,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
 
   useEffect(() => {
     const fetchUserData = async () => {
+      setLoading(true);
       try {
         // Fetch user data
         const userResponse = await axios.get(`${API_URL}/users/${userId}`);
@@ -74,13 +76,22 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
 
         // Fetch posts filtered by userId
         const postsResponse = await axios.get(
-          `${API_URL}/posts/by-user/${userId}` // Asegúrate de que el endpoint esté correcto
+          `${API_URL}/posts/by-user/${userId}`
         );
-        const postsData = postsResponse.data.map((post: any) => ({
-          ...post,
-          imageUrl: post.imageUrl ? `${API_URL}${post.imageUrl}` : null,
-        }));
-        setPosts(postsData);
+
+        //Convert image buffer to base64
+        const postsWithBase64Images = postsResponse.data.map((post: Post) => {
+          if (post.imageUrl && post.imageUrl.type === "Buffer") {
+            const base64String = Buffer.from(post.imageUrl.data).toString(
+              "base64"
+            );
+            post.imageUrlBase64 = `data:image/jpeg;base64,${base64String}`;
+          }
+          return post;
+        });
+
+        console.log(postsResponse.data);
+        setPosts(postsWithBase64Images);
       } catch (err) {
         if (axios.isAxiosError(err)) {
           console.error("Error fetching user data:", err.message);
@@ -165,19 +176,20 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
           </div>
         </div>
         <Separator orientation="vertical" className="h-full col-span-1" />
-        <div className="flex flex-col space-y-6 col-span-3">
+        <div className="flex flex-col space-y-6 col-span-3 ">
           {posts.map((post) => (
             <div
               key={post.id}
-              className="bg-inherit rounded-none p-6 border-b-2 transition-transform duration-300 ease-in-out transform hover:scale-105"
+              className="bg-inherit flex-col w-full h-full rounded-none p-6 border-b-2 transition-transform duration-300 ease-in-out transform hover:scale-105"
             >
               {post.imageUrlBase64 ? (
-                <img
+                <Image
                   src={post.imageUrlBase64}
-                  width={400}
-                  height={225}
-                  alt="Article Image"
-                  className="w-full h-48 object-cover rounded-lg"
+                  alt="Post Image"
+                  width={1920}
+                  height={1080}
+                  className="object-contain"
+                  loading="lazy"
                 />
               ) : (
                 <div className="w-full h-48 bg-gray-200 rounded-lg"></div>
