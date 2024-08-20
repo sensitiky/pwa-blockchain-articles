@@ -36,7 +36,7 @@ interface Tag {
   name: string;
 }
 
-const POSTS_PER_PAGE = 7;
+const POSTS_PER_PAGE = 20;
 
 const Container = styled.div`
   display: flex;
@@ -88,7 +88,7 @@ const Articles = () => {
     ) => {
       setLoading(true);
       try {
-        let url = `${API_URL}/posts`;
+        let url = `${API_URL}/posts?page=${page}&limit=${POSTS_PER_PAGE}&order=${order}`;
         if (categoryId) {
           url = `${API_URL}/posts/by-category?categoryId=${categoryId}&page=${page}&order=${order}`;
         }
