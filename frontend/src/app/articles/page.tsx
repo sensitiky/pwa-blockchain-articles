@@ -88,7 +88,7 @@ const Articles = () => {
     ) => {
       setLoading(true);
       try {
-        let url = `${API_URL}/posts?page=${page}&limit=${POSTS_PER_PAGE}&order=${order}`;
+        let url = `${API_URL}/posts?page=${page}&order=${order}`;
         if (categoryId) {
           url = `${API_URL}/posts/by-category?categoryId=${categoryId}&page=${page}&order=${order}`;
         }
