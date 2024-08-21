@@ -393,9 +393,13 @@ const PostPage = () => {
             </div>
           </div>
           {post.category && (
-            <div className="mt-8">
-              <span className="px-2 py-1 bg-[#000916] text-white rounded-full">
-                <span className="text-white">#</span>
+            <div className="mt-8 w-fit">
+              <span className="flex items-center px-2 py-1 bg-[#000916] text-white rounded-full">
+                <img
+                  src="/category-white.png"
+                  className="w-4 h-4 mr-2"
+                  alt="Category Icon"
+                />
                 {post.category ? post.category.name : "Uncategorized"}
               </span>
             </div>

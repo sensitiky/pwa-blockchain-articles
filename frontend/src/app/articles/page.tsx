@@ -275,7 +275,10 @@ const Articles = () => {
             <div className="flex flex-col items-start">
               <div className="flex items-center mb-2">
                 <span className="flex items-center text-[#263238]">
-                  <span className="text-2xl">#</span> {post.category?.name}
+                  <span className="text-2xl">
+                    <img src="/category.png" className="size-4 mr-1" />
+                  </span>{" "}
+                  {post.category?.name}
                 </span>
               </div>
               <div className="flex items-center text-[#263238]">

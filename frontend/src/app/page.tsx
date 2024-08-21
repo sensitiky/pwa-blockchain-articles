@@ -200,7 +200,17 @@ const HomePage: React.FC = () => {
   return (
     <div className="h-full">
       <Header />
-      <div className="py-16 relative h-fit flex items-center justify-center bg-[#000916]">
+      <div className="py-16 relative h-fit flex items-center justify-center bg-[#000916] overflow-hidden">
+        <div className="absolute inset-0 flex justify-center items-center bottom-[15rem]">
+          <Image
+            src="/bg-about.gif"
+            alt="Light Effect"
+            width={2000}
+            height={1200}
+            className="z-0"
+            style={{ opacity: 0.25 }}
+          />
+        </div>
         <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[#ffffff] to-transparent z-0"></div>
         <div
           className="relative z-10 px-4 sm:px-6 md:px-8"

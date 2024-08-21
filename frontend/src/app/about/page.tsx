@@ -9,19 +9,16 @@ const LandingSection: FC = () => {
       <Header />
       <div className="bg-[#000916] min-h-screen flex flex-col">
         <div className="flex-grow grid grid-cols-1 md:grid-cols-2 bg-background text-foreground relative">
-          <h1 className="absolute text-center w-full text-4xl sm:text-5xl font-extrabold text-white top-11 transform -translate-y-1/2 ml-2 mt-10">
+          <h1 className="hidden sm:block z-50 absolute text-center w-full text-4xl sm:text-5xl font-extrabold text-white top-11 transform -translate-y-1/2 ml-2 mt-10">
             Know, learn{" "}
-            <span className="text-[#000916]/80 ml-2">
-              {" "}
-              and criticize.
-            </span>
+            <span className="text-[#000916]/80 ml-2"> and criticize.</span>
           </h1>
           <main
             id="main-about"
-            className="h-full py-40 flex flex-col justify-center bg-[#000916] px-6 sm:px-12 sm:py-40"
+            className="overflow-hidden flex py-80 justify-center bg-[#000916] px-6 sm:px-12 sm:py-80 font-medium relative"
           >
-            <div className="space-y-8 relative">
-              <div className="ml-64 flex items-start space-x-4 relative z-10">
+            <div className="relative flex flex-col items-start space-y-4 z-20">
+              <div className="relative z-20 mb-4">
                 <Image
                   src="/logo about us.png"
                   alt="Logo"
@@ -30,35 +27,39 @@ const LandingSection: FC = () => {
                   className="max-w-full"
                 />
               </div>
-              <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center z-0">
-                <Image
-                  src="/luz.png"
-                  alt="Light Effect"
-                  width={1000}
-                  height={1000}
-                  className="max-w-full"
-                  style={{ filter: "blur(100px)", opacity: 0.5 }}
-                />
+              <div className="relative z-20">
+                <p
+                  id="about-text-1"
+                  className="text-xl sm:text-2xl leading-snug text-white"
+                >
+                  <span className="font-extrabold">
+                    Empowering Web3 education
+                    <br />
+                  </span>
+                  <span className="font-extrabold">and adoption </span>
+                  through
+                  <br />
+                  <span className="font-extrabold">
+                    {" "}
+                    community-driven content
+                    <br />
+                  </span>
+                  and
+                  <span className="font-extrabold"> critical thinking.</span>
+                </p>
               </div>
-              <p
-                id="about-text-1"
-                className="ml-64 mt-10 relative text-xl sm:text-2xl text-white z-20 leading-snug font-medium"
-              >
-                <span className="font-extrabold">
-                  Empowering Web3 education
-                  <br />
-                </span>
-                <span className="font-extrabold">and adoption </span>
-                through
-                <br />
-                <span className="font-extrabold">
-                  {" "}
-                  community-driven content
-                  <br />
-                </span>
-                and
-                <span className="font-extrabold"> critical thinking.</span>
-              </p>
+            </div>
+            <div className="absolute inset-0 flex justify-center items-center z-10 mb-[15rem]">
+              <img
+                src="/bg-about.gif"
+                className="hidden sm:block w-[100rem] h-[65rem]"
+                style={{ opacity: 0.25 }}
+              />
+              <img
+                src="/bg-about.gif"
+                className="block sm:hidden w-full h-full"
+                style={{ opacity: 0.25 }}
+              />
             </div>
           </main>
           <main
