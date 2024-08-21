@@ -208,6 +208,7 @@ const HomePage: React.FC = () => {
             width={2000}
             height={1200}
             className="z-0"
+            unoptimized
             style={{ opacity: 0.25 }}
           />
         </div>

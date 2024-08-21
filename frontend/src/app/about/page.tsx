@@ -25,6 +25,7 @@ const LandingSection: FC = () => {
                   width={300}
                   height={300}
                   className="max-w-full"
+                  unoptimized
                 />
               </div>
               <div className="relative z-20">

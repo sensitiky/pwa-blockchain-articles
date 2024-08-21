@@ -16,6 +16,7 @@ const SupportSection: FC = () => {
               width={1000}
               height={1000}
               className="z-0"
+              unoptimized
               style={{ opacity: 0.25 }}
             />
           </div>
