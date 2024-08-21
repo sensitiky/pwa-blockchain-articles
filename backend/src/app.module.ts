@@ -14,6 +14,7 @@ import { CategoriesModule } from './auth/category/category.module';
 import { TagsModule } from './auth/tag/tag.module';
 import { UsersModule } from './auth/users/user.module';
 import { SearchModule } from './auth/search/search.module';
+import { MetricModule } from './auth/metrics/metric.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { SearchModule } from './auth/search/search.module';
     TagsModule,
     SearchModule,
     TypeOrmModule.forFeature([Category, Tag]),
+    MetricModule,
   ],
   controllers: [UsersController],
 })

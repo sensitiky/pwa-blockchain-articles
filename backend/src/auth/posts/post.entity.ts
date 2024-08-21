@@ -30,6 +30,9 @@ export class Post {
   @Column('text', { nullable: true })
   description: string;
 
+  @Column({ type: 'int', nullable: true })
+  readTime?: number;
+
   @ManyToOne(() => User, (user) => user.posts)
   author: User;
 
@@ -60,6 +63,6 @@ export class Post {
 
   @OneToMany(() => Favorite, (favorite) => favorite.post)
   favorites: Favorite[];
-  
+
   imageUrlBase64: string;
 }

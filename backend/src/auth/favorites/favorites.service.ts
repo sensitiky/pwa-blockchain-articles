@@ -54,4 +54,15 @@ export class FavoritesService {
       relations: ['post', 'comment'],
     });
   }
+  async getSavedArticles() {
+    return this.favoritesRepository
+      .createQueryBuilder('favorite')
+      .select('COUNT(favorite.id)', 'count')
+      .addSelect('post.title', 'title')
+      .addSelect('post.content', 'content')
+      .addSelect('post.createdAt', 'createdAt')
+      .leftJoin('favorite.post', 'post')
+      .groupBy('post.id')
+      .getRawMany();
+  }
 }

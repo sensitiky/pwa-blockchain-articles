@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { IsNull, Like, MoreThan, Not, Repository } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto, UserDto } from './user.dto';
 import { Post } from '../posts/post.entity';
@@ -15,6 +15,7 @@ export class UsersService {
     @InjectRepository(Comment)
     private commentRepository: Repository<Comment>,
   ) {}
+
   async findUserFavorites(userId: number): Promise<Post[]> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
@@ -32,12 +33,73 @@ export class UsersService {
 
     return favoritePosts;
   }
+
   async findOneById(id: number): Promise<User> {
     return this.userRepository.findOne({ where: { id } });
   }
 
   async findOne(email: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { email } });
+  }
+
+  async countAllUsers(): Promise<number> {
+    return this.userRepository.count();
+  }
+
+  async countContentCreators(): Promise<number> {
+    const creators = await this.userRepository
+      .createQueryBuilder('user')
+      .innerJoin('user.posts', 'post')
+      .getCount();
+
+    return creators;
+  }
+
+  async getActiveUsers(period: 'day' | 'week' | 'month'): Promise<number> {
+    const date = new Date();
+    if (period === 'day') {
+      date.setDate(date.getDate() - 1);
+    } else if (period === 'week') {
+      date.setDate(date.getDate() - 7);
+    } else if (period === 'month') {
+      date.setMonth(date.getMonth() - 1);
+    }
+
+    return this.userRepository.count({
+      where: {
+        lastActivity: MoreThan(date),
+      },
+    });
+  }
+  
+  async updateLastActivity(userId: number): Promise<void> {
+    await this.userRepository.update(userId, {
+        lastActivity: new Date(),
+    });
+}
+
+  async updateLastLogin(userId: string): Promise<void> {
+    await this.userRepository.update(userId, {
+      lastLogin: new Date(),
+    });
+  }
+
+  async getRetentionRate(): Promise<{ weekly: number; monthly: number }> {
+    const weeklyRetention = await this.calculateRetentionRate('week');
+    const monthlyRetention = await this.calculateRetentionRate('month');
+    return { weekly: weeklyRetention, monthly: monthlyRetention };
+  }
+
+  private async calculateRetentionRate(
+    period: 'week' | 'month',
+  ): Promise<number> {
+    const date = new Date();
+    if (period === 'week') {
+      date.setDate(date.getDate() - 7);
+    } else if (period === 'month') {
+      date.setMonth(date.getMonth() - 1);
+    }
+    return 0;
   }
 
   async searchUsers(query: string): Promise<User[]> {
@@ -119,7 +181,7 @@ export class UsersService {
     }
 
     await this.commentRepository.delete({ author: { id: userId } });
-    
+
     await this.postRepository.delete({ author: { id: userId } });
 
     await this.userRepository.delete(userId);

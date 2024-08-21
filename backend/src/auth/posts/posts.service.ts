@@ -44,6 +44,25 @@ export class PostsService {
     return favoritePosts;
   }
 
+  async getArticlesByCategory() {
+    return this.postsRepository
+      .createQueryBuilder('post')
+      .leftJoin('post.category', 'category')
+      .select('post.categoryId')
+      .addSelect('category.name')
+      .addSelect('COUNT(post.id)', 'count')
+      .groupBy('post.categoryId')
+      .addGroupBy('category.name')
+      .getRawMany();
+  }
+
+  async getAverageReadTime() {
+    return this.postsRepository
+      .createQueryBuilder('post')
+      .select('AVG(post.readTime)', 'average')
+      .getRawOne();
+  }
+
   async create(createPostDto: CreatePostDto): Promise<Post> {
     console.log('Received createPostDto:', createPostDto);
 

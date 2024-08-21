@@ -5,10 +5,12 @@ import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { Post } from '../posts/post.entity';
 import { Comment } from '../comments/comment.entity';
+import { ActiveUsersGateway } from 'src/active-users.gateway';
+
 @Module({
   imports: [TypeOrmModule.forFeature([User, Post, Comment])],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, ActiveUsersGateway],
   exports: [UsersService],
 })
 export class UsersModule {}

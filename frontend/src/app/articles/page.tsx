@@ -53,7 +53,7 @@ const Articles = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
   );
