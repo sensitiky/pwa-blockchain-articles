@@ -102,7 +102,7 @@ const Articles = () => {
         let postsData = Array.isArray(response.data)
           ? response.data
           : response.data.data || [];
-        // console.log("Posts Data:", postsData);
+         console.log("Posts Data:", postsData);
 
         // Apply sortOrder2 logic after fetching the posts
         if (sortOrder2 === "short") {
@@ -262,7 +262,7 @@ const Articles = () => {
     return posts.map((post) => (
       <div
         key={post.id}
-        className="w-full p-4 sm:p-6 bg-inherit mx-auto text-card-foreground border border-r-0 border-l-0 rounded-none shadow-none transition-transform ios-style"
+        className="w-full p-4 flex-wrap sm:p-6 bg-inherit mx-auto text-card-foreground border border-r-0 border-l-0 rounded-none shadow-none transition-transform ios-style"
       >
         <div className="flex flex-col h-full">
           {post.imageUrlBase64 && (

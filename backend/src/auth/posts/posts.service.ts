@@ -191,6 +191,7 @@ export class PostsService {
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.tags', 'tag')
       .leftJoinAndSelect('post.category', 'category')
+      .leftJoinAndSelect('post.author', 'author')
       .where('tag.id = :tagId', { tagId })
       .andWhere('category.id = :categoryId', { categoryId })
       .take(limit)
