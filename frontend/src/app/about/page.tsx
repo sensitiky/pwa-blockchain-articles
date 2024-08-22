@@ -53,7 +53,7 @@ const LandingSection: FC = () => {
             <div className="absolute inset-0 flex justify-center items-center z-10 mb-[15rem]">
               <img
                 src="/bg-about.gif"
-                className="hidden sm:block w-[100rem] h-[65rem]"
+                className="hidden sm:block w-[65rem] h-[65rem]"
                 style={{ opacity: 0.25 }}
               />
               <img
