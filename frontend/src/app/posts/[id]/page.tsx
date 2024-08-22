@@ -288,16 +288,16 @@ const PostPage = () => {
       <Header />
       <div className="px-4 py-20 md:px-6 lg:py-2">
         <div className="mx-auto max-w-4xl">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-6 space-y-4 sm:space-y-0">
             <button
-              className="hover:underline bg-inherit text-black inline-flex h-8 items-center justify-center rounded-md px-4 text-sm font-medium transition-colors hover:bg-inherit focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+              className="hover:underline bg-inherit text-black inline-flex h-8 items-start justify-center rounded-md px-4 text-sm font-medium transition-colors hover:bg-inherit focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
               onClick={() => router.push("/articles")}
             >
               <ArrowLeftIcon className="mr-2 h-4 w-4" />
               Go Back
             </button>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Avatar className="h-10 w-10">
                 <AvatarImage src={`${API_URL}${post.author?.avatar}`} />
                 <AvatarFallback>
@@ -311,7 +311,7 @@ const PostPage = () => {
                   )}
                 </AvatarFallback>
               </Avatar>
-              <div>
+              <div className="text-center sm:text-left">
                 <p className="text-sm font-medium text-black">
                   {post.author?.firstName ?? "Author"}{" "}
                   {post.author?.lastName ?? "Unknown"}
@@ -350,7 +350,7 @@ const PostPage = () => {
                 )}
               </div>
               {user?.id === post.author?.id && (
-                <>
+                <div className="flex space-x-2">
                   <Button
                     variant="ghost"
                     className="w-fit flex items-center space-x-1 text-gray-500 hover:bg-inherit"
@@ -365,7 +365,7 @@ const PostPage = () => {
                   >
                     <FaTrash className="size-5" />
                   </Button>
-                </>
+                </div>
               )}
             </div>
           </div>
@@ -423,7 +423,7 @@ const PostPage = () => {
               </ul>
             </div>
           )}
-          <div className="flex items-center mt-8 space-x-4">
+          <div className="flex flex-col sm:flex-row items-start mt-8 space-y-4 sm:space-y-0 sm:space-x-4">
             <button
               className="w-fit flex items-center space-x-1"
               onClick={() => handleFavorite(post.id)}

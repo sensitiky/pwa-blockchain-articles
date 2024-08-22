@@ -4,7 +4,6 @@ import Slider from "react-slick";
 import Image from "next/image";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { FaRegComment } from "react-icons/fa";
 import axios from "axios";
 import parse from "html-react-parser";
 import { useAuth } from "../../context/authContext";
@@ -48,7 +47,7 @@ type Comment = {
   favorites: number;
 };
 
-const POSTS_PER_PAGE = 20;
+const POSTS_PER_PAGE = 5;
 
 const settings = {
   dots: true,
@@ -186,38 +185,40 @@ const ArticleCarousel = () => {
                 </div>
                 <div>
                   <div className="flex justify-between items-center">
-                    <div className="flex items-center space-x-4">
+                    <div className="flex flex-wrap items-center space-x-4">
                       <span className="text-gray-500">
                         {calculateReadingTime(post.description)} min read
                       </span>
-                      <span className="bg-gray-500 w-px h-6"></span>
-                      <button className="flex items-center space-x-1 text-gray-500">
-                        <img
-                          src="/comment.png"
-                          alt="Comment"
-                          className="w-5 h-5 mr-1"
-                        />
-                        <span>
-                          {Array.isArray(post.comments)
-                            ? post.comments.length
-                            : 0}
-                        </span>
-                      </button>
-                      <button
-                        className="flex items-center space-x-1 text-gray-500"
-                        onClick={() => handleFavorite(post.id)}
-                      >
-                        <img
-                          src="/saved-svgrepo-com.png"
-                          alt="Saved"
-                          className="w-5 h-5 mr-1"
-                        />
-                        <span>
-                          {Array.isArray(post.favorites)
-                            ? post.favorites.length
-                            : 0}
-                        </span>
-                      </button>
+                      <span className="bg-gray-500 w-px h-6 hidden sm:block"></span>
+                      <div className="flex space-x-4">
+                        <button className="flex items-center space-x-1 text-gray-500">
+                          <img
+                            src="/comment.png"
+                            alt="Comment"
+                            className="w-5 h-5 mr-1"
+                          />
+                          <span>
+                            {Array.isArray(post.comments)
+                              ? post.comments.length
+                              : 0}
+                          </span>
+                        </button>
+                        <button
+                          className="flex items-center space-x-1 text-gray-500"
+                          onClick={() => handleFavorite(post.id)}
+                        >
+                          <img
+                            src="/saved-svgrepo-com.png"
+                            alt="Saved"
+                            className="w-5 h-5 mr-1"
+                          />
+                          <span>
+                            {Array.isArray(post.favorites)
+                              ? post.favorites.length
+                              : 0}
+                          </span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

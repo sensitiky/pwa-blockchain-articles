@@ -416,7 +416,7 @@ const Articles = () => {
           )}
         </div>
       </div>
-      <div className="sort-order-container flex flex-col lg:flex-row items-center text-center">
+      <div className="sort-order-container flex flex-col lg:flex-row items-center text-center flex-wrap">
         <div className="flex flex-col justify-start py-4 px-4 lg:px-44 flex-shrink w-full lg:w-auto">
           <label htmlFor="sortOrder1" className="text-[#263238] font-bold">
             Sort by:

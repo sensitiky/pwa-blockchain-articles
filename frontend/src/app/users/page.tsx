@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import Header from "@/assets/header";
 import Footer from "@/assets/footer";
@@ -10,12 +9,9 @@ import Articles from "@/assets/userarticles";
 import { useAuth } from "../../../context/authContext";
 import { useRouter } from "next/navigation";
 import { getProfile, updateProfile } from "../../../services/authService";
-import {
-  UserIcon,
-  LockIcon,
-  PencilIcon,
-} from "lucide-react";
+import { UserIcon, LockIcon, PencilIcon } from "lucide-react";
 import { BookmarkIcon } from "lucide-react";
+import { motion } from "framer-motion";
 
 const Users = () => {
   const [selectedSection, setSelectedSection] = useState("personal");
@@ -73,78 +69,6 @@ const Users = () => {
     fetchProfile();
   }, [isAuthenticated]);
 
-  const handleEditToggle = () => {
-    setEditMode(!editMode);
-  };
-
-  const handleBioEditToggle = () => {
-    setBioEditMode(!bioEditMode);
-  };
-
-  const handleSectionChange = (section: string) => {
-    setSelectedSection(section);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    if (userInfo[name as keyof typeof userInfo] !== value) {
-      setUserInfo((prevUserInfo) => ({ ...prevUserInfo, [name]: value }));
-    }
-  };
-
-  const handleCountryChange = (selectedOption: any) => {
-    if (userInfo.country !== selectedOption.label) {
-      setUserInfo((prevUserInfo) => ({
-        ...prevUserInfo,
-        country: selectedOption.label,
-      }));
-    }
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (reader.result) {
-          setProfileImage(reader.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleEditBio = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const { value } = e.target;
-    if (bio !== value) {
-      setBio(value);
-    }
-  };
-
-  const handleDateChange = (date: Date | null) => {
-    if (date && userInfo.date !== date) {
-      setUserInfo((prevUserInfo) => ({ ...prevUserInfo, date }));
-    }
-  };
-
-  const handleProfileSave = async () => {
-    try {
-      await updateProfile(userInfo);
-      setEditMode(false);
-    } catch (error) {
-      console.error("Error updating profile", error);
-    }
-  };
-
-  const handleBioSave = async () => {
-    try {
-      await updateProfile({ ...userInfo, bio });
-      setBioEditMode(false);
-    } catch (error) {
-      console.error("Error updating bio", error);
-    }
-  };
-
   const RenderContent = () => {
     if (!isAuthenticated) {
       router.push("/");
@@ -167,17 +91,30 @@ const Users = () => {
     }
   };
 
+  const handleDragEnd = (event: any, info: { offset: { x: number } }) => {
+    if (info.offset.x > 100) {
+      setIsSidebarVisible(true);
+    } else if (info.offset.x < -100) {
+      setIsSidebarVisible(false);
+    }
+  };
+
   return (
     <div>
       <Header />
       <div className="grid min-h-screen grid-cols-1 md:grid-cols-[400px_1fr] bg-inherit text-foreground">
         {/* Mobile Menu Button */}
-        <button
-          className="md:hidden p-4 fixed top-4 right-4 z-50 bg-[#000916] text-white rounded-full shadow-lg"
+        <motion.div
+          className={`fixed block sm:hidden left-0 top-1/2 transform -translate-y-1/2 z-50 bg-[#000916] text-white p-2 rounded-r-full cursor-pointer animate-pulse ${
+            isSidebarVisible ? "translate-x-64" : "translate-x-0"
+          }`}
           onClick={() => setIsSidebarVisible(!isSidebarVisible)}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          onDragEnd={handleDragEnd}
         >
-          {isSidebarVisible ? "✕" : "☰"}
-        </button>
+          {isSidebarVisible ? "✕" : "➔"}
+        </motion.div>
 
         {/* Mobile Sidebar */}
         <aside
