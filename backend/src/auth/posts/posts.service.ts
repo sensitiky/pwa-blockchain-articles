@@ -211,6 +211,7 @@ export class PostsService {
   }
 
   async findOne(id: number): Promise<Post> {
+    console.log('Received ID:', id);
     const post = await this.postsRepository.findOne({
       where: { id },
       relations: [
@@ -256,7 +257,7 @@ export class PostsService {
     return this.postsRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.tags', 'tag')
-      .select('tag.id')
+      .select('tag.id', 'tagId')
       .addSelect('tag.name', 'name')
       .addSelect('COUNT(post.id)', 'count')
       .where('post.categoryId = :categoryId', { categoryId })

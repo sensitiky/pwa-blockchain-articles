@@ -65,7 +65,7 @@ const Articles = () => {
     { categoryId: number; count: number }[]
   >([]);
   const [tags, setTags] = useState<
-    { tagId: number; name: string; count: number }[]
+    { id: number; name: string; count: number }[]
   >([]);
 
   const fetchCategories = useCallback(async () => {
@@ -89,15 +89,20 @@ const Articles = () => {
       setLoading(true);
       try {
         let url = `${API_URL}/posts?page=${page}&limit=${POSTS_PER_PAGE}&order=${order}`;
-        if (categoryId) {
-          url = `${API_URL}/posts/by-category?categoryId=${categoryId}&page=${page}&order=${order}`;
-        }
-        if (tagId) {
-          url = `${API_URL}/posts/by-tag?tagId=${tagId}&categoryId=${categoryId}&page=${page}&order=${order}`;
-        }
 
+        if (categoryId && tagId) {
+          url = `${API_URL}/posts/by-tag?tagId=${tagId}&categoryId=${categoryId}`;
+        } else if (categoryId) {
+          url = `${API_URL}/posts/by-category?categoryId=${categoryId}&page=${page}&limit=${POSTS_PER_PAGE}&order=${order}`;
+        } else if (tagId) {
+          url = `${API_URL}/posts/by-tag?tagId=${tagId}&page=${page}&limit=${POSTS_PER_PAGE}&order=${order}`;
+        }
+        // console.log("URL:", url);
         const response = await axios.get(url);
-        let postsData = response.data.data || [];
+        let postsData = Array.isArray(response.data)
+          ? response.data
+          : response.data.data || [];
+        // console.log("Posts Data:", postsData);
 
         // Apply sortOrder2 logic after fetching the posts
         if (sortOrder2 === "short") {
@@ -158,7 +163,7 @@ const Articles = () => {
       // console.log("Raw Tags Response:", response.data);
 
       const tags = response.data.map((tag: any) => ({
-        tagId: tag.tagId, // The 'tagId' should now be correctly populated
+        id: tag.tagId, // The 'tagId' should now be correctly populated
         name: tag.name, // The 'name' should now be correctly populated
         count: tag.count,
       }));
@@ -173,8 +178,15 @@ const Articles = () => {
   useEffect(() => {
     fetchCategories();
     fetchCategoryCounts();
-    fetchPosts(1, sortOrder);
-  }, [fetchCategories, fetchCategoryCounts, fetchPosts, sortOrder]);
+    fetchPosts(1, sortOrder, selectedCategoryId, selectedTagId);
+  }, [
+    fetchCategories,
+    fetchCategoryCounts,
+    fetchPosts,
+    sortOrder,
+    selectedCategoryId,
+    selectedTagId,
+  ]);
 
   const handleCategoryChange = useCallback(
     (categoryId: number | null) => {
@@ -193,14 +205,27 @@ const Articles = () => {
   );
 
   const handleTagChange = useCallback(
-    (tagId: number | null) => {
-      // Toggle the selection: if the tag is already selected, deselect it.
-      setSelectedTagId((prevTagId) => (prevTagId === tagId ? null : tagId));
+    (id: number | null) => {
+      //  console.log("Selected TagId:", id);
+      setSelectedTagId(id);
       setPosts([]);
-      fetchPosts(1, "recent", selectedCategoryId, tagId);
+      fetchPosts(1, sortOrder, selectedCategoryId, id);
     },
-    [fetchPosts, selectedCategoryId]
+    [fetchPosts, selectedCategoryId, sortOrder]
   );
+
+  const renderTags = () => {
+    // console.log("Tags:", tags);
+    return tags.map((tag) => (
+      <button
+        key={tag.id}
+        className={`ios-button ${selectedTagId === tag.id ? "selected" : ""}`}
+        onClick={() => handleTagChange(tag.id)}
+      >
+        {tag.name} ({tag.count})
+      </button>
+    ));
+  };
 
   const handleSortOrderChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -221,9 +246,11 @@ const Articles = () => {
     },
     [fetchPosts, sortOrder, selectedCategoryId, selectedTagId]
   );
+
   const calculateReadingTime = useCallback((text: string) => {
     const wordsPerMinute = 200;
-    const numberOfWords = text.split(/\s+/).length;
+    const cleanText = text.replace(/<[^>]*>/g, "");
+    const numberOfWords = cleanText.split(/\s+/).length;
     return Math.ceil(numberOfWords / wordsPerMinute);
   }, []);
 
@@ -383,17 +410,7 @@ const Articles = () => {
                 Tags
               </h3>
               <div className="flex flex-wrap justify-center mt-2 space-x-4">
-                {tags.map((tag) => (
-                  <button
-                    key={tag.tagId}
-                    className={`ios-button ${
-                      selectedTagId === tag.tagId ? "selected" : ""
-                    }`}
-                    onClick={() => handleTagChange(tag.tagId)}
-                  >
-                    {tag.name} ({tag.count})
-                  </button>
-                ))}
+                {renderTags()}
               </div>
             </div>
           )}

@@ -48,7 +48,7 @@ type Comment = {
   favorites: number;
 };
 
-const POSTS_PER_PAGE = 5;
+const POSTS_PER_PAGE = 20;
 
 const settings = {
   dots: true,
@@ -160,7 +160,7 @@ const ArticleCarousel = () => {
         <Slider {...settings}>
           {posts.map((post, index) => (
             <div key={index} className="p-4 flex justify-center">
-              <div className="bg-opacity-50 backdrop-blur-3xl bg-white p-6 rounded-xl border-[1px] border-black min-h-[250px] max-h-[250px] overflow-hidden grid grid-rows-[auto,auto,1fr,auto] gap-2 w-full max-w-md">
+              <div className="bg-opacity-50 backdrop-blur-3xl bg-white p-6 rounded-xl border border-[#263238] min-h-[250px] max-h-[250px] overflow-hidden grid grid-rows-[auto,auto,1fr,auto] gap-2 w-full max-w-md">
                 <div className="overflow-hidden">
                   {post.imageUrlBase64 && (
                     <div className="relative w-full h-40">

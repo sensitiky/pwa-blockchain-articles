@@ -90,7 +90,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
           return post;
         });
 
-        console.log(postsResponse.data);
+        // console.log(postsResponse.data);
         setPosts(postsWithBase64Images);
       } catch (err) {
         if (axios.isAxiosError(err)) {
