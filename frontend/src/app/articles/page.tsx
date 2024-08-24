@@ -94,7 +94,7 @@ const Articles = () => {
         let postsData = Array.isArray(response.data)
           ? response.data
           : response.data.data || [];
-        console.log("Posts Data:", postsData);
+       // console.log("Posts Data:", postsData);
 
         // Apply sortOrder2 logic after fetching the posts
         if (sortOrder2 === "short") {

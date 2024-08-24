@@ -278,7 +278,10 @@ const PostPage = () => {
       });
 
     return (
-      <div style={{ textIndent: "20px" }} className="text-lg justify-between">
+      <div
+        style={{ textIndent: "20px" }}
+        className="text-lg justify-between break-words overflow-hidden"
+      >
         {parse(transformedDescription)}
       </div>
     );
