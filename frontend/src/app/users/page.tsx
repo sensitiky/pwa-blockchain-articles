@@ -8,18 +8,15 @@ import SavedItems from "@/assets/saveditems";
 import Articles from "@/assets/userarticles";
 import { useAuth } from "../../../context/authContext";
 import { useRouter } from "next/navigation";
-import { getProfile, updateProfile } from "../../../services/authService";
-import { UserIcon, LockIcon, PencilIcon } from "lucide-react";
-import { BookmarkIcon } from "lucide-react";
+import { getProfile } from "../../../services/authService";
+import { UserIcon, LockIcon, PencilIcon, BookmarkIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Users = () => {
   const [selectedSection, setSelectedSection] = useState("personal");
-  const [editMode, setEditMode] = useState(false);
-  const [bioEditMode, setBioEditMode] = useState(false);
-  const [bio, setBio] = useState<string>("");
   const router = useRouter();
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+  const { user, isAuthenticated } = useAuth();
   const [userInfo, setUserInfo] = useState({
     firstName: "",
     lastName: "",
@@ -35,8 +32,6 @@ const Users = () => {
     bio: "",
     avatar: "",
   });
-  const { user, isAuthenticated } = useAuth();
-  const [profileImage, setProfileImage] = useState<string>("");
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -58,8 +53,6 @@ const Users = () => {
             bio: profile.bio || "",
             avatar: profile.avatar || "",
           });
-          setProfileImage(profile.profileImage || "");
-          setBio(profile.bio || "");
         } catch (error) {
           console.error("Error fetching profile data", error);
         }
@@ -100,12 +93,12 @@ const Users = () => {
   };
 
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="grid min-h-screen grid-cols-1 md:grid-cols-[400px_1fr] bg-inherit text-foreground">
+      <div className="grid grid-cols-1 md:grid-cols-[400px_1fr] bg-inherit text-foreground">
         {/* Mobile Menu Button */}
         <motion.div
-          className={`fixed block sm:hidden left-0 top-1/2 transform -translate-y-1/2 z-50 bg-[#000916] text-white p-2 rounded-r-full cursor-pointer animate-pulse ${
+          className={`fixed block sm:hidden left-0 top-1/2 transform -translate-y-1/2 z-50 bg-[#000916] text-white p-2 rounded-r-full cursor-pointer ${
             isSidebarVisible ? "translate-x-64" : "translate-x-0"
           }`}
           onClick={() => setIsSidebarVisible(!isSidebarVisible)}
@@ -216,7 +209,9 @@ const Users = () => {
           </div>
         </aside>
 
-        <main className="bg-inherit p-4 md:p-6 lg:p-8">{RenderContent()}</main>
+        <main className="bg-inherit p-4 md:p-6 lg:p-8 flex-grow">
+          {RenderContent()}
+        </main>
       </div>
       <Footer />
     </div>
