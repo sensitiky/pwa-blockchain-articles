@@ -212,7 +212,7 @@ const Posts: React.FC = () => {
                       </Button>
                     </Link>
                   </div>
-                  <h3 className="absolute top-0 left-0 right-0 text-lg mb-2 text-center text-black font-semibold backdrop-blur-lg bg-opacity-20 bg-black p-2 z-10">
+                  <h3 className="absolute top-0 left-0 right-0 text-lg mb-2 text-center text-white font-semibold backdrop-blur-xl bg-opacity-20 bg-black p-2 z-10">
                     {removeSpecialCharacters(post.title)}
                   </h3>
                 </div>
