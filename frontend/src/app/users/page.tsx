@@ -95,7 +95,7 @@ const Users = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="grid grid-cols-1 md:grid-cols-[400px_1fr] bg-inherit text-foreground">
+      <div className="grid grid-cols-1 md:grid-cols-[400px_1fr] bg-inherit text-foreground min-h-screen h-full">
         {/* Mobile Menu Button */}
         <motion.div
           className={`fixed block sm:hidden left-0 top-1/2 transform -translate-y-1/2 z-50 bg-[#000916] text-white p-2 rounded-r-full cursor-pointer ${
@@ -157,7 +157,7 @@ const Users = () => {
 
         {/* Desktop Sidebar */}
         <aside
-          className={`hidden md:block border-r border-border bg-[#000916] px-2 py-8 w-full md:w-16 md:hover:w-64 md:transition-all md:duration-300 group`}
+          className={`hidden md:block border-r border-border bg-[#000916] px-2 py-8 w-full md:w-16 md:hover:w-64 md:transition-all md:duration-300 group h-full`}
         >
           <div className="flex flex-col gap-8">
             <div className="space-y-2">

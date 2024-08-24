@@ -19,24 +19,7 @@ import styled from "styled-components";
 import Link from "next/link";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
-const POSTS_PER_PAGE = 10;
-type Post = {
-  id: number;
-  title: string;
-  content: string | null;
-  description: string | null;
-  createdAt: Date;
-  imageUrlBase64: string | null;
-  author: { id: number; user: string; avatar: string | null };
-  category: Category | null;
-  comments: any[];
-  favorites: number;
-};
 
-type Category = {
-  id: number;
-  name: string;
-};
 const Container = styled.div`
   display: flex;
   justify-content: center;
@@ -45,6 +28,16 @@ const Container = styled.div`
   padding: 1rem;
   background-color: inherit;
 `;
+
+type FavoriteItem = {
+  id: number;
+  imageUrlBase64: string | null;
+  title: string;
+  author: string;
+  description: string;
+  comments: { id: number; content: string }[];
+  createdAt: Date;
+};
 
 const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
   const [favorites, setFavorites] = useState<
@@ -55,13 +48,12 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
       author: string;
       description: string;
       comments: { id: number; content: string }[];
+      createdAt: Date;
     }[]
   >([]);
-  const [posts, setPosts] = useState<Post[]>([]);
   const [liked, setLiked] = useState<boolean[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [order, setOrder] = useState<string>("Date (newest first)");
-  const [page, setPage] = useState<number>(1);
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -74,6 +66,7 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
                 favorite.imageUrl.data
               ).toString("base64")}`
             : null,
+          createdAt: new Date(favorite.createdAt),
         }));
         setFavorites(favoritesData);
         setLiked(favoritesData.map(() => true));
@@ -94,24 +87,16 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
 
     try {
       if (!newLiked[index]) {
-        // Delete favorite using userId and postId
         await axios.delete(
           `${API_URL}/users/${userId}/favorites/${favorite.id}`
         );
 
-        // Remove from state
         const updatedFavorites = favorites.filter((_, i) => i !== index);
         const updatedLiked = liked.filter((_, i) => i !== index);
 
         setFavorites(updatedFavorites);
         setLiked(updatedLiked);
       }
-      // Aquí podrías agregar lógica para agregar el favorito si se vuelve a "likear"
-      // Ejemplo:
-      // else {
-      //   await axios.post(`${API_URL}/favorites`, { userId, postId: favorite.id });
-      //   // Opcional: agregar el favorito de nuevo al estado
-      // }
     } catch (error) {
       console.error("Error toggling favorite", error);
     }
@@ -119,34 +104,28 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
 
   const handleOrderChange = (newOrder: string) => {
     setOrder(newOrder);
-    setPage(1);
+    setFavorites(sortFavorites(favorites, newOrder));
   };
 
-  const sortPosts = (posts: Post[]) => {
+  const sortFavorites = (favorites: FavoriteItem[], order: string) => {
     switch (order) {
       case "Date (newest first)":
-        return posts.sort(
+        return favorites.sort(
           (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
         );
       case "Date (oldest first)":
-        return posts.sort(
+        return favorites.sort(
           (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
         );
       case "Title":
-        return posts.sort((a, b) => a.title.localeCompare(b.title));
+        return favorites.sort((a, b) => a.title.localeCompare(b.title));
       default:
-        return posts;
+        return favorites;
     }
   };
 
-  const sortedPosts = sortPosts(posts);
-  const paginatedPosts = sortedPosts.slice(
-    (page - 1) * POSTS_PER_PAGE,
-    page * POSTS_PER_PAGE
-  );
-
   return (
-    <section className="max-h-dvh w-full py-4 sm:py-6 md:py-8 lg:py-12">
+    <section className="flex items-center justify-between py-4">
       <div className="container px-4 md:px-6">
         <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-gray-800 mb-4">
           Your favorite items
