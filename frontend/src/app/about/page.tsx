@@ -38,7 +38,7 @@ const LandingSection: FC = () => {
               <div className="max-w-2xl">
                 <p
                   id="about-text-1"
-                  className="text-lg sm:text-2xl leading-snug text-white"
+                  className="text-lg sm:text-2xl leading-snug text-white text-left"
                 >
                   <span className="font-extrabold">
                     Empowering Web3 education
