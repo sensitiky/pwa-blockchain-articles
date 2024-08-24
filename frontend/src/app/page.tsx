@@ -384,11 +384,14 @@ const HomePage: React.FC = () => {
                       <h3 className="text-xl font-bold mb-2 text-[#263238]">
                         {post.title}
                       </h3>
-                      <p className="text-gray-600 line-clamp-3">
-                        {typeof post.description === "string"
-                          ? parse(post.description)
-                          : JSON.stringify(post.description)}
-                      </p>
+                      {!post.imageUrlBase64 &&
+                        typeof post.description === "string" && !post.description.includes("<iframe") && (
+                          <p className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-3">
+                            {typeof post.description === "string"
+                              ? parse(post.description.replace(/<img.*?>/g, ""))
+                              : JSON.stringify(post.description)}
+                          </p>
+                        )}
                     </div>
                   </div>
                 </div>

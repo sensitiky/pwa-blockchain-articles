@@ -254,7 +254,7 @@ const Articles = () => {
     return posts.map((post) => (
       <div
         key={post.id}
-        className="w-full p-4 flex-wrap sm:p-6 bg-inherit mx-auto text-card-foreground border border-r-0 border-l-0 rounded-none shadow-none transition-transform ios-style"
+        className="w-full p-3 sm:p-4 md:p-6 bg-inherit mx-auto text-card-foreground border border-r-0 border-l-0 rounded-none shadow-none transition-transform ios-style"
       >
         <div className="flex flex-col h-full">
           {post.imageUrlBase64 && (
@@ -263,12 +263,12 @@ const Articles = () => {
               alt="Post Image"
               width={1200}
               height={300}
-              className="w-full h-full object-cover"
+              className="w-full h-48 sm:h-64 md:h-80 object-cover"
               loading="lazy"
             />
           )}
-          <div className="flex justify-between mt-2">
-            <div className="flex items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-2">
+            <div className="flex items-center mb-2 sm:mb-0">
               <Link href={`/users/${post.author?.id}`}>
                 <img
                   src={
@@ -279,29 +279,32 @@ const Articles = () => {
                       : "/default-avatar.jpg"
                   }
                   alt="Author image"
-                  className="w-10 h-10 rounded-full"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
                 />
               </Link>
               <div className="flex-col flex ml-2">
-                <span className="text-lg font-semibold text-[#263238]">
+                <span className="text-base sm:text-lg font-semibold text-[#263238]">
                   {post.author ? post.author.user : "Unknown Author"}
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-xs sm:text-sm text-muted-foreground">
                   {post.author ? post.author.bio : "Unknown Author"}
                 </span>
               </div>
             </div>
-            <div className="flex flex-col items-start">
+            <div className="flex flex-col items-start sm:items-end mt-2 sm:mt-0">
               <div className="flex items-center mb-2">
-                <span className="flex items-center text-[#263238]">
-                  <span className="text-2xl">
-                    <img src="/category.png" className="size-4 mr-1" />
+                <span className="flex items-center text-[#263238] text-sm sm:text-base">
+                  <span className="text-xl sm:text-2xl">
+                    <img
+                      src="/category.png"
+                      className="w-3 h-3 sm:w-4 sm:h-4 mr-1"
+                    />
                   </span>{" "}
                   {post.category?.name}
                 </span>
               </div>
-              <div className="flex items-center text-[#263238]">
-                <TagIcon className="w-4 h-4 mr-1" />
+              <div className="flex items-center text-[#263238] text-xs sm:text-sm">
+                <TagIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                 {post.tags
                   .slice(0, 3)
                   .map((tag) => tag.name)
@@ -310,11 +313,11 @@ const Articles = () => {
             </div>
           </div>
           <div className="flex-1 mt-4">
-            <h2 className="text-2xl font-bold mb-2 truncate text-[#263238]">
+            <h2 className="text-xl sm:text-2xl font-bold mb-2 truncate text-[#263238]">
               {post.title}
             </h2>
             <p
-              className="text-muted-foreground mb-4 line-clamp-3"
+              className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-3"
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(post.description, {
                   ALLOWED_TAGS: ["b", "i", "em", "strong", "a", "p"],
@@ -323,23 +326,29 @@ const Articles = () => {
               }}
             ></p>
           </div>
-          <div className="flex items-center text-muted-foreground mt-4">
-            <ClockIcon className="w-5 h-5 mr-1" />
-            <span>{calculateReadingTime(post.description)} min read</span>
-            <span className="mx-2">|</span>
-            <img src="/comment.png" alt="Comment" className="w-5 h-5 mr-1" />
-            <span>{post.commentscount || 0}</span>
-            <span className="mx-2">|</span>
-            <img
-              src="/saved-svgrepo-com.png"
-              alt="Saved"
-              className="w-5 h-5 mr-1"
-            />
-            <span>{post.favoritescount || 0}</span>
+          <div className="flex flex-wrap items-center text-muted-foreground mt-4 gap-2">
+            <div className="flex items-center">
+              <ClockIcon className="w-4 h-4 mr-1" />
+              <span className="text-sm">
+                {calculateReadingTime(post.description)} min read
+              </span>
+            </div>
+            <div className="flex items-center">
+              <img src="/comment.png" alt="Comment" className="w-4 h-4 mr-1" />
+              <span className="text-sm">{post.commentscount || 0}</span>
+            </div>
+            <div className="flex items-center">
+              <img
+                src="/saved-svgrepo-com.png"
+                alt="Saved"
+                className="w-4 h-4 mr-1"
+              />
+              <span className="text-sm">{post.favoritescount || 0}</span>
+            </div>
           </div>
           <div className="flex justify-end mt-4">
             <Link href={`/posts/${post.id}`}>
-              <button className="bg-[#000916] text-primary-foreground px-4 py-2 rounded-full hover:bg-[#000916]/80">
+              <button className="bg-[#000916] text-primary-foreground px-3 py-1 sm:px-4 sm:py-2 text-sm sm:text-base rounded-full hover:bg-[#000916]/80">
                 Read More
               </button>
             </Link>
@@ -352,105 +361,110 @@ const Articles = () => {
   return (
     <div className="articles-container flex flex-col min-h-screen w-screen z-auto">
       <Header />
-      <div className="articles-header w-screen bg-[#000916] text-center py-8 px-4">
-        <div className="articles-title-container py-12">
-          <h1 className="articles-title text-4xl font-bold text-yellow-500">
-            Articles
-          </h1>
-        </div>
-        <div className="categories-container text-center py-4 w-full">
-          <h3 className="categories-title text-xl font-medium text-white mb-6">
-            Categories
-          </h3>
-          <button
-            className={`ios-button2 ${
-              selectedCategoryId === null ? "selected" : ""
-            }`}
-            onClick={() => handleCategoryChange(null)}
-          >
-            All Categories
-          </button>
-          <div className="flex flex-wrap justify-center mt-4 space-x-4">
-            {categories.length > 0 ? (
-              categories.map((category) => {
-                const categoryCount =
-                  categoryCounts.find((item) => item.categoryId === category.id)
-                    ?.count || 0;
-                return (
-                  <button
-                    key={category.id}
-                    className={`ios-button ${
-                      selectedCategoryId === category.id ? "selected" : ""
-                    }`}
-                    onClick={() => handleCategoryChange(category.id)}
-                  >
-                    {category.name} ({categoryCount})
-                  </button>
-                );
-              })
-            ) : (
-              <div className="text-white">No categories available</div>
-            )}
+      <main className="flex-grow">
+        <div className="articles-header bg-[#000916] text-center py-4 sm:py-8 px-2 sm:px-4">
+          <div className="articles-title-container py-6 sm:py-12">
+            <h1 className="articles-title text-3xl sm:text-4xl font-bold text-yellow-500">
+              Articles
+            </h1>
           </div>
-          {selectedCategoryId !== null && tags.length > 0 && (
-            <div className="tags-container text-center py-4 w-full">
-              <h3 className="tags-title text-lg font-medium text-white mb-4">
-                Tags
-              </h3>
-              <div className="flex flex-wrap justify-center mt-2 space-x-4">
-                {renderTags()}
+          <div className="categories-container text-center py-2 sm:py-4 w-full">
+            <h3 className="categories-title text-lg sm:text-xl font-medium text-white mb-3 sm:mb-6">
+              Categories
+            </h3>
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-4">
+              <button
+                className={`ios-button2 ${
+                  selectedCategoryId === null ? "selected" : ""
+                }`}
+                onClick={() => handleCategoryChange(null)}
+              >
+                All Categories
+              </button>
+              <div className="flex flex-wrap justify-center mt-4 space-x-4">
+                {categories.length > 0 ? (
+                  categories.map((category) => {
+                    const categoryCount =
+                      categoryCounts.find(
+                        (item) => item.categoryId === category.id
+                      )?.count || 0;
+                    return (
+                      <button
+                        key={category.id}
+                        className={`ios-button ${
+                          selectedCategoryId === category.id ? "selected" : ""
+                        }`}
+                        onClick={() => handleCategoryChange(category.id)}
+                      >
+                        {category.name} ({categoryCount})
+                      </button>
+                    );
+                  })
+                ) : (
+                  <div className="text-white">No categories available</div>
+                )}
               </div>
             </div>
-          )}
+            {selectedCategoryId !== null && tags.length > 0 && (
+              <div className="tags-container text-center py-2 sm:py-4 w-full mt-2">
+                <h3 className="tags-title text-base sm:text-lg font-medium text-white mb-2 sm:mb-4">
+                  Tags
+                </h3>
+                <div className="flex flex-wrap justify-center gap-2 sm:gap-4">
+                  {renderTags()}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-      <div className="sort-order-container flex flex-col lg:flex-row items-center text-center flex-wrap">
-        <div className="flex flex-col justify-start py-4 px-4 lg:px-44 flex-shrink w-full lg:w-auto">
-          <label htmlFor="sortOrder1" className="text-[#263238] font-bold">
-            Sort by:
-          </label>
-          <select
-            id="sortOrder1"
-            className="ml-2 p-2 border w-full lg:w-fit ios-select text-black"
-            value={sortOrder}
-            onChange={handleSortOrderChange}
-          >
-            <option value="recent">Most Recent</option>
-            <option value="saved">Most Saved</option>
-            <option value="comment">Most Comments</option>
-          </select>
+        <div className="sort-order-container flex flex-col lg:flex-row items-center text-center flex-wrap">
+          <div className="flex flex-col justify-start py-4 px-4 lg:px-44 flex-shrink w-full lg:w-auto">
+            <label htmlFor="sortOrder1" className="text-[#263238] font-bold">
+              Sort by:
+            </label>
+            <select
+              id="sortOrder1"
+              className="ml-2 p-2 border w-full lg:w-fit ios-select text-black"
+              value={sortOrder}
+              onChange={handleSortOrderChange}
+            >
+              <option value="recent">Most Recent</option>
+              <option value="saved">Most Saved</option>
+              <option value="comment">Most Comments</option>
+            </select>
+          </div>
+          <div className="flex flex-col justify-start py-4 px-4 lg:px-44 flex-shrink w-full lg:w-auto">
+            <label htmlFor="sortOrder2" className="text-[#263238] font-bold">
+              Sort by Length:
+            </label>
+            <select
+              id="sortOrder2"
+              className="ml-2 p-2 border w-full lg:w-fit ios-select text-black"
+              value={sortOrder2}
+              onChange={handleSortOrder2Change}
+            >
+              <option value="All">All</option>
+              <option value="short">Short (≤ 1000 characters)</option>
+              <option value="medium">Medium (1000-3000 characters)</option>
+              <option value="long">Long (≥ 3000 characters)</option>
+            </select>
+          </div>
         </div>
-        <div className="flex flex-col justify-start py-4 px-4 lg:px-44 flex-shrink w-full lg:w-auto">
-          <label htmlFor="sortOrder2" className="text-[#263238] font-bold">
-            Sort by Length:
-          </label>
-          <select
-            id="sortOrder2"
-            className="ml-2 p-2 border w-full lg:w-fit ios-select text-black"
-            value={sortOrder2}
-            onChange={handleSortOrder2Change}
-          >
-            <option value="All">All</option>
-            <option value="short">Short (≤ 1000 characters)</option>
-            <option value="medium">Medium (1000-3000 characters)</option>
-            <option value="long">Long (≥ 3000 characters)</option>
-          </select>
-        </div>
-      </div>
 
-      <div className="articles-content flex-grow flex justify-center py-8 px-4 bg-inherit">
-        <div className="bg-inherit posts-container w-full max-w-screen-lg mx-auto px-2 sm:px-4">
-          {loading ? (
-            <div className="flex justify-center mt-8">
-              <CircularProgress />
-            </div>
-          ) : (
-            <div className="posts-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 gap-6 bg-inherit shadow-none">
-              {renderPosts}
-            </div>
-          )}
+        <div className="articles-content flex-grow flex justify-center py-8 px-4 bg-inherit">
+          <div className="bg-inherit posts-container w-full max-w-screen-lg mx-auto px-2 sm:px-4">
+            {loading ? (
+              <div className="flex justify-center mt-8">
+                <CircularProgress />
+              </div>
+            ) : (
+              <div className="posts-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 sm:gap-6">
+                {renderPosts}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );

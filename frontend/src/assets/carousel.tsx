@@ -33,6 +33,8 @@ type Post = {
   tags: { name: string }[];
   comments: Comment[];
   favorites: number;
+  favoritescount: number;
+  commentscount: number;
 };
 
 type Comment = {
@@ -197,26 +199,39 @@ const ArticleCarousel = () => {
                             alt="Comment"
                             className="w-5 h-5 mr-1"
                           />
-                          <span>
-                            {Array.isArray(post.comments)
-                              ? post.comments.length
-                              : 0}
-                          </span>
+                          <span>{post.commentscount || 0}</span>
                         </button>
                         <button
                           className="flex items-center space-x-1 text-gray-500"
                           onClick={() => handleFavorite(post.id)}
                         >
-                          <img
-                            src="/saved-svgrepo-com.png"
-                            alt="Saved"
-                            className="w-5 h-5 mr-1"
-                          />
-                          <span>
-                            {Array.isArray(post.favorites)
-                              ? post.favorites.length
-                              : 0}
-                          </span>
+                          <svg
+                            width="1.5rem"
+                            height="1.5rem"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+                            <g
+                              id="SVGRepo_tracerCarrier"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+
+                            <g id="SVGRepo_iconCarrier">
+                              {" "}
+                              <path
+                                d="M19 19.2674V7.84496C19 5.64147 17.4253 3.74489 15.2391 3.31522C13.1006 2.89493 10.8994 2.89493 8.76089 3.31522C6.57467 3.74489 5 5.64147 5 7.84496V19.2674C5 20.6038 6.46752 21.4355 7.63416 20.7604L10.8211 18.9159C11.5492 18.4945 12.4508 18.4945 13.1789 18.9159L16.3658 20.7604C17.5325 21.4355 19 20.6038 19 19.2674Z"
+                                stroke="#6b7280"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />{" "}
+                            </g>
+                          </svg>
+                          <span>{post.favoritescount || 0}</span>
                         </button>
                       </div>
                     </div>
