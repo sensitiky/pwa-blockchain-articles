@@ -86,4 +86,11 @@ export class UsersController {
     await this.usersService.deleteUser(user.id);
     return { message: 'User deleted successfully' };
   }
+  @Delete(':userId/favorites/:postId')
+  async removeFavorite(
+    @Param('userId') userId: number,
+    @Param('postId') postId: number,
+  ) {
+    return this.usersService.removeUserFavorite(userId, postId);
+  }
 }

@@ -15,6 +15,7 @@ import { TagsModule } from './auth/tag/tag.module';
 import { UsersModule } from './auth/users/user.module';
 import { SearchModule } from './auth/search/search.module';
 import { MetricModule } from './auth/metrics/metric.module';
+import { UpdatePostCountsService } from './updatecount';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { MetricModule } from './auth/metrics/metric.module';
     MetricModule,
   ],
   controllers: [UsersController],
+  providers: [UpdatePostCountsService],
 })
 export class AppModule implements OnModuleInit {
   constructor(
@@ -39,6 +41,7 @@ export class AppModule implements OnModuleInit {
     private readonly categoryRepository: Repository<Category>,
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
+    private readonly updatePostCountsService: UpdatePostCountsService,
   ) {}
 
   async onModuleInit() {
@@ -97,5 +100,6 @@ export class AppModule implements OnModuleInit {
         await this.tagRepository.save(this.tagRepository.create({ name }));
       }
     }
+    await this.updatePostCountsService.updateCounts();
   }
 }

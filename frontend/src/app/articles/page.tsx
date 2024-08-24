@@ -7,7 +7,6 @@ import Link from "next/link";
 import { ClockIcon, TagIcon } from "lucide-react";
 import DOMPurify from "dompurify";
 import Image from "next/image";
-import styled from "styled-components";
 import { CircularProgress } from "@mui/material";
 import { useAuth } from "../../../context/authContext";
 import React from "react";
@@ -29,6 +28,8 @@ interface Post {
   comments: Comment[];
   favorites: number;
   tags: Tag[];
+  commentscount: number;
+  favoritescount: number;
 }
 
 interface Tag {
@@ -37,15 +38,6 @@ interface Tag {
 }
 
 const POSTS_PER_PAGE = 20;
-
-const Container = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  padding: 1rem;
-  background-color: inherit;
-`;
 
 const Articles = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -91,7 +83,7 @@ const Articles = () => {
         let url = `${API_URL}/posts?page=${page}&limit=${POSTS_PER_PAGE}&order=${order}`;
 
         if (categoryId && tagId) {
-          url = `${API_URL}/posts/by-tag?tagId=${tagId}&categoryId=${categoryId}`;
+          url = `${API_URL}/posts/by-tag?tagId=${tagId}&categoryId=${categoryId}&order=${order}`;
         } else if (categoryId) {
           url = `${API_URL}/posts/by-category?categoryId=${categoryId}&page=${page}&limit=${POSTS_PER_PAGE}&order=${order}`;
         } else if (tagId) {
@@ -102,7 +94,7 @@ const Articles = () => {
         let postsData = Array.isArray(response.data)
           ? response.data
           : response.data.data || [];
-         console.log("Posts Data:", postsData);
+        console.log("Posts Data:", postsData);
 
         // Apply sortOrder2 logic after fetching the posts
         if (sortOrder2 === "short") {
@@ -336,18 +328,14 @@ const Articles = () => {
             <span>{calculateReadingTime(post.description)} min read</span>
             <span className="mx-2">|</span>
             <img src="/comment.png" alt="Comment" className="w-5 h-5 mr-1" />
-            <span>
-              {Array.isArray(post.comments) ? post.comments.length : 0}
-            </span>
+            <span>{post.commentscount || 0}</span>
             <span className="mx-2">|</span>
             <img
               src="/saved-svgrepo-com.png"
               alt="Saved"
               className="w-5 h-5 mr-1"
             />
-            <span>
-              {Array.isArray(post.favorites) ? post.favorites.length : 0}
-            </span>
+            <span>{post.favoritescount || 0}</span>
           </div>
           <div className="flex justify-end mt-4">
             <Link href={`/posts/${post.id}`}>

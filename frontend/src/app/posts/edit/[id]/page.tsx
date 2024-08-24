@@ -5,7 +5,6 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "../../../../../context/authContext";
 import { Input } from "@/components/ui/input";
-import CustomEditor from "@/components/ui/editor";
 import Image from "next/image";
 import Header from "@/assets/header";
 import Footer from "@/assets/footer";
@@ -13,6 +12,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import { CircularProgress } from "@mui/material";
 import styled from "styled-components";
 import { AnimatePresence, motion } from "framer-motion";
+import RichTextEditor from "@/components/ui/texteditor";
 
 interface EditPostDto {
   title: string;
@@ -219,7 +219,10 @@ const EditPostPage = () => {
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Description
               </label>
-              <CustomEditor onChange={handleEditorChange} />
+              <RichTextEditor
+                onChange={handleEditorChange}
+                value={post.description}
+              />
             </div>
             <div className="w-full justify-end flex">
               <Button

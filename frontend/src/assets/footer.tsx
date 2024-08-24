@@ -19,7 +19,7 @@ const Footer = () => {
           />
         </div>
         <div className="mt-6 flex justify-center space-x-4">
-          <Link href="#">
+          <Link href="https://discord.com/invite/hA36SVempM?utm_source=Discord&utm_medium=Invite">
             <Image
               className="filter invert"
               src="/discord.svg"
@@ -28,7 +28,7 @@ const Footer = () => {
               height={24}
             />
           </Link>
-          <Link href="#">
+          <Link href="https://x.com/innovatio_space">
             <Image
               className="filter invert"
               src="/twitter.svg"
@@ -37,7 +37,7 @@ const Footer = () => {
               height={24}
             />
           </Link>
-          <Link href="#">
+          <Link href="https://www.instagram.com/innovatiospace/">
             <Image
               src="/instagram.svg"
               alt="instagram"
@@ -46,7 +46,7 @@ const Footer = () => {
               className="filter invert"
             />
           </Link>
-          <Link href="#">
+          <Link href="https://www.facebook.com/innovatiospace">
             <Image
               src="/facebook.svg"
               alt="facebook"

@@ -5,6 +5,7 @@ import { User } from './user.entity';
 import { CreateUserDto, UserDto } from './user.dto';
 import { Post } from '../posts/post.entity';
 import { Comment } from '../comments/comment.entity';
+import { Favorite } from '../favorites/favorite.entity';
 @Injectable()
 export class UsersService {
   constructor(
@@ -14,6 +15,8 @@ export class UsersService {
     private postRepository: Repository<Post>,
     @InjectRepository(Comment)
     private commentRepository: Repository<Comment>,
+    @InjectRepository(Favorite)
+    private favoriteRepository: Repository<Favorite>,
   ) {}
 
   async findUserFavorites(userId: number): Promise<Post[]> {
@@ -32,6 +35,18 @@ export class UsersService {
     const favoritePosts = await this.postRepository.findByIds(favoritePostIds);
 
     return favoritePosts;
+  }
+
+  async removeUserFavorite(userId: number, postId: number): Promise<void> {
+    const favorite = await this.favoriteRepository.findOne({
+      where: { user: { id: userId }, post: { id: postId } },
+    });
+
+    if (!favorite) {
+      throw new Error('Favorite not found');
+    }
+
+    await this.favoriteRepository.remove(favorite);
   }
 
   async findOneById(id: number): Promise<User> {
@@ -71,12 +86,12 @@ export class UsersService {
       },
     });
   }
-  
+
   async updateLastActivity(userId: number): Promise<void> {
     await this.userRepository.update(userId, {
-        lastActivity: new Date(),
+      lastActivity: new Date(),
     });
-}
+  }
 
   async updateLastLogin(userId: string): Promise<void> {
     await this.userRepository.update(userId, {

@@ -18,19 +18,20 @@ import { CreatePostDto } from './posts.dto';
 import { Request } from 'express';
 import { Express } from 'express';
 import { Post } from './post.entity';
-import { parse } from 'path';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  async findAll(
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 5,
-  ) {
-    return this.postsService.findAll(page, limit);
-  }
+async findAll(
+  @Query('page') page: number = 1,
+  @Query('limit') limit: number = 5,
+  @Query('order') order: string = 'recent',  
+) {
+  return this.postsService.findAll(page, limit, order);
+}
+
 
   @Get('count-by-category')
   async countByCategory() {

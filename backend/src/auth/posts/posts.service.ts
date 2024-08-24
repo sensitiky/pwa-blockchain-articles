@@ -64,8 +64,6 @@ export class PostsService {
   }
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
-    console.log('Received createPostDto:', createPostDto);
-
     const author = await this.usersRepository.findOne({
       where: { id: createPostDto.authorId },
     });
@@ -99,8 +97,6 @@ export class PostsService {
           }),
         )
       : [];
-
-    console.log('Tags processed:', tags);
 
     const post = this.postsRepository.create({
       ...createPostDto,
@@ -152,18 +148,74 @@ export class PostsService {
       }
     }
   }
-
-  async findAll(page: number, limit: number) {
-    const [result, total] = await this.postsRepository.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
-      relations: ['author', 'category', 'tags', 'comments', 'favorites'],
+  private transformMediaToBase64(posts: Post[]): Post[] {
+    return posts.map((post) => {
+      if (post.imageUrl) {
+        const isGif = post.imageUrl.includes('.gif');
+        const mimeType = isGif ? 'image/gif' : 'image/jpeg';
+        const base64Image = `data:${mimeType};base64,${post.imageUrl.toString('base64')}`;
+        return {
+          ...post,
+          imageUrl: undefined,
+          imageUrlBase64: base64Image,
+        };
+      }
+      return post;
     });
+  }
 
-    const transformImageToBase64 = (posts: Post[]) => {
+  async findAll(page: number, limit: number, order: string) {
+    let queryBuilder = this.postsRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.author', 'author')
+      .leftJoinAndSelect('post.category', 'category')
+      .leftJoinAndSelect('post.tags', 'tags');
+
+    switch (order) {
+      case 'saved':
+        queryBuilder = this.postsRepository
+          .createQueryBuilder('post')
+          .leftJoinAndSelect('post.author', 'author')
+          .leftJoinAndSelect('post.category', 'category')
+          .leftJoinAndSelect('post.tags', 'tags')
+          .leftJoin('post.favorites', 'favorites')
+          .addSelect('COUNT(DISTINCT favorites.id)', 'favoritesCount')
+          .groupBy('post.id')
+          .addGroupBy('author.id')
+          .addGroupBy('category.id')
+          .addGroupBy('tags.id')
+          .orderBy('favoritesCount', 'DESC');
+        break;
+      case 'comment':
+        queryBuilder = this.postsRepository
+          .createQueryBuilder('post')
+          .leftJoinAndSelect('post.author', 'author')
+          .leftJoinAndSelect('post.category', 'category')
+          .leftJoinAndSelect('post.tags', 'tags')
+          .leftJoin('post.comments', 'comments')
+          .addSelect('COUNT(DISTINCT comments.id)', 'commentsCount')
+          .groupBy('post.id')
+          .addGroupBy('author.id')
+          .addGroupBy('category.id')
+          .addGroupBy('tags.id')
+          .orderBy('commentsCount', 'DESC');
+        break;
+      case 'recent':
+      default:
+        queryBuilder.orderBy('post.createdAt', 'DESC');
+        break;
+    }
+
+    queryBuilder.skip((page - 1) * limit).take(limit);
+
+    const [result, total] = await queryBuilder.getManyAndCount();
+
+    const transformMediaToBase64 = (posts: Post[]) => {
       return posts.map((post) => {
         if (post.imageUrl) {
-          const base64Image = `data:image/jpeg;base64,${post.imageUrl.toString('base64')}`;
+          const isGif = post.imageUrl.includes('.gif');
+          const mimeType = isGif ? 'image/gif' : 'image/jpeg';
+          const base64Image = `data:${mimeType};base64,${post.imageUrl.toString('base64')}`;
           return {
             ...post,
             imageUrl: undefined,
@@ -174,7 +226,7 @@ export class PostsService {
       });
     };
 
-    const transformedResult = transformImageToBase64(result);
+    const transformedResult = transformMediaToBase64(result);
 
     return {
       data: transformedResult,
@@ -187,7 +239,7 @@ export class PostsService {
     tagId: number,
     categoryId: number,
   ): Promise<Post[]> {
-    return this.postsRepository
+    const posts = await this.postsRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.tags', 'tag')
       .leftJoinAndSelect('post.category', 'category')
@@ -196,6 +248,8 @@ export class PostsService {
       .andWhere('category.id = :categoryId', { categoryId })
       .take(limit)
       .getMany();
+
+    return this.transformMediaToBase64(posts);
   }
 
   async findAllByCategory(page: number, limit: number, categoryId: number) {
@@ -205,14 +259,16 @@ export class PostsService {
       take: limit,
       relations: ['author', 'category', 'tags', 'comments', 'favorites'],
     });
+
+    const transformedResult = this.transformMediaToBase64(result);
+
     return {
-      data: result,
+      data: transformedResult,
       totalPages: Math.ceil(total / limit),
     };
   }
 
   async findOne(id: number): Promise<Post> {
-    console.log('Received ID:', id);
     const post = await this.postsRepository.findOne({
       where: { id },
       relations: [
@@ -226,7 +282,9 @@ export class PostsService {
     });
 
     if (post && post.imageUrl) {
-      post.imageUrlBase64 = `data:image/jpeg;base64,${post.imageUrl.toString('base64')}`;
+      const isGif = post.imageUrl.includes('.gif');
+      const mimeType = isGif ? 'image/gif' : 'image/jpeg';
+      post.imageUrlBase64 = `data:${mimeType};base64,${post.imageUrl.toString('base64')}`;
     }
 
     return post;

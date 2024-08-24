@@ -6,10 +6,10 @@ import Header from "@/assets/header";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import dynamic from "next/dynamic";
 import { FaUpload } from "react-icons/fa";
 import { useAuth } from "../../../context/authContext";
 import { motion, AnimatePresence } from "framer-motion";
+import RichTextEditor from "@/components/ui/texteditor";
 
 interface Category {
   id: number;
@@ -20,10 +20,6 @@ interface Tag {
   id: number;
   name: string;
 }
-
-const CustomEditor = dynamic(() => import("@/components/ui/editor"), {
-  ssr: false,
-});
 
 const categoryDescriptions: { [key: number]: string } = {
   1: "In-depth analysis of Web3 projects, trends and technologies. Get expert opinions, critical reviews and thought-provoking perspectives.",
@@ -46,6 +42,7 @@ export default function NewArticles() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [gifFile, setGifFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [newTag, setNewTag] = useState<string>("");
   const [showPopup, setShowPopup] = useState(false);
@@ -117,7 +114,7 @@ export default function NewArticles() {
     }
   };
 
-  const handleSubmit = async (publish: boolean) => {  
+  const handleSubmit = async (publish: boolean) => {
     if (!user) {
       alert("User not authenticated");
       return;
@@ -159,6 +156,9 @@ export default function NewArticles() {
     if (imageFile) {
       formData.append("image", imageFile);
     }
+    if (gifFile) {
+      formData.append("gifFile", gifFile);
+    }
     formData.append("created_at", new Date().toISOString());
 
     setIsSubmitting(true);
@@ -171,7 +171,11 @@ export default function NewArticles() {
       });
       router.push("/articles");
     } catch (error) {
-      console.error("Error creating post:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error:", error.response?.data || error.message);
+      } else {
+        console.error("Error creating post:", error);
+      }
       setIsSubmitting(false);
     }
   };
@@ -386,7 +390,7 @@ export default function NewArticles() {
                     </span>
                   </div>
                   <div className="mt-4">
-                    <CustomEditor
+                    <RichTextEditor
                       onChange={setDescription}
                       disabled={!selectedCategory || selectedTags.length < 2}
                     />

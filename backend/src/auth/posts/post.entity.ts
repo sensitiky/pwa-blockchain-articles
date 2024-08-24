@@ -64,5 +64,11 @@ export class Post {
   @OneToMany(() => Favorite, (favorite) => favorite.post)
   favorites: Favorite[];
 
+  @Column({ type: 'int', default: 0 })
+  commentscount: number;
+  
+  @Column({ type: 'int', default: 0 })
+  favoritescount: number;   
+
   imageUrlBase64: string;
 }

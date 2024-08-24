@@ -43,6 +43,7 @@ interface Post {
   tags: Tag[];
   comments: Comment[];
   favorites: number;
+  commentscount: number;
 }
 
 interface Tag {
@@ -85,6 +86,10 @@ const PostPage = () => {
   const [commentContent, setCommentContent] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [favoriteComments, setFavoriteComments] = useState<{
+    [key: number]: boolean;
+  }>({});
   const router = useRouter();
   const { id } = useParams();
 
@@ -165,6 +170,10 @@ const PostPage = () => {
             : comment
         );
         setComments(updatedComments);
+        setFavoriteComments((prev) => ({
+          ...prev,
+          [commentId]: true,
+        }));
       } else {
         setPost((prevPost) =>
           prevPost ? { ...prevPost, favorites: prevPost.favorites + 1 } : null
@@ -173,6 +182,13 @@ const PostPage = () => {
     } catch (error) {
       console.error("Error favoriting post or comment:", error);
     }
+  };
+
+  const handleFavoriteClick = async () => {
+    if (post) {
+      await handleFavorite(post.id);
+    }
+    setIsFavorited(true);
   };
 
   const handleDelete = async () => {
@@ -426,23 +442,39 @@ const PostPage = () => {
           <div className="flex flex-col sm:flex-row items-start mt-8 space-y-4 sm:space-y-0 sm:space-x-4">
             <button
               className="w-fit flex items-center space-x-1"
-              onClick={() => handleFavorite(post.id)}
+              onClick={handleFavoriteClick}
             >
-              <img
-                src="/saved-svgrepo-com.png"
-                alt="Saved"
-                className="w-5 h-5"
-              />
-              <span>
-                {Array.isArray(post.favorites) ? post.favorites.length : 0}
-              </span>
+              <svg
+                width="1.5rem"
+                height="1.5rem"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+
+                <g id="SVGRepo_iconCarrier">
+                  {" "}
+                  <path
+                    d="M19 19.2674V7.84496C19 5.64147 17.4253 3.74489 15.2391 3.31522C13.1006 2.89493 10.8994 2.89493 8.76089 3.31522C6.57467 3.74489 5 5.64147 5 7.84496V19.2674C5 20.6038 6.46752 21.4355 7.63416 20.7604L10.8211 18.9159C11.5492 18.4945 12.4508 18.4945 13.1789 18.9159L16.3658 20.7604C17.5325 21.4355 19 20.6038 19 19.2674Z"
+                    stroke={isFavorited ? "#007BFF" : "#6b7280"}
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />{" "}
+                </g>
+              </svg>
             </button>
-            <button className="w-fit flex items-center space-x-1 text-gray-500">
+            <div className="w-fit flex items-center space-x-1 text-gray-500">
               <img src="/comment.png" alt="Comment" className="w-5 h-5" />
-              <span>
-                {Array.isArray(post.comments) ? post.comments.length : 0}
-              </span>
-            </button>
+              <span>{post.commentscount || 0}</span>
+            </div>
           </div>
           <div className="flex w-full justify-center">
             <div className="mt-20 w-[30rem] justify-center bg-[#000916]/20 h-[0.1rem]"></div>
@@ -488,11 +520,36 @@ const PostPage = () => {
                       className="flex w-fit items-center rounded-full space-x-1"
                       onClick={() => handleFavorite(post.id, comment.id)}
                     >
-                      <img
-                        src="/saved-svgrepo-com.png"
-                        alt="Saved"
-                        className="w-4 h-4"
-                      />
+                      <svg
+                        width="25px"
+                        height="25px"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+                        <g
+                          id="SVGRepo_tracerCarrier"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+
+                        <g id="SVGRepo_iconCarrier">
+                          {" "}
+                          <path
+                            d="M15.7 4C18.87 4 21 6.98 21 9.76C21 15.39 12.16 20 12 20C11.84 20 3 15.39 3 9.76C3 6.98 5.13 4 8.3 4C10.12 4 11.31 4.91 12 5.71C12.69 4.91 13.88 4 15.7 4Z"
+                            fill={
+                              favoriteComments[comment.id]
+                                ? "#D22B2B"
+                                : "#6b7280"
+                            }
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />{" "}
+                        </g>
+                      </svg>
                     </Button>
                   </div>
                 </div>
@@ -530,12 +587,3 @@ const PostPage = () => {
 };
 
 export default PostPage;
-
-function formatDate(dateString: string) {
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
-  return new Date(dateString).toLocaleDateString(undefined, options);
-}

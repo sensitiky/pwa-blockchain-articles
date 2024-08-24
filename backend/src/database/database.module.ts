@@ -8,6 +8,8 @@ import { Category } from '../auth/category/category.entity';
 import { Tag } from 'src/auth/tag/tag.entity';
 import { Favorite } from '../auth/favorites/favorite.entity';
 import { DatabaseService } from './database.service';
+import { CommentSubscriber } from 'src/event/listenerComment.service';
+import { FavoriteSubscriber } from 'src/event/listenerFavorites.service';
 
 @Module({
   imports: [
@@ -30,6 +32,7 @@ import { DatabaseService } from './database.service';
         ssl: configService.get<boolean>('DB_SSL')
           ? { rejectUnauthorized: false }
           : false,
+        subscribers: [CommentSubscriber, FavoriteSubscriber],
       }),
       inject: [ConfigService],
     }),
