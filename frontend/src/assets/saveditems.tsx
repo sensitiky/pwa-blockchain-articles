@@ -42,6 +42,7 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
   >([]);
   const [liked, setLiked] = useState<boolean[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [order, setOrder] = useState<string>("Date (newest first)");
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -97,6 +98,10 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
     }
   };
 
+  const handleOrderChange = (newOrder: string) => {
+    setOrder(newOrder);
+  };
+  
   return (
     <section className="max-h-dvh w-full py-4 sm:py-6 md:py-8 lg:py-12">
       <div className="container px-4 md:px-6">
@@ -109,22 +114,36 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2 rounded-lg bg-inherit border-border border-black shadow-md"
+                className="gap-2 bg-inherit border-border border-black rounded-lg"
               >
                 <FontAwesomeIcon icon={faArrowsUpDown} className="h-4 w-4" />
-                <span className="hidden sm:inline">Order</span>
+                Order
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="rounded-lg shadow-lg">
               <DropdownMenuLabel>Order by</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuCheckboxItem checked>
+              <DropdownMenuCheckboxItem
+                checked={order === "Date (newest first)"}
+                onCheckedChange={() => handleOrderChange("Date (newest first)")}
+                className="rounded-lg"
+              >
                 Date (newest first)
               </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={order === "Date (oldest first)"}
+                onCheckedChange={() => handleOrderChange("Date (oldest first)")}
+                className="rounded-lg"
+              >
                 Date (oldest first)
               </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem>Title</DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={order === "Title"}
+                onCheckedChange={() => handleOrderChange("Title")}
+                className="rounded-lg"
+              >
+                Title
+              </DropdownMenuCheckboxItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
