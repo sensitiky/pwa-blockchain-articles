@@ -110,6 +110,13 @@ function Toolbar({ editor }: ToolbarProps) {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (file) {
+        const fileType = file.type;
+
+        if (fileType === "image/gif") {
+          alert("GIF images are not allowed. Please upload a different image.");
+          return;
+        }
+
         const reader = new FileReader();
         reader.onload = () => {
           const base64 = reader.result?.toString();

@@ -381,29 +381,29 @@ const Articles = () => {
               >
                 All Categories
               </button>
-              <div className="flex flex-wrap justify-center mt-4 space-x-4">
-                {categories.length > 0 ? (
-                  categories.map((category) => {
-                    const categoryCount =
-                      categoryCounts.find(
-                        (item) => item.categoryId === category.id
-                      )?.count || 0;
-                    return (
-                      <button
-                        key={category.id}
-                        className={`ios-button ${
-                          selectedCategoryId === category.id ? "selected" : ""
-                        }`}
-                        onClick={() => handleCategoryChange(category.id)}
-                      >
-                        {category.name} ({categoryCount})
-                      </button>
-                    );
-                  })
-                ) : (
-                  <div className="text-white">No categories available</div>
-                )}
-              </div>
+            </div>
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-4">
+              {categories.length > 0 ? (
+                categories.map((category) => {
+                  const categoryCount =
+                    categoryCounts.find(
+                      (item) => item.categoryId === category.id
+                    )?.count || 0;
+                  return (
+                    <button
+                      key={category.id}
+                      className={`ios-button ${
+                        selectedCategoryId === category.id ? "selected" : ""
+                      }`}
+                      onClick={() => handleCategoryChange(category.id)}
+                    >
+                      {category.name} ({categoryCount})
+                    </button>
+                  );
+                })
+              ) : (
+                <div className="text-white">No categories available</div>
+              )}
             </div>
             {selectedCategoryId !== null && tags.length > 0 && (
               <div className="tags-container text-center py-2 sm:py-4 w-full mt-2">
