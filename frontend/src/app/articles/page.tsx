@@ -94,7 +94,7 @@ const Articles = () => {
         let postsData = Array.isArray(response.data)
           ? response.data
           : response.data.data || [];
-       // console.log("Posts Data:", postsData);
+        // console.log("Posts Data:", postsData);
 
         // Apply sortOrder2 logic after fetching the posts
         if (sortOrder2 === "short") {
@@ -261,9 +261,9 @@ const Articles = () => {
             <Image
               src={post.imageUrlBase64}
               alt="Post Image"
-              width={1200}
-              height={300}
-              className="w-full h-48 sm:h-64 md:h-80 object-cover"
+              width={1920}
+              height={1080}
+              className="w-full h-48 sm:h-64 md:h-80 object-cover object-center"
               loading="lazy"
             />
           )}
@@ -282,28 +282,27 @@ const Articles = () => {
                   className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
                 />
               </Link>
-              <div className="flex-col flex ml-2">
-                <span className="text-base sm:text-lg font-semibold text-[#263238]">
+              <div className="flex flex-col ml-2">
+                <span className="text-base sm:text-lg font-semibold text-[#263238] truncate">
                   {post.author ? post.author.user : "Unknown Author"}
                 </span>
-                <span className="text-xs sm:text-sm text-muted-foreground">
+                <span className="text-xs sm:text-sm text-muted-foreground truncate">
                   {post.author ? post.author.bio : "Unknown Author"}
                 </span>
               </div>
             </div>
             <div className="flex flex-col items-start sm:items-end mt-2 sm:mt-0">
               <div className="flex items-center mb-2">
-                <span className="flex items-center text-[#263238] text-sm sm:text-base">
-                  <span className="text-xl sm:text-2xl">
-                    <img
-                      src="/category.png"
-                      className="w-3 h-3 sm:w-4 sm:h-4 mr-1"
-                    />
-                  </span>{" "}
+                <span className="flex items-center text-[#263238] text-sm sm:text-base truncate">
+                  <img
+                    src="/category.png"
+                    className="w-3 h-3 sm:w-4 sm:h-4 mr-1"
+                    alt="Category"
+                  />{" "}
                   {post.category?.name}
                 </span>
               </div>
-              <div className="flex items-center text-[#263238] text-xs sm:text-sm">
+              <div className="flex items-center text-[#263238] text-xs sm:text-sm truncate">
                 <TagIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                 {post.tags
                   .slice(0, 3)
@@ -317,7 +316,7 @@ const Articles = () => {
               {post.title}
             </h2>
             <p
-              className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-3"
+              className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-3 break-words"
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(post.description, {
                   ALLOWED_TAGS: ["b", "i", "em", "strong", "a", "p"],
