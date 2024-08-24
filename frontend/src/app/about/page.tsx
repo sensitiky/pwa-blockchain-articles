@@ -106,7 +106,6 @@ const LandingSection: FC = () => {
           </main>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

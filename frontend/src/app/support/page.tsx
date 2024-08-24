@@ -11,10 +11,10 @@ const SupportSection: FC = () => {
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <div>
+    <div className="h-screen">
       <Header />
-      <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-background text-foreground">
-        <aside className="mb-8 relative flex flex-col justify-center items-center bg-[#000916] px-6 sm:px-12 py-10 sm:py-16">
+      <div className="h-screen grid grid-cols-1 md:grid-cols-2 bg-background text-foreground">
+        <aside className="relative flex flex-col justify-center items-center bg-[#000916] px-6 sm:px-12 py-10 sm:py-16 h-screen">
           <div className="absolute inset-0 flex justify-center items-center">
             <Image
               src="/bg-about.gif"
