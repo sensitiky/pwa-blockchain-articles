@@ -137,13 +137,8 @@ export default function NewArticles() {
       return;
     }
 
-    if (/[^a-zA-Z\s]/.test(title)) {
-      alert("Title contains special characters.");
-      return;
-    }
-
-    if (/\d/.test(title)) {
-      alert("Title contains numbers.");
+    if (/[^a-zA-Z0-9\s?!¡¿/\\´]/.test(title)) {
+      alert("Title contains disallowed special characters.");
       return;
     }
 

@@ -35,6 +35,7 @@ const EditPostPage = () => {
   const { user } = useAuth();
   const [post, setPost] = useState<EditPostDto | null>(null);
   const [loading, setLoading] = useState(true);
+  const [title, setTitle] = useState("");
   const [showPopup, setShowPopup] = useState(false);
 
   const { id } = useParams();
@@ -117,6 +118,15 @@ const EditPostPage = () => {
     }
 
     const formData = new FormData();
+    if (title.length > 140) {
+      alert("Title exceeds the maximum length of 140 characters.");
+      return;
+    }
+
+    if (/[^a-zA-Z0-9\s?!¡¿/\\´]/.test(title)) {
+      alert("Title contains disallowed special characters.");
+      return;
+    }
     formData.append("title", post.title);
     formData.append("content", post.content);
     formData.append("description", post.description);
@@ -183,7 +193,7 @@ const EditPostPage = () => {
                 type="text"
                 name="title"
                 value={post.title}
-                onChange={handleInputChange}
+                onChange={(e) => setTitle(e.target.value)}
                 required
                 maxLength={140}
                 className="rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
