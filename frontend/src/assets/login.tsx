@@ -382,15 +382,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                 {loading ? "Logging in..." : "Login"}
               </Button>
             </div>
-            <div className="flex justify-center">
-              <Button
-                className="rounded-full w-44 bg-[#000916] flex items-center justify-center"
-                onClick={handleFacebookLogin}
-              >
-                <i className="fab fa-facebook mr-2"></i>
-                Login with Facebook
-              </Button>
-            </div>
+            
 
             <div className="space-y-2 flex flex-col items-center">
               <GoogleLogin
