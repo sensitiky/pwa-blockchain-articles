@@ -263,6 +263,7 @@ const Articles = () => {
               alt="Post Image"
               width={1920}
               height={1080}
+              layout="responsive"
               className="w-full h-48 sm:h-64 md:h-80 object-cover object-center"
               loading="lazy"
             />
