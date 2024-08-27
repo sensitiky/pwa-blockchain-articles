@@ -123,7 +123,7 @@ const EditPostPage = () => {
       return;
     }
 
-    if (/[^a-zA-Z0-9\s?!¡¿/\\´]/.test(title)) {
+    if (/[^a-zA-Z0-9\s?!¡¿&\/\\´']/.test(title)) {
       alert("Title contains disallowed special characters.");
       return;
     }

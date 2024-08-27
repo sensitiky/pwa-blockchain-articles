@@ -62,6 +62,7 @@ interface Author {
   linkedin?: string;
   facebook?: string;
   avatar?: string;
+  role: string;
 }
 
 interface Comment {
@@ -306,7 +307,7 @@ const PostPage = () => {
                   {post.author?.lastName ?? "Unknown"}
                 </p>
                 <p className="text-xs text-gray-500 line-clamp-2">
-                  {post.author?.bio}
+                  {post.author?.role}
                 </p>
               </div>
               <div className="flex items-center space-x-2">
