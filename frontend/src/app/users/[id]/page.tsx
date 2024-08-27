@@ -133,7 +133,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
           </Avatar>
           <div className="text-center space-y-2">
             <h2 className="text-2xl font-bold">{user?.user}</h2>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-left">
               {user?.bio || "No bio available."}
             </p>
           </div>
