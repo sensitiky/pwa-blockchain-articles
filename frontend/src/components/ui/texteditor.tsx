@@ -91,7 +91,7 @@ export default function RichTextEditor({
           editor={editor}
           className={`text-base sm:text-lg text-gray-700 h-full ${
             disabled ? "pointer-events-none opacity-60" : ""
-          }`}
+          } editor-content`}
         />
       </div>
     </div>
