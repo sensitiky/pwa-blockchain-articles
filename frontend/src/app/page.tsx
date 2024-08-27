@@ -373,7 +373,7 @@ const HomePage: React.FC = () => {
                       )}
                       <div className="ml-4">
                         <p className="text-lg font-semibold text-[#263238]">
-                          {post.author?.firstName} {post.author?.lastName}
+                          {post.author?.user}
                         </p>
                         <p className="text-sm text-gray-500">
                           {formatDate(post.createdAt)}
@@ -385,7 +385,8 @@ const HomePage: React.FC = () => {
                         {post.title}
                       </h3>
                       {!post.imageUrlBase64 &&
-                        typeof post.description === "string" && !post.description.includes("<iframe") && (
+                        typeof post.description === "string" &&
+                        !post.description.includes("<iframe") && (
                           <p className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-3">
                             {typeof post.description === "string"
                               ? parse(post.description.replace(/<img.*?>/g, ""))

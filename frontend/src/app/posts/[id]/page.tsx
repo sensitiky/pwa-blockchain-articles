@@ -303,8 +303,7 @@ const PostPage = () => {
               </Avatar>
               <div className="text-center sm:text-left">
                 <p className="text-sm font-medium text-black">
-                  {post.author?.firstName ?? "Author"}{" "}
-                  {post.author?.lastName ?? "Unknown"}
+                  {post.author?.user ?? "Author"}{" "}
                 </p>
                 <p className="text-xs text-gray-500 line-clamp-2">
                   {post.author?.role}
