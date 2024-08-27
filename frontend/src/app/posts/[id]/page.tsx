@@ -473,10 +473,7 @@ const PostPage = () => {
                   <div className="flex items-center space-x-4">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={avatarUrl} alt="Author avatar" />
-                      <AvatarFallback>
-                        {author.firstName}
-                        {author.lastName}
-                      </AvatarFallback>
+                      <AvatarFallback>{author.user}</AvatarFallback>
                     </Avatar>
                     <div>
                       <p className="text-sm font-medium">{authorName}</p>
