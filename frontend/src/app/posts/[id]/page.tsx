@@ -16,12 +16,11 @@ import {
   FaTrash,
 } from "react-icons/fa";
 import { ArrowLeftIcon } from "lucide-react";
-import parse from "html-react-parser";
 import { useAuth } from "../../../../context/authContext";
 import DeletePostModal from "@/assets/deletepost";
 import styled from "styled-components";
 import { CircularProgress } from "@mui/material";
-import PostDescription from "@/assets/Postdescription";
+import parse, { domToReact, Element } from "html-react-parser";
 
 const Container = styled.div`
   display: flex;
@@ -256,6 +255,25 @@ const PostPage = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const parseHtmlContent = (htmlContent: string) => {
+    return parse(htmlContent, {
+      replace: (domNode) => {
+        if (domNode instanceof Element) {
+          const { tagName } = domNode;
+
+          if (
+            tagName === "iframe" ||
+            ["h1", "h2", "h3", "b", "strong", "i", "em", "p", "a"].includes(
+              tagName
+            )
+          ) {
+            return domToReact([domNode]);
+          }
+        }
+      },
+    });
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-white text-gray-900">
       <Header />
@@ -359,7 +377,7 @@ const PostPage = () => {
           )}
           <div className="prose prose-lg mx-auto mt-8">
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <PostDescription description={post.description} />
+              {parseHtmlContent(post.description)}
             </div>
           </div>
           {post.category && (

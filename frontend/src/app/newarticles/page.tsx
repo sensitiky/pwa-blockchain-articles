@@ -401,9 +401,9 @@ export default function NewArticles() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="absolute inset-0 flex items-center justify-center bg-transparent bg-opacity-75 z-50"
+                  className="absolute top-0 left-0 right-0 flex justify-center bg-transparent bg-opacity-75 z-50"
                 >
-                  <div className="backdrop-blur bg-white border border-black p-6 rounded-lg shadow-lg text-center">
+                  <div className="backdrop-blur bg-white border border-black p-6 rounded-lg shadow-lg text-center mt-4">
                     <h2 className="text-2xl mb-4 text-black">
                       Select 1 category and 2 tags first
                     </h2>
