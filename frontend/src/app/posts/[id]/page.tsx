@@ -474,8 +474,8 @@ const PostPage = () => {
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={avatarUrl} alt="Author avatar" />
                       <AvatarFallback>
-                        {author.firstName[0]}
-                        {author.lastName[0]}
+                        {author.firstName}
+                        {author.lastName}
                       </AvatarFallback>
                     </Avatar>
                     <div>
