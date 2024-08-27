@@ -190,15 +190,27 @@ export class UsersService {
       throw new Error('User ID is required for deleting user.');
     }
 
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new Error('User not found.');
+    try {
+      // Eliminar comentarios relacionados
+      await this.commentRepository.delete({ author: { id: userId } });
+    } catch (error) {
+      console.warn('Error deleting comments for user:', error);
     }
 
-    await this.commentRepository.delete({ author: { id: userId } });
+    try {
+      // Eliminar publicaciones relacionadas
+      await this.postRepository.delete({ author: { id: userId } });
+    } catch (error) {
+      console.warn('Error deleting posts for user:', error);
+    }
+    
+    try {
+      // Eliminar al usuario en sí
+      await this.userRepository.delete(userId);
+    } catch (error) {
+      console.warn('Error deleting user:', error);
+      throw new Error('User deletion failed.');
+    }
+}
 
-    await this.postRepository.delete({ author: { id: userId } });
-
-    await this.userRepository.delete(userId);
-  }
 }
