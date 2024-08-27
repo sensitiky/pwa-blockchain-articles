@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
@@ -31,6 +31,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const [codeVerified, setCodeVerified] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [passwordCriteria, setPasswordCriteria] = useState({
     length: false,
@@ -268,7 +269,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
         const { user, token } = response.data;
         setUser(user);
         login(response.data);
-        localStorage.setItem("token", token); 
+        localStorage.setItem("token", token);
         router.push("/users");
         onClose();
       } else {
@@ -362,14 +363,25 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={handlePasswordChange}
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={passwordVisible ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                  required
+                  className="pr-10"
+                />
+                <span
+                  className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                  onClick={() => setPasswordVisible(!passwordVisible)}
+                >
+                  <i
+                    className={`fas fa-eye${passwordVisible ? "-slash" : ""}`}
+                  ></i>
+                </span>
+              </div>
             </div>
             {error && <div className="text-red-500">{error}</div>}
             <div className="flex justify-center">
@@ -382,7 +394,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                 {loading ? "Logging in..." : "Login"}
               </Button>
             </div>
-            
 
             <div className="space-y-2 flex flex-col items-center">
               <GoogleLogin
@@ -429,14 +440,25 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={handlePasswordChange}
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={passwordVisible ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                  required
+                  className="pr-10"
+                />
+                <span
+                  className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                  onClick={() => setPasswordVisible(!passwordVisible)}
+                >
+                  <i
+                    className={`fas fa-eye${passwordVisible ? "-slash" : ""}`}
+                  ></i>
+                </span>
+              </div>
             </div>
             <div className="space-y-2">
               <p>Password must contain:</p>
@@ -608,14 +630,26 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   onChange={(e) => setResetCode(e.target.value)}
                   required
                 />
-                <Input
-                  id="new-password"
-                  type="password"
-                  placeholder="Enter new password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                />
+                <div className="relative">
+                  <Input
+                    id="new-password"
+                    type={passwordVisible ? "text" : "password"}
+                    placeholder="Enter new password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    className="pr-10"
+                  />
+                  <span
+                    className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                    onClick={() => setPasswordVisible(!passwordVisible)}
+                  >
+                    <i
+                      className={`fas fa-eye${passwordVisible ? "-slash" : ""}`}
+                    ></i>
+                  </span>
+                </div>
+
                 <div className="flex justify-center">
                   <Button
                     type="button"

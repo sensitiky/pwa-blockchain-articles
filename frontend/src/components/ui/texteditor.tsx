@@ -103,7 +103,10 @@ interface ToolbarProps {
 }
 
 function Toolbar({ editor }: ToolbarProps) {
+  const [videoPopupOpen, setVideoPopupOpen] = useState(false);
+  const [linkPopupOpen, setLinkPopupOpen] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
+  const [linkLabel, setLinkLabel] = useState("");
   const [linkUrl, setLinkUrl] = useState("");
 
   const handleImageUpload = useCallback(
@@ -145,6 +148,7 @@ function Toolbar({ editor }: ToolbarProps) {
         editor.commands.focus("end");
 
         setVideoUrl("");
+        setVideoPopupOpen(false);
       } else {
         alert("Invalid YouTube URL");
       }
@@ -152,17 +156,19 @@ function Toolbar({ editor }: ToolbarProps) {
   }, [videoUrl, editor]);
 
   const insertLink = useCallback(() => {
-    if (linkUrl && editor) {
+    if (linkLabel && linkUrl && editor) {
       editor
         .chain()
         .focus()
         .extendMarkRange("link")
         .setLink({ href: linkUrl })
-        .insertContent(linkUrl) // Ensure the link is inserted with visible text
+        .insertContent(`<a href="${linkUrl}" target="_blank">${linkLabel}</a>`)
         .run();
+      setLinkLabel("");
       setLinkUrl("");
+      setLinkPopupOpen(false);
     }
-  }, [linkUrl, editor]);
+  }, [linkLabel, linkUrl, editor]);
 
   const addIndentation = useCallback(() => {
     if (editor) {
@@ -240,42 +246,91 @@ function Toolbar({ editor }: ToolbarProps) {
           onChange={handleImageUpload}
         />
       </label>
-      <div className="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={insertVideo}
-          disabled={!videoUrl}
-          className="p-1 sm:p-2 rounded-full bg-gray-300 hover:bg-[#F1F5F9]"
-        >
-          <AiOutlineVideoCamera className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
-        </Button>
-        <input
-          type="text"
-          placeholder="Video URL"
-          value={videoUrl}
-          onChange={(e) => setVideoUrl(e.target.value)}
-          className="border border-gray-300 p-1 sm:p-2 rounded-lg focus:outline-none focus:border-gray-400 text-sm sm:text-base flex-grow"
-        />
-      </div>
-      <div className="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={insertLink}
-          disabled={!linkUrl}
-          className="p-1 sm:p-2 rounded-full bg-gray-300 hover:bg-[#F1F5F9]"
-        >
-          <LinkIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
-        </Button>
-        <input
-          type="text"
-          placeholder="Link URL"
-          value={linkUrl}
-          onChange={(e) => setLinkUrl(e.target.value)}
-          className="border border-gray-300 p-1 sm:p-2 rounded-lg focus:outline-none focus:border-gray-400 text-sm sm:text-base flex-grow"
-        />
-      </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setVideoPopupOpen(true)}
+        className="p-1 sm:p-2 rounded-full bg-gray-300 hover:bg-[#F1F5F9]"
+      >
+        <AiOutlineVideoCamera className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setLinkPopupOpen(true)}
+        className="p-1 sm:p-2 rounded-full bg-gray-300 hover:bg-[#F1F5F9]"
+      >
+        <LinkIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
+      </Button>
+
+      {/* Popup para el video */}
+      {videoPopupOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-lg font-medium mb-4">Insert Video URL</h2>
+            <input
+              type="text"
+              placeholder="YouTube URL"
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              className="border border-gray-300 p-2 rounded-lg w-full mb-4"
+            />
+            <div className="flex justify-end">
+              <Button
+                variant="ghost"
+                className="mr-2"
+                onClick={() => setVideoPopupOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={insertVideo}
+                className="bg-blue-500 text-white rounded-lg px-4 py-2"
+              >
+                Insert
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Popup para el link */}
+      {linkPopupOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-lg font-medium mb-4">Insert Link</h2>
+            <input
+              type="text"
+              placeholder="Label"
+              value={linkLabel}
+              onChange={(e) => setLinkLabel(e.target.value)}
+              className="border border-gray-300 p-2 rounded-lg w-full mb-4"
+            />
+            <input
+              type="text"
+              placeholder="URL"
+              value={linkUrl}
+              onChange={(e) => setLinkUrl(e.target.value)}
+              className="border border-gray-300 p-2 rounded-lg w-full mb-4"
+            />
+            <div className="flex justify-end">
+              <Button
+                variant="ghost"
+                className="mr-2"
+                onClick={() => setLinkPopupOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={insertLink}
+                className="bg-blue-500 text-white rounded-lg px-4 py-2"
+              >
+                Insert
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

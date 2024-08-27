@@ -23,7 +23,7 @@ interface Post {
   imageUrlBase64: string | null;
   createdAt: string;
   description: string;
-  author?: { id: number; user: string; avatar?: string; bio: string };
+  author?: { id: number; user: string; avatar?: string; role: string };
   category?: Category;
   comments: Comment[];
   favorites: number;
@@ -89,12 +89,10 @@ const Articles = () => {
         } else if (tagId) {
           url = `${API_URL}/posts/by-tag?tagId=${tagId}&page=${page}&limit=${POSTS_PER_PAGE}&order=${order}`;
         }
-        // console.log("URL:", url);
         const response = await axios.get(url);
         let postsData = Array.isArray(response.data)
           ? response.data
           : response.data.data || [];
-        // console.log("Posts Data:", postsData);
 
         // Apply sortOrder2 logic after fetching the posts
         if (sortOrder2 === "short") {
@@ -151,16 +149,12 @@ const Articles = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // The response should now include the correct structure with name
-      // console.log("Raw Tags Response:", response.data);
-
       const tags = response.data.map((tag: any) => ({
         id: tag.tagId, // The 'tagId' should now be correctly populated
         name: tag.name, // The 'name' should now be correctly populated
         count: tag.count,
       }));
 
-      // console.log("Processed Tags:", tags); // Verify the processed tags
       setTags(tags);
     } catch (error: any) {
       console.error("Error fetching tags:", error.message || error);
@@ -182,32 +176,35 @@ const Articles = () => {
 
   const handleCategoryChange = useCallback(
     (categoryId: number | null) => {
-      setSelectedCategoryId(categoryId);
+      // Toggle the selected category
+      const newCategoryId =
+        selectedCategoryId === categoryId ? null : categoryId;
+      setSelectedCategoryId(newCategoryId);
       setSelectedTagId(null); // Reset selected tag when category changes
       setSortOrder("recent"); // Reset sort order to default when category changes
       setPosts([]);
-      fetchPosts(1, "recent", categoryId);
-      if (categoryId !== null) {
-        fetchTags(categoryId);
+      fetchPosts(1, "recent", newCategoryId);
+      if (newCategoryId !== null) {
+        fetchTags(newCategoryId);
       } else {
         setTags([]);
       }
     },
-    [fetchPosts, fetchTags]
+    [fetchPosts, fetchTags, selectedCategoryId]
   );
 
   const handleTagChange = useCallback(
     (id: number | null) => {
-      //  console.log("Selected TagId:", id);
-      setSelectedTagId(id);
+      // Toggle the selected tag
+      const newTagId = selectedTagId === id ? null : id;
+      setSelectedTagId(newTagId);
       setPosts([]);
-      fetchPosts(1, sortOrder, selectedCategoryId, id);
+      fetchPosts(1, sortOrder, selectedCategoryId, newTagId);
     },
-    [fetchPosts, selectedCategoryId, sortOrder]
+    [fetchPosts, selectedCategoryId, sortOrder, selectedTagId]
   );
 
   const renderTags = () => {
-    // console.log("Tags:", tags);
     return tags.map((tag) => (
       <button
         key={tag.id}
@@ -288,7 +285,7 @@ const Articles = () => {
                   {post.author ? post.author.user : "Unknown Author"}
                 </span>
                 <span className="text-xs sm:text-sm text-muted-foreground truncate">
-                  {post.author ? post.author.bio : "Unknown Author"}
+                  {post.author ? post.author.role : "Unknown Author"}
                 </span>
               </div>
             </div>
@@ -306,7 +303,7 @@ const Articles = () => {
               <div className="flex items-center text-[#263238] text-xs sm:text-sm truncate">
                 <TagIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                 {post.tags
-                  .slice(0, 3)
+                  .slice(0, 5)
                   .map((tag) => tag.name)
                   .join(", ")}
               </div>

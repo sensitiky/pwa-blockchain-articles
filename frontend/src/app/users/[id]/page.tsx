@@ -57,6 +57,7 @@ interface Post {
   comments: { id: number; content: string }[];
   favorites: { id: number }[];
   createdAt: string;
+  tags: { id: number; name: string }[];
 }
 
 const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
@@ -90,7 +91,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
           return post;
         });
 
-        // console.log(postsResponse.data);
+        console.log(postsResponse.data);
         setPosts(postsWithBase64Images);
       } catch (err) {
         if (axios.isAxiosError(err)) {
@@ -195,13 +196,24 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
                 <div className="w-full h-48 bg-gray-200 rounded-lg"></div>
               )}
 
-              <div className="mt-4 space-y-2">
+              <div className="mt-4 space-y-2 ">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <UserIcon className="w-4 h-4" />
                   <span>{user?.user}</span>
-                  <Separator orientation="vertical" />
-                  <TagIcon className="w-4 h-4" />
+                  <Image
+                    src="/category.png"
+                    width={1920}
+                    height={1080}
+                    className="w-3 h-3 sm:w-4 sm:h-4 mr-1"
+                    alt="Category"
+                  />
                   <span>{post.category.name}</span>
+                  {post.tags.map((tag) => (
+                    <span key={tag.id} className="flex flex-row ">
+                      <TagIcon className="w-4 h-4 mr-2" />
+                      {tag.name}
+                    </span>
+                  ))}
                 </div>
                 <h3 className="text-lg font-semibold">{post.title}</h3>
                 <p className="text-muted-foreground line-clamp-2">
@@ -222,7 +234,10 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
                   </div>
                 </div>
                 <Link href={`/posts/${post.id}`}>
-                  <Button variant="link" className="text-primary">
+                  <Button
+                    variant="link"
+                    className="flex justify-end text-white mt-2 bg-[#000916] rounded-full w-fit"
+                  >
                     Read Article
                   </Button>
                 </Link>

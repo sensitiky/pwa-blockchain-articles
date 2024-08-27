@@ -21,6 +21,7 @@ import { useAuth } from "../../../../context/authContext";
 import DeletePostModal from "@/assets/deletepost";
 import styled from "styled-components";
 import { CircularProgress } from "@mui/material";
+import PostDescription from "@/assets/Postdescription";
 
 const Container = styled.div`
   display: flex;
@@ -254,37 +255,6 @@ const PostPage = () => {
     ins: "ins",
     sub: "sub",
     sup: "sup",
-  };
-
-  const PostDescription = ({ description }: { description: string | null }) => {
-    if (!description) {
-      return (
-        <div
-          style={{ textIndent: "20px" }}
-          className="text-lg justify-between"
-        ></div>
-      );
-    }
-
-    const transformedDescription = description
-      .replace(/\.(?!\d)/g, ".")
-      .replace(/\[(\w+)\](.*?)\[\/\1\]/g, (match, tagName, content) => {
-        const htmlTagName =
-          tagMap[tagName.toLowerCase() as keyof typeof tagMap];
-        if (htmlTagName) {
-          return `<${htmlTagName}>${content}</${htmlTagName}>`;
-        }
-        return match;
-      });
-
-    return (
-      <div
-        style={{ textIndent: "20px" }}
-        className="text-lg justify-between break-words overflow-hidden"
-      >
-        {parse(transformedDescription)}
-      </div>
-    );
   };
 
   const calculateReadingTime = (text: string) => {

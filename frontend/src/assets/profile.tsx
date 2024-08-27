@@ -161,8 +161,16 @@ const ProfileSettings: React.FC = () => {
       return;
     }
 
+    const file = e.target.files[0];
+    const fileSizeInMB = file.size / (1024 * 1024);
+
+    if (fileSizeInMB > 1) {
+      alert("The image file size should not exceed 1MB.");
+      return;
+    }
+
     const formData = new FormData();
-    formData.append("avatar", e.target.files[0]);
+    formData.append("avatar", file);
 
     try {
       const response = await uploadAvatar(formData);
@@ -240,29 +248,34 @@ const ProfileSettings: React.FC = () => {
   };
 
   return (
-    <div>
-      <Button
-        variant="outline"
-        className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black"
-        onClick={() => setShowDeleteModal(true)}
-      >
-        Delete Profile
-      </Button>
-      <div className="flex flex-col items-center justify-center md:flex-row md:space-x-8 px-4 md:px-6">
-        <div className="flex-1 flex flex-col items-center md:items-center">
-          <div className="flex items-center gap-6 flex-col md:flex-row">
+    <div className="container mx-auto p-8">
+      <div className="flex justify-center mb-12">
+        <Button
+          variant="outline"
+          className="w-fit bg-red-600 hover:bg-red-700 text-white hover:text-white rounded-full transition duration-300 ease-in-out shadow-md hover:shadow-lg px-6 py-3"
+          onClick={() => setShowDeleteModal(true)}
+        >
+          Delete Profile
+        </Button>
+      </div>
+      <div className="flex flex-col items-center justify-center md:flex-row md:space-x-20 px-4 md:px-6">
+        <div className="flex-1 flex flex-col items-center md:items-start max-w-4xl">
+          <div className="flex items-center gap-8 flex-col md:flex-row mb-10">
             <CardContainer className="inter-var mx-auto">
-              <CardBody className="bg-inherit text-card-foreground border-none rounded-lg shadow-none w-full h-full transition-transform relative flex justify-center items-center">
+              <CardBody className="text-card-foreground rounded-xl w-full h-full transition-transform duration-300 ease-in-out relative flex justify-center items-center hover:shadow-xl">
                 <CardItem translateZ="50" className="relative z-10">
-                  <Avatar className="w-36 h-36 md:w-36 md:h-36">
+                  <Avatar className="w-40 h-40 md:w-48 md:h-48 border-4 border-primary">
                     <AvatarImage src={avatarUrl} />
                     <AvatarFallback>{user?.firstName}</AvatarFallback>
                   </Avatar>
                 </CardItem>
               </CardBody>
             </CardContainer>
-            <label htmlFor="profile-image-upload" className="cursor-pointer">
-              <FaCamera className="w-6 h-6 text-primary" />
+            <label
+              htmlFor="profile-image-upload"
+              className="cursor-pointer hover:opacity-80 transition duration-300 ease-in-out"
+            >
+              <FaCamera className="w-8 h-8 text-primary" />
               <input
                 id="profile-image-upload"
                 type="file"
@@ -270,84 +283,102 @@ const ProfileSettings: React.FC = () => {
                 onChange={handleImageChange}
               />
             </label>
-            <h1 className="text-5xl md:text-5xl font-bold text-center md:text-left">
+            <h1 className="text-5xl md:text-6xl font-bold text-center md:text-left text-[#000916]">
               Hi, {user?.firstName}
             </h1>
           </div>
-          <div className="flex-1 w-full max-w-2xl mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="grid gap-1">
-                <Label className="text-2xl">Username</Label>
+          <div className="flex-1 w-full max-w-5xl mt-8 grid grid-cols-1 md:grid-cols-2 gap-20">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label className="text-2xl font-semibold text-gray-700">
+                  Username
+                </Label>
                 {editMode ? (
                   <Input
                     name="user"
                     value={userInfo.user}
                     onChange={handleInputChange}
-                    className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
+                    className="w-full p-3 border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300 ease-in-out"
                   />
                 ) : (
-                  <div className="flex items-center border-b-[1px]">
-                    <span className="flex-grow">{user?.user}</span>
+                  <div className="flex items-center border-b-2 border-gray-300 py-2">
+                    <span className="flex-grow text-xl text-[#000916]">
+                      {user?.user}
+                    </span>
                   </div>
                 )}
               </div>
-              <div className="grid gap-1">
-                <Label className="text-2xl">First Name</Label>
+              <div className="space-y-2">
+                <Label className="text-2xl font-semibold text-gray-700">
+                  First Name
+                </Label>
                 {editMode ? (
                   <Input
                     name="firstName"
                     value={userInfo.firstName}
                     onChange={handleInputChange}
-                    className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
+                    className="w-full p-3 border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300 ease-in-out"
                   />
                 ) : (
-                  <div className="flex items-center border-b-[1px]">
-                    <span className="flex-grow">{user?.firstName}</span>
+                  <div className="flex items-center border-b-2 border-gray-300 py-2">
+                    <span className="flex-grow text-xl text-[#000916]">
+                      {user?.firstName}
+                    </span>
                   </div>
                 )}
               </div>
-              <div className="grid gap-1">
-                <Label className="text-2xl">Last Name</Label>
+              <div className="space-y-2">
+                <Label className="text-2xl font-semibold text-gray-700">
+                  Last Name
+                </Label>
                 {editMode ? (
                   <Input
                     name="lastName"
                     value={userInfo.lastName}
                     onChange={handleInputChange}
-                    className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
+                    className="w-full p-3 border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300 ease-in-out"
                   />
                 ) : (
-                  <div className="flex items-center border-b-[1px]">
-                    <span className="flex-grow">{user?.lastName}</span>
+                  <div className="flex items-center border-b-2 border-gray-300 py-2">
+                    <span className="flex-grow text-xl text-[#000916]">
+                      {user?.lastName}
+                    </span>
                   </div>
                 )}
               </div>
-              <div className="grid gap-1">
-                <Label className="text-2xl">Rol</Label>
+              <div className="space-y-2">
+                <Label className="text-2xl font-semibold text-gray-700">
+                  Role
+                </Label>
                 {editMode ? (
                   <Input
                     name="role"
                     value={userInfo.role}
                     onChange={handleInputChange}
-                    className="focus:ring focus:ring-opacity-50 focus:ring-blue-500"
+                    className="w-full p-3 border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300 ease-in-out"
                   />
                 ) : (
-                  <div className="flex items-center border-b-[1px]">
-                    <span className="flex-grow">{user?.role}</span>
+                  <div className="flex items-center border-b-2 border-gray-300 py-2">
+                    <span className="flex-grow text-xl text-[#000916]">
+                      {user?.role}
+                    </span>
                   </div>
                 )}
               </div>
-              <div className="grid gap-1">
-                <Label className="text-2xl">Date</Label>
+              <div className="space-y-2">
+                <Label className="text-2xl font-semibold text-gray-700">
+                  Date
+                </Label>
                 {editMode ? (
                   <DatePicker
                     selected={userInfo.date}
                     onChange={handleDateChange}
                     dateFormat="MMMM d, yyyy"
-                    className="w-full p-2 border rounded focus:ring focus:ring-opacity-50 focus:ring-blue-500"
+                    className="w-full p-3 border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300 ease-in-out"
                   />
                 ) : (
-                  <div className="flex items-center border-b-[1px]">
-                    <h2>
+                  <div className="flex items-center border-b-2 border-gray-300 py-2">
+                    <h2 className="text-xl text-[#000916]">
                       {user?.date
                         ? new Date(user.date).toDateString()
                         : "No date available"}
@@ -355,14 +386,20 @@ const ProfileSettings: React.FC = () => {
                   </div>
                 )}
               </div>
-              <div className="grid gap-1">
-                <Label className="text-2xl">Email</Label>
-                <div className="flex items-center border-b-[1px]">
-                  <span className="flex-grow">{user?.email}</span>
+              <div className="space-y-2">
+                <Label className="text-2xl font-semibold text-gray-700">
+                  Email
+                </Label>
+                <div className="flex items-center border-b-2 border-gray-300 py-2">
+                  <span className="flex-grow text-xl text-[#000916]">
+                    {user?.email}
+                  </span>
                 </div>
               </div>
-              <div className="grid gap-1">
-                <Label className="text-2xl">Country</Label>
+              <div className="space-y-2">
+                <Label className="text-2xl font-semibold text-gray-700">
+                  Country
+                </Label>
                 {editMode ? (
                   <Select
                     options={countryList().getData()}
@@ -376,75 +413,77 @@ const ProfileSettings: React.FC = () => {
                     className="w-full text-xl"
                   />
                 ) : (
-                  <div className="flex items-center border-b-[1px]">
-                    <span className="flex-grow">{user?.country}</span>
+                  <div className="flex items-center border-b-2 border-gray-300 py-2">
+                    <span className="flex-grow text-xl text-[#000916]">
+                      {user?.country}
+                    </span>
                   </div>
                 )}
               </div>
               <Button
                 variant="outline"
-                className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black"
+                className="hover:text-white w-full bg-[#000916] hover:bg-[#000916]/80 text-white font-semibold py-3 rounded-full transition duration-300 ease-in-out shadow-md hover:shadow-lg mt-6"
                 onClick={handleEditToggle}
               >
                 {editMode ? "Save Changes" : "Edit Information"}
               </Button>
             </div>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <h2 className="text-2xl font-bold">Bio</h2>
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <h2 className="text-3xl font-bold text-[#000916]">Bio</h2>
                 {bioEditMode ? (
                   <textarea
                     value={bio}
                     onChange={handleEditBio}
                     rows={10}
-                    className="w-full p-2 border rounded resize-none focus:ring focus:ring-opacity-50 focus:ring-blue-500"
+                    className="w-full p-3 border-2 rounded-lg resize-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300 ease-in-out"
                   />
                 ) : (
-                  <p className="text-gray-500">{bio}</p>
+                  <p className="text-gray-600 text-lg leading-relaxed">{bio}</p>
                 )}
               </div>
               <Button
                 variant="outline"
-                className="w-full bg-inherit border-none hover:bg-inherit hover:underline text-black"
+                className="hover:text-white w-full bg-[#000916] hover:bg-[#000916]/80 text-white font-semibold py-3 rounded-full transition duration-300 ease-in-out shadow-md hover:shadow-lg"
                 onClick={handleBioEditToggle}
               >
                 {bioEditMode ? "Save Changes" : "Edit Bio"}
               </Button>
-              <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center justify-center gap-6 mt-8">
                 {user?.facebook && (
                   <Link
                     href={user?.facebook}
-                    className="text-primary"
+                    className="text-primary hover:text-primary-dark transition duration-300 ease-in-out"
                     prefetch={false}
                   >
-                    <FaFacebook className="w-6 h-6" />
+                    <FaFacebook className="w-8 h-8" />
                   </Link>
                 )}
                 {user?.instagram && (
                   <Link
                     href={user?.instagram}
-                    className="text-primary"
+                    className="text-primary hover:text-primary-dark transition duration-300 ease-in-out"
                     prefetch={false}
                   >
-                    <FaInstagram className="w-6 h-6" />
+                    <FaInstagram className="w-8 h-8" />
                   </Link>
                 )}
                 {user?.twitter && (
                   <Link
                     href={user?.twitter}
-                    className="text-primary"
+                    className="text-primary hover:text-primary-dark transition duration-300 ease-in-out"
                     prefetch={false}
                   >
-                    <FaTwitter className="w-6 h-6" />
+                    <FaTwitter className="w-8 h-8" />
                   </Link>
                 )}
                 {user?.linkedin && (
                   <Link
                     href={user?.linkedin}
-                    className="text-primary"
+                    className="text-primary hover:text-primary-dark transition duration-300 ease-in-out"
                     prefetch={false}
                   >
-                    <FaLinkedin className="w-6 h-6" />
+                    <FaLinkedin className="w-8 h-8" />
                   </Link>
                 )}
               </div>

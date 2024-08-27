@@ -5,7 +5,7 @@ import Image from "next/image";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import axios from "axios";
-import parse from "html-react-parser";
+import parse, { DOMNode, Element } from "html-react-parser";
 import { useAuth } from "../../context/authContext";
 
 type Category = {
@@ -78,6 +78,7 @@ const settings = {
 };
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+
 const countWords = (text: string) => {
   if (!text) return 0;
   return text.split(/\s+/).filter((word) => word.length > 0).length;
@@ -87,6 +88,17 @@ const calculateReadingTime = (text: string) => {
   const wordsPerMinute = 200;
   const numberOfWords = countWords(text);
   return Math.ceil(numberOfWords / wordsPerMinute);
+};
+
+// Function to filter out iframes from the content
+const removeIframes = (htmlString: string) => {
+  return parse(htmlString, {
+    replace: (domNode: DOMNode) => {
+      if (domNode instanceof Element && domNode.name === "iframe") {
+        return null;
+      }
+    },
+  });
 };
 
 const ArticleCarousel = () => {
@@ -182,7 +194,7 @@ const ArticleCarousel = () => {
                 </div>
                 <div className="overflow-hidden">
                   <div className="text-sm text-gray-900 line-clamp-3">
-                    {parse(post.description)}
+                    {removeIframes(post.description)}
                   </div>
                 </div>
                 <div>
