@@ -48,7 +48,7 @@ const Container = styled.div`
 `;
 
 const ProfileSettings: React.FC = () => {
-  const { isAuthenticated, user, setUser } = useAuth();
+  const { isAuthenticated, user, setUser, logout } = useAuth();
   const [editMode, setEditMode] = useState(false);
   const [bioEditMode, setBioEditMode] = useState(false);
   const [userInfo, setUserInfo] = useState<User>({});
@@ -241,6 +241,7 @@ const ProfileSettings: React.FC = () => {
       try {
         await api.delete(`${API_URL}/users/me`);
         router.push("/");
+        logout();
       } catch (error) {
         console.error("Error deleting profile:", error);
       }
