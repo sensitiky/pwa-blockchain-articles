@@ -100,7 +100,7 @@ const PostPage = () => {
       const response = await axios.get(`${API_URL}/posts/${id}`);
       const postData = response.data;
       setPost(postData);
-      setComments(postData.comments);
+      setComments(postData.comments || []);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching post data:", error);
@@ -241,23 +241,6 @@ const PostPage = () => {
     return text.split(/\s+/).filter((word) => word.length > 0).length;
   };
 
-  const tagMap = {
-    h1: "h1",
-    h2: "h2",
-    h3: "h3",
-    p: "p",
-    b: "b",
-    strong: "strong",
-    i: "i",
-    em: "em",
-    mark: "mark",
-    small: "small",
-    del: "del",
-    ins: "ins",
-    sub: "sub",
-    sup: "sup",
-  };
-
   const calculateReadingTime = (text: string) => {
     const wordsPerMinute = 200;
     const numberOfWords = countWords(text);
@@ -291,19 +274,17 @@ const PostPage = () => {
               <Avatar className="h-10 w-10">
                 <AvatarImage src={`${API_URL}${post.author?.avatar}`} />
                 <AvatarFallback>
-                  {post.author ? (
-                    <>
-                      {post.author.firstName?.[0] ?? "A"}
-                      {post.author.lastName?.[0] ?? "U"}
-                    </>
-                  ) : (
-                    "AU"
-                  )}
+                  {post.author && post.author.firstName
+                    ? post.author.firstName[0]
+                    : "A"}
+                  {post.author && post.author.lastName
+                    ? post.author.lastName[0]
+                    : "U"}
                 </AvatarFallback>
               </Avatar>
               <div className="text-center sm:text-left">
                 <p className="text-sm font-medium text-black">
-                  {post.author?.user ?? "Author"}{" "}
+                  {post.author?.user ?? "Author"}
                 </p>
                 <p className="text-xs text-gray-500 line-clamp-2">
                   {post.author?.role}
