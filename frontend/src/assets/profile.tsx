@@ -433,16 +433,23 @@ const ProfileSettings: React.FC = () => {
               <div className="space-y-3">
                 <h2 className="text-3xl font-bold text-[#000916]">Bio</h2>
                 {bioEditMode ? (
-                  <textarea
-                    value={bio}
-                    onChange={handleEditBio}
-                    rows={10}
-                    className="w-full p-3 border-2 rounded-lg resize-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300 ease-in-out"
-                  />
+                  <div>
+                    <textarea
+                      value={bio}
+                      onChange={handleEditBio}
+                      rows={10}
+                      maxLength={360}
+                      className="w-full p-3 border-2 rounded-lg resize-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300 ease-in-out"
+                    />
+                    <div className="text-right text-gray-500 mt-1">
+                      {bio.length}/360
+                    </div>
+                  </div>
                 ) : (
                   <p className="text-gray-600 text-lg leading-relaxed">{bio}</p>
                 )}
               </div>
+
               <Button
                 variant="outline"
                 className="hover:text-white w-full bg-[#000916] hover:bg-[#000916]/80 text-white font-semibold py-3 rounded-full transition duration-300 ease-in-out shadow-md hover:shadow-lg"
