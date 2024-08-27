@@ -37,7 +37,6 @@ Create a .env file in the root directories of both the frontend and backend, and
     NEXT_PUBLIC_API_URL_PROD=https://api.yourdomain.com
     NEXT_PUBLIC_API_URL_DEV=http://localhost:4000
     NEXT_PUBLIC_FACEBOOK_APP_ID=your_facebook_app_id
-    NEXT_APP_TINY_MCE_API_KEY=your_tiny_mce_api_key
     NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
 
 3. **Install dependencies**:
