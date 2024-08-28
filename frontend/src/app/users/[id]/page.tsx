@@ -121,6 +121,26 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
     return <div className="text-red-500">{error}</div>;
   }
 
+  const formatBio = (bioText: string) => {
+    const urlRegex = /((https?:\/\/|www\.)[^\s]+)/g;
+
+    // Reemplaza URLs por enlaces azules
+    let formattedText = bioText.replace(urlRegex, (url) => {
+      return `<a href="${url}" style="color: blue;" target="_blank" rel="noopener noreferrer">${url}</a>`;
+    });
+
+    // Reemplaza saltos de línea con <br> y aplica un estilo para añadir margen inferior
+    formattedText = formattedText.replace(
+      /\n/g,
+      '<br style="margin-bottom: 1rem;">'
+    );
+
+    // Reemplaza tabulaciones con espacios en blanco
+    formattedText = formattedText.replace(/\t/g, "&emsp;");
+
+    return formattedText;
+  };
+
   return (
     <div className="w-full min-h-screen flex items-start justify-center py-10">
       <div className="container max-w-5xl grid grid-cols-1 md:grid-cols-5 gap-2 px-4 md:px-0">
@@ -133,9 +153,11 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
           </Avatar>
           <div className="text-center space-y-2">
             <h2 className="text-2xl font-bold">{user?.user}</h2>
-            <p className="text-muted-foreground text-left">
-              {user?.bio || "No bio available."}
-            </p>
+            <p
+              className="text-muted-foreground text-left"
+              style={{ whiteSpace: "pre-wrap" }}
+              dangerouslySetInnerHTML={{ __html: formatBio(user?.bio ?? "") }}
+            ></p>
           </div>
           <div className="flex items-center gap-4">
             {user?.facebook && (
