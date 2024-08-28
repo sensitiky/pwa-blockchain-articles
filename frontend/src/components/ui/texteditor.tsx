@@ -278,14 +278,14 @@ function Toolbar({ editor }: ToolbarProps) {
             <div className="flex justify-end">
               <Button
                 variant="ghost"
-                className="mr-2"
+                className="mr-2 rounded-full bg-gray-100 hover:bg-gray-100/80"
                 onClick={() => setVideoPopupOpen(false)}
               >
                 Cancel
               </Button>
               <Button
                 onClick={insertVideo}
-                className="bg-blue-500 text-white rounded-lg px-4 py-2"
+                className="bg-[#000916] text-white rounded-full hover:bg-[#000916]/80 px-4 py-2"
               >
                 Insert
               </Button>
@@ -316,14 +316,14 @@ function Toolbar({ editor }: ToolbarProps) {
             <div className="flex justify-end">
               <Button
                 variant="ghost"
-                className="mr-2"
+                className="mr-2 bg-gray-100 hover:bg-gray-100/80 rounded-full"
                 onClick={() => setLinkPopupOpen(false)}
               >
                 Cancel
               </Button>
               <Button
                 onClick={insertLink}
-                className="bg-blue-500 text-white rounded-lg px-4 py-2"
+                className="bg-[#000916] hover:bg-[#000916]/80 text-white rounded-full px-4 py-2"
               >
                 Insert
               </Button>

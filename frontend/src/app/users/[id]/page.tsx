@@ -144,17 +144,17 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
   return (
     <div className="w-full min-h-screen flex items-start justify-center py-10">
       <div className="container max-w-5xl grid grid-cols-1 md:grid-cols-5 gap-2 px-4 md:px-0">
-        <div className="rounded-2xl p-6 flex flex-col items-center gap-4 col-span-1 shadow-none border-none bg-inherit">
+        <div className="rounded-2xl p-6 flex flex-col items-center gap-4 col-span-1 bg-inherit">
           <Avatar className="w-32 h-32 border-4 border-gray-300">
             <AvatarImage src={`${API_URL}${user?.avatar}`} />
             <AvatarFallback>
               {user?.firstName && user.firstName[0]}
             </AvatarFallback>
           </Avatar>
-          <div className="text-center space-y-2">
+          <div className="text-center space-y-2 w-fit">
             <h2 className="text-2xl font-bold">{user?.user}</h2>
             <p
-              className="text-gray-600 text-lg leading-relaxed"
+              className="text-gray-600 text-lg leading-relaxed text-left"
               style={{ whiteSpace: "pre-wrap" }}
               dangerouslySetInnerHTML={{ __html: formatBio(user?.bio ?? "") }}
             ></p>
@@ -198,7 +198,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
             )}
           </div>
         </div>
-        <Separator orientation="vertical" className="h-full col-span-1" />
+        <div className="h-full col-span-1 bg-gray-200 w-[1px] m-4" />
         <div className="flex flex-col space-y-6 col-span-3 ">
           {posts.map((post) => (
             <div

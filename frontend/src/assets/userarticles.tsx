@@ -123,10 +123,6 @@ const Posts: React.FC = () => {
     page * POSTS_PER_PAGE
   );
 
-  const removeSpecialCharacters = (str: string): string => {
-    return str.replace(/[^a-zA-Z0-9 ]/g, "");
-  };
-
   if (posts.length === 0) {
     return (
       <div className="flex justify-center items-center h-full flex-col">
@@ -223,7 +219,7 @@ const Posts: React.FC = () => {
                     </Link>
                   </div>
                   <h3 className="absolute top-0 left-0 right-0 text-lg mb-2 text-center text-white font-semibold backdrop-blur-xl bg-opacity-20 bg-black p-2 z-10">
-                    {removeSpecialCharacters(post.title)}
+                    {post.title}
                   </h3>
                 </div>
               ))
