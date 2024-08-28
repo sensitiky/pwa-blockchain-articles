@@ -7,7 +7,7 @@ import SecuritySettings from "@/assets/security";
 import SavedItems from "@/assets/saveditems";
 import Articles from "@/assets/userarticles";
 import { useAuth } from "../../../context/authContext";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getProfile } from "../../../services/authService";
 import { UserIcon, LockIcon, PencilIcon, BookmarkIcon } from "lucide-react";
 import { motion } from "framer-motion";
@@ -15,6 +15,7 @@ import { motion } from "framer-motion";
 const Users = () => {
   const [selectedSection, setSelectedSection] = useState("personal");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const [userInfo, setUserInfo] = useState({
@@ -61,6 +62,13 @@ const Users = () => {
 
     fetchProfile();
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    const section = searchParams.get("section");
+    if (section) {
+      setSelectedSection(section);
+    }
+  }, [searchParams]);
 
   const RenderContent = () => {
     if (!isAuthenticated) {

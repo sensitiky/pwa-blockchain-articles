@@ -292,6 +292,18 @@ const Header = () => {
                   >
                     Create
                   </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => router.push("/users?section=saved")}
+                    className="hover:bg-customColor-innovatio hover:text-white transition-colors duration-300"
+                  >
+                    Saved Items
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => router.push("/users?section=articles")}
+                    className="hover:bg-customColor-innovatio hover:text-white transition-colors duration-300"
+                  >
+                    My Articles
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={handleLogout}

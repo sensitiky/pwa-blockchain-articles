@@ -304,7 +304,7 @@ const PostPage = () => {
           <div className="flex flex-col sm:flex-row items-center justify-between mb-6 space-y-4 sm:space-y-0">
             <button
               className="hover:underline bg-inherit text-black inline-flex h-8 items-start justify-center rounded-md px-4 text-sm font-medium transition-colors hover:bg-inherit focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-              onClick={() => router.push("/articles")}
+              onClick={() => router.back()}
             >
               <ArrowLeftIcon className="mr-2 h-4 w-4" />
               Go Back
