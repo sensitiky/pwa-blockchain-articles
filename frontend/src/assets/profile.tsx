@@ -4,10 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
-import { FaCamera, FaShareAlt } from "react-icons/fa";
+import { FaCamera } from "react-icons/fa";
 import Select, { SingleValue } from "react-select";
 import countryList from "react-select-country-list";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuth } from "../../context/authContext";
 import api from "../../services/api";
@@ -17,13 +16,17 @@ import styled from "styled-components";
 import { CircularProgress } from "@mui/material";
 import { useRouter } from "next/navigation";
 import ModalUserDelete from "@/assets/userdelete";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
 interface User {
   firstName?: string;
   lastName?: string;
-  date?: Date;
+  date?: Date | null;
   email?: string;
   user?: string;
   country?: string;
@@ -113,9 +116,11 @@ const ProfileSettings: React.FC = () => {
     setUserInfo({ ...userInfo, country: selectedOption?.value || "" });
   };
 
-  const handleDateChange = (date: Date | null) => {
+  const handleDateChange = (date: Dayjs | null) => {
     if (date) {
-      setUserInfo({ ...userInfo, date });
+      setUserInfo({ ...userInfo, date: date.toDate() });
+    } else {
+      setUserInfo({ ...userInfo, date: null });
     }
   };
 
@@ -126,9 +131,12 @@ const ProfileSettings: React.FC = () => {
     setEditMode(!editMode);
   };
 
-  const handleBioEditToggle = () => {
+  const handleBioEditToggle = async () => {
     if (bioEditMode) {
-      handleBioSave();
+      const success = await handleBioSave();
+      if (!success) {
+        return; // No cambiar el modo de edición si la bio no es válida
+      }
     }
     setBioEditMode(!bioEditMode);
   };
@@ -146,13 +154,24 @@ const ProfileSettings: React.FC = () => {
     }
   };
 
-  const handleBioSave = async () => {
+  const handleBioSave = async (): Promise<boolean> => {
+    const validBioPattern = /^[a-zA-Z0-9\s.,!?'"-]*$/;
+
+    if (!validBioPattern.test(bio)) {
+      alert(
+        "Bio contains invalid characters. Please remove any links, images, or videos."
+      );
+      return false; // Indica que la operación falló
+    }
+
     try {
       await api.put(`${API_URL}/users/me`, { ...userInfo, bio });
       setUserInfo({ ...userInfo, bio });
       fetchProfile();
+      return true; // Indica que la operación fue exitosa
     } catch (error) {
       console.error("Error saving bio:", error);
+      return false; // Indica que la operación falló
     }
   };
 
@@ -368,15 +387,17 @@ const ProfileSettings: React.FC = () => {
               </div>
               <div className="space-y-2">
                 <Label className="text-2xl font-semibold text-gray-700">
-                  Date
+                  Birthday
                 </Label>
                 {editMode ? (
-                  <DatePicker
-                    selected={userInfo.date}
-                    onChange={handleDateChange}
-                    dateFormat="MMMM d, yyyy"
-                    className="w-full p-3 border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300 ease-in-out"
-                  />
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      value={userInfo.date ? null : undefined}
+                      label="Select your birthday"
+                      onChange={handleDateChange}
+                      className="w-full p-3 border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300 ease-in-out"
+                    />
+                  </LocalizationProvider>
                 ) : (
                   <div className="flex items-center border-b-2 border-gray-300 py-2">
                     <h2 className="text-xl text-[#000916]">

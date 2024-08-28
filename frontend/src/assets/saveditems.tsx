@@ -124,6 +124,17 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
     }
   };
 
+  if (favorites.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-full flex-col">
+        <h2 className="text-black text-lg font-bold">
+          You have not saved any articles yet
+        </h2>
+        <CircularProgress></CircularProgress>
+      </div>
+    );
+  }
+
   return (
     <section className="flex items-center justify-between py-4">
       <div className="container px-4 md:px-6">

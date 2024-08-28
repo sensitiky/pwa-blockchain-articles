@@ -127,6 +127,16 @@ const Posts: React.FC = () => {
     return str.replace(/[^a-zA-Z0-9 ]/g, "");
   };
 
+  if (posts.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-full flex-col">
+        <h2 className="text-black text-lg font-bold">
+          You have not created any articles yet
+        </h2>
+        <CircularProgress></CircularProgress>
+      </div>
+    );
+  }
   return (
     <>
       <div className="flex items-center justify-between py-4">

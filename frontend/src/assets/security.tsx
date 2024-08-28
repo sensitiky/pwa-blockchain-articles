@@ -1,12 +1,21 @@
+"use client";
 import React, { useState, useEffect } from "react";
-import { TextField, Button, Avatar, CircularProgress } from "@mui/material";
-import { FaEdit } from "react-icons/fa";
+import {
+  TextField,
+  Avatar,
+  CircularProgress,
+  IconButton,
+  InputAdornment,
+  Tooltip,
+} from "@mui/material";
+import { FaEdit, FaCheck, FaEye, FaEyeSlash } from "react-icons/fa";
 import { motion } from "framer-motion";
 import styled from "styled-components";
 import api from "../../services/api";
 import { useAuth } from "../../context/authContext";
 
 interface UserProfile {
+  id?: number;
   firstName?: string;
   avatar?: string;
   medium?: string;
@@ -18,6 +27,7 @@ interface UserProfile {
   password?: string;
   confirmPassword?: string;
 }
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
 const Container = styled.div`
@@ -26,16 +36,16 @@ const Container = styled.div`
   align-items: center;
   height: 100vh;
   padding: 1rem;
-  background-color: inherit;
+  background-color: #f7f8fa;
 `;
 
 const Card = styled.div`
   width: 100%;
   max-width: 800px;
-  background-color: #fff;
+  background-color: #ffffff;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 `;
 
 const Section = styled.div`
@@ -43,38 +53,43 @@ const Section = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: bold;
-  margin-bottom: 1rem;
+  color: #000916;
+  margin-bottom: 1.5rem;
 `;
 
 const FieldContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 `;
 
 const FieldLabel = styled.div`
   font-size: 1rem;
   font-weight: medium;
-  text-transform: capitalize;
+  color: #000916;
+`;
+
+const ActionIcons = styled.div`
+  display: flex;
+  gap: 0.5rem;
 `;
 
 const SecuritySettings: React.FC = () => {
   const { isAuthenticated, user, setUser } = useAuth();
-  const [editMode, setEditMode] = useState(false);
   const [userInfo, setUserInfo] = useState<UserProfile>({});
   const [loading, setLoading] = useState(true);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const fetchProfile = async () => {
     if (isAuthenticated) {
       try {
         const response = await api.get(`${API_URL}/users/me`);
         const profile = response.data;
-        const avatarUrl = profile.avatar
-          ? `${API_URL}${profile.avatar}`
-          : "";
+        const avatarUrl = profile.avatar ? `${API_URL}${profile.avatar}` : "";
         setUser({
           id: profile.id,
           firstName: profile.firstName,
@@ -110,13 +125,30 @@ const SecuritySettings: React.FC = () => {
     setUserInfo({ ...userInfo, [name]: value });
   };
 
-  const handleSaveChanges = async () => {
+  const handleSaveChanges = async (field: keyof UserProfile) => {
+    if (field === "password" || field === "confirmPassword") {
+      if (userInfo.password !== userInfo.confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
+    }
+
+    const updatedField: Partial<UserProfile> & { id: number } = {
+      id: userInfo.id ?? 0,
+      [field]: userInfo[field],
+    };
+
     try {
-      await api.put(`${API_URL}/users/me`, userInfo);
-      setEditMode(false);
+      await api.put(`${API_URL}/users/me`, updatedField);
+      setUser({ ...user, ...updatedField });
+      setEditingField(null);
     } catch (error) {
       console.error("Error saving profile information:", error);
     }
+  };
+
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   if (loading) {
@@ -142,7 +174,9 @@ const SecuritySettings: React.FC = () => {
             sx={{ width: 56, height: 56 }}
           />
           <div>
-            <h1 className="text-4xl font-bold">Hi, {user?.firstName}</h1>
+            <h1 className="text-4xl font-bold text-[#000916]">
+              Hi, {user?.firstName}
+            </h1>
             <p className="text-xl text-gray-500">
               Manage your security settings.
             </p>
@@ -154,13 +188,29 @@ const SecuritySettings: React.FC = () => {
             (field) => (
               <FieldContainer key={field}>
                 <FieldLabel>{field}</FieldLabel>
-                {editMode ? (
+                {editingField === field ? (
                   <TextField
                     name={field}
                     value={userInfo[field as keyof UserProfile] || ""}
                     onChange={handleInputChange}
                     variant="outlined"
                     size="small"
+                    onBlur={() => handleSaveChanges(field as keyof UserProfile)}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Tooltip title="Save">
+                            <IconButton
+                              onClick={() =>
+                                handleSaveChanges(field as keyof UserProfile)
+                              }
+                            >
+                              <FaCheck color="#28a745" />
+                            </IconButton>
+                          </Tooltip>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 ) : (
                   <div className="flex items-center gap-2">
@@ -175,13 +225,13 @@ const SecuritySettings: React.FC = () => {
                         ? "Provided"
                         : "Not Provided"}
                     </span>
-                    <Button
-                      variant="text"
-                      size="small"
-                      onClick={() => setEditMode(true)}
-                    >
-                      <FaEdit />
-                    </Button>
+                    <ActionIcons>
+                      <Tooltip title="Edit">
+                        <IconButton onClick={() => setEditingField(field)}>
+                          <FaEdit color="#007bff" />
+                        </IconButton>
+                      </Tooltip>
+                    </ActionIcons>
                   </div>
                 )}
               </FieldContainer>
@@ -193,14 +243,55 @@ const SecuritySettings: React.FC = () => {
           {["email", "password", "confirmPassword"].map((field) => (
             <FieldContainer key={field}>
               <FieldLabel>{field}</FieldLabel>
-              {editMode ? (
+              {editingField === field ? (
                 <TextField
                   name={field}
-                  type={field.includes("password") ? "password" : "text"}
+                  type={
+                    field.includes("password") && !showPassword
+                      ? "password"
+                      : "text"
+                  }
                   value={userInfo[field as keyof UserProfile] || ""}
                   onChange={handleInputChange}
                   variant="outlined"
                   size="small"
+                  onBlur={() => handleSaveChanges(field as keyof UserProfile)}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        {field.includes("password") ? (
+                          <>
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={handleTogglePasswordVisibility}
+                              edge="end"
+                            >
+                              {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </IconButton>
+                            <Tooltip title="Save">
+                              <IconButton
+                                onClick={() =>
+                                  handleSaveChanges(field as keyof UserProfile)
+                                }
+                              >
+                                <FaCheck color="#28a745" />
+                              </IconButton>
+                            </Tooltip>
+                          </>
+                        ) : (
+                          <Tooltip title="Save">
+                            <IconButton
+                              onClick={() =>
+                                handleSaveChanges(field as keyof UserProfile)
+                              }
+                            >
+                              <FaCheck color="#28a745" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               ) : (
                 <div className="flex items-center gap-2">
@@ -215,28 +306,18 @@ const SecuritySettings: React.FC = () => {
                       ? "Provided"
                       : "Not Provided"}
                   </span>
-                  <Button
-                    variant="text"
-                    size="small"
-                    onClick={() => setEditMode(true)}
-                  >
-                    <FaEdit />
-                  </Button>
+                  <ActionIcons>
+                    <Tooltip title="Edit">
+                      <IconButton onClick={() => setEditingField(field)}>
+                        <FaEdit color="#007bff" />
+                      </IconButton>
+                    </Tooltip>
+                  </ActionIcons>
                 </div>
               )}
             </FieldContainer>
           ))}
         </Section>
-        {editMode && (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSaveChanges}
-            className="mt-6"
-          >
-            Save Changes
-          </Button>
-        )}
       </Card>
     </motion.div>
   );

@@ -20,7 +20,7 @@ import { useAuth } from "../../../../context/authContext";
 import DeletePostModal from "@/assets/deletepost";
 import styled from "styled-components";
 import { CircularProgress } from "@mui/material";
-import parse, { domToReact, Element } from "html-react-parser";
+import parse, { DOMNode, domToReact, Element } from "html-react-parser";
 
 const Container = styled.div`
   display: flex;
@@ -98,6 +98,7 @@ const PostPage = () => {
     try {
       const response = await axios.get(`${API_URL}/posts/${id}`);
       const postData = response.data;
+      console.log(response.data);
       setPost(postData);
       setComments(postData.comments || []);
       setLoading(false);
@@ -259,15 +260,36 @@ const PostPage = () => {
     return parse(htmlContent, {
       replace: (domNode) => {
         if (domNode instanceof Element) {
-          const { tagName } = domNode;
+          const { tagName, attribs } = domNode;
 
+          // Estilo general para elementos de bloque
+          const blockStyle = {
+            whiteSpace: "pre-wrap", // Mantiene saltos de línea y espacios
+            fontFamily: "Gilroy, sans-serif", // Aplica la fuente Gilroy
+            lineHeight: "1.6", // Asegura un espacio adecuado entre líneas
+            marginBottom: "1rem", // Asegura espacio entre párrafos
+          };
+
+          // Aplicar estilo para respetar los saltos de línea y espacios a otros elementos de bloque
+          if (["p", "div", "span", "h1", "h2", "h3"].includes(tagName)) {
+            return (
+              <div style={blockStyle} {...attribs}>
+                {domToReact(domNode.children as DOMNode[])}
+              </div>
+            );
+          }
+
+          // Especialmente para elementos <br> que deben generar un salto de línea
+          if (tagName === "br") {
+            return <br />;
+          }
+
+          // Elementos permitidos
           if (
             tagName === "iframe" ||
-            ["h1", "h2", "h3", "b", "strong", "i", "em", "p", "a"].includes(
-              tagName
-            )
+            ["b", "strong", "i", "em", "a"].includes(tagName)
           ) {
-            return domToReact([domNode]);
+            return domToReact([domNode] as DOMNode[]);
           }
         }
       },

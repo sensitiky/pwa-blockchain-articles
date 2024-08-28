@@ -20,7 +20,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
 export default function LoginCard({ onClose }: { onClose: () => void }) {
   const [showRegister, setShowRegister] = useState(false);
-  const [user, setuser] = useState("");
+  const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
@@ -28,7 +28,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const [resetCode, setResetCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [codeSent, setCodeSent] = useState(false);
-  const [codeVerified, setCodeVerified] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -39,7 +38,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     numberOrSymbol: false,
   });
   const router = useRouter();
-  const { setUser, login, loginWithGoogle } = useAuth();
+  const { setUser: setAuthUser, login, loginWithGoogle } = useAuth();
 
   useFacebookSDK();
 
@@ -75,7 +74,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       );
 
       if (response.status === 200) {
-        setUser(response.data.user);
+        setAuthUser(response.data.user);
         login(response.data);
         onClose();
       } else {
@@ -114,7 +113,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       );
 
       if (response.status === 200) {
-        setUser(response.data.user);
+        setAuthUser(response.data.user);
         login(response.data);
         router.push("/users");
         onClose();
@@ -162,33 +161,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     }
   };
 
-  const handleVerifyCode = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await axios.post(
-        `${API_URL}/auth/verify-code`,
-        { email, code: verificationCode },
-        { withCredentials: true }
-      );
-
-      if (response.status === 200) {
-        setCodeVerified(true);
-        setError(null);
-      } else {
-        setError("Invalid verification code");
-      }
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data.message || "Invalid verification code");
-      } else {
-        setError((err as Error).message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleForgotPassword = async () => {
     setLoading(true);
     setError(null);
@@ -222,6 +194,16 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const handleResetPassword = async () => {
     setLoading(true);
     setError(null);
+
+    if (
+      !passwordCriteria.length ||
+      !passwordCriteria.uppercase ||
+      !passwordCriteria.numberOrSymbol
+    ) {
+      setError("Password does not meet the criteria.");
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await axios.post(
@@ -267,7 +249,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
       if (response.status === 200) {
         const { user, token } = response.data;
-        setUser(user);
+        setAuthUser(user);
         login(response.data);
         localStorage.setItem("token", token);
         router.push("/users");
@@ -303,7 +285,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       );
 
       if (res.status === 200) {
-        setUser(res.data.user);
+        setAuthUser(res.data.user);
         login(res.data);
         onClose();
       } else {
@@ -423,7 +405,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                 id="username"
                 placeholder="Enter your username"
                 value={user}
-                onChange={(e) => setuser(e.target.value)}
+                onChange={(e) => setUser(e.target.value)}
                 required
               />
             </div>
@@ -499,7 +481,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                 Please complete all the password criteria.
               </div>
             ) : null}
-            {codeSent && !codeVerified && (
+            {codeSent && (
               <>
                 <div className="space-y-2">
                   <Label htmlFor="verification-code">Verification Code</Label>
@@ -511,16 +493,17 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                     onChange={(e) => setVerificationCode(e.target.value)}
                     required
                   />
-                  <div className="flex justify-center">
-                    <Button
-                      type="button"
-                      className="mt-2 rounded-sm w-44 bg-[#000916]"
-                      onClick={handleVerifyCode}
-                      disabled={loading}
-                    >
-                      {loading ? "Verifying..." : "Verify Code"}
-                    </Button>
-                  </div>
+                </div>
+                {error && <div className="text-red-500">{error}</div>}
+                <div className="flex justify-center">
+                  <Button
+                    type="button"
+                    className="rounded-full w-44"
+                    onClick={handleRegister}
+                    disabled={loading}
+                  >
+                    {loading ? "Registering..." : "Register"}
+                  </Button>
                 </div>
               </>
             )}
@@ -535,21 +518,6 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   {loading ? "Sending..." : "Send Verification Code"}
                 </Button>
               </div>
-            )}
-            {codeVerified && (
-              <>
-                {error && <div className="text-red-500">{error}</div>}
-                <div className="flex justify-center">
-                  <Button
-                    type="button"
-                    className="rounded-sm w-44"
-                    onClick={handleRegister}
-                    disabled={loading}
-                  >
-                    {loading ? "Registering..." : "Register"}
-                  </Button>
-                </div>
-              </>
             )}
             <div className="space-y-2 flex items-center">
               <Checkbox id="terms" className="mr-4" required />
