@@ -154,7 +154,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
           <div className="text-center space-y-2">
             <h2 className="text-2xl font-bold">{user?.user}</h2>
             <p
-              className="text-muted-foreground text-left"
+              className="text-gray-600 text-lg leading-relaxed"
               style={{ whiteSpace: "pre-wrap" }}
               dangerouslySetInnerHTML={{ __html: formatBio(user?.bio ?? "") }}
             ></p>
