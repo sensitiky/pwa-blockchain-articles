@@ -155,7 +155,7 @@ const ProfileSettings: React.FC = () => {
   };
 
   const formatBio = (bioText: string) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const urlRegex = /((https?:\/\/|www\.)[^\s]+)/g;
 
     // Reemplaza URLs por enlaces azules
     let formattedText = bioText.replace(urlRegex, (url) => {
@@ -175,11 +175,12 @@ const ProfileSettings: React.FC = () => {
   };
 
   const handleBioSave = async (): Promise<boolean> => {
-    const validBioPattern = /^[a-zA-Z0-9\s.,!?'"-]*$/;
+    // Permite letras, números, espacios, puntuación común y URL (http/https)
+    const validBioPattern = /^[a-zA-Z0-9\s.,!?'"\-_:\/?&=]*$/;
 
     if (!validBioPattern.test(bio)) {
       alert(
-        "Bio contains invalid characters. Please remove any links, images, or videos."
+        "Bio contains invalid characters. Only letters, numbers, spaces, and common punctuation are allowed."
       );
       return false; // Indica que la operación falló
     }
