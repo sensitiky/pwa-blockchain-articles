@@ -485,7 +485,7 @@ const PostPage = () => {
                 ? `${API_URL}${author.avatar}`
                 : author.avatar;
 
-              const authorName = `${author.firstName} ${author.lastName}`;
+              const authorName = `${author.user} `;
 
               return (
                 <div

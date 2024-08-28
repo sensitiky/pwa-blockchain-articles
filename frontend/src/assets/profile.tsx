@@ -156,10 +156,22 @@ const ProfileSettings: React.FC = () => {
 
   const formatBio = (bioText: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const formattedText = bioText.replace(urlRegex, (url) => {
+
+    // Reemplaza URLs por enlaces azules
+    let formattedText = bioText.replace(urlRegex, (url) => {
       return `<a href="${url}" style="color: blue;" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
-    return formattedText.replace(/\n/g, "<br>").replace(/\t/g, "&emsp;");
+
+    // Reemplaza saltos de línea con <br> y aplica un estilo para añadir margen inferior
+    formattedText = formattedText.replace(
+      /\n/g,
+      '<br style="margin-bottom: 1rem;">'
+    );
+
+    // Reemplaza tabulaciones con espacios en blanco
+    formattedText = formattedText.replace(/\t/g, "&emsp;");
+
+    return formattedText;
   };
 
   const handleBioSave = async (): Promise<boolean> => {
