@@ -154,6 +154,14 @@ const ProfileSettings: React.FC = () => {
     }
   };
 
+  const formatBio = (bioText: string) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const formattedText = bioText.replace(urlRegex, (url) => {
+      return `<a href="${url}" style="color: blue;" target="_blank" rel="noopener noreferrer">${url}</a>`;
+    });
+    return formattedText.replace(/\n/g, "<br>").replace(/\t/g, "&emsp;");
+  };
+
   const handleBioSave = async (): Promise<boolean> => {
     const validBioPattern = /^[a-zA-Z0-9\s.,!?'"-]*$/;
 
@@ -467,7 +475,11 @@ const ProfileSettings: React.FC = () => {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-gray-600 text-lg leading-relaxed">{bio}</p>
+                  <p
+                    className="text-gray-600 text-lg leading-relaxed"
+                    style={{ whiteSpace: "pre-wrap" }}
+                    dangerouslySetInnerHTML={{ __html: formatBio(bio) }}
+                  ></p>
                 )}
               </div>
 
