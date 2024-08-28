@@ -137,7 +137,7 @@ export default function NewArticles() {
       return;
     }
 
-    if (/[^a-zA-Z0-9\s?!:;,¡-¿&\/\\´_'.\-]/.test(title)) {
+    if (/[^a-zA-Z0-9\s.,\-'&?!:*]/.test(title)) {
       alert("Title contains disallowed special characters.");
       return;
     }
