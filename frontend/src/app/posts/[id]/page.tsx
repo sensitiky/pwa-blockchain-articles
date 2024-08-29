@@ -343,7 +343,7 @@ const PostPage = () => {
                   alt={`${user?.firstName}'s avatar`}
                 />
                 <AvatarFallback>
-                  {post.author?.user ? post.author.firstName[0] : "A"}
+                  {post.author?.user}
                 </AvatarFallback>
               </Avatar>
               <div className="text-center sm:text-left">
