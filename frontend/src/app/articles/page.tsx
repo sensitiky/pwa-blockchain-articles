@@ -269,9 +269,8 @@ const Articles = () => {
               <Image
                 src={post.imageUrlBase64}
                 alt="Post Image"
-                width={1920}
-                height={1080}
-                layout="responsive"
+                layout="fill"
+                objectFit="cover"
                 loading="lazy"
               />
             </div>
