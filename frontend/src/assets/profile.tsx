@@ -295,47 +295,49 @@ const ProfileSettings: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-8 h-auto">
-      <div className="flex justify-center mb-12">
+    <div className="container mx-auto p-4 sm:p-8 h-auto">
+      <div className="flex justify-center mb-8 sm:mb-12">
         <Button
           variant="outline"
-          className="w-fit bg-red-600 hover:bg-red-700 text-white hover:text-white rounded-full transition duration-300 ease-in-out shadow-md hover:shadow-lg px-6 py-3"
+          className="w-fit bg-red-600 hover:bg-red-700 text-white hover:text-white rounded-full transition duration-300 ease-in-out shadow-md hover:shadow-lg px-4 sm:px-6 py-2 sm:py-3"
           onClick={() => setShowDeleteModal(true)}
         >
           Delete Profile
         </Button>
       </div>
-      <div className="flex flex-col items-center justify-center md:flex-row md:space-x-20 px-4 md:px-6">
-        <div className="flex-1 flex flex-col items-center md:items-start max-w-4xl">
-          <div className="flex items-center gap-8 flex-col md:flex-row mb-10">
+      <div className="flex flex-col items-center justify-center lg:flex-row lg:space-x-8 xl:space-x-20 px-2 sm:px-4 md:px-6">
+        <div className="flex-1 flex flex-col items-center lg:items-start max-w-4xl w-full">
+          <div className="flex items-center gap-4 sm:gap-8 flex-col sm:flex-row mb-6 sm:mb-10 w-full">
             <CardContainer className="inter-var mx-auto">
               <CardBody className="text-card-foreground rounded-xl w-full h-full transition-transform duration-300 ease-in-out relative flex justify-center items-center hover:shadow-xl">
                 <CardItem translateZ="50" className="relative z-10">
-                  <Avatar className="w-40 h-40 md:w-48 md:h-48 border-4 border-primary">
+                  <Avatar className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 border-4 border-primary">
                     <AvatarImage src={avatarUrl} />
                     <AvatarFallback>{user?.firstName}</AvatarFallback>
                   </Avatar>
                 </CardItem>
               </CardBody>
             </CardContainer>
-            <label
-              htmlFor="profile-image-upload"
-              className="cursor-pointer hover:opacity-80 transition duration-300 ease-in-out"
-            >
-              <FaCamera className="w-8 h-8 text-primary" />
-              <input
-                id="profile-image-upload"
-                type="file"
-                className="hidden"
-                onChange={handleImageChange}
-              />
-            </label>
-            <h1 className="text-5xl md:text-6xl font-bold text-center md:text-left text-[#000916]">
-              Hi, {user?.user}
-            </h1>
+            <div className="flex flex-col items-center sm:items-start">
+              <label
+                htmlFor="profile-image-upload"
+                className="cursor-pointer hover:opacity-80 transition duration-300 ease-in-out mb-2 sm:mb-4"
+              >
+                <FaCamera className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+                <input
+                  id="profile-image-upload"
+                  type="file"
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
+              </label>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center sm:text-left text-[#000916]">
+                Hi, {user?.user}
+              </h1>
+            </div>
           </div>
-          <div className="flex-1 w-full max-w-5xl mt-8 grid grid-cols-1 md:grid-cols-2 gap-20">
-            <div className="space-y-6">
+          <div className="flex-1 w-full max-w-5xl mt-4 sm:mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20">
+            <div className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
                 <Label className="text-2xl font-semibold text-gray-700">
                   Username
@@ -477,25 +479,27 @@ const ProfileSettings: React.FC = () => {
                 {editMode ? "Save Changes" : "Edit Information"}
               </Button>
             </div>
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <h2 className="text-3xl font-bold text-[#000916]">Bio</h2>
+            <div className="space-y-4 sm:space-y-6">
+              <div className="space-y-2 sm:space-y-3">
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#000916]">
+                  Bio
+                </h2>
                 {bioEditMode ? (
                   <div>
                     <textarea
                       value={bio}
                       onChange={handleEditBio}
-                      rows={10}
+                      rows={8}
                       maxLength={360}
-                      className="w-full p-3 border-2 rounded-lg resize-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300 ease-in-out"
+                      className="w-full p-2 sm:p-3 border-2 rounded-lg resize-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300 ease-in-out text-sm sm:text-base"
                     />
-                    <div className="text-right text-gray-500 mt-1">
+                    <div className="text-right text-gray-500 mt-1 text-sm">
                       {bio.length}/360
                     </div>
                   </div>
                 ) : (
                   <p
-                    className="text-gray-600 text-lg leading-relaxed"
+                    className="text-gray-600 text-base sm:text-lg leading-relaxed"
                     style={{ whiteSpace: "pre-wrap" }}
                     dangerouslySetInnerHTML={{ __html: formatBio(bio) }}
                   ></p>
@@ -504,19 +508,19 @@ const ProfileSettings: React.FC = () => {
 
               <Button
                 variant="outline"
-                className="hover:text-white w-full bg-[#000916] hover:bg-[#000916]/80 text-white font-semibold py-3 rounded-full transition duration-300 ease-in-out shadow-md hover:shadow-lg"
+                className="hover:text-white w-full bg-[#000916] hover:bg-[#000916]/80 text-white font-semibold py-2 sm:py-3 rounded-full transition duration-300 ease-in-out shadow-md hover:shadow-lg text-sm sm:text-base"
                 onClick={handleBioEditToggle}
               >
                 {bioEditMode ? "Save Changes" : "Edit Bio"}
               </Button>
-              <div className="flex items-center justify-center gap-6 mt-8">
+              <div className="flex items-center justify-center gap-4 sm:gap-6 mt-6 sm:mt-8">
                 {user?.facebook && (
                   <Link
                     href={user?.facebook}
                     className="text-primary hover:text-primary-dark transition duration-300 ease-in-out"
                     prefetch={false}
                   >
-                    <FaFacebook className="w-8 h-8" />
+                    <FaFacebook className="w-6 h-6 sm:w-8 sm:h-8" />
                   </Link>
                 )}
                 {user?.instagram && (
@@ -525,7 +529,7 @@ const ProfileSettings: React.FC = () => {
                     className="text-primary hover:text-primary-dark transition duration-300 ease-in-out"
                     prefetch={false}
                   >
-                    <FaInstagram className="w-8 h-8" />
+                    <FaInstagram className="w-6 h-6 sm:w-8 sm:h-8" />
                   </Link>
                 )}
                 {user?.twitter && (
@@ -534,7 +538,7 @@ const ProfileSettings: React.FC = () => {
                     className="text-primary hover:text-primary-dark transition duration-300 ease-in-out"
                     prefetch={false}
                   >
-                    <FaTwitter className="w-8 h-8" />
+                    <FaTwitter className="w-6 h-6 sm:w-8 sm:h-8" />
                   </Link>
                 )}
                 {user?.linkedin && (
@@ -543,7 +547,7 @@ const ProfileSettings: React.FC = () => {
                     className="text-primary hover:text-primary-dark transition duration-300 ease-in-out"
                     prefetch={false}
                   >
-                    <FaLinkedin className="w-8 h-8" />
+                    <FaLinkedin className="w-6 h-6 sm:w-8 sm:h-8" />
                   </Link>
                 )}
               </div>
