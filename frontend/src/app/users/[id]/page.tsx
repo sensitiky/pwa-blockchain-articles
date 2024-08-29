@@ -170,6 +170,11 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
             );
           }
 
+          //Excluir imagenes
+          if (tagName === "img") {
+            return null;
+          }
+
           // Especialmente para elementos <br> que deben generar un salto de línea
           if (tagName === "br") {
             return <br />;
@@ -186,6 +191,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
       },
     });
   };
+
   return (
     <div className="w-full min-h-screen flex items-start justify-center py-10">
       <div className="container max-w-5xl grid grid-cols-1 md:grid-cols-5 gap-2 px-4 md:px-0">
