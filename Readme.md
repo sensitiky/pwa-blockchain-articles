@@ -70,7 +70,8 @@ Create a .env file in the root directories of both the frontend and backend, and
 ---
 ### Contributing
 
-Feel free to fork this repository and contribute by submitting a pull request.
+- Feel free to fork this repository and contribute by submitting a pull request.
+
 ---
 
 ### License
