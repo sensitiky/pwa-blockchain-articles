@@ -316,6 +316,12 @@ const PostPage = () => {
     }
   };
 
+  const avatarUrl = user?.avatar
+    ? user.avatar.startsWith("http")
+      ? user.avatar
+      : `${API_URL}${user.avatar}`
+    : "/default-avatar.webp";
+
   return (
     <div className="flex flex-col min-h-screen bg-white text-gray-900">
       <Header />
@@ -333,11 +339,8 @@ const PostPage = () => {
             <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Avatar className="h-10 w-10">
                 <AvatarImage
-                  src={
-                    user?.avatar
-                      ? `${API_URL}${user.avatar}`
-                      : "/default-avatar.webp"
-                  }
+                  src={avatarUrl}
+                  alt={`${user?.firstName}'s avatar`}
                 />
                 <AvatarFallback>
                   {post.author?.user ? post.author.firstName[0] : "A"}

@@ -23,10 +23,19 @@ import {
   useScroll,
 } from "framer-motion";
 import DOMPurify from "dompurify";
+import { CircularProgress } from "@mui/material";
+import Image from "next/image";
+
+interface ImageBuffer {
+  type: string;
+  data: Uint8Array;
+}
 
 interface SearchResult {
   id: string;
   title?: string;
+  imageUrl: { type: string; data: number[] } | null;
+  imageUrlBase64: string;
   name?: string;
   description?: string;
 }
@@ -45,8 +54,8 @@ const Header = () => {
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      if (query.length > 2) {
-        performSearch(query);
+      if (query.trim().length > 2) {
+        performSearch(query.trim());
       } else {
         setResults([]);
       }
@@ -55,17 +64,38 @@ const Header = () => {
     return () => clearTimeout(delayDebounceFn);
   }, [query]);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL_PROD;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
   const performSearch = async (searchQuery: string) => {
     setLoading(true);
     try {
-      const response = await axios.get<SearchResult[]>(`${API_URL}/search`, {
-        params: { q: searchQuery },
+      const fullUrl = `${API_URL}/search?q=${encodeURIComponent(searchQuery)}`;
+
+      const response = await axios.get<SearchResult[]>(fullUrl, {
+        headers: { "Cache-Control": "no-cache" },
       });
-      setResults(response.data);
-    } catch (error) {
-      console.error("Error fetching search results", error);
+
+      if (Array.isArray(response.data)) {
+        const resultsWithBase64Images = response.data.map((result) => {
+          if (result.imageUrl && result.imageUrl.type === "Buffer") {
+            // Convertir el buffer a una cadena Base64
+            const base64String = Buffer.from(result.imageUrl.data).toString(
+              "base64"
+            );
+            result.imageUrlBase64 = `data:image/jpeg;base64,${base64String}`;
+          }
+          return result;
+        });
+
+        setResults(resultsWithBase64Images);
+        console.log(resultsWithBase64Images);
+      } else {
+        console.error("Unexpected response format:", response.data);
+        setResults([]);
+      }
+    } catch (error: any) {
+      console.error("Error fetching search results:", error.response || error);
+      setResults([]);
     } finally {
       setLoading(false);
     }
@@ -157,10 +187,10 @@ const Header = () => {
             />
             {loading && (
               <div
-                className="bg-white rounded-lg shadow-lg mt-2 p-2 absolute z-50 w-full"
+                className="bg-white rounded-lg shadow-lg mt-2 p-2 absolute z-50 w-full justify-center flex"
                 id="loading"
               >
-                Loading...
+                <CircularProgress />
               </div>
             )}
             {results.length > 0 && (
@@ -171,13 +201,28 @@ const Header = () => {
                 {results.map((result) => (
                   <div
                     key={result.id}
-                    className="p-2 border-b last:border-0 cursor-pointer hover:bg-gray-200 flex"
+                    className="p-2 border-b last:border-0 cursor-pointer hover:bg-gray-200 flex h-full"
                     onClick={() => handleResultClick(result.id)}
                   >
                     <div>
                       <div className="font-semibold">
                         {result.title || result.name}
                       </div>
+                      {result.imageUrlBase64 ? (
+                        <div className="w-full h-fit">
+                          <Image
+                            src={result.imageUrlBase64}
+                            alt="Post Image"
+                            width={1920}
+                            height={1080}
+                            layout="responsive"
+                            objectFit="contain"
+                            loading="lazy"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-full h-48 bg-gray-200 rounded-lg"></div>
+                      )}
                       <div
                         className="text-sm text-gray-600 line-clamp-2"
                         dangerouslySetInnerHTML={{
@@ -282,32 +327,38 @@ const Header = () => {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={() => router.push("/users")}
-                    className="hover:bg-customColor-innovatio hover:text-white transition-colors duration-300"
+                    className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-medium"
                   >
                     Profile
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => router.push("/newarticles")}
-                    className="hover:bg-customColor-innovatio hover:text-white transition-colors duration-300"
+                    className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-medium"
                   >
                     Create
                   </DropdownMenuItem>
                   <DropdownMenuItem
+                    onClick={() => router.push("/users?section=articles")}
+                    className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-medium"
+                  >
+                    My Articles
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
                     onClick={() => router.push("/users?section=saved")}
-                    className="hover:bg-customColor-innovatio hover:text-white transition-colors duration-300"
+                    className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-medium"
                   >
                     Saved Items
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => router.push("/users?section=articles")}
-                    className="hover:bg-customColor-innovatio hover:text-white transition-colors duration-300"
+                    onClick={() => router.push("/users?section=security")}
+                    className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-medium"
                   >
-                    My Articles
+                    Security & Socials
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={handleLogout}
-                    className="hover:bg-customColor-innovatio hover:text-white transition-colors duration-300"
+                    className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-bold"
                   >
                     Logout
                   </DropdownMenuItem>
@@ -316,7 +367,7 @@ const Header = () => {
             ) : (
               <Button
                 onClick={handleStartNewCampaign}
-                className="font-medium rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio transition-colors duration-300 shadow-md"
+                className="font-medium rounded-full bg-gray-100 text-[#000916] hover:bg-gray-1003 hover:text-gray-100 transition-colors duration-300 shadow-md"
               >
                 Get Started
               </Button>
@@ -331,7 +382,7 @@ const Header = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ opacity: 0, y: -100 }}
           transition={{ duration: 0.3 }}
-          className=" top-0 left-0 w-screen z-50 p-4 backdrop-blur-xl bg-[#000916] lg:hidden md:hidden"
+          className=" top-0 left-0 w-screen z-50 p-4 backdrop-blur-xl bg-[#000916] lg:hidden md:block"
         >
           <div className="container mx-auto flex justify-between items-center">
             <div id="mobile-logo" className="text-lg text-white font-semibold">
@@ -401,7 +452,7 @@ const Header = () => {
                 ) : (
                   <button
                     onClick={handleStartNewCampaign}
-                    className="w-full rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:bg-customColor-innovatio3 hover:text-customColor-innovatio"
+                    className="w-full rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:bg-gray-1003 hover:text-customColor-innovatio"
                   >
                     Get Started
                   </button>

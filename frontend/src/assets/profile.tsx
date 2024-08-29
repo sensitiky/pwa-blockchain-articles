@@ -294,6 +294,13 @@ const ProfileSettings: React.FC = () => {
     }
   };
 
+  const ensureAbsoluteUrl = (url?: string) => {
+    if (!url) return "#";
+    return url.startsWith("http://") || url.startsWith("https://")
+      ? url
+      : `https://${url}`;
+  };
+
   return (
     <div className="container mx-auto p-4 sm:p-8 h-auto">
       <div className="flex justify-center mb-8 sm:mb-12">
@@ -516,7 +523,7 @@ const ProfileSettings: React.FC = () => {
               <div className="flex items-center justify-center gap-4 sm:gap-6 mt-6 sm:mt-8">
                 {user?.facebook && (
                   <Link
-                    href={user?.facebook}
+                    href={ensureAbsoluteUrl(user?.facebook)}
                     className="text-primary hover:text-primary-dark transition duration-300 ease-in-out"
                     prefetch={false}
                   >
@@ -525,7 +532,7 @@ const ProfileSettings: React.FC = () => {
                 )}
                 {user?.instagram && (
                   <Link
-                    href={user?.instagram}
+                    href={ensureAbsoluteUrl(user?.instagram)}
                     className="text-primary hover:text-primary-dark transition duration-300 ease-in-out"
                     prefetch={false}
                   >
@@ -534,7 +541,7 @@ const ProfileSettings: React.FC = () => {
                 )}
                 {user?.twitter && (
                   <Link
-                    href={user?.twitter}
+                    href={ensureAbsoluteUrl(user?.twitter)}
                     className="text-primary hover:text-primary-dark transition duration-300 ease-in-out"
                     prefetch={false}
                   >
@@ -543,7 +550,7 @@ const ProfileSettings: React.FC = () => {
                 )}
                 {user?.linkedin && (
                   <Link
-                    href={user?.linkedin}
+                    href={ensureAbsoluteUrl(user?.linkedin)}
                     className="text-primary hover:text-primary-dark transition duration-300 ease-in-out"
                     prefetch={false}
                   >
