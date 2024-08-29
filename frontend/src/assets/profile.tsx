@@ -204,8 +204,8 @@ const ProfileSettings: React.FC = () => {
     const file = e.target.files[0];
     const fileSizeInMB = file.size / (1024 * 1024);
 
-    if (fileSizeInMB > 1) {
-      alert("The image file size should not exceed 1MB.");
+    if (fileSizeInMB > 5) {
+      alert("The image file size should not exceed 5MB.");
       return;
     }
 
