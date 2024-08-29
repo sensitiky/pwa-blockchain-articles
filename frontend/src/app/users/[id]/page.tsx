@@ -7,7 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Header from "@/assets/header";
 import Footer from "@/assets/footer";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import styled from "styled-components";
 import {
   FaFacebook,
@@ -16,7 +16,13 @@ import {
   FaLinkedin,
   FaTwitter,
 } from "react-icons/fa";
-import { ClockIcon, MessageCircleIcon, TagIcon, UserIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  ClockIcon,
+  MessageCircleIcon,
+  TagIcon,
+  UserIcon,
+} from "lucide-react";
 import Image from "next/image";
 import DOMPurify from "dompurify";
 
@@ -66,6 +72,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -150,7 +157,15 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
   return (
     <div className="w-full min-h-screen flex items-start justify-center py-10">
       <div className="container max-w-5xl grid grid-cols-1 md:grid-cols-5 gap-2 px-4 md:px-0">
-        <div className="rounded-2xl p-6 flex flex-col items-center gap-4 col-span-1 bg-inherit">
+        <div className="rounded-2xl p-6 flex flex-col items-center gap-4 col-span-1 bg-inherit mt-2">
+          <button
+            className="flex items-center hover:underline bg-inherit text-black h-8 rounded-md px-4 text-sm font-medium transition-colors hover:bg-inherit focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+            onClick={() => router.back()}
+          >
+            <ArrowLeftIcon className="mr-2 h-4 w-4" />
+            Go Back
+          </button>
+
           <Avatar className="w-32 h-32 border-4 border-gray-300">
             <AvatarImage
               src={
