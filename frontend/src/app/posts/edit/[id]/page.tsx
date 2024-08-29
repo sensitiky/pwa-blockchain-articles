@@ -198,7 +198,7 @@ const EditPostPage = () => {
                 type="text"
                 name="title"
                 value={post.title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={handleInputChange}
                 required
                 maxLength={140}
                 className="rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
