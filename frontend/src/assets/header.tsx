@@ -226,20 +226,10 @@ const Header = () => {
                       <div
                         className="text-sm text-gray-600 line-clamp-2"
                         dangerouslySetInnerHTML={{
-                          __html: DOMPurify.sanitize(
-                            result.description ?? "",
-                            {
-                              ALLOWED_TAGS: [
-                                "b",
-                                "i",
-                                "em",
-                                "strong",
-                                "a",
-                                "p",
-                              ],
-                              ALLOWED_ATTR: ["href"],
-                            }
-                          ),
+                          __html: DOMPurify.sanitize(result.description ?? "", {
+                            ALLOWED_TAGS: ["b", "i", "em", "strong", "a", "p"],
+                            ALLOWED_ATTR: ["href"],
+                          }),
                         }}
                       ></div>
                     </div>
@@ -380,7 +370,7 @@ const Header = () => {
             ) : (
               <Button
                 onClick={handleStartNewCampaign}
-                className="font-medium rounded-full bg-gray-100 text-[#000916] hover:bg-gray-1003 hover:text-gray-100 transition-colors duration-300 shadow-md"
+                className="font-medium rounded-full bg-gray-100 text-[#000916] hover:bg-[#000916] hover:border hover:border-gray-100 hover:text-gray-100 transition-colors duration-300 shadow-md"
               >
                 Get Started
               </Button>
