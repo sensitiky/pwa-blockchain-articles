@@ -20,10 +20,16 @@ const DeletePostModal: React.FC<DeletePostModalProps> = ({
         <h2 className="text-xl font-bold mb-4">Delete Post</h2>
         <p className="mb-4">Are you sure you want to delete this post?</p>
         <div className="flex justify-end space-x-4">
-          <Button onClick={onClose} className="bg-gray-500 text-white">
+          <Button
+            onClick={onClose}
+            className="bg-gray-500 text-white rounded-full"
+          >
             Cancel
           </Button>
-          <Button onClick={onDelete} className="bg-red-500 text-white">
+          <Button
+            onClick={onDelete}
+            className="bg-red-500 text-white rounded-full"
+          >
             Delete
           </Button>
         </div>

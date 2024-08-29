@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { BookMarkedIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -14,9 +13,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowsUpDown } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import DOMPurify from "dompurify";
-import { CircularProgress } from "@mui/material";
 import styled from "styled-components";
 import Link from "next/link";
+import Image from "next/image";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
@@ -130,7 +129,13 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
         <h2 className="text-black text-lg font-bold">
           You have not saved any articles yet
         </h2>
-        <CircularProgress></CircularProgress>
+        <Image
+          src="/Logo-blogchain.png"
+          width={300}
+          height={300}
+          alt="Blogchain Logo"
+          className="animate-bounce"
+        />
       </div>
     );
   }
@@ -184,7 +189,13 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
         <div className="mt-4">
           {loading ? (
             <Container>
-              <CircularProgress />
+              <Image
+                src="/Logo-blogchain.png"
+                width={300}
+                height={300}
+                alt="Blogchain Logo"
+                className="animate-bounce"
+              />
             </Container>
           ) : (
             favorites.map((favorite, index) => (

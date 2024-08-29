@@ -22,8 +22,8 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import Link from "next/link";
-import { CircularProgress } from "@mui/material";
 import styled from "styled-components";
+import Image from "next/image";
 
 const POSTS_PER_PAGE = 10;
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
@@ -129,7 +129,13 @@ const Posts: React.FC = () => {
         <h2 className="text-black text-lg font-bold">
           You have not created any articles yet
         </h2>
-        <CircularProgress></CircularProgress>
+        <Image
+          src="/Logo-blogchain.png"
+          width={300}
+          height={300}
+          alt="Blogchain Logo"
+          className="animate-bounce"
+        />
       </div>
     );
   }
@@ -179,7 +185,13 @@ const Posts: React.FC = () => {
       </div>
       {loading ? (
         <Container>
-          <CircularProgress />
+          <Image
+            src="/Logo-blogchain.png"
+            width={300}
+            height={300}
+            alt="Blogchain Logo"
+            className="animate-bounce"
+          />
         </Container>
       ) : (
         <>

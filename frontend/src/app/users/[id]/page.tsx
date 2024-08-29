@@ -4,12 +4,10 @@ import React, { useEffect, useState, Suspense } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import Header from "@/assets/header";
 import Footer from "@/assets/footer";
 import { useParams } from "next/navigation";
-import { CircularProgress } from "@mui/material";
 import styled from "styled-components";
 import {
   FaFacebook,
@@ -112,7 +110,13 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
   if (loading) {
     return (
       <Container>
-        <CircularProgress />
+        <Image
+          src="/Logo-blogchain.png"
+          width={300}
+          height={300}
+          alt="Blogchain Logo"
+          className="animate-bounce"
+        />
       </Container>
     );
   }
@@ -146,10 +150,14 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
       <div className="container max-w-5xl grid grid-cols-1 md:grid-cols-5 gap-2 px-4 md:px-0">
         <div className="rounded-2xl p-6 flex flex-col items-center gap-4 col-span-1 bg-inherit">
           <Avatar className="w-32 h-32 border-4 border-gray-300">
-            <AvatarImage src={`${API_URL}${user?.avatar}`} />
-            <AvatarFallback>
-              {user?.firstName && user.firstName[0]}
-            </AvatarFallback>
+            <AvatarImage
+              src={
+                user?.avatar
+                  ? `${API_URL}${user.avatar}`
+                  : "/default-avatar.webp"
+              }
+            />
+            <AvatarFallback>{user?.user}</AvatarFallback>
           </Avatar>
           <div className="text-center space-y-2 w-fit">
             <h2 className="text-2xl font-bold">{user?.user}</h2>

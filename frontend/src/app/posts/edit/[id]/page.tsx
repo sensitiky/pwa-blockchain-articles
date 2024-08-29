@@ -9,7 +9,6 @@ import Image from "next/image";
 import Header from "@/assets/header";
 import Footer from "@/assets/footer";
 import { ArrowLeftIcon } from "lucide-react";
-import { CircularProgress } from "@mui/material";
 import styled from "styled-components";
 import { AnimatePresence, motion } from "framer-motion";
 import RichTextEditor from "@/components/ui/texteditor";
@@ -152,7 +151,13 @@ const EditPostPage = () => {
     return (
       <div>
         <Container>
-          <CircularProgress />
+          <Image
+            src="/Logo-blogchain.png"
+            width={300}
+            height={300}
+            alt="Blogchain Logo"
+            className="animate-bounce"
+          />
         </Container>
       </div>
     );

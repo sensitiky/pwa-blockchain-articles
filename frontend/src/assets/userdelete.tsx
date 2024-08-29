@@ -79,19 +79,23 @@ const ModalUserDelete: React.FC<ModalUserDeleteProps> = ({
     <ModalContainer show={show}>
       <ModalContent>
         <ModalTitle>Delete Profile</ModalTitle>
-        <ModalText>Type "Delete" to confirm profile deletion:</ModalText>
+        <ModalText>Type “Delete” to confirm deletion of the profile:</ModalText>
         <Input
           value={deleteConfirmation}
           onChange={(e) => setDeleteConfirmation(e.target.value)}
           className="mb-4"
           placeholder="Type 'Delete' here"
         />
-        <Button onClick={handleClose} variant="outline" className="p-4 m-4">
+        <Button
+          onClick={handleClose}
+          variant="outline"
+          className="p-4 m-4 rounded-full bg-gray-100 hover:bg-gray-50"
+        >
           Cancel
         </Button>
         <Button
           onClick={handleDeleteProfile}
-          className="mb-2 p-4"
+          className="mb-2 p-4 rounded-full"
           disabled={deleteConfirmation !== "Delete"}
         >
           Confirm

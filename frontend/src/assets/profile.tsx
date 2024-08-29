@@ -13,13 +13,13 @@ import api from "../../services/api";
 import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
 import Link from "next/link";
 import styled from "styled-components";
-import { CircularProgress } from "@mui/material";
 import { useRouter } from "next/navigation";
 import ModalUserDelete from "@/assets/userdelete";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
+import Image from "next/image";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
@@ -265,7 +265,13 @@ const ProfileSettings: React.FC = () => {
   if (loading) {
     return (
       <Container>
-        <CircularProgress />
+        <Image
+          src="/Logo-blogchain.png"
+          width={300}
+          height={300}
+          alt="Blogchain Logo"
+          className="animate-bounce"
+        />
       </Container>
     );
   }
@@ -274,7 +280,7 @@ const ProfileSettings: React.FC = () => {
     ? user.avatar.startsWith("http")
       ? user.avatar
       : `${API_URL}${user.avatar}`
-    : "default-avatar-url";
+    : "/default-avatar.webp";
 
   const handleDeleteProfile = async () => {
     if (deleteConfirmation === "Delete") {
@@ -325,7 +331,7 @@ const ProfileSettings: React.FC = () => {
               />
             </label>
             <h1 className="text-5xl md:text-6xl font-bold text-center md:text-left text-[#000916]">
-              Hi, {user?.firstName}
+              Hi, {user?.user}
             </h1>
           </div>
           <div className="flex-1 w-full max-w-5xl mt-8 grid grid-cols-1 md:grid-cols-2 gap-20">

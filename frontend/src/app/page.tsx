@@ -365,7 +365,7 @@ const HomePage: React.FC = () => {
                               ? post.author.avatar.startsWith("http")
                                 ? post.author.avatar
                                 : `${API_URL}${post.author.avatar}`
-                              : "/default-avatar.jpg"
+                              : "/default-avatar.webp"
                           }
                           alt="Author image"
                           className="w-10 h-10 rounded-full"

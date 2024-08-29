@@ -7,7 +7,6 @@ import Link from "next/link";
 import { ClockIcon, TagIcon } from "lucide-react";
 import DOMPurify from "dompurify";
 import Image from "next/image";
-import { CircularProgress } from "@mui/material";
 import { useAuth } from "../../../context/authContext";
 import React from "react";
 
@@ -245,28 +244,39 @@ const Articles = () => {
 
   const renderPosts = useMemo(() => {
     if (posts.length === 0 && !loading) {
-      return <div className="text-center text-white">No posts available</div>;
+      return (
+        <div className="text-center text-black">
+          No posts available
+          <Image
+            src="/Logo-blogchain.png"
+            width={300}
+            height={300}
+            alt="Blogchain Logo"
+            className="animate-bounce"
+          />
+        </div>
+      );
     }
 
     return posts.map((post) => (
       <div
         key={post.id}
-        className="w-full p-3 sm:p-4 md:p-6 bg-inherit mx-auto text-card-foreground border border-r-0 border-l-0 rounded-none shadow-none transition-transform ios-style"
+        className="w-full p-3 sm:p-4 md:p-6 mx-auto text-card-foreground border-b-2 transition-transform ios-style"
       >
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col">
           {post.imageUrlBase64 && (
-            <Image
-              src={post.imageUrlBase64}
-              alt="Post Image"
-              width={1920}
-              height={1080}
-              layout="responsive"
-              className="w-full h-48 sm:h-64 md:h-80 object-cover object-center"
-              loading="lazy"
-            />
+            <div className="w-full h-48 sm:h-64 md:h-80 relative">
+              <Image
+                src={post.imageUrlBase64}
+                alt="Post Image"
+                layout="fill"
+                objectFit="cover"
+                loading="lazy"
+              />
+            </div>
           )}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-2">
-            <div className="flex items-center mb-2 sm:mb-0">
+          <div className="flex flex-col justify-between items-start mt-2">
+            <div className="flex items-center mb-2 w-full">
               <Link href={`/users/${post.author?.id}`}>
                 <img
                   src={
@@ -274,13 +284,13 @@ const Articles = () => {
                       ? post.author.avatar.startsWith("http")
                         ? post.author.avatar
                         : `${API_URL}${post.author.avatar}`
-                      : "/default-avatar.jpg"
+                      : "/default-avatar.webp"
                   }
                   alt="Author image"
                   className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
                 />
               </Link>
-              <div className="flex flex-col ml-2">
+              <div className="flex flex-col ml-2 flex-grow">
                 <span className="text-base sm:text-lg font-semibold text-[#263238] truncate">
                   {post.author ? post.author.user : "Unknown Author"}
                 </span>
@@ -288,9 +298,7 @@ const Articles = () => {
                   {post.author ? post.author.role : "Unknown Author"}
                 </span>
               </div>
-            </div>
-            <div className="flex flex-col items-start sm:items-end mt-2 sm:mt-0">
-              <div className="flex items-center mb-2">
+              <div className="flex flex-col items-end">
                 <span className="flex items-center text-[#263238] text-sm sm:text-base truncate">
                   <img
                     src="/category.png"
@@ -299,13 +307,13 @@ const Articles = () => {
                   />{" "}
                   {post.category?.name}
                 </span>
-              </div>
-              <div className="flex items-center text-[#263238] text-xs sm:text-sm truncate">
-                <TagIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                {post.tags
-                  .slice(0, 5)
-                  .map((tag) => tag.name)
-                  .join(", ")}
+                <div className="flex items-center text-[#263238] text-xs sm:text-sm truncate mt-1">
+                  <TagIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                  {post.tags
+                    .slice(0, 2)
+                    .map((tag) => tag.name)
+                    .join(", ")}
+                </div>
               </div>
             </div>
           </div>
@@ -452,7 +460,13 @@ const Articles = () => {
           <div className="bg-inherit posts-container w-full max-w-screen-lg mx-auto px-2 sm:px-4">
             {loading ? (
               <div className="flex justify-center mt-8">
-                <CircularProgress />
+                <Image
+                  src="/Logo-blogchain.png"
+                  width={300}
+                  height={300}
+                  alt="Blogchain Logo"
+                  className="animate-bounce"
+                />
               </div>
             ) : (
               <div className="posts-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 sm:gap-6">

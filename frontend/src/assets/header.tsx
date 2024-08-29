@@ -129,7 +129,7 @@ const Header = () => {
     ? user.avatar.startsWith("http")
       ? user.avatar
       : `${API_URL}${user.avatar}`
-    : "default-avatar-url";
+    : "/default-avatar.webp";
 
   return (
     <div id="header" className="bg-[#000916]">

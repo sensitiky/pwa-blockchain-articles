@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import {
   TextField,
   Avatar,
-  CircularProgress,
   IconButton,
   InputAdornment,
   Tooltip,
@@ -13,6 +12,7 @@ import { motion } from "framer-motion";
 import styled from "styled-components";
 import api from "../../services/api";
 import { useAuth } from "../../context/authContext";
+import Image from "next/image";
 
 interface UserProfile {
   id?: number;
@@ -154,7 +154,13 @@ const SecuritySettings: React.FC = () => {
   if (loading) {
     return (
       <Container>
-        <CircularProgress />
+        <Image
+          src="/Logo-blogchain.png"
+          width={300}
+          height={300}
+          alt="Blogchain Logo"
+          className="animate-bounce"
+        />
       </Container>
     );
   }
@@ -175,7 +181,7 @@ const SecuritySettings: React.FC = () => {
           />
           <div>
             <h1 className="text-4xl font-bold text-[#000916]">
-              Hi, {user?.firstName}
+              Hi, {user?.user}
             </h1>
             <p className="text-xl text-gray-500">
               Manage your security settings.
@@ -184,7 +190,7 @@ const SecuritySettings: React.FC = () => {
         </div>
         <Section>
           <SectionTitle>Social Media</SectionTitle>
-          {["medium", "instagram", "facebook", "twitter", "linkedin"].map(
+          {["Medium", "Instagram", "Facebook", "Twitter", "Linkedin"].map(
             (field) => (
               <FieldContainer key={field}>
                 <FieldLabel>{field}</FieldLabel>
@@ -240,7 +246,7 @@ const SecuritySettings: React.FC = () => {
         </Section>
         <Section>
           <SectionTitle>Security</SectionTitle>
-          {["email", "password", "confirmPassword"].map((field) => (
+          {["Email", "Password", "Confirm Password"].map((field) => (
             <FieldContainer key={field}>
               <FieldLabel>{field}</FieldLabel>
               {editingField === field ? (

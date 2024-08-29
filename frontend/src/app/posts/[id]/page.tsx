@@ -19,7 +19,6 @@ import { ArrowLeftIcon } from "lucide-react";
 import { useAuth } from "../../../../context/authContext";
 import DeletePostModal from "@/assets/deletepost";
 import styled from "styled-components";
-import { CircularProgress } from "@mui/material";
 import parse, { DOMNode, domToReact, Element } from "html-react-parser";
 
 const Container = styled.div`
@@ -220,7 +219,13 @@ const PostPage = () => {
     return (
       <div className="flex flex-col space-y-3">
         <Container>
-          <CircularProgress />
+          <Image
+            src="/Logo-blogchain.png"
+            width={300}
+            height={300}
+            alt="Blogchain Logo"
+            className="animate-bounce"
+          />
         </Container>
       </div>
     );
@@ -230,7 +235,13 @@ const PostPage = () => {
     return (
       <div className="flex flex-col space-y-3">
         <Container>
-          <CircularProgress />
+          <Image
+            src="/Logo-blogchain.png"
+            width={300}
+            height={300}
+            alt="Blogchain Logo"
+            className="animate-bounce"
+          />
         </Container>
       </div>
     );
@@ -321,14 +332,15 @@ const PostPage = () => {
 
             <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Avatar className="h-10 w-10">
-                <AvatarImage src={`${API_URL}${post.author?.avatar}`} />
+                <AvatarImage
+                  src={
+                    user?.avatar
+                      ? `${API_URL}${user.avatar}`
+                      : "/default-avatar.webp"
+                  }
+                />
                 <AvatarFallback>
-                  {post.author && post.author.firstName
-                    ? post.author.firstName[0]
-                    : "A"}
-                  {post.author && post.author.lastName
-                    ? post.author.lastName[0]
-                    : "U"}
+                  {post.author?.user ? post.author.firstName[0] : "A"}
                 </AvatarFallback>
               </Avatar>
               <div className="text-center sm:text-left">
@@ -487,7 +499,7 @@ const PostPage = () => {
               const author = comment.author || {
                 firstName: "Unknown",
                 lastName: "User",
-                avatar: "/default-avatar.png",
+                avatar: "/default-avatar.webp",
               };
 
               const avatarUrl = author.avatar?.startsWith("/")
