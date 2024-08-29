@@ -245,8 +245,10 @@ const Articles = () => {
   const renderPosts = useMemo(() => {
     if (posts.length === 0 && !loading) {
       return (
-        <div className="text-center justify-center text-black font-medium">
-          No articles were found
+        <div className="relative flex flex-col items-center justify-center">
+          <p className="top-1/2 transform -translate-y-1/2 text-black font-medium text-xl">
+            No articles were found
+          </p>
           <Image
             src="/Logo-blogchain.png"
             width={300}
