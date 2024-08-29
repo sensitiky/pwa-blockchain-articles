@@ -18,6 +18,7 @@ import {
 } from "react-icons/fa";
 import { ClockIcon, MessageCircleIcon, TagIcon, UserIcon } from "lucide-react";
 import Image from "next/image";
+import parse, { DOMNode, domToReact, Element } from "html-react-parser";
 
 const Container = styled.div`
   display: flex;
@@ -49,6 +50,7 @@ interface Post {
   id: number;
   title: string;
   content: string;
+  description: string;
   imageUrl: { type: string; data: number[] } | null;
   imageUrlBase64?: string;
   category: { name: string };
@@ -89,7 +91,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
           return post;
         });
 
-       // console.log(postsResponse.data);
+        // console.log(postsResponse.data);
         setPosts(postsWithBase64Images);
       } catch (err) {
         if (axios.isAxiosError(err)) {
@@ -145,6 +147,45 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
     return formattedText;
   };
 
+  const parseHtmlContent = (htmlContent: string) => {
+    return parse(htmlContent, {
+      replace: (domNode) => {
+        if (domNode instanceof Element) {
+          const { tagName, attribs } = domNode;
+
+          // Estilo general para elementos de bloque
+          const blockStyle = {
+            whiteSpace: "pre-wrap", // Mantiene saltos de línea y espacios
+            fontFamily: "Gilroy, sans-serif", // Aplica la fuente Gilroy
+            lineHeight: "1.6", // Asegura un espacio adecuado entre líneas
+            marginBottom: "1rem", // Asegura espacio entre párrafos
+          };
+
+          // Aplicar estilo para respetar los saltos de línea y espacios a otros elementos de bloque
+          if (["p", "div", "span", "h1", "h2", "h3"].includes(tagName)) {
+            return (
+              <div style={blockStyle} {...attribs}>
+                {domToReact(domNode.children as DOMNode[])}
+              </div>
+            );
+          }
+
+          // Especialmente para elementos <br> que deben generar un salto de línea
+          if (tagName === "br") {
+            return <br />;
+          }
+
+          // Elementos permitidos
+          if (
+            tagName === "iframe" ||
+            ["b", "strong", "i", "em", "a"].includes(tagName)
+          ) {
+            return domToReact([domNode] as DOMNode[]);
+          }
+        }
+      },
+    });
+  };
   return (
     <div className="w-full min-h-screen flex items-start justify-center py-10">
       <div className="container max-w-5xl grid grid-cols-1 md:grid-cols-5 gap-2 px-4 md:px-0">
@@ -247,7 +288,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
                 </div>
                 <h3 className="text-lg font-semibold">{post.title}</h3>
                 <p className="text-muted-foreground line-clamp-2">
-                  {post.content}
+                  {parseHtmlContent(post.description)}
                 </p>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
