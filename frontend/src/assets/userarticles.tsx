@@ -198,7 +198,14 @@ const Posts: React.FC = () => {
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
             {paginatedPosts.length === 0 ? (
               <p className="text-center col-span-3 text-gray-500">
-                No posts available
+                No articles were found
+                <Image
+                  src="/Logo-blogchain.png"
+                  width={300}
+                  height={300}
+                  alt="Blogchain Logo"
+                  className="animate-bounce"
+                />
               </p>
             ) : (
               paginatedPosts.map((post) => (

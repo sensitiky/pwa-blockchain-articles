@@ -245,8 +245,8 @@ const Articles = () => {
   const renderPosts = useMemo(() => {
     if (posts.length === 0 && !loading) {
       return (
-        <div className="text-center text-black">
-          No posts available
+        <div className="text-center justify-center text-black font-medium">
+          No articles were found
           <Image
             src="/Logo-blogchain.png"
             width={300}
