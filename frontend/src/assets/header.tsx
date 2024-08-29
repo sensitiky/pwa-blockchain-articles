@@ -227,7 +227,7 @@ const Header = () => {
                         className="text-sm text-gray-600 line-clamp-2"
                         dangerouslySetInnerHTML={{
                           __html: DOMPurify.sanitize(
-                            result.description ? "" : "",
+                            result.description ?? "",
                             {
                               ALLOWED_TAGS: [
                                 "b",
