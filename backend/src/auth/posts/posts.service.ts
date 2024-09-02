@@ -1,4 +1,9 @@
-import { Injectable, Inject, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { Post } from './post.entity';
@@ -10,12 +15,11 @@ import { Favorite } from '../favorites/favorite.entity';
 import { Comment } from '../comments/comment.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { RedisCache } from 'cache-manager-redis-store';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PostsService {
-  private redisCache: RedisCache;
+  private redisCache: Cache;
 
   constructor(
     @InjectRepository(Post)
@@ -36,12 +40,8 @@ export class PostsService {
     this.initializeRedisCache();
   }
 
-  private async initializeRedisCache() {
-    this.redisCache = await RedisCache.create({
-      host: this.configService.get('REDIS_HOST'),
-      port: this.configService.get('REDIS_PORT'),
-      ttl: 60 * 60 * 24, // 24 hours
-    });
+  private initializeRedisCache() {
+    this.redisCache = this.cacheManager;
   }
 
   async findUserFavorites(userId: number): Promise<Post[]> {
