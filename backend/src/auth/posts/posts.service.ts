@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { Post } from './post.entity';
@@ -8,6 +8,8 @@ import { Tag } from '../tag/tag.entity';
 import { Category } from '../category/category.entity';
 import { Favorite } from '../favorites/favorite.entity';
 import { Comment } from '../comments/comment.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class PostsService {
@@ -24,6 +26,7 @@ export class PostsService {
     private commentsRepository: Repository<Comment>,
     @InjectRepository(Favorite)
     private favoritesRepository: Repository<Favorite>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async findUserFavorites(userId: number): Promise<Post[]> {
@@ -165,6 +168,13 @@ export class PostsService {
   }
 
   async findAll(page: number, limit: number, order: string) {
+    const cacheKey = `posts:${page}:${limit}:${order}`;
+    const cachedResult = await this.cacheManager.get(cacheKey);
+
+    if (cachedResult) {
+      return cachedResult;
+    }
+
     let queryBuilder = this.postsRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.author', 'author')
@@ -228,10 +238,20 @@ export class PostsService {
 
     const transformedResult = transformMediaToBase64(result);
 
-    return {
+    const response = {
       data: transformedResult,
       totalPages: Math.ceil(total / limit),
     };
+
+    await this.cacheManager.set(cacheKey, response, 3600000); // Cache for 1 hour (3600000 milliseconds)
+
+    return response;
+  }
+
+  async invalidateCache() {
+    const keys = await this.cacheManager.store.keys();
+    const postKeys = keys.filter((key) => key.startsWith('posts:'));
+    await Promise.all(postKeys.map((key) => this.cacheManager.del(key)));
   }
 
   async findByTag(

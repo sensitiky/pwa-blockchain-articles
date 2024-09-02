@@ -39,7 +39,7 @@ const AuthWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
   const [metrics, setMetrics] = useState<any>(null);
-  const [activeUsers, setActiveUsers] = useState(0); // Estado para usuarios activos
+  const [activeUsers, setActiveUsers] = useState(0);
   const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
   const router = useRouter();
 

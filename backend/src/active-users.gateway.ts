@@ -5,7 +5,8 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { UsersService } from './auth/users/users.service';
+import { IUserActivityService } from './auth/user-activity.interface';
+import { Inject } from '@nestjs/common';
 
 @WebSocketGateway({ cors: true })
 export class ActiveUsersGateway
@@ -14,7 +15,10 @@ export class ActiveUsersGateway
   @WebSocketServer() server: Server;
   private activeUsers = new Set<string>();
 
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    @Inject('IUserActivityService')
+    private readonly userActivityService: IUserActivityService,
+  ) {}
 
   handleConnection(client: Socket) {
     const userId = client.handshake.query.userId as string;
@@ -34,7 +38,7 @@ export class ActiveUsersGateway
   }
 
   updateUserActivity(userId: string) {
-    this.usersService.updateLastActivity(parseInt(userId));
+    this.userActivityService.updateLastActivity(parseInt(userId));
   }
 
   emitActiveUsersCount() {

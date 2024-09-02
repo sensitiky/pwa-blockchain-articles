@@ -17,7 +17,7 @@ export class CommentsService {
     private postsRepository: Repository<Post>,
   ) {}
 
-  async create(createCommentDto: CreateCommentDto): Promise<Comment> {  
+  async create(createCommentDto: CreateCommentDto): Promise<Comment> {
     const author = await this.usersRepository.findOne({
       where: { id: createCommentDto.authorId },
     });
@@ -42,10 +42,9 @@ export class CommentsService {
   async findAllByPost(postId: number): Promise<Comment[]> {
     return this.commentsRepository.find({
       where: { post: { id: postId }, parentComment: null },
-      relations: [ 'author' ],
+      relations: ['author'],
     });
   }
-  
 
   async findAllReplies(commentId: number): Promise<Comment[]> {
     return this.commentsRepository.find({

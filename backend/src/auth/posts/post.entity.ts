@@ -66,9 +66,9 @@ export class Post {
 
   @Column({ type: 'int', default: 0 })
   commentscount: number;
-  
+
   @Column({ type: 'int', default: 0 })
-  favoritescount: number;   
+  favoritescount: number;
 
   imageUrlBase64: string;
 }

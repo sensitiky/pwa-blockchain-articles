@@ -6,8 +6,10 @@ import { CreateUserDto, UserDto } from './user.dto';
 import { Post } from '../posts/post.entity';
 import { Comment } from '../comments/comment.entity';
 import { Favorite } from '../favorites/favorite.entity';
+import { IUserActivityService } from '../user-activity.interface';
+
 @Injectable()
-export class UsersService {
+export class UsersService implements IUserActivityService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -203,7 +205,7 @@ export class UsersService {
     } catch (error) {
       console.warn('Error deleting posts for user:', error);
     }
-    
+
     try {
       // Eliminar al usuario en sí
       await this.userRepository.delete(userId);
@@ -211,6 +213,5 @@ export class UsersService {
       console.warn('Error deleting user:', error);
       throw new Error('User deletion failed.');
     }
-}
-
+  }
 }
