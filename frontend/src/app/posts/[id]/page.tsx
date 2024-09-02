@@ -339,13 +339,7 @@ const PostPage = () => {
             <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Avatar className="h-10 w-10">
                 <AvatarImage
-                  src={
-                    post.author?.avatar
-                      ? post.author.avatar.startsWith("http")
-                        ? post.author.avatar
-                        : `${API_URL}${post.author.avatar}`
-                      : "/default-avatar.webp"
-                  }
+                  src={avatarUrl}
                   alt={`${post.author?.firstName}'s avatar`}
                 />
                 <AvatarFallback>{post.author?.user}</AvatarFallback>
