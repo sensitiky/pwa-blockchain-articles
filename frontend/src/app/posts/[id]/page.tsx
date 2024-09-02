@@ -316,10 +316,10 @@ const PostPage = () => {
     }
   };
 
-  const avatarUrl = user?.avatar
-    ? user.avatar.startsWith("http")
-      ? user.avatar
-      : `${API_URL}${user.avatar}`
+  const avatarUrl = post.author?.avatar
+    ? post.author.avatar.startsWith("http")
+      ? post.author.avatar
+      : `${API_URL}${post.author.avatar}`
     : "/default-avatar.webp";
 
   return (
@@ -339,12 +339,16 @@ const PostPage = () => {
             <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Avatar className="h-10 w-10">
                 <AvatarImage
-                  src={avatarUrl}
-                  alt={`${user?.firstName}'s avatar`}
+                  src={
+                    post.author?.avatar
+                      ? post.author.avatar.startsWith("http")
+                        ? post.author.avatar
+                        : `${API_URL}${post.author.avatar}`
+                      : "/default-avatar.webp"
+                  }
+                  alt={`${post.author?.firstName}'s avatar`}
                 />
-                <AvatarFallback>
-                  {post.author?.user}
-                </AvatarFallback>
+                <AvatarFallback>{post.author?.user}</AvatarFallback>
               </Avatar>
               <div className="text-center sm:text-left">
                 <p className="text-sm font-medium text-black">
