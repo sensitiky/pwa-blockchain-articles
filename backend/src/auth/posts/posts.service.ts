@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { Post } from './post.entity';
@@ -10,9 +10,13 @@ import { Favorite } from '../favorites/favorite.entity';
 import { Comment } from '../comments/comment.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { RedisCache } from 'cache-manager-redis-store';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PostsService {
+  private redisCache: RedisCache;
+
   constructor(
     @InjectRepository(Post)
     private postsRepository: Repository<Post>,
@@ -27,15 +31,34 @@ export class PostsService {
     @InjectRepository(Favorite)
     private favoritesRepository: Repository<Favorite>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+    private configService: ConfigService,
+  ) {
+    this.initializeRedisCache();
+  }
+
+  private async initializeRedisCache() {
+    this.redisCache = await RedisCache.create({
+      host: this.configService.get('REDIS_HOST'),
+      port: this.configService.get('REDIS_PORT'),
+      ttl: 60 * 60 * 24, // 24 hours
+    });
+  }
 
   async findUserFavorites(userId: number): Promise<Post[]> {
+    const cacheKey = `user:${userId}:favorites`;
+    const cachedFavorites = await this.redisCache.get<Post[]>(cacheKey);
+
+    if (cachedFavorites) {
+      return cachedFavorites;
+    }
+
     const user = await this.usersRepository.findOne({
       where: { id: userId },
       relations: ['favorites', 'favorites.post'],
     });
+
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     const favoritePostIds = user.favorites
@@ -44,11 +67,20 @@ export class PostsService {
 
     const favoritePosts = await this.postsRepository.findByIds(favoritePostIds);
 
+    await this.redisCache.set(cacheKey, favoritePosts, 3600); // Cache for 1 hour
+
     return favoritePosts;
   }
 
   async getArticlesByCategory() {
-    return this.postsRepository
+    const cacheKey = 'articles:by:category';
+    const cachedResult = await this.redisCache.get<any>(cacheKey);
+
+    if (cachedResult) {
+      return cachedResult;
+    }
+
+    const result = await this.postsRepository
       .createQueryBuilder('post')
       .leftJoin('post.category', 'category')
       .select('post.categoryId')
@@ -57,89 +89,102 @@ export class PostsService {
       .groupBy('post.categoryId')
       .addGroupBy('category.name')
       .getRawMany();
+
+    await this.redisCache.set(cacheKey, result, 3600); // Cache for 1 hour
+
+    return result;
   }
 
   async getAverageReadTime() {
-    return this.postsRepository
+    const cacheKey = 'average:read:time';
+    const cachedResult = await this.redisCache.get<any>(cacheKey);
+
+    if (cachedResult) {
+      return cachedResult;
+    }
+
+    const result = await this.postsRepository
       .createQueryBuilder('post')
       .select('AVG(post.readTime)', 'average')
       .getRawOne();
+
+    await this.redisCache.set(cacheKey, result, 3600); // Cache for 1 hour
+
+    return result;
   }
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
-    const author = await this.usersRepository.findOne({
-      where: { id: createPostDto.authorId },
-    });
+    try {
+      const author = await this.usersRepository.findOne({
+        where: { id: createPostDto.authorId },
+      });
 
-    if (!author) {
-      throw new Error('Author not found');
+      if (!author) {
+        throw new NotFoundException('Author not found');
+      }
+
+      const category = createPostDto.categoryId
+        ? await this.categoriesRepository.findOne({
+            where: { id: createPostDto.categoryId },
+          })
+        : null;
+
+      let tags = [];
+      if (typeof createPostDto.tags === 'string') {
+        tags = JSON.parse(createPostDto.tags);
+      }
+
+      tags = Array.isArray(tags)
+        ? await Promise.all(
+            tags.map(async (tag) => {
+              let existingTag = await this.tagsRepository.findOne({
+                where: { name: tag.name },
+              });
+              if (!existingTag) {
+                existingTag = this.tagsRepository.create({ name: tag.name });
+                await this.tagsRepository.save(existingTag);
+              }
+              return existingTag;
+            }),
+          )
+        : [];
+
+      const post = this.postsRepository.create({
+        ...createPostDto,
+        author,
+        category,
+        tags,
+      });
+
+      await this.postsRepository.save(post);
+      author.postCount += 1;
+      await this.usersRepository.save(author);
+
+      await this.invalidateCache();
+
+      return post;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to create post');
     }
-
-    const category = createPostDto.categoryId
-      ? await this.categoriesRepository.findOne({
-          where: { id: createPostDto.categoryId },
-        })
-      : null;
-
-    let tags = [];
-    if (typeof createPostDto.tags === 'string') {
-      tags = JSON.parse(createPostDto.tags);
-    }
-
-    tags = Array.isArray(tags)
-      ? await Promise.all(
-          tags.map(async (tag) => {
-            let existingTag = await this.tagsRepository.findOne({
-              where: { name: tag.name },
-            });
-            if (!existingTag) {
-              existingTag = this.tagsRepository.create({ name: tag.name });
-              await this.tagsRepository.save(existingTag);
-            }
-            return existingTag;
-          }),
-        )
-      : [];
-
-    const post = this.postsRepository.create({
-      ...createPostDto,
-      author,
-      category,
-      tags,
-    });
-
-    await this.postsRepository.save(post);
-    author.postCount += 1;
-    await this.usersRepository.save(author);
-
-    return post;
   }
 
   async deletePost(postId: number): Promise<void> {
-    const post = await this.postsRepository.findOne({
-      where: { id: postId },
-      relations: ['author', 'comments', 'favorites'],
-    });
+    try {
+      const post = await this.postsRepository.findOne({
+        where: { id: postId },
+        relations: ['author', 'comments', 'favorites'],
+      });
 
-    if (post) {
+      if (!post) {
+        throw new NotFoundException('Post not found');
+      }
+
       if (post.comments && post.comments.length > 0) {
-        for (const comment of post.comments) {
-          const favoritesForComment = await this.favoritesRepository.find({
-            where: { comment },
-          });
-          if (favoritesForComment.length > 0) {
-            await this.favoritesRepository.remove(favoritesForComment);
-          }
-        }
-        await this.commentsRepository.remove(
-          post.comments as unknown as Comment[],
-        );
+        await this.commentsRepository.remove(post.comments);
       }
 
       if (post.favorites && post.favorites.length > 0) {
-        await this.favoritesRepository.remove(
-          post.favorites as unknown as Favorite[],
-        );
+        await this.favoritesRepository.remove(post.favorites);
       }
 
       const author = post.author;
@@ -149,8 +194,13 @@ export class PostsService {
         author.postCount -= 1;
         await this.usersRepository.save(author);
       }
+
+      await this.invalidateCache();
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to delete post');
     }
   }
+
   private transformMediaToBase64(posts: Post[]): Post[] {
     return posts.map((post) => {
       if (post.imageUrl) {
@@ -169,7 +219,7 @@ export class PostsService {
 
   async findAll(page: number, limit: number, order: string) {
     const cacheKey = `posts:${page}:${limit}:${order}`;
-    const cachedResult = await this.cacheManager.get(cacheKey);
+    const cachedResult = await this.redisCache.get<any>(cacheKey);
 
     if (cachedResult) {
       return cachedResult;
@@ -183,11 +233,7 @@ export class PostsService {
 
     switch (order) {
       case 'saved':
-        queryBuilder = this.postsRepository
-          .createQueryBuilder('post')
-          .leftJoinAndSelect('post.author', 'author')
-          .leftJoinAndSelect('post.category', 'category')
-          .leftJoinAndSelect('post.tags', 'tags')
+        queryBuilder = queryBuilder
           .leftJoin('post.favorites', 'favorites')
           .addSelect('COUNT(DISTINCT favorites.id)', 'favoritesCount')
           .groupBy('post.id')
@@ -197,11 +243,7 @@ export class PostsService {
           .orderBy('favoritesCount', 'DESC');
         break;
       case 'comment':
-        queryBuilder = this.postsRepository
-          .createQueryBuilder('post')
-          .leftJoinAndSelect('post.author', 'author')
-          .leftJoinAndSelect('post.category', 'category')
-          .leftJoinAndSelect('post.tags', 'tags')
+        queryBuilder = queryBuilder
           .leftJoin('post.comments', 'comments')
           .addSelect('COUNT(DISTINCT comments.id)', 'commentsCount')
           .groupBy('post.id')
@@ -212,7 +254,7 @@ export class PostsService {
         break;
       case 'recent':
       default:
-        queryBuilder.orderBy('post.createdAt', 'DESC');
+        queryBuilder = queryBuilder.orderBy('post.createdAt', 'DESC');
         break;
     }
 
@@ -220,38 +262,22 @@ export class PostsService {
 
     const [result, total] = await queryBuilder.getManyAndCount();
 
-    const transformMediaToBase64 = (posts: Post[]) => {
-      return posts.map((post) => {
-        if (post.imageUrl) {
-          const isGif = post.imageUrl.includes('.gif');
-          const mimeType = isGif ? 'image/gif' : 'image/jpeg';
-          const base64Image = `data:${mimeType};base64,${post.imageUrl.toString('base64')}`;
-          return {
-            ...post,
-            imageUrl: undefined,
-            imageUrlBase64: base64Image,
-          };
-        }
-        return post;
-      });
-    };
-
-    const transformedResult = transformMediaToBase64(result);
+    const transformedResult = this.transformMediaToBase64(result);
 
     const response = {
       data: transformedResult,
       totalPages: Math.ceil(total / limit),
     };
 
-    await this.cacheManager.set(cacheKey, response, 3600000); // Cache for 1 hour (3600000 milliseconds)
+    await this.redisCache.set(cacheKey, response, 3600); // Cache for 1 hour
 
     return response;
   }
 
   async invalidateCache() {
-    const keys = await this.cacheManager.store.keys();
+    const keys = await this.redisCache.store.keys();
     const postKeys = keys.filter((key) => key.startsWith('posts:'));
-    await Promise.all(postKeys.map((key) => this.cacheManager.del(key)));
+    await Promise.all(postKeys.map((key) => this.redisCache.del(key)));
   }
 
   async findByTag(
@@ -259,6 +285,13 @@ export class PostsService {
     tagId: number,
     categoryId: number,
   ): Promise<Post[]> {
+    const cacheKey = `posts:tag:${tagId}:category:${categoryId}:limit:${limit}`;
+    const cachedResult = await this.redisCache.get<Post[]>(cacheKey);
+
+    if (cachedResult) {
+      return cachedResult;
+    }
+
     const posts = await this.postsRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.tags', 'tag')
@@ -269,10 +302,21 @@ export class PostsService {
       .take(limit)
       .getMany();
 
-    return this.transformMediaToBase64(posts);
+    const transformedPosts = this.transformMediaToBase64(posts);
+
+    await this.redisCache.set(cacheKey, transformedPosts, 3600); // Cache for 1 hour
+
+    return transformedPosts;
   }
 
   async findAllByCategory(page: number, limit: number, categoryId: number) {
+    const cacheKey = `posts:category:${categoryId}:page:${page}:limit:${limit}`;
+    const cachedResult = await this.redisCache.get<any>(cacheKey);
+
+    if (cachedResult) {
+      return cachedResult;
+    }
+
     const [result, total] = await this.postsRepository.findAndCount({
       where: { category: { id: categoryId } },
       skip: (page - 1) * limit,
@@ -282,13 +326,24 @@ export class PostsService {
 
     const transformedResult = this.transformMediaToBase64(result);
 
-    return {
+    const response = {
       data: transformedResult,
       totalPages: Math.ceil(total / limit),
     };
+
+    await this.redisCache.set(cacheKey, response, 3600); // Cache for 1 hour
+
+    return response;
   }
 
   async findOne(id: number): Promise<Post> {
+    const cacheKey = `post:${id}`;
+    const cachedPost = await this.redisCache.get<Post>(cacheKey);
+
+    if (cachedPost) {
+      return cachedPost;
+    }
+
     const post = await this.postsRepository.findOne({
       where: { id },
       relations: [
@@ -301,39 +356,85 @@ export class PostsService {
       ],
     });
 
-    if (post && post.imageUrl) {
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    if (post.imageUrl) {
       const isGif = post.imageUrl.includes('.gif');
       const mimeType = isGif ? 'image/gif' : 'image/jpeg';
       post.imageUrlBase64 = `data:${mimeType};base64,${post.imageUrl.toString('base64')}`;
     }
 
+    await this.redisCache.set(cacheKey, post, 3600); // Cache for 1 hour
+
     return post;
   }
 
   async searchPosts(query: string): Promise<Post[]> {
-    return this.postsRepository.find({
+    const cacheKey = `posts:search:${query}`;
+    const cachedResult = await this.redisCache.get<Post[]>(cacheKey);
+
+    if (cachedResult) {
+      return cachedResult;
+    }
+
+    const posts = await this.postsRepository.find({
       where: { title: Like(`%${query}%`) },
     });
+
+    await this.redisCache.set(cacheKey, posts, 1800); // Cache for 30 minutes
+
+    return posts;
   }
 
   async findPostsByUserId(userId: number): Promise<Post[]> {
-    return this.postsRepository.find({
+    const cacheKey = `posts:user:${userId}`;
+    const cachedResult = await this.redisCache.get<Post[]>(cacheKey);
+
+    if (cachedResult) {
+      return cachedResult;
+    }
+
+    const posts = await this.postsRepository.find({
       where: { author: { id: userId } },
       relations: ['author', 'category', 'tags', 'comments', 'favorites'],
     });
+
+    await this.redisCache.set(cacheKey, posts, 3600); // Cache for 1 hour
+
+    return posts;
   }
 
   async countPostsByCategory() {
-    return this.postsRepository
+    const cacheKey = 'posts:count:by:category';
+    const cachedResult = await this.redisCache.get<any>(cacheKey);
+
+    if (cachedResult) {
+      return cachedResult;
+    }
+
+    const result = await this.postsRepository
       .createQueryBuilder('post')
       .select('post.categoryId')
       .addSelect('COUNT(post.id)', 'count')
       .groupBy('post.categoryId')
       .getRawMany();
+
+    await this.redisCache.set(cacheKey, result, 3600); // Cache for 1 hour
+
+    return result;
   }
 
   async countPostsByTag(categoryId: number) {
-    return this.postsRepository
+    const cacheKey = `posts:count:by:tag:category:${categoryId}`;
+    const cachedResult = await this.redisCache.get<any>(cacheKey);
+
+    if (cachedResult) {
+      return cachedResult;
+    }
+
+    const result = await this.postsRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.tags', 'tag')
       .select('tag.id', 'tagId')
@@ -343,70 +444,82 @@ export class PostsService {
       .groupBy('tag.id')
       .addGroupBy('tag.name')
       .getRawMany();
+
+    await this.redisCache.set(cacheKey, result, 3600); // Cache for 1 hour
+
+    return result;
   }
 
   async updatePost(
     postId: number,
     updatePostDto: CreatePostDto,
   ): Promise<Post> {
-    const post = await this.postsRepository.findOne({
-      where: { id: postId },
-      relations: ['author', 'category', 'tags'],
-    });
-
-    if (!post) {
-      throw new Error('Post not found');
-    }
-
-    if (updatePostDto.authorId) {
-      const author = await this.usersRepository.findOne({
-        where: { id: updatePostDto.authorId },
+    try {
+      const post = await this.postsRepository.findOne({
+        where: { id: postId },
+        relations: ['author', 'category', 'tags'],
       });
-      if (!author) {
-        throw new Error('Author not found');
-      }
-      post.author = author;
-    }
 
-    if (updatePostDto.categoryId) {
-      const category = await this.categoriesRepository.findOne({
-        where: { id: updatePostDto.categoryId },
-      });
-      post.category = category;
-    }
-
-    if (updatePostDto.tags) {
-      let tags = [];
-      if (typeof updatePostDto.tags === 'string') {
-        tags = JSON.parse(updatePostDto.tags);
+      if (!post) {
+        throw new NotFoundException('Post not found');
       }
 
-      tags = Array.isArray(tags)
-        ? await Promise.all(
-            tags.map(async (tag) => {
-              let existingTag = await this.tagsRepository.findOne({
-                where: { name: tag.name },
-              });
-              if (!existingTag) {
-                existingTag = this.tagsRepository.create({ name: tag.name });
-                await this.tagsRepository.save(existingTag);
-              }
-              return existingTag;
-            }),
-          )
-        : [];
+      if (updatePostDto.authorId) {
+        const author = await this.usersRepository.findOne({
+          where: { id: updatePostDto.authorId },
+        });
+        if (!author) {
+          throw new NotFoundException('Author not found');
+        }
+        post.author = author;
+      }
 
-      post.tags = tags;
+      if (updatePostDto.categoryId) {
+        const category = await this.categoriesRepository.findOne({
+          where: { id: updatePostDto.categoryId },
+        });
+        post.category = category;
+      }
+
+      if (updatePostDto.tags) {
+        let tags = [];
+        if (typeof updatePostDto.tags === 'string') {
+          tags = JSON.parse(updatePostDto.tags);
+        }
+
+        tags = Array.isArray(tags)
+          ? await Promise.all(
+              tags.map(async (tag) => {
+                let existingTag = await this.tagsRepository.findOne({
+                  where: { name: tag.name },
+                });
+                if (!existingTag) {
+                  existingTag = this.tagsRepository.create({ name: tag.name });
+                  await this.tagsRepository.save(existingTag);
+                }
+                return existingTag;
+              }),
+            )
+          : [];
+
+        post.tags = tags;
+      }
+
+      post.title = updatePostDto.title;
+      post.content = updatePostDto.content;
+      post.description = updatePostDto.description;
+
+      if (updatePostDto.imageUrl) {
+        post.imageUrl = updatePostDto.imageUrl;
+      }
+
+      const updatedPost = await this.postsRepository.save(post);
+
+      await this.invalidateCache();
+
+      return updatedPost;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to update post');
     }
-
-    post.title = updatePostDto.title;
-    post.content = updatePostDto.content;
-    post.description = updatePostDto.description;
-
-    if (updatePostDto.imageUrl) {
-      post.imageUrl = updatePostDto.imageUrl;
-    }
-
-    return await this.postsRepository.save(post);
   }
 }

@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Like, MoreThan, Not, Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -7,9 +11,15 @@ import { Post } from '../posts/post.entity';
 import { Comment } from '../comments/comment.entity';
 import { Favorite } from '../favorites/favorite.entity';
 import { IUserActivityService } from '../user-activity.interface';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { RedisCache } from 'cache-manager-redis-store';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService implements IUserActivityService {
+  private redisCache: RedisCache;
+
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -19,15 +29,33 @@ export class UsersService implements IUserActivityService {
     private commentRepository: Repository<Comment>,
     @InjectRepository(Favorite)
     private favoriteRepository: Repository<Favorite>,
-  ) {}
+    private configService: ConfigService,
+  ) {
+    this.initializeRedisCache();
+  }
+
+  private async initializeRedisCache() {
+    this.redisCache = await RedisCache.create({
+      host: this.configService.get('REDIS_HOST'),
+      port: this.configService.get('REDIS_PORT'),
+      ttl: 60 * 60 * 24, // 24 hours
+    });
+  }
 
   async findUserFavorites(userId: number): Promise<Post[]> {
+    const cacheKey = `user:${userId}:favorites`;
+    const cachedFavorites = await this.redisCache.get<Post[]>(cacheKey);
+
+    if (cachedFavorites) {
+      return cachedFavorites;
+    }
+
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['favorites', 'favorites.post'],
     });
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     const favoritePostIds = user.favorites
@@ -35,6 +63,8 @@ export class UsersService implements IUserActivityService {
       .map((favorite) => favorite.post.id);
 
     const favoritePosts = await this.postRepository.findByIds(favoritePostIds);
+
+    await this.redisCache.set(cacheKey, favoritePosts, 3600); // Cache for 1 hour
 
     return favoritePosts;
   }
@@ -52,11 +82,33 @@ export class UsersService implements IUserActivityService {
   }
 
   async findOneById(id: number): Promise<User> {
-    return this.userRepository.findOne({ where: { id } });
+    const cacheKey = `user:${id}`;
+    const cachedUser = await this.redisCache.get<User>(cacheKey);
+
+    if (cachedUser) {
+      return cachedUser;
+    }
+
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (user) {
+      await this.redisCache.set(cacheKey, user, 3600); // Cache for 1 hour
+    }
+    return user;
   }
 
   async findOne(email: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { email } });
+    const cacheKey = `user:email:${email}`;
+    const cachedUser = await this.redisCache.get<User>(cacheKey);
+
+    if (cachedUser) {
+      return cachedUser;
+    }
+
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (user) {
+      await this.redisCache.set(cacheKey, user, 3600); // Cache for 1 hour
+    }
+    return user;
   }
 
   async countAllUsers(): Promise<number> {
@@ -73,6 +125,13 @@ export class UsersService implements IUserActivityService {
   }
 
   async getActiveUsers(period: 'day' | 'week' | 'month'): Promise<number> {
+    const cacheKey = `active-users:${period}`;
+    const cachedResult = await this.redisCache.get<number>(cacheKey);
+
+    if (cachedResult !== null) {
+      return cachedResult;
+    }
+
     const date = new Date();
     if (period === 'day') {
       date.setDate(date.getDate() - 1);
@@ -82,11 +141,20 @@ export class UsersService implements IUserActivityService {
       date.setMonth(date.getMonth() - 1);
     }
 
-    return this.userRepository.count({
-      where: {
-        lastActivity: MoreThan(date),
-      },
-    });
+    try {
+      const count = await this.userRepository.count({
+        where: {
+          lastActivity: MoreThan(date),
+        },
+      });
+
+      await this.redisCache.set(cacheKey, count, 3600); // Cache for 1 hour
+      return count;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Failed to get active users count',
+      );
+    }
   }
 
   async updateLastActivity(userId: number): Promise<void> {
@@ -120,9 +188,20 @@ export class UsersService implements IUserActivityService {
   }
 
   async searchUsers(query: string): Promise<User[]> {
-    return this.userRepository.find({
+    const cacheKey = `users:search:${query}`;
+    const cachedResult = await this.redisCache.get<User[]>(cacheKey);
+
+    if (cachedResult) {
+      return cachedResult;
+    }
+
+    const users = await this.userRepository.find({
       where: { user: Like(`%${query}%`) },
     });
+
+    await this.redisCache.set(cacheKey, users, 1800); // Cache for 30 minutes
+
+    return users;
   }
 
   async findByFacebookId(facebookId: string): Promise<User | null> {
