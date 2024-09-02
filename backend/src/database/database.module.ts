@@ -29,9 +29,7 @@ import { FavoriteSubscriber } from 'src/event/listenerFavorites.service';
         entities: [User, Post, Comment, Category, Tag, Favorite],
         synchronize: true,
         logging: true,
-        ssl: configService.get<boolean>('DB_SSL')
-          ? { rejectUnauthorized: false }
-          : false,
+        
         subscribers: [CommentSubscriber, FavoriteSubscriber],
       }),
       inject: [ConfigService],

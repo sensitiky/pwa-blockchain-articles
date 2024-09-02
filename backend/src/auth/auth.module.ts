@@ -9,23 +9,25 @@ import { JwtModule } from '@nestjs/jwt';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     DatabaseModule,
     PassportModule,
+    CacheModule.register(),
     JwtModule.registerAsync({
-	imports:[ConfigModule],
-	inject:[ConfigService],
-	useFactory: async (configService: ConfigService) =>({
-	secret: configService.get<string>('JWT_SECRET'),
-	signOptions: { expiresIn: '360m' },
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '360m' },
+      }),
     }),
-   }),
   ],
   providers: [AuthService, UsersService, GoogleStrategy, JwtStrategy],
   controllers: [AuthController, UsersController],
-  exports: [AuthService, UsersService]
+  exports: [AuthService, UsersService],
 })
 export class AuthModule {}
