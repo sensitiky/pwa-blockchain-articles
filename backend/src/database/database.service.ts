@@ -1,13 +1,20 @@
-import { Injectable, BadRequestException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  Logger,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { User } from '../auth/users/user.entity';
 import { CreateUserDto } from '../auth/users/user.dto';
+import * as NodeCache from 'node-cache';
 
 @Injectable()
 export class DatabaseService {
   private readonly logger = new Logger(DatabaseService.name);
+  private readonly cache = new NodeCache({ stdTTL: 300 }); // 5 minutes TTL
 
   constructor(
     @InjectRepository(User)
@@ -20,15 +27,31 @@ export class DatabaseService {
       this.logger.warn('Username not provided');
       throw new BadRequestException('Username not provided');
     }
-    const user = await this.userRepository.findOne({
-      where: { user: username },
-    });
-    if (user) {
-      this.logger.log(`User found: ${user}`);
-    } else {
-      this.logger.warn(`User not found: ${username}`);
+
+    try {
+      // Check cache first
+      const cachedUser = this.cache.get<User>(username);
+      if (cachedUser) {
+        this.logger.log(`User found in cache: ${username}`);
+        return cachedUser;
+      }
+
+      const user = await this.userRepository.findOne({
+        where: { user: username },
+        select: ['id', 'user', 'email', 'role'], // Select only necessary fields
+      });
+
+      if (user) {
+        this.logger.log(`User found: ${username}`);
+        this.cache.set(username, user);
+      } else {
+        this.logger.warn(`User not found: ${username}`);
+      }
+      return user;
+    } catch (error) {
+      this.logger.error(`Error finding user: ${error.message}`);
+      throw new InternalServerErrorException('Error finding user');
     }
-    return user;
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
@@ -38,27 +61,54 @@ export class DatabaseService {
       throw new BadRequestException('Contraseña is required');
     }
 
-    const salt = await bcrypt.genSalt();
-    const hashedcontrasena = await bcrypt.hash(createUserDto.password, salt);
+    try {
+      const salt = await bcrypt.genSalt();
+      const hashedcontrasena = await bcrypt.hash(createUserDto.password, salt);
 
-    const newUser = this.userRepository.create({
-      ...createUserDto,
-      password: hashedcontrasena,
-    });
+      const newUser = this.userRepository.create({
+        ...createUserDto,
+        password: hashedcontrasena,
+      });
 
-    const savedUser = await this.userRepository.save(newUser);
-    this.logger.log(`User created: ${createUserDto.user}`);
-    return savedUser;
+      const savedUser = await this.userRepository.save(newUser);
+      this.logger.log(`User created: ${createUserDto.user}`);
+
+      // Cache the new user
+      this.cache.set(savedUser.user, savedUser);
+
+      return savedUser;
+    } catch (error) {
+      this.logger.error(`Error creating user: ${error.message}`);
+      throw new InternalServerErrorException('Error creating user');
+    }
   }
 
   async getUser(id: number): Promise<User> {
     this.logger.log(`Getting user by id: ${id}`);
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (user) {
-      this.logger.log(`User found: ${id}`);
-    } else {
-      this.logger.warn(`User not found: ${id}`);
+
+    try {
+      // Check cache first
+      const cachedUser = this.cache.get<User>(`user_${id}`);
+      if (cachedUser) {
+        this.logger.log(`User found in cache: ${id}`);
+        return cachedUser;
+      }
+
+      const user = await this.userRepository.findOne({
+        where: { id },
+        select: ['id', 'user', 'email', 'role'], // Select only necessary fields
+      });
+
+      if (user) {
+        this.logger.log(`User found: ${id}`);
+        this.cache.set(`user_${id}`, user);
+      } else {
+        this.logger.warn(`User not found: ${id}`);
+      }
+      return user;
+    } catch (error) {
+      this.logger.error(`Error getting user: ${error.message}`);
+      throw new InternalServerErrorException('Error getting user');
     }
-    return user;
   }
 }
