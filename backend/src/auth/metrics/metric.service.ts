@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { PostsService } from '../posts/posts.service';
 import { FavoritesService } from '../favorites/favorites.service';
+import { UserActivityService } from '../../user-activity.service';
 
 @Injectable()
 export class MetricService {
@@ -9,7 +10,9 @@ export class MetricService {
     private readonly usersService: UsersService,
     private readonly postsService: PostsService,
     private readonly favoritesService: FavoritesService,
+    private readonly userActivityService: UserActivityService,
   ) {}
+
   async getAllMetrics() {
     const userCount = await this.usersService.countAllUsers();
     const contentCreatorCount = await this.usersService.countContentCreators();
@@ -20,6 +23,7 @@ export class MetricService {
     const articlesByCategory = await this.postsService.getArticlesByCategory();
     const averageReadTime = await this.postsService.getAverageReadTime();
     const savedArticles = await this.favoritesService.getSavedArticles();
+    const activeUsers = this.userActivityService.getActiveUsersCount();
 
     return {
       userCount,
@@ -31,6 +35,7 @@ export class MetricService {
       articlesByCategory,
       averageReadTime,
       savedArticles,
+      activeUsers,
     };
   }
 }

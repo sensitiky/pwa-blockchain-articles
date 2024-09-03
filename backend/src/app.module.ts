@@ -15,6 +15,9 @@ import { UsersModule } from './auth/users/user.module';
 import { SearchModule } from './auth/search/search.module';
 import { MetricModule } from './auth/metrics/metric.module';
 import { UpdatePostCountsService } from './updatecount';
+import { ActiveUsersGateway } from './active-users.gateway';
+import { UserActivityService } from './user-activity.service';
+import { User } from './auth/users/user.entity';
 
 @Module({
   imports: [
@@ -28,10 +31,10 @@ import { UpdatePostCountsService } from './updatecount';
     CategoriesModule,
     TagsModule,
     SearchModule,
-    TypeOrmModule.forFeature([Category, Tag]),
+    TypeOrmModule.forFeature([Category, Tag, User]),
     MetricModule,
   ],
-  providers: [UpdatePostCountsService],
+  providers: [UpdatePostCountsService, ActiveUsersGateway, UserActivityService],
 })
 export class AppModule implements OnModuleInit {
   constructor(

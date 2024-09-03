@@ -57,15 +57,28 @@ const AuthWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }, []);
 
   const setupWebSocket = () => {
-    const socket = io(API_URL || ""); // Conectar con el servidor WebSocket
+    const socket = io(API_URL || "http://localhost:4000", {
+      path: "/socket.io",
+      transports: ["websocket"],
+      query: {
+        userId: localStorage.getItem("userId"),
+      },
+    });
 
-    // Recibir actualizaciones sobre usuarios activos
+    socket.on("connect", () => {
+      console.log("Connected to WebSocket server");
+    });
+
     socket.on("usersUpdate", (count: number) => {
-      setActiveUsers(count); // Actualizar el estado con el número de usuarios activos
+      setActiveUsers(count);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Disconnected from WebSocket server");
     });
 
     return () => {
-      socket.disconnect(); // Desconectar el WebSocket cuando el componente se desmonta
+      socket.disconnect();
     };
   };
 

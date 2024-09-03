@@ -57,8 +57,10 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
     if (!criteria.length || !criteria.uppercase || !criteria.numberOrSymbol) {
       setPasswordError("Password does not meet the criteria.");
+      setCodeSent(false);
     } else {
       setPasswordError(null);
+      setCodeSent(false);
     }
   };
 
@@ -134,6 +136,15 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const handleSendVerificationCode = async () => {
     setLoading(true);
     setError(null);
+    if (
+      !passwordCriteria.length ||
+      !passwordCriteria.uppercase ||
+      !passwordCriteria.numberOrSymbol
+    ) {
+      setError("Password does not meet the criteria.");
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await axios.post(

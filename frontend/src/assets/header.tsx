@@ -126,10 +126,23 @@ const Header = () => {
   });
 
   useEffect(() => {
-    if (!prevIsAuthenticated.current && isAuthenticated) {
-      router.push("/");
+    const handleBeforeUnload = () => {
+      localStorage.setItem("lastVisitedUrl", window.location.pathname);
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    if (isAuthenticated) {
+      const lastVisitedUrl = localStorage.getItem("lastVisitedUrl");
+      if (lastVisitedUrl) {
+        router.push(lastVisitedUrl);
+        localStorage.removeItem("lastVisitedUrl");
+      }
     }
-    prevIsAuthenticated.current = isAuthenticated;
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
   }, [isAuthenticated, router]);
 
   const handleStartNewCampaign = () => {

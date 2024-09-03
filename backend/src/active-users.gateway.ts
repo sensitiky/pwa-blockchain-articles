@@ -7,11 +7,12 @@ import {
 import { Server, Socket } from 'socket.io';
 import { IUserActivityService } from './auth/user-activity.interface';
 import { Inject } from '@nestjs/common';
-import path from 'path';
 
 @WebSocketGateway({
+  cors: {
+    origin: ['https://www.blogchain.tech','https://blogchain.tech','http://localhost:3000/'], // Permitir cualquier origen en desarrollo
+  },
   path: '/socket.io',
-  cors: { origin: ['https://www.blogchain.tech', 'https://blogchain.tech'] },
 })
 export class ActiveUsersGateway
   implements OnGatewayConnection, OnGatewayDisconnect
@@ -26,12 +27,16 @@ export class ActiveUsersGateway
 
   handleConnection(client: Socket) {
     const userId = client.handshake.query.userId as string;
-    if (userId) {
-      this.activeUsers.add(userId);
-      this.updateUserActivity(userId);
+    
+    if (userId && !isNaN(parseInt(userId))) {
+      const numericUserId = parseInt(userId);
+      this.userActivityService.updateLastActivity(numericUserId);
       this.emitActiveUsersCount();
+    } else {
+      console.warn(`Invalid userId: ${userId}`);
     }
-  }
+}
+
 
   handleDisconnect(client: Socket) {
     const userId = client.handshake.query.userId as string;

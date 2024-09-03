@@ -34,6 +34,12 @@ export class UsersService implements IUserActivityService {
   ) {
     this.initializeRedisCache();
   }
+  removeActiveUser(userId: number): void {
+    throw new Error('Method not implemented.');
+  }
+  getActiveUsersCount(): number {
+    throw new Error('Method not implemented.');
+  }
 
   private initializeRedisCache() {
     this.redisCache = this.cacheManager;

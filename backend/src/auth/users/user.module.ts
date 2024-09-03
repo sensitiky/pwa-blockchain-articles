@@ -27,6 +27,7 @@ import { Favorite } from '../favorites/favorite.entity';
       provide: 'IUserActivityService',
       useClass: UsersService,
     },
+    TypeOrmModule,
   ],
 })
 export class UsersModule {}
