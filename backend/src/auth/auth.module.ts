@@ -7,7 +7,7 @@ import { GoogleStrategy } from './strategies/google.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
-import { UserManagementModule } from '../user-management.module';
+import { UsersModule } from './users/user.module';
 
 @Module({
   imports: [
@@ -16,13 +16,13 @@ import { UserManagementModule } from '../user-management.module';
     CacheModule.register(),
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      inject: [ConfigService],
+      inject: [ConfigService], 
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
         signOptions: { expiresIn: '360m' },
       }),
     }),
-    UserManagementModule,
+    UsersModule,
   ],
   providers: [AuthService, GoogleStrategy, JwtStrategy],
   controllers: [AuthController],
