@@ -1,18 +1,32 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { UsersController } from './users.controller';
-import { UserManagementModule } from '../../user-management.module';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
-import { ConfigModule } from '@nestjs/config';
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
+import { User } from './user.entity';
+import { Post } from '../posts/post.entity';
+import { Comment } from '../comments/comment.entity';
+import { Favorite } from '../favorites/favorite.entity';
 
 @Module({
   imports: [
-    forwardRef(() => UserManagementModule),
+    TypeOrmModule.forFeature([User, Post, Comment, Favorite]),
     CacheModule.register(),
-    ConfigModule,
   ],
-  providers: [UsersService],
   controllers: [UsersController],
-  exports: [UsersService],
+  providers: [
+    UsersService,
+    {
+      provide: 'IUserActivityService',
+      useClass: UsersService,
+    },
+  ],
+  exports: [
+    UsersService,
+    {
+      provide: 'IUserActivityService',
+      useClass: UsersService,
+    },
+  ],
 })
 export class UsersModule {}

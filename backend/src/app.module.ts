@@ -15,13 +15,11 @@ import { UsersModule } from './auth/users/user.module';
 import { SearchModule } from './auth/search/search.module';
 import { MetricModule } from './auth/metrics/metric.module';
 import { UpdatePostCountsService } from './updatecount';
-import { UserManagementModule } from './user-management.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     DatabaseModule,
-    UserManagementModule,
     AuthModule,
     PostsModule,
     UsersModule,
