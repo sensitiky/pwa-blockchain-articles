@@ -7,8 +7,10 @@ import {
 import { Server, Socket } from 'socket.io';
 import { IUserActivityService } from './auth/user-activity.interface';
 import { Inject } from '@nestjs/common';
+import path from 'path';
 
 @WebSocketGateway({
+  path: '/socket.io',
   cors: { origin: ['https://www.blogchain.tech', 'https://blogchain.tech'] },
 })
 export class ActiveUsersGateway
