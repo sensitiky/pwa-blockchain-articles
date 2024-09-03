@@ -2,7 +2,6 @@ import { Module, OnModuleInit } from '@nestjs/common';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
-import { UsersController } from './auth/users/users.controller';
 import { AuthModule } from './auth/auth.module';
 import { PostsModule } from './auth/posts/posts.module';
 import { Category } from './auth/category/category.entity';
@@ -16,11 +15,13 @@ import { UsersModule } from './auth/users/user.module';
 import { SearchModule } from './auth/search/search.module';
 import { MetricModule } from './auth/metrics/metric.module';
 import { UpdatePostCountsService } from './updatecount';
+import { UserManagementModule } from './user-management.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     DatabaseModule,
+    UserManagementModule,
     AuthModule,
     PostsModule,
     UsersModule,
@@ -32,7 +33,6 @@ import { UpdatePostCountsService } from './updatecount';
     TypeOrmModule.forFeature([Category, Tag]),
     MetricModule,
   ],
-  controllers: [UsersController],
   providers: [UpdatePostCountsService],
 })
 export class AppModule implements OnModuleInit {

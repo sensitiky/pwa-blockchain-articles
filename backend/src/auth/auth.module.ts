@@ -1,20 +1,17 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { DatabaseModule } from '../database/database.module';
-import { UsersService } from './users/users.service';
-import { UsersController } from './users/users.controller';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
+import { UserManagementModule } from '../user-management.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    DatabaseModule,
     PassportModule,
     CacheModule.register(),
     JwtModule.registerAsync({
@@ -25,9 +22,10 @@ import { CacheModule } from '@nestjs/cache-manager';
         signOptions: { expiresIn: '360m' },
       }),
     }),
+    UserManagementModule,
   ],
-  providers: [AuthService, UsersService, GoogleStrategy, JwtStrategy],
-  controllers: [AuthController, UsersController],
-  exports: [AuthService, UsersService],
+  providers: [AuthService, GoogleStrategy, JwtStrategy],
+  controllers: [AuthController],
+  exports: [AuthService],
 })
 export class AuthModule {}

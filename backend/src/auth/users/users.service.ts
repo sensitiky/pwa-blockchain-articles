@@ -3,32 +3,23 @@ import {
   NotFoundException,
   InternalServerErrorException,
   Inject,
+  BadRequestException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Like, MoreThan, Not, Repository } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto, UserDto } from './user.dto';
-import { Post } from '../posts/post.entity';
-import { Comment } from '../comments/comment.entity';
-import { Favorite } from '../favorites/favorite.entity';
 import { IUserActivityService } from '../user-activity.interface';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
+import { Post } from '../posts/post.entity';
+import { UserManagementService } from '../../user-management.service';
 
 @Injectable()
 export class UsersService implements IUserActivityService {
   private redisCache: Cache;
 
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
-    @InjectRepository(Post)
-    private postRepository: Repository<Post>,
-    @InjectRepository(Comment)
-    private commentRepository: Repository<Comment>,
-    @InjectRepository(Favorite)
-    private favoriteRepository: Repository<Favorite>,
+    private userManagementService: UserManagementService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private configService: ConfigService,
   ) {
@@ -47,35 +38,34 @@ export class UsersService implements IUserActivityService {
       return cachedFavorites;
     }
 
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      relations: ['favorites', 'favorites.post'],
-    });
-    if (!user) {
-      throw new NotFoundException('User not found');
+    try {
+      const favoritePosts =
+        await this.userManagementService.findUserFavorites(userId);
+
+      if (!favoritePosts || favoritePosts.length === 0) {
+        throw new NotFoundException('User not found or has no favorites');
+      }
+
+      await this.redisCache.set(cacheKey, favoritePosts, 3600); // Cache for 1 hour
+
+      return favoritePosts;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error fetching user favorites');
     }
-
-    const favoritePostIds = user.favorites
-      .filter((favorite) => favorite.post)
-      .map((favorite) => favorite.post.id);
-
-    const favoritePosts = await this.postRepository.findByIds(favoritePostIds);
-
-    await this.redisCache.set(cacheKey, favoritePosts, 3600); // Cache for 1 hour
-
-    return favoritePosts;
   }
 
   async removeUserFavorite(userId: number, postId: number): Promise<void> {
-    const favorite = await this.favoriteRepository.findOne({
-      where: { user: { id: userId }, post: { id: postId } },
-    });
-
-    if (!favorite) {
-      throw new Error('Favorite not found');
+    try {
+      await this.userManagementService.removeUserFavorite(userId, postId);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error removing user favorite');
     }
-
-    await this.favoriteRepository.remove(favorite);
   }
 
   async findOneById(id: number): Promise<User> {
@@ -86,11 +76,15 @@ export class UsersService implements IUserActivityService {
       return cachedUser;
     }
 
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (user) {
-      await this.redisCache.set(cacheKey, user, 3600); // Cache for 1 hour
+    try {
+      const user = await this.userManagementService.findOneById(id);
+      if (user) {
+        await this.redisCache.set(cacheKey, user, 3600); // Cache for 1 hour
+      }
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException('Error fetching user by ID');
     }
-    return user;
   }
 
   async findOne(email: string): Promise<User | undefined> {
@@ -101,24 +95,23 @@ export class UsersService implements IUserActivityService {
       return cachedUser;
     }
 
-    const user = await this.userRepository.findOne({ where: { email } });
-    if (user) {
-      await this.redisCache.set(cacheKey, user, 3600); // Cache for 1 hour
+    try {
+      const user = await this.userManagementService.findOne(email);
+      if (user) {
+        await this.redisCache.set(cacheKey, user, 3600); // Cache for 1 hour
+      }
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException('Error fetching user by email');
     }
-    return user;
   }
 
   async countAllUsers(): Promise<number> {
-    return this.userRepository.count();
+    return this.userManagementService.countAllUsers();
   }
 
   async countContentCreators(): Promise<number> {
-    const creators = await this.userRepository
-      .createQueryBuilder('user')
-      .innerJoin('user.posts', 'post')
-      .getCount();
-
-    return creators;
+    return this.userManagementService.countContentCreators();
   }
 
   async getActiveUsers(period: 'day' | 'week' | 'month'): Promise<number> {
@@ -129,21 +122,8 @@ export class UsersService implements IUserActivityService {
       return cachedResult;
     }
 
-    const date = new Date();
-    if (period === 'day') {
-      date.setDate(date.getDate() - 1);
-    } else if (period === 'week') {
-      date.setDate(date.getDate() - 7);
-    } else if (period === 'month') {
-      date.setMonth(date.getMonth() - 1);
-    }
-
     try {
-      const count = await this.userRepository.count({
-        where: {
-          lastActivity: MoreThan(date),
-        },
-      });
+      const count = await this.userManagementService.getActiveUsers(period);
 
       await this.redisCache.set(cacheKey, count, 3600); // Cache for 1 hour
       return count;
@@ -155,15 +135,11 @@ export class UsersService implements IUserActivityService {
   }
 
   async updateLastActivity(userId: number): Promise<void> {
-    await this.userRepository.update(userId, {
-      lastActivity: new Date(),
-    });
+    await this.userManagementService.updateLastActivity(userId);
   }
 
   async updateLastLogin(userId: string): Promise<void> {
-    await this.userRepository.update(userId, {
-      lastLogin: new Date(),
-    });
+    await this.userManagementService.updateLastLogin(userId);
   }
 
   async getRetentionRate(): Promise<{ weekly: number; monthly: number }> {
@@ -192,39 +168,55 @@ export class UsersService implements IUserActivityService {
       return cachedResult;
     }
 
-    const users = await this.userRepository.find({
-      where: { user: Like(`%${query}%`) },
-    });
-
-    await this.redisCache.set(cacheKey, users, 1800); // Cache for 30 minutes
-
-    return users;
+    try {
+      const users = await this.userManagementService.searchUsers(query);
+      await this.redisCache.set(cacheKey, users, 1800); // Cache for 30 minutes
+      return users;
+    } catch (error) {
+      throw new InternalServerErrorException('Error searching users');
+    }
   }
 
   async findByFacebookId(facebookId: string): Promise<User | null> {
-    return this.userRepository.findOne({ where: { facebookId } });
+    try {
+      return await this.userManagementService.findByFacebookId(facebookId);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error finding user by Facebook ID',
+      );
+    }
   }
 
   async findUserPosts(userId: number): Promise<Post[]> {
-    return this.postRepository.find({
-      where: { author: { id: userId } },
-      relations: ['author'],
-    });
+    try {
+      return await this.userManagementService.findUserPosts(userId);
+    } catch (error) {
+      throw new InternalServerErrorException('Error finding user posts');
+    }
   }
+
   async update(user: User): Promise<User> {
-    return this.userRepository.save(user);
+    try {
+      return await this.userManagementService.update(user);
+    } catch (error) {
+      throw new InternalServerErrorException('Error updating user');
+    }
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = this.userRepository.create(createUserDto);
-    user.postCount = 0;
-    const newUser = await this.userRepository.save(user);
-    newUser.postCount = newUser.posts ? newUser.posts.length : 0;
-    return this.userRepository.save(newUser);
+    try {
+      return await this.userManagementService.create(createUserDto);
+    } catch (error) {
+      throw new InternalServerErrorException('Error creating user');
+    }
   }
 
   async findByEmail(email: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { email } });
+    try {
+      return await this.userManagementService.findByEmail(email);
+    } catch (error) {
+      throw new InternalServerErrorException('Error finding user by email');
+    }
   }
 
   async updateUserInfo(
@@ -232,27 +224,33 @@ export class UsersService implements IUserActivityService {
     updateData: Partial<User>,
   ): Promise<User> {
     if (!userId) {
-      throw new Error('User ID is required for updating user info.');
+      throw new BadRequestException(
+        'User ID is required for updating user info.',
+      );
     }
     if (Object.keys(updateData).length === 0) {
-      throw new Error('Update data cannot be empty.');
+      throw new BadRequestException('Update data cannot be empty.');
     }
 
-    await this.userRepository.update(userId, updateData);
-    const updatedUser = await this.userRepository.findOne({
-      where: { id: userId },
-    });
-
-    if (!updatedUser) {
-      throw new Error('User not found after update.');
+    try {
+      return await this.userManagementService.updateUserInfo(
+        userId,
+        updateData,
+      );
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error updating user info');
     }
-
-    updatedUser.postCount = updatedUser.posts ? updatedUser.posts.length : 0;
-    return this.userRepository.save(updatedUser);
   }
 
   async updatePassword(email: string, newPassword: string): Promise<void> {
-    await this.userRepository.update({ email }, { password: newPassword });
+    try {
+      await this.userManagementService.updatePassword(email, newPassword);
+    } catch (error) {
+      throw new InternalServerErrorException('Error updating password');
+    }
   }
 
   transformToDto(user: User): UserDto {
@@ -265,29 +263,16 @@ export class UsersService implements IUserActivityService {
 
   async deleteUser(userId: number): Promise<void> {
     if (!userId) {
-      throw new Error('User ID is required for deleting user.');
+      throw new BadRequestException('User ID is required for deleting user.');
     }
 
     try {
-      // Eliminar comentarios relacionados
-      await this.commentRepository.delete({ author: { id: userId } });
+      await this.userManagementService.deleteUser(userId);
     } catch (error) {
-      console.warn('Error deleting comments for user:', error);
-    }
-
-    try {
-      // Eliminar publicaciones relacionadas
-      await this.postRepository.delete({ author: { id: userId } });
-    } catch (error) {
-      console.warn('Error deleting posts for user:', error);
-    }
-
-    try {
-      // Eliminar al usuario en sí
-      await this.userRepository.delete(userId);
-    } catch (error) {
-      console.warn('Error deleting user:', error);
-      throw new Error('User deletion failed.');
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error deleting user');
     }
   }
 }
