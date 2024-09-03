@@ -8,7 +8,9 @@ import { Server, Socket } from 'socket.io';
 import { IUserActivityService } from './auth/user-activity.interface';
 import { Inject } from '@nestjs/common';
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({
+  cors: { origin: ['https://www.blogchain.tech', 'https://blogchain.tech'] },
+})
 export class ActiveUsersGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
