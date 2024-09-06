@@ -324,11 +324,6 @@ const Header = () => {
             </Link>
             {isAuthenticated ? (
               <DropdownMenu>
-                <Link href={"/newarticles"}>
-                  <Button className="bg-white text-[#000916] font-normal rounded-full hover:bg-white/80">
-                    Write a Blog
-                  </Button>
-                </Link>
                 <p className="text-[#FFC017] font-normal text-xl">
                   Hi, {user?.user}!
                 </p>
@@ -378,6 +373,11 @@ const Header = () => {
                     Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
+                <Link href={"/newarticles"}>
+                  <Button className="bg-white text-[#000916] font-normal rounded-full hover:bg-white/80">
+                    Write a Blog
+                  </Button>
+                </Link>
               </DropdownMenu>
             ) : (
               <Button
