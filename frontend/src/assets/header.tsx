@@ -25,6 +25,7 @@ import {
 import DOMPurify from "dompurify";
 import { CircularProgress } from "@mui/material";
 import Image from "next/image";
+import Search from "@/utils/svg";
 
 interface ImageBuffer {
   type: string;
@@ -186,17 +187,13 @@ const Header = () => {
             id="search-container"
             className="relative text-gray-400 focus-within:text-gray-600"
           >
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3 animate-fade-in">
-              <svg className="h-5 w-5 fill-current" viewBox="0 0 20 20">
-                <path d="M12.9 14.32l4.1 4.1-1.4 1.4-4.1-4.1c-1 .7-2.2 1.1-3.5 1.1C4.9 16.82 2 13.92 2 10.42S4.9 4 8.4 4s6.4 2.9 6.4 6.4c0 1.3-.4 2.5-1.1 3.5zM8.4 14c2 0 3.6-1.6 3.6-3.6S10.4 6.8 8.4 6.8 4.8 8.4 4.8 10.4s1.6 3.6 3.6 3.6z" />
-              </svg>
-            </span>
+            <Search />
             <Input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="py-2 pl-10 pr-4 text-sm text-gray-900 bg-white rounded-full shadow transition-all duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-blue-500 focus:scale-105"
-              placeholder="Search..."
+              className="py-2 pl-10 pr-4 w-[25rem] text-sm text-gray-900 bg-[#01132D] rounded-full shadow transition-all duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-blue-500 focus:scale-105"
+              placeholder="Search"
             />
             {loading && (
               <div
@@ -299,7 +296,7 @@ const Header = () => {
           `}</style>
           <nav
             id="nav"
-            className="space-x-4 flex items-center p-4 bg-inherit rounded-full font-medium"
+            className="space-x-4 flex items-center p-4 bg-inherit rounded-full font-normal"
           >
             <Link
               href="/"
@@ -327,6 +324,14 @@ const Header = () => {
             </Link>
             {isAuthenticated ? (
               <DropdownMenu>
+                <Link href={"/newarticles"}>
+                  <Button className="bg-white text-[#000916] font-normal rounded-full hover:bg-white/80">
+                    Write a Blog
+                  </Button>
+                </Link>
+                <p className="text-[#FFC017] font-normal text-xl">
+                  Hi, {user?.user}!
+                </p>
                 <DropdownMenuTrigger asChild>
                   <Avatar className="rounded-full cursor-pointer shadow-md transition-transform duration-300 hover:scale-105">
                     <AvatarImage
@@ -342,16 +347,10 @@ const Header = () => {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    onClick={() => router.push("/users")}
+                    onClick={() => router.push("/users?section=personal")}
                     className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-medium"
                   >
                     Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => router.push("/newarticles")}
-                    className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-medium"
-                  >
-                    Create
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => router.push("/users?section=articles")}
@@ -383,7 +382,7 @@ const Header = () => {
             ) : (
               <Button
                 onClick={handleStartNewCampaign}
-                className="font-medium rounded-full bg-gray-100 text-[#000916] hover:bg-[#000916] hover:border hover:border-gray-100 hover:text-gray-100 transition-colors duration-300 shadow-md"
+                className="font-normal rounded-full bg-gray-100 text-[#000916] hover:bg-[#000916] hover:border hover:border-gray-100 hover:text-gray-100 transition-colors duration-300 shadow-md"
               >
                 Get Started
               </Button>

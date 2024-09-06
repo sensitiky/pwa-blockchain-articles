@@ -200,31 +200,29 @@ const HomePage: React.FC = () => {
   return (
     <div className="h-full">
       <Header />
-      <div className="py-16 relative h-fit flex items-center justify-center bg-[#000916] overflow-hidden">
-        <div className="absolute inset-0 flex justify-center items-center bottom-[15rem]">
+      <div className="py-16 relative h-fit flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 flex justify-center items-center bottom-[15rem] bg-[#000916] overflow-hidden">
           <Image
             src="/bg-about.gif"
             alt="Light Effect"
             width={2000}
             height={1200}
-            className="z-0"
             unoptimized
             style={{ opacity: 0.25 }}
           />
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[#ffffff] to-transparent z-0"></div>
         <div
-          className="relative z-10 px-4 sm:px-6 md:px-8"
+          className="relative px-4 sm:px-6 md:px-8"
           data-aos="fade-in"
           data-aos-once="true"
           data-aos-anchor-placement="top-bottom"
           data-aos-offset="200"
         >
-          <h1 className="text-center text-yellow-400 text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
-            Welcome to Blogchain
+          <h1 className="text-center text-[#FFC017] text-2xl">
+            Welcome to <span className="font-bold">Blogchain</span>
           </h1>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center text-white font-bold mt-4">
-            A place where we write <br />
+            A place to write <br />
             articles about blockchain
             <br />
             for discussion
@@ -235,13 +233,13 @@ const HomePage: React.FC = () => {
               alt="Hero Image"
               height={1000}
               width={1000}
-              className="w-full max-w-sm sm:max-w-sm md:max-w-md lg:max-w-lg"
+              className="w-full max-w-xl"
             />
           </div>
         </div>
       </div>
 
-      <section className="flex flex-col py-4 px-4 md:px-8 font-medium">
+      <section className="flex flex-col py-4 px-4 md:px-8">
         <div
           className="container mx-auto text-center"
           data-aos="fade-in"
@@ -251,7 +249,7 @@ const HomePage: React.FC = () => {
         >
           <div className="grid gap-8 mb-24 sm:grid-cols-1 md:grid-cols-2">
             <div className="text-center flex flex-col justify-center">
-              <h1 className="text-2xl sm:text-3xl md:text-5xl font-semibold mb-4 text-[#263238]">
+              <h1 className="text-2xl sm:text-3xl md:text-5xl  mb-4 text-[#263238] font-normal">
                 Read, write, share and discuss blockchain
               </h1>
             </div>
@@ -268,7 +266,7 @@ const HomePage: React.FC = () => {
           </div>
           <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-3">
             <div>
-              <h2 className="text-right text-2xl sm:text-3xl md:text-4xl text-customColor-letras">
+              <h2 className="text-right text-2xl sm:text-3xl md:text-4xl text-[#FFC017] font-normal">
                 Blogchainer Redactor
               </h2>
               <p className="text-right mt-4 text-base sm:text-lg md:text-lg text-[#263238]">
@@ -288,7 +286,7 @@ const HomePage: React.FC = () => {
               />
             </div>
             <div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl text-customColor-letras">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl text-[#FFC017] font-normal">
                 Web3 Lector
               </h2>
               <p className="mt-4 text-base sm:text-lg md:text-lg text-[#263238]">
@@ -307,7 +305,7 @@ const HomePage: React.FC = () => {
       <section className="py-16 px-4 md:px-8">
         <div className="container mx-auto">
           <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#263238] mb-14">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#263238] mb-14">
               Discover Articles
             </h2>
           </div>

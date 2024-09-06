@@ -73,6 +73,7 @@ interface Comment {
     lastName: string;
     user: string;
     avatar?: string;
+    role?: string;
   };
   favorites: number;
 }
@@ -111,7 +112,7 @@ const PostPage = () => {
     try {
       const response = await axios.get(`${API_URL}/comments/post/${postId}`);
       const commentsData: Comment[] = response.data;
-      // console.log("Comments data:", commentsData);
+      console.log("Comments data:", commentsData);
       setComments(commentsData);
     } catch (error) {
       console.error("Error fetching comments:", error);
@@ -140,6 +141,7 @@ const PostPage = () => {
           lastName: user.lastName,
           user: user.user,
           avatar: user.avatar,
+          role: user.role,
         },
       };
 
@@ -260,9 +262,11 @@ const PostPage = () => {
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "long",
+      hour: "numeric",
+      minute: "numeric",
       day: "numeric",
+      month: "short",
+      year: "numeric",
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
@@ -500,7 +504,7 @@ const PostPage = () => {
               const author = comment.author || {
                 firstName: "Unknown",
                 lastName: "User",
-                avatar: "/default-avatar.webp",
+                avatar: "default-avatar.webp",
               };
 
               const avatarUrl = author.avatar?.startsWith("/")
@@ -521,6 +525,7 @@ const PostPage = () => {
                     </Avatar>
                     <div>
                       <p className="text-sm font-medium">{authorName}</p>
+                      <p className="text-sm text-gray-500 font-light">{author.role}</p>
                       <div className="text-xs text-gray-500">
                         {formatDate(comment.createdAt)}
                       </div>

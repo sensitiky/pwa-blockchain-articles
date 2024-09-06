@@ -316,7 +316,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     <GoogleOAuthProvider
       clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
     >
-      <div className="mx-auto max-w-sm space-y-6">
+      <div className="mx-auto max-w-sm space-y-6 z-50">
         {!showRegister && !forgotPassword && (
           <div className="space-y-2 text-center">
             <h1 className="text-3xl font-bold">Login</h1>

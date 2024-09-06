@@ -34,11 +34,17 @@ const SupportSection: FC = () => {
               its readers, if you have the opportunity,
               <br /> do not hesitate to support our cause.
             </p>
+            <Image
+              src="/support us 1.png"
+              width={300}
+              height={300}
+              alt="Support Us ilustration"
+            />
           </div>
         </aside>
         <main className="flex flex-col justify-center items-center bg-gradient-to-b from-white to-cyan-100 text-black px-6 sm:px-12 py-10 sm:py-16">
           <div className="font-medium space-y-8 text-center px-6 flex flex-col justify-center h-full">
-            <p className="text-xl sm:text-2xl leading-snug text-[#263238] text-justify">
+            <p className="text-xl sm:text-2xl leading-snug text-[#263238] text-justify justify-center">
               We are accepting donations in fiat <br />
               and cryptocurrencies, choose the <br />
               channel that suits you best and <br />
@@ -58,6 +64,12 @@ const SupportSection: FC = () => {
                 Paypal & Venmo
               </Button>
             </div>
+            <Image
+              src="/support us 2.png"
+              width={300}
+              height={300}
+              alt="Support Us ilustration"
+            />
           </div>
         </main>
       </div>

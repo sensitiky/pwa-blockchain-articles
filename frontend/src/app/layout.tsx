@@ -23,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-gilroy">
+      <body className="font-gilroy font-medium">
         <AuthWrapper>
           <Background />
           <FacebookInit />

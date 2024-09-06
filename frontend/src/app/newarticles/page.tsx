@@ -89,6 +89,10 @@ export default function NewArticles() {
     });
   };
 
+  const handleTagDeselect = (tag: Tag) => {
+    setSelectedTags((prevTags) => prevTags.filter((t) => t.id !== tag.id));
+  };
+
   const handleAddNewTag = () => {
     if (
       newTag.trim() !== "" &&
@@ -176,9 +180,9 @@ export default function NewArticles() {
   };
 
   return (
-    <div className="max-h-screen bg-gray-100">
+    <div className="max-h-screen">
       <Header />
-      <div className="bg-gray-100 flex flex-col min-h-screen">
+      <div className="bg-white flex flex-col min-h-screen">
         <main className="flex-1 py-8 px-4 md:px-6 justify-center flex">
           <div className="w-full max-w-6xl flex flex-col md:flex-row relative">
             <div className="w-full md:w-1/3 pr-4 mb-4 md:mb-0">
@@ -193,7 +197,7 @@ export default function NewArticles() {
                         key={category.id}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className={`text-lg hover:bg-inherit rounded-full border-gray-500 w-fit ${
+                        className={`text-lg hover:bg-gray-300 rounded-full w-fit p-1 font-normal ${
                           selectedCategory === category ? "bg-gray-300" : ""
                         }`}
                         onClick={() => handleCategorySelect(category)}
@@ -208,7 +212,7 @@ export default function NewArticles() {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 0, transition: { duration: 0 } }}
-                      className="bg-gray-100 mt-4 flex-col"
+                      className="mt-4 flex-col"
                     >
                       <div className="flex justify-between">
                         <h2 className="text-xl font-semibold text-gray-800">
@@ -221,7 +225,7 @@ export default function NewArticles() {
                           className="size-8 cursor-pointer hover:animate-pulse"
                         />
                       </div>
-                      <p className="text-gray-600 mt-2">
+                      <p className="text-gray-600 mt-2 font-normal">
                         {categoryDescriptions[selectedCategory.id]}
                       </p>
                     </motion.div>
@@ -245,7 +249,7 @@ export default function NewArticles() {
                         key={tag.id}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className={`text-lg hover:bg-inherit rounded-full border-gray-500 w-fit ${
+                        className={`text-lg hover:bg-gray-300 rounded-full border-gray-300 w-fit font-normal p-1 ${
                           selectedTags.some((t) => t.id === tag.id)
                             ? "bg-gray-300"
                             : ""
@@ -255,28 +259,30 @@ export default function NewArticles() {
                         {tag.name}
                       </motion.button>
                     ))}
-                  {/* Mostrar los tags seleccionados */}
+
                   {selectedTags.map((tag) => (
-                    <motion.button
-                      key={tag.id}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`text-lg hover:bg-gray-300 rounded-full border-gray-500 w-full ${
-                        selectedTags.some((t) => t.id === tag.id)
-                          ? "bg-gray-300"
-                          : ""
-                      }`}
-                      onClick={() => handleTagSelect(tag)}
-                    >
-                      {tag.name}
-                    </motion.button>
+                    <div key={tag.id} className="relative w-full">
+                      <button
+                        className={`text-lg hover:bg-gray-300 rounded-full border-gray-500 w-full bg-gray-300 p-1 pr-8 font-normal`}
+                        onClick={() => handleTagSelect(tag)}
+                      >
+                        {tag.name}
+                      </button>
+                      <button
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#000916] hover:text-[#000916]/80 font-bold"
+                        onClick={() => handleTagDeselect(tag)}
+                      >
+                        X
+                      </button>
+                    </div>
                   ))}
                 </div>
+
                 <Input
                   placeholder="Add new tag"
                   value={newTag}
                   onChange={(e) => setNewTag(e.target.value)}
-                  className="w-full mt-2"
+                  className="w-full mt-2 border-gray-500"
                   maxLength={24}
                 />
                 <p className="justify-end flex text-gray-500">
@@ -284,7 +290,7 @@ export default function NewArticles() {
                 </p>
                 <Button
                   variant="outline"
-                  className="mt-2"
+                  className="mt-2 rounded-full bg-[#000916] text-white hover:bg-[#000916]/80 hover:text-white"
                   onClick={handleAddNewTag}
                 >
                   Add Tag
