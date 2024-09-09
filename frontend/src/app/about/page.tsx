@@ -1,4 +1,3 @@
-import Footer from "@/assets/footer";
 import Header from "@/assets/header";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,17 +7,18 @@ const LandingSection: FC = () => {
   return (
     <div className="h-full">
       <Header />
-      <div className="bg-[#000916] min-h-screen flex flex-col">
-        <div className="flex-grow grid grid-cols-1 md:grid-cols-2 bg-background text-foreground relative">
-          <h1 className="hidden sm:block z-40 absolute text-center w-full text-4xl sm:text-5xl font-extrabold text-white top-11 transform -translate-y-1/2 ml-2 mt-10">
+      <div className="bg-[#000916] min-h-screen flex">
+        <div className="flex-grow grid grid-cols-1 md:grid-cols-2 text-foreground relative">
+          {/* Título centrado y grande en el medio */}
+          <h1 className="hidden sm:block z-40 absolute text-center w-full text-4xl font-extrabold text-white top-11 transform -translate-y-1/2 ml-2 mt-10">
             Know, learn{" "}
-            <span className="text-[#000916]/80 ml-2"> and criticize.</span>
+            <span className="text-[#000916] ml-2">and criticize.</span>
           </h1>
-          <main
-            id="main-about"
-            className="overflow-hidden flex flex-col items-center justify-center bg-[#000916] px-4 py-20 sm:px-12 sm:py-40 font-medium relative min-h-screen"
-          >
-            <div className="relative flex flex-col items-center space-y-8 z-20">
+
+          {/* Sección Izquierda - Fondo Oscuro */}
+          <main className="flex flex-col items-center justify-center bg-[#000916] px-4 py-20 font-medium relative">
+            <div className="relative flex flex-col items-center space-y-4 z-20">
+              {/* Logo y nombre */}
               <div className="flex flex-col sm:flex-row items-center space-y-2 space-x-1">
                 <h2 className="text-3xl font-bold text-white">Blogchain</h2>
                 <Image
@@ -31,10 +31,12 @@ const LandingSection: FC = () => {
                 />
                 <h2 className="text-3xl font-bold text-[#ffc017]">Innovatio</h2>
               </div>
-              <div className="max-w-2xl justify-center">
+
+              {/* Texto de introducción */}
+              <div className="max-w-2xl text-left">
                 <p
                   id="about-text-1"
-                  className="text-lg sm:text-2xl leading-snug text-white text-left"
+                  className="text-lg sm:text-2xl leading-snug text-white"
                 >
                   <span className="font-extrabold">
                     Empowering Web3 education
@@ -51,13 +53,16 @@ const LandingSection: FC = () => {
                   <span className="font-extrabold"> critical thinking.</span>
                 </p>
               </div>
+
+              {/* Ilustración */}
               <Image
-                src="/About1.png"
-                width={320}
-                height={230}
+                src="/about1.svg"
+                width={300}
+                height={200}
                 alt="About Ilustration"
               />
             </div>
+            {/* Fondo de imagen borroso */}
             <div className="absolute inset-0 flex justify-center items-center z-10">
               <img
                 src="/bg-about.gif"
@@ -67,16 +72,11 @@ const LandingSection: FC = () => {
             </div>
           </main>
 
-          <main
-            id="main-about-2"
-            className="flex flex-col items-center py-80 justify-center bg-gradient-to-b from-white to-cyan-100 text-black px-6 sm:px-12 sm:py-80 font-medium"
-          >
-            <div className="space-y-8 max-w-lg w-full">
-              {/* Texto alineado a la izquierda */}
-              <p
-                id="about-text-2"
-                className="text-left text-xl sm:text-2xl leading-snug text-[#263238] font-normal"
-              >
+          {/* Sección Derecha - Fondo Claro */}
+          <main className="flex flex-col items-center justify-center bg-gradient-to-b from-white to-cyan-100 text-black px-6 font-medium">
+            <div className="space-y-2 max-w-lg w-1/2 text-left mt-20">
+              {/* Texto descriptivo */}
+              <p className="text-xl text-[#263238] font-normal">
                 Are you an enthusiast of blockchain{" "}
                 <br className="hidden sm:block" />
                 technology and new opportunities in{" "}
@@ -94,10 +94,10 @@ const LandingSection: FC = () => {
                 you don't miss a thing.
               </p>
 
-              {/* Botones centrados */}
-              <div className="flex flex-col items-center md:flex-row md:space-x-4 space-y-4 md:space-y-0">
+              {/* Botones estilizados */}
+              <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
                 <Link href="https://linktr.ee/innovatiospace" target="_blank">
-                  <button className="px-6 py-3 bg-[#000916] text-white rounded-full hover:bg-[#000916]/80 transition duration-300">
+                  <button className="px-6 py-3 bg-[#000916] text-white rounded-full hover:bg-[#000916]/80 transition duration-300 font-normal">
                     Innovatio Social Media
                   </button>
                 </Link>
@@ -105,19 +105,19 @@ const LandingSection: FC = () => {
                   href="https://discord.com/invite/hA36SVempM?utm_source=Discord&utm_medium=Invite"
                   target="_blank"
                 >
-                  <button className="px-6 py-3 bg-[#000916] text-white rounded-full hover:bg-[#000916]/80 transition duration-300">
+                  <button className="px-6 py-3 bg-[#000916] text-white rounded-full hover:bg-[#000916]/80 transition duration-300 font-normal">
                     Discord Community
                   </button>
                 </Link>
               </div>
 
-              {/* Imagen centrada */}
+              {/* Segunda Ilustración */}
               <div className="flex justify-center">
                 <Image
-                  src="/About2.png"
+                  src="/about2.svg"
                   width={300}
-                  height={235}
-                  className="overflow-hidden mr-20"
+                  height={200}
+                  className="mr-20"
                   alt="Social Media About"
                 />
               </div>

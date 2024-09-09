@@ -15,15 +15,11 @@ const SupportSection: FC = () => {
       <Header />
       <div className="h-screen grid grid-cols-1 md:grid-cols-2 bg-background text-foreground">
         <aside className="relative flex flex-col justify-center items-center bg-[#000916] px-6 sm:px-12 py-10 sm:py-16 h-screen">
-          <div className="absolute inset-0 flex justify-center items-center">
-            <Image
+          <div className="absolute inset-0 flex justify-center items-center z-10">
+            <img
               src="/bg-about.gif"
-              alt="Light Effect"
-              width={1000}
-              height={1000}
-              className="z-0"
-              unoptimized
-              style={{ opacity: 0.25 }}
+              className="object-cover w-full h-full opacity-25"
+              alt="Background"
             />
           </div>
           <div className="font-medium flex flex-col items-center justify-center z-10 space-y-8 text-center px-6 h-full">
@@ -35,14 +31,14 @@ const SupportSection: FC = () => {
               <br /> do not hesitate to support our cause.
             </p>
             <Image
-              src="/support us 1.png"
+              src="/support1.svg"
               width={300}
               height={300}
               alt="Support Us ilustration"
             />
           </div>
         </aside>
-        <main className="flex flex-col justify-center items-center bg-gradient-to-b from-white to-cyan-100 text-black px-6 sm:px-12 py-10 sm:py-16">
+        <main className="flex flex-col justify-center items-center bg-gradient-to-b from-white to-cyan-100 text-black">
           <div className="font-medium space-y-8 text-center px-6 flex flex-col justify-center h-full">
             <p className="text-xl sm:text-2xl leading-snug text-[#263238] text-justify justify-center">
               We are accepting donations in fiat <br />
@@ -51,23 +47,24 @@ const SupportSection: FC = () => {
               contribute to keep this forum alive.
             </p>
             <div className="justify-center flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
-              <Button className="px-6 py-3 bg-[#000916] text-white rounded-full hover:bg-gray-800 transition duration-300">
+              <Button className="text-base px-6 py-3 bg-[#000916] text-white rounded-full hover:bg-gray-800 transition duration-300 font-normal">
                 Wallet Address List
               </Button>
               <Button
-                className="px-6 py-3 bg-[#000916] text-white rounded-full hover:bg-gray-800 transition duration-300"
+                className="text-base px-6 py-3 bg-[#000916] text-white rounded-full hover:bg-gray-800 transition duration-300 font-normal"
                 onClick={openModal}
               >
                 SEPA Transfers
               </Button>
-              <Button className="px-6 py-3 bg-[#000916] text-white rounded-full hover:bg-gray-800 transition duration-300">
+              <Button className="text-base px-6 py-3 bg-[#000916] text-white rounded-full hover:bg-gray-800 transition duration-300 font-normal">
                 Paypal & Venmo
               </Button>
             </div>
             <Image
-              src="/support us 2.png"
+              src="/support2.svg"
               width={300}
               height={300}
+              className="ml-20"
               alt="Support Us ilustration"
             />
           </div>

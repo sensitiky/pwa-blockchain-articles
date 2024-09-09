@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -13,6 +13,8 @@ import LoginCard from "@/assets/login";
 import Footer from "@/assets/footer";
 import axios from "axios";
 import parse from "html-react-parser";
+import { Separator } from "@/components/ui/separator";
+import { Eye } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 const cookies = new Cookie();
@@ -73,6 +75,9 @@ const HomePage: React.FC = () => {
   const [showLoginCard, setShowLoginCard] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [categoryCounts, setCategoryCounts] = useState<
+    { categoryId: number; count: number }[]
+  >([]);
   const [comments, setComments] = useState<Comment[]>([]);
   const [selectedTagId, setSelectedTagId] = useState<number | null>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
@@ -97,6 +102,7 @@ const HomePage: React.FC = () => {
 
     fetchTags();
     fetchCategories();
+    fetchCategoryCounts();
     fetchPosts();
   }, []);
 
@@ -137,6 +143,19 @@ const HomePage: React.FC = () => {
       console.error("Error fetching categories", error);
     }
   };
+
+  const fetchCategoryCounts = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API_URL}/posts/count-by-category`);
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const result = response.data;
+      setCategoryCounts(result);
+    } catch (error) {
+      console.error("Error fetching category counts:", error);
+    }
+  }, []);
 
   const fetchPosts = async () => {
     try {
@@ -300,11 +319,42 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
+      <section className="container mx-auto p-8 mt-10">
+        <div className="flex items-center justify-start">
+          <img src="eye.svg" className="m-2" />
+          <h2 className="text-lg font-semibold text-[#263238]">CATEGORIES</h2>
+          <div className="border-t w-full ml-4 border-[#263238]"></div>
+        </div>
+        <div className="flex flex-row flex-wrap justify-center">
+          {categories.map((category) => {
+            const categoryCount = categoryCounts.find(
+              (count) => count.categoryId === category.id
+            );
+            return (
+              <div
+                className="text-center mb-8 flex items-center"
+                key={category.id}
+              >
+                <div className="text-base p-4 font-normal text-[#263238] bg-white rounded-full border border-[#263238] mx-2 hover:bg-inherit flex items-center">
+                  {category.name}
+                  {categoryCount && (
+                    <span className="ml-2 text-muted-foreground rounded-full p-1 bg-slate-300">
+                      {categoryCount.count}
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div className="border-t w-full ml-4 border-[#263238]"></div>
+      </section>
+
       <ArticleCarousel />
 
       <section className="py-16 px-4 md:px-8">
         <div className="container mx-auto">
-          <div className="text-center mb-8">
+          <div className="text-center mb-8 justify-center flex">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#263238] mb-14">
               Discover Articles
             </h2>
@@ -342,7 +392,7 @@ const HomePage: React.FC = () => {
             {posts.map((post, index) => (
               <div
                 key={index}
-                className="flex flex-col border-b border-customColor-innovatio3 pb-4 mb-4 rounded-none shadow-none bg-inherit"
+                className="flex flex-col border-b border-[#263238] pb-4 mb-4 rounded-none shadow-none bg-inherit"
               >
                 <div className="flex flex-col sm:flex-row mb-4">
                   {post.imageUrlBase64 && (
@@ -394,12 +444,19 @@ const HomePage: React.FC = () => {
                     </div>
                   </div>
                 </div>
+                <div className="flex justify-end">
+                  <Link href={`/posts/${post.id}`}>
+                    <Button className="text-base rounded-full">
+                      Read More
+                    </Button>
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
           <div className="text-center mt-8">
             <Link href="/articles">
-              <Button className="px-6 py-2 text-white bg-[#000916] hover:bg-[#000916]/80 rounded-full">
+              <Button className="px-6 py-2 text-white bg-[#000916] hover:bg-[#000916]/80 rounded-full font-normal text-base">
                 View All
               </Button>
             </Link>

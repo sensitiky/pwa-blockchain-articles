@@ -29,7 +29,7 @@ export default function RootLayout({
           <FacebookInit />
           <GoogleOAuthProvider clientId={clientId as string}>
             <AuthProvider>
-              <main className="w-full h-full overflow-x-hidden font-regular text-[#263238]">
+              <main className="w-full h-full overflow-x-hidden text-[#263238]">
                 {children}
               </main>
             </AuthProvider>

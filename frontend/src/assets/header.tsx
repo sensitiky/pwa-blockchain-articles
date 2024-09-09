@@ -176,7 +176,7 @@ const Header = () => {
     : "/default-avatar.webp";
 
   return (
-    <div id="header" className="bg-[#000916]">
+    <div id="header" className="bg-[#000916] font-normal">
       {/* Desktop Header */}
       <header id="desktop-header" className="p-4 hidden lg:block">
         <div className="container mx-auto flex justify-between items-center">
@@ -343,25 +343,25 @@ const Header = () => {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={() => router.push("/users?section=personal")}
-                    className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-medium"
+                    className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-normal"
                   >
                     Profile
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => router.push("/users?section=articles")}
-                    className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-medium"
+                    className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-normal"
                   >
                     My Articles
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => router.push("/users?section=saved")}
-                    className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-medium"
+                    className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-normal"
                   >
                     Saved Items
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => router.push("/users?section=security")}
-                    className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-medium"
+                    className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-normal"
                   >
                     Security & Socials
                   </DropdownMenuItem>

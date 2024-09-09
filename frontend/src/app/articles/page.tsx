@@ -9,6 +9,7 @@ import DOMPurify from "dompurify";
 import Image from "next/image";
 import { useAuth } from "../../../context/authContext";
 import React from "react";
+import { Button } from "@/components/ui/button";
 
 type Category = {
   id: number;
@@ -205,13 +206,17 @@ const Articles = () => {
 
   const renderTags = () => {
     return tags.map((tag) => (
-      <button
+      <Button
         key={tag.id}
-        className={`ios-button ${selectedTagId === tag.id ? "selected" : ""}`}
+        className={`text-white rounded-full border border-white text-base font-normal ${
+          selectedTagId === tag.id
+            ? "bg-[#FFC017] text-[#0d0d0d] hover:bg-[#FFC017]"
+            : ""
+        }`}
         onClick={() => handleTagChange(tag.id)}
       >
         {tag.name} ({tag.count})
-      </button>
+      </Button>
     ));
   };
 
@@ -375,20 +380,10 @@ const Articles = () => {
               Articles
             </h1>
           </div>
-          <div className="categories-container text-center py-2 sm:py-4 w-full">
-            <h3 className="categories-title text-lg sm:text-xl font-medium text-white mb-3 sm:mb-6">
+          <div className="text-center py-2 sm:py-4 w-full">
+            <h3 className="text-2xl font-normal text-white mb-3 sm:mb-6">
               Categories
             </h3>
-            <div className="flex flex-wrap justify-center gap-2 sm:gap-4">
-              <button
-                className={`ios-button2 ${
-                  selectedCategoryId === null ? "selected" : ""
-                }`}
-                onClick={() => handleCategoryChange(null)}
-              >
-                All Categories
-              </button>
-            </div>
             <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-4">
               {categories.length > 0 ? (
                 categories.map((category) => {
@@ -397,15 +392,17 @@ const Articles = () => {
                       (item) => item.categoryId === category.id
                     )?.count || 0;
                   return (
-                    <button
+                    <Button
                       key={category.id}
-                      className={`ios-button ${
-                        selectedCategoryId === category.id ? "selected" : ""
+                      className={`text-white rounded-full border border-white text-base font-normal ${
+                        selectedCategoryId === category.id
+                          ? "bg-[#FFC017] text-[#0d0d0d] hover:bg-[#FFC017]"
+                          : ""
                       }`}
                       onClick={() => handleCategoryChange(category.id)}
                     >
                       {category.name} ({categoryCount})
-                    </button>
+                    </Button>
                   );
                 })
               ) : (
@@ -414,7 +411,7 @@ const Articles = () => {
             </div>
             {selectedCategoryId !== null && tags.length > 0 && (
               <div className="tags-container text-center py-2 sm:py-4 w-full mt-2">
-                <h3 className="tags-title text-base sm:text-lg font-medium text-white mb-2 sm:mb-4">
+                <h3 className="text-xl font-normal text-white mb-2 sm:mb-4">
                   Tags
                 </h3>
                 <div className="flex flex-wrap justify-center gap-2 sm:gap-4">
