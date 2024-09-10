@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Post } from './auth/posts/post.entity';
-import { Comment } from './auth/comments/comment.entity';
-import { Favorite } from './auth/favorites/favorite.entity';
+import { Post } from './entities/post.entity';
+import { Comment } from './entities/comment.entity';
+import { Favorite } from './entities/favorite.entity';
 
 @Injectable()
 export class UpdatePostCountsService {

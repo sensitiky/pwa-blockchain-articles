@@ -291,13 +291,11 @@ const HomePage: React.FC = () => {
                 className="text-center mb-8 flex items-center"
                 key={category.id}
               >
-                <div className="text-base p-4 font-normal text-[#263238] bg-white rounded-full border border-[#263238] mx-2 hover:bg-inherit flex items-center">
+                <div className="text-base p-2 font-normal text-[#263238] bg-white rounded-full border border-[#263238] mx-2 hover:bg-inherit flex items-center">
                   {category.name}
-                  {categoryCount && (
-                    <span className="ml-2 text-muted-foreground rounded-full p-1 bg-slate-300">
-                      {categoryCount.count}
-                    </span>
-                  )}
+                  <span className="ml-2 text-muted-foreground rounded-full p-1 bg-slate-300">
+                    {categoryCount ? categoryCount.count : 0}
+                  </span>
                 </div>
               </div>
             );
@@ -363,7 +361,10 @@ const HomePage: React.FC = () => {
                   <div className="ml-0 sm:ml-4 mt-4 sm:mt-0 flex-1">
                     <div className="flex items-start mb-4">
                       {post.author?.avatar && (
-                        <Link href={`/users/${post.author?.id}`} target="_blank">
+                        <Link
+                          href={`/users/${post.author?.id}`}
+                          target="_blank"
+                        >
                           <img
                             src={
                               post.author?.avatar

@@ -1,23 +1,23 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { DatabaseModule } from './database/database.module';
-import { AuthModule } from './auth/auth.module';
-import { PostsModule } from './auth/posts/posts.module';
-import { Category } from './auth/category/category.entity';
-import { Tag } from './auth/tag/tag.entity';
+import { DatabaseModule } from './modules/database.module';
+import { AuthModule } from './modules/auth.module';
+import { PostsModule } from './modules/posts.module';
+import { Category } from './entities/category.entity';
+import { Tag } from './entities/tag.entity';
 import { Repository } from 'typeorm';
-import { CommentsModule } from './auth/comments/comments.module';
-import { FavoritesModule } from './auth/favorites/favorites.module';
-import { CategoriesModule } from './auth/category/category.module';
-import { TagsModule } from './auth/tag/tag.module';
-import { UsersModule } from './auth/users/user.module';
-import { SearchModule } from './auth/search/search.module';
-import { MetricModule } from './auth/metrics/metric.module';
+import { CommentsModule } from './modules/comments.module';
+import { FavoritesModule } from './modules/favorites.module';
+import { CategoriesModule } from './modules/category.module';
+import { TagsModule } from './modules/tag.module';
+import { UsersModule } from './modules/user.module';
+import { SearchModule } from './modules/search.module';
+import { MetricModule } from './modules/metric.module';
 import { UpdatePostCountsService } from './updatecount';
 import { ActiveUsersGateway } from './active-users.gateway';
-import { UserActivityService } from './user-activity.service';
-import { User } from './auth/users/user.entity';
+import { UserActivityService } from './services/user-activity.service';
+import { User } from './entities/user.entity';
 
 @Module({
   imports: [

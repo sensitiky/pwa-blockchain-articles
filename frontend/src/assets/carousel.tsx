@@ -7,6 +7,8 @@ import "slick-carousel/slick/slick-theme.css";
 import axios from "axios";
 import parse, { DOMNode, Element } from "html-react-parser";
 import { useAuth } from "../../context/authContext";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 type Category = {
   id: number;
@@ -197,56 +199,62 @@ const ArticleCarousel = () => {
                     {removeIframes(post.description)}
                   </div>
                 </div>
-                <div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex flex-wrap items-center space-x-4">
-                      <span className="text-gray-500">
-                        {calculateReadingTime(post.description)} min read
-                      </span>
-                      <span className="bg-gray-500 w-px h-6 hidden sm:block"></span>
-                      <div className="flex space-x-4">
-                        <button className="flex items-center space-x-1 text-gray-500">
-                          <img
-                            src="/comment.png"
-                            alt="Comment"
-                            className="w-5 h-5 mr-1"
-                          />
-                          <span>{post.commentscount || 0}</span>
-                        </button>
-                        <button
-                          className="flex items-center space-x-1 text-gray-500"
-                          onClick={() => handleFavorite(post.id)}
+                <div className="flex-grow"></div>
+                <div className="justify-between items-center">
+                  <div className="flex flex-wrap items-center space-x-4 bottom-9 absolute">
+                    <span className="text-gray-500">
+                      {calculateReadingTime(post.description)} min read
+                    </span>
+                    <span className="bg-gray-500 w-px h-6 hidden sm:block"></span>
+                    <div className="flex space-x-4">
+                      <button className="flex items-center space-x-1 text-gray-500">
+                        <img
+                          src="/comment.png"
+                          alt="Comment"
+                          className="w-5 h-5 mr-1"
+                        />
+                        <span>{post.commentscount || 0}</span>
+                      </button>
+                      <button
+                        className="flex items-center space-x-1 text-gray-500"
+                        onClick={() => handleFavorite(post.id)}
+                      >
+                        <svg
+                          width="1.5rem"
+                          height="1.5rem"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
                         >
-                          <svg
-                            width="1.5rem"
-                            height="1.5rem"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <g id="SVGRepo_bgCarrier" stroke-width="0" />
+                          <g id="SVGRepo_bgCarrier" stroke-width="0" />
 
-                            <g
-                              id="SVGRepo_tracerCarrier"
+                          <g
+                            id="SVGRepo_tracerCarrier"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+
+                          <g id="SVGRepo_iconCarrier">
+                            {" "}
+                            <path
+                              d="M19 19.2674V7.84496C19 5.64147 17.4253 3.74489 15.2391 3.31522C13.1006 2.89493 10.8994 2.89493 8.76089 3.31522C6.57467 3.74489 5 5.64147 5 7.84496V19.2674C5 20.6038 6.46752 21.4355 7.63416 20.7604L10.8211 18.9159C11.5492 18.4945 12.4508 18.4945 13.1789 18.9159L16.3658 20.7604C17.5325 21.4355 19 20.6038 19 19.2674Z"
+                              stroke="#6b7280"
+                              stroke-width="1.5"
                               stroke-linecap="round"
                               stroke-linejoin="round"
-                            />
-
-                            <g id="SVGRepo_iconCarrier">
-                              {" "}
-                              <path
-                                d="M19 19.2674V7.84496C19 5.64147 17.4253 3.74489 15.2391 3.31522C13.1006 2.89493 10.8994 2.89493 8.76089 3.31522C6.57467 3.74489 5 5.64147 5 7.84496V19.2674C5 20.6038 6.46752 21.4355 7.63416 20.7604L10.8211 18.9159C11.5492 18.4945 12.4508 18.4945 13.1789 18.9159L16.3658 20.7604C17.5325 21.4355 19 20.6038 19 19.2674Z"
-                                stroke="#6b7280"
-                                stroke-width="1.5"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                              />{" "}
-                            </g>
-                          </svg>
-                          <span>{post.favoritescount || 0}</span>
-                        </button>
-                      </div>
+                            />{" "}
+                          </g>
+                        </svg>
+                        <span>{post.favoritescount || 0}</span>
+                      </button>
                     </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <Link href={`/posts/${post.id}`}>
+                      <Button className="text-base font-normal rounded-full">
+                        Read More
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>

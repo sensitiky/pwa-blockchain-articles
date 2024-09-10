@@ -180,7 +180,7 @@ const Header = () => {
       {/* Desktop Header */}
       <header id="desktop-header" className="p-4 hidden lg:block">
         <div className="container mx-auto flex justify-between items-center">
-          <div id="logo" className="text-white text-lg font-bold">
+          <div id="logo" className="text-white text-xl font-bold">
             <Link href="/">Blogchain</Link>
           </div>
           <div
@@ -296,7 +296,7 @@ const Header = () => {
           `}</style>
           <nav
             id="nav"
-            className="space-x-4 flex items-center p-4 bg-inherit rounded-full font-normal"
+            className="space-x-4 flex items-center p-4 bg-inherit rounded-full font-normal text-[1rem]"
           >
             <Link
               href="/"
@@ -324,7 +324,7 @@ const Header = () => {
             </Link>
             {isAuthenticated ? (
               <DropdownMenu>
-                <p className="text-[#FFC017] font-normal text-xl">
+                <p className="text-[#FFC017] font-normal">
                   Hi, {user?.user}!
                 </p>
                 <DropdownMenuTrigger asChild>

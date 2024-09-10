@@ -524,22 +524,22 @@ const PostPage = () => {
                 >
                   <div className="flex items-center space-x-4">
                     <Link href={`/users/${comment.author?.id}`} target="_blank">
-                      <Avatar className="h-8 w-8">
+                      <Avatar className="size-10">
                         <AvatarImage src={avatarUrl} alt="Author avatar" />
                         <AvatarFallback>{author.user}</AvatarFallback>
                       </Avatar>
                     </Link>
                     <div>
-                      <p className="text-sm font-medium">{authorName}</p>
-                      <p className="text-sm text-gray-500 font-light">
+                      <p className="text-base font-normal">{authorName}</p>
+                      <p className="text-base text-gray-500 font-light">
                         {author.role}
                       </p>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-sm text-gray-500">
                         {formatDate(comment.createdAt)}
                       </div>
                     </div>
                   </div>
-                  <p className="mt-2 ml-5 text-sm">{comment.content}</p>
+                  <p className="mt-2 ml-5 text-base">{comment.content}</p>
                   <div className="flex items-center space-x-2 text-xs text-muted-foreground mt-2">
                     <Button
                       variant="ghost"

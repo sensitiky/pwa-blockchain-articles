@@ -298,15 +298,15 @@ const Articles = () => {
                 />
               </Link>
               <div className="flex flex-col ml-2 flex-grow">
-                <span className="text-base sm:text-lg font-semibold text-[#263238] truncate">
+                <span className="text-base text-[1.2rem] font-semibold text-[#263238] truncate">
                   {post.author ? post.author.user : "Unknown Author"}
                 </span>
-                <span className="text-xs sm:text-sm text-muted-foreground truncate">
+                <span className="text-xs text-[1.1rem] text-muted-foreground truncate">
                   {post.author ? post.author.role : "Unknown Author"}
                 </span>
               </div>
               <div className="flex flex-col items-end">
-                <span className="flex items-center text-[#263238] text-sm sm:text-base truncate">
+                <span className="flex items-center text-[#263238] text-[1rem] sm:text-base truncate">
                   <img
                     src="/category.png"
                     className="w-3 h-3 sm:w-4 sm:h-4 mr-1"
@@ -314,7 +314,7 @@ const Articles = () => {
                   />{" "}
                   {post.category?.name}
                 </span>
-                <div className="flex items-center text-[#263238] text-xs sm:text-sm truncate mt-1">
+                <div className="flex items-center text-[#263238] text-[0.95rem] sm:text-sm truncate mt-1">
                   <TagIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                   {post.tags
                     .slice(0, 2)
@@ -360,7 +360,7 @@ const Articles = () => {
           </div>
           <div className="flex justify-end mt-4">
             <Link href={`/posts/${post.id}`}>
-              <button className="bg-[#000916] text-primary-foreground px-3 py-1 sm:px-4 sm:py-2 text-sm sm:text-base rounded-full hover:bg-[#000916]/80">
+              <button className="bg-[#000916] text-white px-3 py-1 sm:px-4 sm:py-2 text-base font-normal sm:text-base rounded-full hover:bg-[#000916]/80">
                 Read More
               </button>
             </Link>
@@ -376,12 +376,12 @@ const Articles = () => {
       <main className="flex-grow">
         <div className="articles-header bg-[#000916] text-center py-4 sm:py-8 px-2 sm:px-4">
           <div className="articles-title-container py-6 sm:py-12">
-            <h1 className="articles-title text-3xl sm:text-4xl font-bold text-yellow-500">
+            <h1 className="articles-title text-[2.6rem] font-bold text-yellow-500">
               Articles
             </h1>
           </div>
           <div className="text-center py-2 sm:py-4 w-full">
-            <h3 className="text-2xl font-normal text-white mb-3 sm:mb-6">
+            <h3 className="text-[1.6rem] font-normal text-white mb-3 sm:mb-6">
               Categories
             </h3>
             <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-4">
@@ -394,7 +394,7 @@ const Articles = () => {
                   return (
                     <Button
                       key={category.id}
-                      className={`text-white rounded-full border border-white text-base font-normal ${
+                      className={`text-white rounded-full border border-white text-base text-[1.1rem] font-normal ${
                         selectedCategoryId === category.id
                           ? "bg-[#FFC017] text-[#0d0d0d] hover:bg-[#FFC017]"
                           : ""
@@ -411,7 +411,7 @@ const Articles = () => {
             </div>
             {selectedCategoryId !== null && tags.length > 0 && (
               <div className="tags-container text-center py-2 sm:py-4 w-full mt-2">
-                <h3 className="text-xl font-normal text-white mb-2 sm:mb-4">
+                <h3 className="text-[1.5rem] font-normal text-white mb-2 sm:mb-4">
                   Tags
                 </h3>
                 <div className="flex flex-wrap justify-center gap-2 sm:gap-4">

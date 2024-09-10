@@ -1,62 +1,82 @@
 import Image from "next/image";
 import React from "react";
 import Link from "next/link";
+import { useAuth } from "../../context/authContext";
 
 const Footer = () => {
+  const { isAuthenticated } = useAuth();
   return (
-    <footer className="bg-[#000916] min-w-full py-6 border-t border-gray-200 backdrop-blur-md">
-      <div className="min-w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-start items-center gap-4">
-          <span className="text-xl font-bold text-white flex items-center">
-            Blogchain <span className="font-light mx-2">By</span>
-          </span>
-          <Image
-            src="/footer.png"
-            alt="Innovatio logo"
-            width={100}
-            height={24}
-          />
+    <footer className="bg-[#000916] min-w-full font-normal text-white py-6 border-t border-gray-200 backdrop-blur-md">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+        <div className="flex justify-between items-center w-full mb-6">
+          <div className="flex flex-row items-center text-center mx-4">
+            <span className="text-xl font-bold text-white flex items-center">
+              Blogchain <span className="font-light mx-2">By</span>
+            </span>
+            <Image
+              src="/footer.png"
+              alt="Innovatio logo"
+              width={100}
+              height={24}
+            />
+          </div>
+          <div className="flex w-1/2 justify-center">
+            <p className="text-white">
+              Blogchain is a community forum where enthusiasts, professionals
+              and influencers write and share educational and informative
+              articles related to the web3 and the technological world, soak up
+              knowledge and meet new content creators, follow them on their new
+              social networks and debate without any censorship or editorial
+              line.
+            </p>
+          </div>
+          <div className="flex flex-row text-white">
+            <div className="flex flex-col m-4">
+              <Link href="/" className="text-[16px]">
+                Blogchain
+              </Link>
+              <Link href="/" className="text-[14px]">
+                Home
+              </Link>
+              <Link href="/about" className="text-[14x]">
+                About Us
+              </Link>
+              <Link href="/support" className="text-[14px]">
+                Support Us
+              </Link>
+            </div>
+            <div className="flex flex-col m-4">
+              <Link href="/articles" className="text-[16px]">
+                Articles
+              </Link>
+              <Link href="/newarticles" className="text-[14px]">
+                Write a blog
+              </Link>
+              <Link href="/" className="text-[14px]">
+                Home of <br />
+                content
+              </Link>
+            </div>
+            {isAuthenticated && (
+              <div className="flex flex-col m-4">
+                <Link href="/users?section=personal" className="text-[16px]">
+                  Profile
+                </Link>
+                <Link href="/users?section=personal" className="text-[14px]">
+                  My profile
+                </Link>
+                <Link href="/users?section=saved" className="text-[14px]">
+                  My favorites
+                </Link>
+                <Link href="/users?section=articles" className="text-[14px]">
+                  My articles
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="mt-6 flex justify-center space-x-4">
-          <Link href="https://discord.com/invite/hA36SVempM?utm_source=Discord&utm_medium=Invite">
-            <Image
-              className="filter invert"
-              src="/discord.svg"
-              alt="discord"
-              width={24}
-              height={24}
-            />
-          </Link>
-          <Link href="https://x.com/innovatio_space">
-            <Image
-              className="filter invert"
-              src="/twitter.svg"
-              alt="twitter"
-              width={24}
-              height={24}
-            />
-          </Link>
-          <Link href="https://www.instagram.com/innovatiospace/">
-            <Image
-              src="/instagram.svg"
-              alt="instagram"
-              width={24}
-              height={24}
-              className="filter invert"
-            />
-          </Link>
-          <Link href="https://www.facebook.com/innovatiospace">
-            <Image
-              src="/facebook.svg"
-              alt="facebook"
-              width={24}
-              height={24}
-              className="filter invert"
-            />
-          </Link>
-        </div>
-        <div className="mt-6 border-t border-gray-200 pt-4 flex justify-center text-gray-300">
-          <p>&copy; 2024 Innovatio. All rights reserved.</p>
+        <div className="border-t font-normal border-gray-200 pt-4 flex justify-center w-full">
+          <p>&copy; 2024 Blogchain. All rights reserved.</p>
         </div>
       </div>
     </footer>
