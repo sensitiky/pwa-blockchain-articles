@@ -12,14 +12,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import styled from "styled-components";
 import { AnimatePresence, motion } from "framer-motion";
 import RichTextEditor from "@/components/ui/texteditor";
-
-interface EditPostDto {
-  title: string;
-  content: string;
-  description: string;
-  imageUrl: string | null | File;
-  imagePreviewUrl?: string | null;
-}
+import { EditPostDto } from "@/interfaces/interfaces";
 
 const Container = styled.div`
   display: flex;

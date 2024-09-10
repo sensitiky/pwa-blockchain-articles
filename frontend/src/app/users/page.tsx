@@ -6,9 +6,8 @@ import ProfileSettings from "@/assets/profile";
 import SecuritySettings from "@/assets/security";
 import SavedItems from "@/assets/saveditems";
 import Articles from "@/assets/userarticles";
-import { useAuth } from "../../../context/authContext";
+import { useAuth, getProfile } from "../../../context/authContext";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getProfile } from "../../../services/authService";
 import { UserIcon, LockIcon, PencilIcon, BookmarkIcon } from "lucide-react";
 import { motion } from "framer-motion";
 

@@ -13,55 +13,10 @@ import LoginCard from "@/assets/login";
 import Footer from "@/assets/footer";
 import axios from "axios";
 import parse from "html-react-parser";
-import { Separator } from "@/components/ui/separator";
-import { Eye } from "lucide-react";
+import { Tag, Category, Post } from "@/interfaces/interfaces";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 const cookies = new Cookie();
-
-interface Post {
-  id: number;
-  title: string;
-  content: string;
-  imageUrlBase64: string | null;
-  createdAt: string;
-  description: string | object;
-  author?: Author;
-  category?: { name: string };
-  tags: { name: string }[];
-  comments: Comment[];
-  favorites: number;
-}
-
-interface Author {
-  id: number;
-  user: string;
-  firstName: string;
-  lastName: string;
-  bio: string;
-  twitter?: string;
-  linkedin?: string;
-  facebook?: string;
-  avatar?: string;
-}
-
-interface Comment {
-  id: number;
-  content: string;
-  createdAt: string;
-  author: { id: number; firstName: string; lastName: string; user: string };
-  favorites: number;
-}
-
-interface Tag {
-  id: number;
-  name: string;
-}
-
-interface Category {
-  id: number;
-  name: string;
-}
 
 const POSTS_PER_PAGE = 6;
 

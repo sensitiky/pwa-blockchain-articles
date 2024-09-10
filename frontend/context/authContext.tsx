@@ -8,26 +8,9 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import api from "../services/api";
-
-interface User {
-  id: number;
-  firstName?: string;
-  lastName?: string;
-  date?: Date;
-  email?: string;
-  user?: string;
-  country?: string;
-  medium?: string;
-  instagram?: string;
-  facebook?: string;
-  twitter?: string;
-  linkedin?: string;
-  bio?: string;
-  avatar?: string;
-  postCount?: number;
-  role?: string;
-}
+import axios from "axios";
+import UserInfo from "@/interfaces/interfaces";
+import User from "@/interfaces/interfaces";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
@@ -51,6 +34,40 @@ export const useAuth = () => {
   return context;
 };
 
+export const getProfile = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No token found");
+
+    const response = await axios.get(`${API_URL}/users/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching profile data", error);
+    throw error;
+  }
+};
+
+export const updateProfile = async (userInfo: UserInfo) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No token found");
+
+    const response = await axios.put(`${API_URL}/users/me`, userInfo, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating profile", error);
+    throw error;
+  }
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -63,7 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const loginWithGoogle = useCallback(async (token: string) => {
     try {
-      const response = await api.post(`${API_URL}/auth/google`, { token });
+      const response = await axios.post(`${API_URL}/auth/google`, { token });
       if (response.status === 200) {
         localStorage.setItem("token", response.data.token);
         setToken(response.data.token);
@@ -88,7 +105,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const token = localStorage.getItem("token");
         if (token) {
           setToken(token);
-          const response = await api.get(`${API_URL}/users/me`);
+          const response = await axios.get(`${API_URL}/users/me`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
           setUser(response.data);
         }
       } catch (error) {
