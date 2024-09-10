@@ -66,7 +66,7 @@ const AuthWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     });
 
     socket.on("connect", () => {
-      console.log("Connected to WebSocket server");
+     // console.log("Connected to WebSocket server");
     });
 
     socket.on("usersUpdate", (count: number) => {
@@ -74,7 +74,7 @@ const AuthWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     });
 
     socket.on("disconnect", () => {
-      console.log("Disconnected from WebSocket server");
+      //console.log("Disconnected from WebSocket server");
     });
 
     return () => {

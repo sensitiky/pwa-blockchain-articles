@@ -89,7 +89,7 @@ const Header = () => {
         });
 
         setResults(resultsWithBase64Images);
-        console.log(resultsWithBase64Images);
+        // console.log(resultsWithBase64Images);
       } else {
         console.error("Unexpected response format:", response.data);
         setResults([]);

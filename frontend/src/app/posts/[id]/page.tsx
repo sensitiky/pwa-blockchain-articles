@@ -112,7 +112,7 @@ const PostPage = () => {
     try {
       const response = await axios.get(`${API_URL}/comments/post/${postId}`);
       const commentsData: Comment[] = response.data;
-      console.log("Comments data:", commentsData);
+      //console.log("Comments data:", commentsData);
       setComments(commentsData);
     } catch (error) {
       console.error("Error fetching comments:", error);
