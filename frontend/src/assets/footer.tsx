@@ -15,7 +15,6 @@ const Footer = () => {
             alt="Innovatio logo"
             width={100}
             height={24}
-            className="text-customColor-letras"
           />
         </div>
         <div className="mt-6 flex justify-center space-x-4">

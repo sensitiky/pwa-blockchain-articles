@@ -86,6 +86,34 @@ export class AuthController {
     }
   }
 
+  @Post("check-user")
+  async checkUser(@Body() body: { email: string }, @Res() res: Response) {
+    try {
+      const user = await this.authService.checkUser({
+        email: body.email,
+        id: 0,
+        user: '',
+        lastLogin: undefined,
+        lastActivity: undefined,
+        facebookId: '',
+        role: '',
+        password: '',
+        posts: [],
+        comments: [],
+        favorites: [],
+        postCount: 0
+      });
+      if (user) {
+        res.status(200).json({ message: "User found", user });
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
+    } catch (error) {
+      this.logger.error(`Error checking user: ${error.message}`);
+      res.status(500).json({ message: "Failed to check user" });
+    }
+  }
+
   @Post('forgot-password')
   async forgotPassword(
     @Body() body: { email: string },

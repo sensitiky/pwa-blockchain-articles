@@ -227,6 +227,7 @@ const HomePage: React.FC = () => {
             width={2000}
             height={1200}
             unoptimized
+            priority
             style={{ opacity: 0.25 }}
           />
         </div>

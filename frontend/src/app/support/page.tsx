@@ -39,7 +39,7 @@ const SupportSection: FC = () => {
           </div>
         </aside>
         <main className="flex flex-col justify-center items-center bg-gradient-to-b from-white to-cyan-100 text-black">
-          <div className="font-medium space-y-8 text-center px-6 flex flex-col justify-center h-full">
+          <div className="font-medium space-y-8 text-center px-6 flex flex-col justify-center h-full mb-10">
             <p className="text-xl sm:text-2xl leading-snug text-[#263238] text-justify justify-center">
               We are accepting donations in fiat <br />
               and cryptocurrencies, choose the <br />

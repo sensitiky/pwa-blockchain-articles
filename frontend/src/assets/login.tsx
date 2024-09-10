@@ -31,6 +31,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [errorKey, setErrorKey] = useState(0);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [passwordCriteria, setPasswordCriteria] = useState({
     length: false,
@@ -96,6 +97,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const handleRegister = async () => {
     setLoading(true);
     setError(null);
+    setErrorKey((prev) => prev + 1);
 
     if (
       !passwordCriteria.length ||
@@ -124,7 +126,19 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data.message || "Registration failed");
+        if (err.response?.status === 400) {
+          setError("Invalid verification code.");
+        } else if (err.response?.status === 429) {
+          setError("Too many attempts. Please try again later.");
+        } else if (err.response?.status ?? 0 >= 500) {
+          setError("Email already in use.");
+        } else {
+          setError(err.response?.data.message || "Registration failed");
+        }
+      } else if (err instanceof Error && err.message === "Network Error") {
+        setError(
+          "Unable to connect to the server. Please check your internet connection."
+        );
       } else {
         setError((err as Error).message);
       }
@@ -136,6 +150,8 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
   const handleSendVerificationCode = async () => {
     setLoading(true);
     setError(null);
+    setErrorKey((prev) => prev + 1);
+
     if (
       !passwordCriteria.length ||
       !passwordCriteria.uppercase ||
@@ -147,6 +163,24 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     }
 
     try {
+      // First, check if the username or email already exists
+      const checkResponse = await axios.post(
+        `${API_URL}/auth/check-user`,
+        { user, email },
+        { withCredentials: true }
+      );
+
+      if (checkResponse.data.exists) {
+        if (checkResponse.data.field === "email") {
+          setError("An account with this email already exists.");
+        } else if (checkResponse.data.field === "username") {
+          setError("This username is already taken.");
+        }
+        setLoading(false);
+        return;
+      }
+
+      // If the user doesn't exist, proceed with sending the verification code
       const response = await axios.post(
         `${API_URL}/auth/send-verification-code`,
         { email },
@@ -161,8 +195,18 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
+        if (err.response?.status === 429) {
+          setError("Too many attempts. Please try again later.");
+        } else if (err.response?.status ?? 0 >= 500) {
+          setError("An unexpected error occurred. Please try again later.");
+        } else {
+          setError(
+            err.response?.data.message || "Failed to send verification code"
+          );
+        }
+      } else if (err instanceof Error && err.message === "Network Error") {
         setError(
-          err.response?.data.message || "Failed to send verification code"
+          "Unable to connect to the server. Please check your internet connection."
         );
       } else {
         setError((err as Error).message);
@@ -505,7 +549,11 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                     required
                   />
                 </div>
-                {error && <div className="text-red-500">{error}</div>}
+                {error && (
+                  <div key={errorKey} className="text-red-500">
+                    {error}
+                  </div>
+                )}
                 <div className="flex justify-center">
                   <Button
                     type="button"
@@ -526,7 +574,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   onClick={handleSendVerificationCode}
                   disabled={loading}
                 >
-                  {loading ? "Sending..." : "Send Verification Code"}
+                  {loading ? "Checking..." : "Send Verification Code"}
                 </Button>
               </div>
             )}

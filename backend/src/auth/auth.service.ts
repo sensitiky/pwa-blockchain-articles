@@ -49,6 +49,9 @@ export class AuthService {
     }
     return null;
   }
+  async checkUser(user: User): Promise<UserDto> {
+    return this.usersService.transformToDto(user);
+  }
 
   async registerUser(createUserDto: CreateUserDto): Promise<UserDto> {
     const existingUser = await this.usersService.findByEmail(
