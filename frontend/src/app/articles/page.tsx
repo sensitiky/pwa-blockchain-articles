@@ -284,7 +284,7 @@ const Articles = () => {
           )}
           <div className="flex flex-col justify-between items-start mt-2">
             <div className="flex items-center mb-2 w-full">
-              <Link href={`/users/${post.author?.id}`}>
+              <Link href={`/users/${post.author?.id}`} target="_blank">
                 <img
                   src={
                     post.author?.avatar

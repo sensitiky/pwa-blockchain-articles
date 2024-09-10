@@ -73,7 +73,7 @@ const LandingSection: FC = () => {
           </main>
 
           {/* Sección Derecha - Fondo Claro */}
-          <main className="flex flex-col items-center justify-center bg-gradient-to-b from-white to-cyan-100 text-black px-6 font-medium">
+          <main className="flex mb-16 flex-col items-center justify-center bg-gradient-to-b from-white to-cyan-100 text-black px-6 font-medium">
             <div className="space-y-2 max-w-lg w-1/2 text-left mt-20">
               {/* Texto descriptivo */}
               <p className="text-xl text-[#263238] font-normal">

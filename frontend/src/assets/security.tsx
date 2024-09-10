@@ -10,10 +10,10 @@ import {
 import { FaEdit, FaCheck, FaEye, FaEyeSlash } from "react-icons/fa";
 import { motion } from "framer-motion";
 import styled from "styled-components";
-import api from "../../services/api";
 import { useAuth } from "../../context/authContext";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 
 interface UserProfile {
   id?: number;
@@ -79,7 +79,7 @@ const ActionIcons = styled.div`
 `;
 
 const SecuritySettings: React.FC = () => {
-  const { isAuthenticated, user, setUser } = useAuth();
+  const { user, setUser } = useAuth();
   const [userInfo, setUserInfo] = useState<UserProfile>({});
   const [loading, setLoading] = useState(true);
   const [editingField, setEditingField] = useState<string | null>(null);
@@ -88,41 +88,23 @@ const SecuritySettings: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const fetchProfile = async () => {
-    if (isAuthenticated) {
-      try {
-        const response = await api.get(`${API_URL}/users/me`);
-        const profile = response.data;
-        const avatarUrl = profile.avatar ? `${API_URL}${profile.avatar}` : "";
-        setUser({
-          id: profile.id,
-          firstName: profile.firstName,
-          lastName: profile.lastName,
-          date: profile.date ? new Date(profile.date) : undefined,
-          email: profile.email,
-          user: profile.user,
-          country: profile.country,
-          medium: profile.medium,
-          instagram: profile.instagram,
-          facebook: profile.facebook,
-          twitter: profile.twitter,
-          linkedin: profile.linkedin,
-          bio: profile.bio,
-          avatar: avatarUrl,
-          postCount: profile.postCount || 0,
-        });
-        setUserInfo(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching profile data", error);
-        setLoading(false);
-      }
-    }
-  };
-
   useEffect(() => {
-    fetchProfile();
-  }, [isAuthenticated]);
+    if (user) {
+      const avatarUrl = user.avatar ? `${API_URL}${user.avatar}` : "";
+      setUserInfo({
+        id: user.id,
+        firstName: user.firstName,
+        avatar: avatarUrl,
+        medium: user.medium,
+        instagram: user.instagram,
+        facebook: user.facebook,
+        twitter: user.twitter,
+        linkedin: user.linkedin,
+        email: user.email,
+      });
+      setLoading(false);
+    }
+  }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -155,7 +137,7 @@ const SecuritySettings: React.FC = () => {
     };
 
     try {
-      await api.put(`${API_URL}/users/me`, updatedField);
+      await axios.put(`${API_URL}/users/me`, updatedField);
       setUser({ ...user, ...updatedField });
       setEditingField(null);
       if (field === "password") {

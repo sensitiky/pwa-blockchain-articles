@@ -339,15 +339,17 @@ const PostPage = () => {
             Go Back
           </button>
           <div className="flex flex-col sm:flex-row items-center mb-6 space-y-4 sm:space-y-0 justify-between">
-            <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 justify-between w-full">
+            <div className="flex items-center space-y-4 justify-between w-full">
               <div className="flex items-center space-x-4">
-                <Avatar className="size-12">
-                  <AvatarImage
-                    src={avatarUrl}
-                    alt={`${post.author?.firstName}'s avatar`}
-                  />
-                  <AvatarFallback>{post.author?.user}</AvatarFallback>
-                </Avatar>
+                <Link href={`/users/${post.author?.id}`} target="_blank">
+                  <Avatar className="size-12">
+                    <AvatarImage
+                      src={avatarUrl}
+                      alt={`${post.author?.firstName}'s avatar`}
+                    />
+                    <AvatarFallback>{post.author?.user}</AvatarFallback>
+                  </Avatar>
+                </Link>
                 <div className="text-center sm:text-left">
                   <p className="text-base font-medium text-black">
                     {post.author?.user ?? "Author"}
@@ -387,26 +389,25 @@ const PostPage = () => {
                   </Link>
                 )}
               </div>
-
-              {user?.id === post.author?.id && (
-                <div className="flex space-x-2">
-                  <Button
-                    variant="ghost"
-                    className="w-fit flex items-center space-x-1 text-gray-500 hover:bg-inherit"
-                    onClick={() => router.push(`/posts/edit/${post.id}`)}
-                  >
-                    <FaEdit className="size-5" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="w-fit flex items-center space-x-1 text-gray-500 hover:bg-inherit"
-                    onClick={() => setIsModalOpen(true)}
-                  >
-                    <FaTrash className="size-5" />
-                  </Button>
-                </div>
-              )}
             </div>
+            {user?.id === post.author?.id && (
+              <div className="flex space-x-2">
+                <Button
+                  variant="ghost"
+                  className="w-fit flex items-center space-x-1 text-gray-500 hover:bg-inherit"
+                  onClick={() => router.push(`/posts/edit/${post.id}`)}
+                >
+                  <FaEdit className="size-5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-fit flex items-center space-x-1 text-gray-500 hover:bg-inherit"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  <FaTrash className="size-5" />
+                </Button>
+              </div>
+            )}
           </div>
           <p className="text-gray-500 mt-4">
             {formatDate(post.createdAt)} •{" "}
@@ -522,10 +523,12 @@ const PostPage = () => {
                   className="border rounded-md p-4 my-4 bg-gray-100"
                 >
                   <div className="flex items-center space-x-4">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={avatarUrl} alt="Author avatar" />
-                      <AvatarFallback>{author.user}</AvatarFallback>
-                    </Avatar>
+                    <Link href={`/users/${comment.author?.id}`} target="_blank">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={avatarUrl} alt="Author avatar" />
+                        <AvatarFallback>{author.user}</AvatarFallback>
+                      </Avatar>
+                    </Link>
                     <div>
                       <p className="text-sm font-medium">{authorName}</p>
                       <p className="text-sm text-gray-500 font-light">

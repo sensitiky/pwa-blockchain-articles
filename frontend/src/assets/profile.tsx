@@ -9,7 +9,6 @@ import Select, { SingleValue } from "react-select";
 import countryList from "react-select-country-list";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuth } from "../../context/authContext";
-import api from "../../services/api";
 import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
 import Link from "next/link";
 import styled from "styled-components";
@@ -20,6 +19,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import Image from "next/image";
+import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
@@ -63,47 +63,14 @@ const ProfileSettings: React.FC = () => {
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const router = useRouter();
 
-  const fetchProfile = async () => {
-    if (isAuthenticated) {
-      try {
-        const response = await api.get(`${API_URL}/users/me`);
-        const profile = response.data;
-        const avatarUrl = profile.avatar ? `${API_URL}${profile.avatar}` : "";
-        const userData = {
-          id: profile.id,
-          firstName: profile.firstName,
-          lastName: profile.lastName,
-          date: profile.date ? new Date(profile.date) : undefined,
-          email: profile.email,
-          user: profile.user,
-          country: profile.country,
-          medium: profile.medium,
-          instagram: profile.instagram,
-          facebook: profile.facebook,
-          twitter: profile.twitter,
-          linkedin: profile.linkedin,
-          bio: profile.bio,
-          avatar: avatarUrl,
-          postCount: profile.postCount,
-          role: profile.role,
-        };
-        setUser(userData);
-        setUserInfo(userData);
-        setProfileImage(
-          avatarUrl ? `${avatarUrl}?${new Date().getTime()}` : ""
-        );
-        setBio(profile.bio || "");
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching profile data", error);
-        setLoading(false);
-      }
-    }
-  };
-
   useEffect(() => {
-    fetchProfile();
-  }, [isAuthenticated]);
+    if (isAuthenticated && user) {
+      const avatarUrl = user.avatar ? `${API_URL}${user.avatar}` : "";
+      setProfileImage(avatarUrl ? `${avatarUrl}?${new Date().getTime()}` : "");
+      setBio(user.bio || "");
+      setLoading(false);
+    }
+  }, [isAuthenticated, user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -147,8 +114,13 @@ const ProfileSettings: React.FC = () => {
 
   const handleProfileSave = async () => {
     try {
-      await api.put(`${API_URL}/users/me`, userInfo);
-      fetchProfile();
+      await axios.put(`${API_URL}/users/me`, userInfo);
+      setUser({
+        ...user,
+        ...userInfo,
+        id: user?.id || 0,
+        date: userInfo.date || undefined,
+      });
     } catch (error) {
       console.error("Error saving profile information:", error);
     }
@@ -186,9 +158,9 @@ const ProfileSettings: React.FC = () => {
     }
 
     try {
-      await api.put(`${API_URL}/users/me`, { ...userInfo, bio });
+      await axios.put(`${API_URL}/users/me`, { ...userInfo, bio });
       setUserInfo({ ...userInfo, bio });
-      fetchProfile();
+      setUser({ ...user, id: user?.id || 0, bio });
       return true; // Indica que la operación fue exitosa
     } catch (error) {
       console.error("Error saving bio:", error);
@@ -223,7 +195,7 @@ const ProfileSettings: React.FC = () => {
   };
 
   const uploadAvatar = async (formData: FormData) => {
-    return await api.put(`${API_URL}/users/me`, formData, {
+    return await axios.put(`${API_URL}/users/me`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -239,10 +211,6 @@ const ProfileSettings: React.FC = () => {
     const cacheBuster = `?${new Date().getTime()}`;
     setProfileImage(`${avatarUrl}${cacheBuster}`);
     setUserInfo((prevUserInfo) => ({ ...prevUserInfo, avatar: avatarUrl }));
-  };
-
-  const refreshUserProfile = async () => {
-    await fetchProfile();
   };
 
   useEffect(() => {
@@ -285,7 +253,7 @@ const ProfileSettings: React.FC = () => {
   const handleDeleteProfile = async () => {
     if (deleteConfirmation === "Delete") {
       try {
-        await api.delete(`${API_URL}/users/me`);
+        await axios.delete(`${API_URL}/users/me`);
         router.push("/");
         logout();
       } catch (error) {
@@ -574,3 +542,27 @@ const ProfileSettings: React.FC = () => {
 };
 
 export default ProfileSettings;
+function refreshUserProfile() {
+  // Implement the logic to refresh the user profile here
+  // For example, you can make an API call to fetch the updated user data
+  // and update the state accordingly
+
+  // Example implementation:
+  const { isAuthenticated, user, setUser } = useAuth();
+
+  const fetchUserProfile = async () => {
+    try {
+      // Make an API call to fetch the updated user data
+      const response = await axios.get(`${API_URL}/users/me`);
+
+      // Update the user state with the fetched data
+      setUser(response.data);
+    } catch (error) {
+      console.error("Error refreshing user profile:", error);
+    }
+  };
+
+  if (isAuthenticated && user) {
+    fetchUserProfile();
+  }
+}

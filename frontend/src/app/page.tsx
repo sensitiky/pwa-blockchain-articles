@@ -363,17 +363,19 @@ const HomePage: React.FC = () => {
                   <div className="ml-0 sm:ml-4 mt-4 sm:mt-0 flex-1">
                     <div className="flex items-start mb-4">
                       {post.author?.avatar && (
-                        <img
-                          src={
-                            post.author?.avatar
-                              ? post.author.avatar.startsWith("http")
-                                ? post.author.avatar
-                                : `${API_URL}${post.author.avatar}`
-                              : "/default-avatar.webp"
-                          }
-                          alt="Author image"
-                          className="w-10 h-10 rounded-full"
-                        />
+                        <Link href={`/users/${post.author?.id}`} target="_blank">
+                          <img
+                            src={
+                              post.author?.avatar
+                                ? post.author.avatar.startsWith("http")
+                                  ? post.author.avatar
+                                  : `${API_URL}${post.author.avatar}`
+                                : "/default-avatar.webp"
+                            }
+                            alt="Author image"
+                            className="w-10 h-10 rounded-full"
+                          />
+                        </Link>
                       )}
                       <div className="ml-4">
                         <p className="text-lg font-semibold text-[#263238]">

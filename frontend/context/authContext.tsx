@@ -9,8 +9,7 @@ import React, {
   useMemo,
 } from "react";
 import axios from "axios";
-import UserInfo from "@/interfaces/interfaces";
-import User from "@/interfaces/interfaces";
+import { UserInfo, User } from "@/interfaces/interfaces";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
