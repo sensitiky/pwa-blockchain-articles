@@ -73,8 +73,8 @@ const LandingSection: FC = () => {
           </main>
 
           {/* Sección Derecha - Fondo Claro */}
-          <main className="flex mb-16 flex-col items-center justify-center bg-gradient-to-b from-white to-cyan-100 text-black px-6 font-medium">
-            <div className="space-y-2 max-w-lg w-1/2 text-left mt-20">
+          <main className="flex flex-col items-center justify-center bg-gradient-to-b from-white to-cyan-100 text-black px-6 font-medium">
+            <div className="space-y-2 max-w-lg w-1/2 text-left mb-[1.6em]">
               {/* Texto descriptivo */}
               <p className="text-xl text-[#263238] font-normal">
                 Are you an enthusiast of blockchain{" "}
@@ -82,16 +82,9 @@ const LandingSection: FC = () => {
                 technology and new opportunities in{" "}
                 <br className="hidden sm:block" />
                 the web3 world?{" "}
-                <span className="font-extrabold">
-                  Join our <br className="hidden sm:block" />
-                  community
-                </span>{" "}
-                of entrepreneurs, <br className="hidden sm:block" />
-                developers, and early adopters and{" "}
-                <br className="hidden sm:block" />
-                follow us on our social networks so{" "}
-                <br className="hidden sm:block" />
-                you don't miss a thing.
+                <span className="font-extrabold">Join our community</span> of
+                entrepreneurs, developers, and early adopters and follow us on
+                our social networks so you don't miss a thing.
               </p>
 
               {/* Botones estilizados */}
@@ -115,7 +108,7 @@ const LandingSection: FC = () => {
               <div className="flex justify-center">
                 <Image
                   src="/about2.svg"
-                  width={300}
+                  width={250}
                   height={200}
                   className="mr-20"
                   alt="Social Media About"
