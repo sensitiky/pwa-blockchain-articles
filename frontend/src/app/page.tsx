@@ -444,7 +444,8 @@ const HomePage: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex justify-end">
+                <div className="flex-grow"></div>{" "}
+                <div className="flex justify-end relative">
                   <Link href={`/posts/${post.id}`}>
                     <Button className="text-base rounded-full">
                       Read More

@@ -324,45 +324,47 @@ const PostPage = () => {
     ? post.author.avatar.startsWith("http")
       ? post.author.avatar
       : `${API_URL}${post.author.avatar}`
-    : "/default-avatar.webp";
+    : "default-avatar.webp";
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-gray-900">
       <Header />
       <div className="px-4 py-20 md:px-6 lg:py-2">
         <div className="mx-auto max-w-4xl">
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-6 space-y-4 sm:space-y-0">
-            <button
-              className="hover:underline bg-inherit text-black inline-flex h-8 items-start justify-center rounded-md px-4 text-sm font-medium transition-colors hover:bg-inherit focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-              onClick={handleGoBack}
-            >
-              <ArrowLeftIcon className="mr-2 h-4 w-4" />
-              Go Back
-            </button>
-
-            <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
-              <Avatar className="h-10 w-10">
-                <AvatarImage
-                  src={avatarUrl}
-                  alt={`${post.author?.firstName}'s avatar`}
-                />
-                <AvatarFallback>{post.author?.user}</AvatarFallback>
-              </Avatar>
-              <div className="text-center sm:text-left">
-                <p className="text-sm font-medium text-black">
-                  {post.author?.user ?? "Author"}
-                </p>
-                <p className="text-xs text-gray-500 line-clamp-2">
-                  {post.author?.role}
-                </p>
+          <button
+            className="hover:underline bg-inherit mt-10 mb-10 text-black inline-flex h-8 items-start justify-center rounded-md px-4 text-sm font-medium transition-colors hover:bg-inherit focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+            onClick={handleGoBack}
+          >
+            <ArrowLeftIcon className="mr-2 h-4 w-4" />
+            Go Back
+          </button>
+          <div className="flex flex-col sm:flex-row items-center mb-6 space-y-4 sm:space-y-0 justify-between">
+            <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 justify-between w-full">
+              <div className="flex items-center space-x-4">
+                <Avatar className="size-12">
+                  <AvatarImage
+                    src={avatarUrl}
+                    alt={`${post.author?.firstName}'s avatar`}
+                  />
+                  <AvatarFallback>{post.author?.user}</AvatarFallback>
+                </Avatar>
+                <div className="text-center sm:text-left">
+                  <p className="text-base font-medium text-black">
+                    {post.author?.user ?? "Author"}
+                  </p>
+                  <p className="text-base text-gray-500 line-clamp-2">
+                    {post.author?.role}
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
+
+              <div className="flex items-center space-x-4">
                 {post.author?.twitter && (
                   <Link
                     href={post.author.twitter}
                     className="text-muted-foreground hover:text-foreground"
                   >
-                    <FaTwitter className="h-5 w-5 text-black" />
+                    <FaTwitter className="size-7 text-black mr-10" />
                     <span className="sr-only">Twitter</span>
                   </Link>
                 )}
@@ -371,7 +373,7 @@ const PostPage = () => {
                     href={post.author.linkedin}
                     className="text-muted-foreground hover:text-foreground"
                   >
-                    <FaLinkedin className="h-5 w-5 text-black" />
+                    <FaLinkedin className="size-7 text-black mr-10" />
                     <span className="sr-only">LinkedIn</span>
                   </Link>
                 )}
@@ -380,11 +382,12 @@ const PostPage = () => {
                     href={post.author.facebook}
                     className="text-muted-foreground hover:text-foreground"
                   >
-                    <FaFacebook className="h-5 w-5 text-black" />
+                    <FaFacebook className="size-7 text-black mr-10" />
                     <span className="sr-only">Facebook</span>
                   </Link>
                 )}
               </div>
+
               {user?.id === post.author?.id && (
                 <div className="flex space-x-2">
                   <Button
@@ -525,7 +528,9 @@ const PostPage = () => {
                     </Avatar>
                     <div>
                       <p className="text-sm font-medium">{authorName}</p>
-                      <p className="text-sm text-gray-500 font-light">{author.role}</p>
+                      <p className="text-sm text-gray-500 font-light">
+                        {author.role}
+                      </p>
                       <div className="text-xs text-gray-500">
                         {formatDate(comment.createdAt)}
                       </div>

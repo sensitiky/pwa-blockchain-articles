@@ -300,25 +300,25 @@ const Header = () => {
           >
             <Link
               href="/"
-              className="text-customColor-hueso hover:text-customColor-innovatio transition-colors duration-300"
+              className="text-white hover:text-white/80 transition-colors duration-300"
             >
               Home
             </Link>
             <Link
               href="/articles"
-              className="text-customColor-hueso hover:text-customColor-innovatio transition-colors duration-300"
+              className="text-white hover:text-white/80 transition-colors duration-300"
             >
               Articles
             </Link>
             <Link
               href="/about"
-              className="text-customColor-hueso hover:text-customColor-innovatio transition-colors duration-300"
+              className="text-white hover:text-white/80 transition-colors duration-300"
             >
               About Us
             </Link>
             <Link
               href="/support"
-              className="text-customColor-hueso hover:text-customColor-innovatio transition-colors duration-300"
+              className="text-white hover:text-white/80 transition-colors duration-300"
             >
               Support Us
             </Link>
@@ -467,7 +467,7 @@ const Header = () => {
                 ) : (
                   <button
                     onClick={handleStartNewCampaign}
-                    className="w-full rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:bg-gray-1003 hover:text-customColor-innovatio"
+                    className="w-full rounded-full bg-customColor-innovatio text-customColor-innovatio3 hover:bg-gray-1003 hover:text-white/80"
                   >
                     Get Started
                   </button>
