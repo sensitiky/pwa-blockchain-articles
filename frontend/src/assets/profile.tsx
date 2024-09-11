@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,26 +20,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import Image from "next/image";
 import axios from "axios";
-
+import { User } from "@/interfaces/interfaces2";
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
-
-interface User {
-  firstName?: string;
-  lastName?: string;
-  date?: Date | null;
-  email?: string;
-  user?: string;
-  country?: string;
-  medium?: string;
-  instagram?: string;
-  facebook?: string;
-  twitter?: string;
-  linkedin?: string;
-  bio?: string;
-  avatar?: string;
-  postCount?: number;
-  role?: string;
-}
 
 const Container = styled.div`
   display: flex;
@@ -113,8 +95,16 @@ const ProfileSettings: React.FC = () => {
   };
 
   const handleProfileSave = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No token found");
+    }
     try {
-      await axios.put(`${API_URL}/users/me`, userInfo);
+      await axios.put(`${API_URL}/users/me`, userInfo, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setUser({
         ...user,
         ...userInfo,
@@ -147,18 +137,28 @@ const ProfileSettings: React.FC = () => {
   };
 
   const handleBioSave = async (): Promise<boolean> => {
-    // Permite letras, números, espacios, puntuación común y URL (http/https)
     const validBioPattern = /^[a-zA-Z0-9\s.,!?'"\-_:\/?&=]*$/;
-
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No token found");
+    }
     if (!validBioPattern.test(bio)) {
       alert(
         "Bio contains invalid characters. Only letters, numbers, spaces, and common punctuation are allowed."
       );
-      return false; // Indica que la operación falló
+      return false;
     }
 
     try {
-      await axios.put(`${API_URL}/users/me`, { ...userInfo, bio });
+      await axios.put(
+        `${API_URL}/users/me`,
+        { ...userInfo, bio },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setUserInfo({ ...userInfo, bio });
       setUser({ ...user, id: user?.id || 0, bio });
       return true; // Indica que la operación fue exitosa
@@ -265,11 +265,16 @@ const ProfileSettings: React.FC = () => {
     : "/default-avatar.webp";
 
   const handleDeleteProfile = async () => {
+    const token = localStorage.getItem("token");
     if (deleteConfirmation === "Delete") {
       try {
-        await axios.delete(`${API_URL}/users/me`);
-        router.push("/");
+        await axios.delete(`${API_URL}/users/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         logout();
+        router.push("/");
       } catch (error) {
         console.error("Error deleting profile:", error);
       }

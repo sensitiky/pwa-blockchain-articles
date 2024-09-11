@@ -1,7 +1,7 @@
 export interface User {
   firstName?: string;
   lastName?: string;
-  date?: Date;
+  date?: Date | null;
   email?: string;
   user?: string;
   country?: string;
@@ -13,6 +13,7 @@ export interface User {
   bio?: string;
   avatar?: string;
   postCount?: number;
+  role?: string;
 }
 
 export interface Post {

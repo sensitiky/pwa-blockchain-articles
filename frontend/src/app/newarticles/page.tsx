@@ -133,7 +133,7 @@ export default function NewArticles() {
       return;
     }
 
-    const tags = selectedTags.map((tag) => ({ id: tag.id, name: tag.name }));
+    const tags = selectedTags.map((tag) => tag.name);
 
     const formData = new FormData();
     if (title.length > 140) {

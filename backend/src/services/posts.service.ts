@@ -118,15 +118,25 @@ export class PostsService {
   private async processTags(
     tags: string | string[] | TagDto[],
   ): Promise<Tag[]> {
-    const tagNames = Array.isArray(tags) ? tags : JSON.parse(tags);
+    const tagNames = Array.isArray(tags)
+      ? tags.map((tag) => (typeof tag === 'string' ? tag : tag.name))
+      : JSON.parse(tags);
+
+    // Find existing tags
     const existingTags = await this.tagsRepository.find({
       where: { name: In(tagNames) },
     });
     const existingTagNames = existingTags.map((tag) => tag.name);
-    const newTags = tagNames
-      .filter((name) => !existingTagNames.includes(name))
-      .map((name) => this.tagsRepository.create({ name }));
 
+    // Filter out existing tags and create new tags
+    const newTagNames = tagNames.filter(
+      (name) => !existingTagNames.includes(name),
+    );
+    const newTags = newTagNames.map((name) =>
+      this.tagsRepository.create({ name }),
+    );
+
+    // Save new tags
     if (newTags.length > 0) {
       await this.tagsRepository.save(newTags);
     }

@@ -10,32 +10,7 @@ import Image from "next/image";
 import { useAuth } from "../../../context/authContext";
 import React from "react";
 import { Button } from "@/components/ui/button";
-
-type Category = {
-  id: number;
-  name: string;
-};
-
-interface Post {
-  id: number;
-  title: string;
-  content: string;
-  imageUrlBase64: string | null;
-  createdAt: string;
-  description: string;
-  author?: { id: number; user: string; avatar?: string; role: string };
-  category?: Category;
-  comments: Comment[];
-  favorites: number;
-  tags: Tag[];
-  commentscount: number;
-  favoritescount: number;
-}
-
-interface Tag {
-  id: number;
-  name: string;
-}
+import { Post, Category, Tag } from "@/interfaces/interface3";
 
 const POSTS_PER_PAGE = 20;
 
@@ -240,6 +215,36 @@ const Articles = () => {
     [fetchPosts, sortOrder, selectedCategoryId, selectedTagId]
   );
 
+  const formatTags = (tags: any[]): string => {
+    return (
+      tags
+        .map((tag) => {
+          try {
+            const parsedName = JSON.parse(tag.name);
+            return parsedName.name;
+          } catch (err) {
+            return tag.name;
+          }
+        })
+        .join(", ") || "No tags"
+    );
+  };
+
+  const formatTagsButton = (tags: any[]): string => {
+    return (
+      tags
+        .map((tag) => {
+          try {
+            const parsedName = JSON.parse(tag.name);
+            return parsedName.name;
+          } catch (err) {
+            return tag.name;
+          }
+        })
+        .join(", ") || "No tags"
+    );
+  };
+
   const calculateReadingTime = useCallback((text: string) => {
     const wordsPerMinute = 200;
     const cleanText = text.replace(/<[^>]*>/g, "");
@@ -285,7 +290,7 @@ const Articles = () => {
           <div className="flex flex-col justify-between items-start mt-2">
             <div className="flex items-center mb-2 w-full">
               <Link href={`/users/${post.author?.id}`} target="_blank">
-                <img
+                <Image
                   src={
                     post.author?.avatar
                       ? post.author.avatar.startsWith("http")
@@ -294,6 +299,8 @@ const Articles = () => {
                       : "/default-avatar.webp"
                   }
                   alt="Author image"
+                  width={1920}
+                  height={1080}
                   className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
                 />
               </Link>
@@ -307,19 +314,18 @@ const Articles = () => {
               </div>
               <div className="flex flex-col items-end">
                 <span className="flex items-center text-[#263238] text-[1rem] sm:text-base truncate">
-                  <img
+                  <Image
                     src="/category.png"
                     className="w-3 h-3 sm:w-4 sm:h-4 mr-1"
                     alt="Category"
+                    width={1920}
+                    height={1080}
                   />{" "}
                   {post.category?.name}
                 </span>
                 <div className="flex items-center text-[#263238] text-[0.95rem] sm:text-sm truncate mt-1">
                   <TagIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                  {post.tags
-                    .slice(0, 2)
-                    .map((tag) => tag.name)
-                    .join(", ")}
+                  {formatTags(Array.isArray(post.tags) ? post.tags : [])}
                 </div>
               </div>
             </div>
@@ -348,13 +354,21 @@ const Articles = () => {
               </span>
             </div>
             <div className="flex items-center">
-              <img src="/comment.png" alt="Comment" className="w-4 h-4 mr-1" />
+              <Image
+                src="/comment.png"
+                alt="Comment"
+                width={1920}
+                height={1080}
+                className="w-4 h-4 mr-1"
+              />
               <span className="text-sm">{post.commentscount || 0}</span>
             </div>
             <div className="flex items-center">
-              <img
+              <Image
                 src="/saved-svgrepo-com.png"
                 alt="Saved"
+                width={1920}
+                height={1080}
                 className="w-4 h-4 mr-1"
               />
               <span className="text-sm">{post.favoritescount || 0}</span>
@@ -417,7 +431,19 @@ const Articles = () => {
                   Tags
                 </h3>
                 <div className="flex flex-wrap justify-center gap-2 sm:gap-4">
-                  {renderTags()}
+                  {tags.map((tag) => (
+                    <Button
+                      key={tag.id}
+                      className={`text-white rounded-full border border-white text-base font-normal ${
+                        selectedTagId === tag.id
+                          ? "bg-[#FFC017] text-[#0d0d0d] hover:bg-[#FFC017]"
+                          : ""
+                      }`}
+                      onClick={() => handleTagChange(tag.id)}
+                    >
+                      {formatTagsButton([tag])} ({tag.count})
+                    </Button>
+                  ))}
                 </div>
               </div>
             )}

@@ -208,8 +208,10 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
                 }}
               >
                 {favorite.imageUrlBase64 ? (
-                  <img
+                  <Image
                     src={favorite.imageUrlBase64}
+                    width={1920}
+                    height={1080}
                     alt={favorite.title || "Placeholder"}
                     className="h-32 w-full sm:w-32 sm:h-32 md:w-40 md:h-40 object-cover rounded-lg border border-gray-300 mb-3 sm:mb-0 sm:mr-4"
                   />

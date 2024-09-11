@@ -214,7 +214,7 @@ const Posts: React.FC = () => {
                   className="relative group overflow-hidden rounded-lg shadow-lg"
                 >
                   {post.imageUrlBase64 ? (
-                    <img
+                    <Image
                       src={post.imageUrlBase64}
                       alt={post.title}
                       width={600}

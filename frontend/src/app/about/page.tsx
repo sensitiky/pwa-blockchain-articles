@@ -64,9 +64,11 @@ const LandingSection: FC = () => {
             </div>
             {/* Fondo de imagen borroso */}
             <div className="absolute inset-0 flex justify-center items-center z-10">
-              <img
+              <Image
                 src="/bg-about.gif"
                 className="object-cover w-full h-full opacity-25"
+                width={1920}
+                height={1080}
                 alt="Background"
               />
             </div>
