@@ -213,6 +213,19 @@ const ProfileSettings: React.FC = () => {
     setUserInfo((prevUserInfo) => ({ ...prevUserInfo, avatar: avatarUrl }));
   };
 
+  const handleAvatarUploadError = (error: any) => {
+    console.error("Error uploading avatar:", error);
+  };
+
+  const refreshUserProfile = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/users/me`);
+      setUser(response.data);
+    } catch (error) {
+      console.error("Error refreshing user profile:", error);
+    }
+  };
+
   useEffect(() => {
     const savedRole = localStorage.getItem("userRole");
     if (savedRole) {
@@ -225,10 +238,6 @@ const ProfileSettings: React.FC = () => {
       localStorage.setItem("userRole", role);
     }
   }, [role]);
-
-  const handleAvatarUploadError = (error: any) => {
-    console.error("Error uploading avatar:", error);
-  };
 
   if (loading) {
     return (
@@ -259,31 +268,6 @@ const ProfileSettings: React.FC = () => {
       } catch (error) {
         console.error("Error deleting profile:", error);
       }
-    }
-  };
-
-  const refreshUserProfile = () => {
-    // Implement the logic to refresh the user profile here
-    // For example, you can make an API call to fetch the updated user data
-    // and update the state accordingly
-
-    // Example implementation:
-    const { isAuthenticated, user, setUser } = useAuth();
-
-    const fetchUserProfile = async () => {
-      try {
-        // Make an API call to fetch the updated user data
-        const response = await axios.get(`${API_URL}/users/me`);
-
-        // Update the user state with the fetched data
-        setUser(response.data);
-      } catch (error) {
-        console.error("Error refreshing user profile:", error);
-      }
-    };
-
-    if (isAuthenticated && user) {
-      fetchUserProfile();
     }
   };
 
