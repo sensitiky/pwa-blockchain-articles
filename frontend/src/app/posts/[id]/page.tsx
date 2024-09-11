@@ -364,27 +364,30 @@ const PostPage = () => {
                 {post.author?.twitter && (
                   <Link
                     href={post.author.twitter}
+                    target="_blank"
                     className="text-muted-foreground hover:text-foreground"
                   >
-                    <FaTwitter className="size-7 text-black mr-10" />
+                    <FaTwitter className="size-6 text-black mr-10" />
                     <span className="sr-only">Twitter</span>
                   </Link>
                 )}
                 {post.author?.linkedin && (
                   <Link
                     href={post.author.linkedin}
+                    target="_blank"
                     className="text-muted-foreground hover:text-foreground"
                   >
-                    <FaLinkedin className="size-7 text-black mr-10" />
+                    <FaLinkedin className="size-6 text-black mr-10" />
                     <span className="sr-only">LinkedIn</span>
                   </Link>
                 )}
                 {post.author?.facebook && (
                   <Link
                     href={post.author.facebook}
+                    target="_blank"
                     className="text-muted-foreground hover:text-foreground"
                   >
-                    <FaFacebook className="size-7 text-black mr-10" />
+                    <FaFacebook className="size-6 text-black mr-10" />
                     <span className="sr-only">Facebook</span>
                   </Link>
                 )}

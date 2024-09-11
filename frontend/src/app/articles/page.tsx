@@ -325,9 +325,11 @@ const Articles = () => {
             </div>
           </div>
           <div className="flex-1 mt-4">
-            <h2 className="text-xl sm:text-2xl font-bold mb-2 truncate text-[#263238]">
-              {post.title}
-            </h2>
+            <Link href={`/posts/${post.id}`}>
+              <h2 className="text-xl sm:text-2xl font-bold mb-2 truncate text-[#263238]">
+                {post.title}
+              </h2>
+            </Link>
             <p
               className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-3 break-words"
               dangerouslySetInnerHTML={{

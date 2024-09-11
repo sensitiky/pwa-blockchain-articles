@@ -388,9 +388,11 @@ const HomePage: React.FC = () => {
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold mb-2 text-[#263238]">
-                        {post.title}
-                      </h3>
+                      <Link href={`/posts/${post.id}`}>
+                        <h3 className="text-xl font-bold mb-2 text-[#263238]">
+                          {post.title}
+                        </h3>
+                      </Link>
                       {!post.imageUrlBase64 &&
                         typeof post.description === "string" &&
                         !post.description.includes("<iframe") && (

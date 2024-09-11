@@ -190,9 +190,11 @@ const ArticleCarousel = () => {
                   )}
                 </div>
                 <div className="overflow-hidden">
-                  <h2 className="text-xl font-semibold truncate text-[#263238]">
-                    {post.title}
-                  </h2>
+                  <Link href={`/posts/${post.id}`}>
+                    <h2 className="text-xl font-semibold truncate text-[#263238]">
+                      {post.title}
+                    </h2>
+                  </Link>
                 </div>
                 <div className="overflow-hidden">
                   <div className="text-sm text-gray-900 line-clamp-3">
