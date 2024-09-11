@@ -262,6 +262,31 @@ const ProfileSettings: React.FC = () => {
     }
   };
 
+  const refreshUserProfile = () => {
+    // Implement the logic to refresh the user profile here
+    // For example, you can make an API call to fetch the updated user data
+    // and update the state accordingly
+
+    // Example implementation:
+    const { isAuthenticated, user, setUser } = useAuth();
+
+    const fetchUserProfile = async () => {
+      try {
+        // Make an API call to fetch the updated user data
+        const response = await axios.get(`${API_URL}/users/me`);
+
+        // Update the user state with the fetched data
+        setUser(response.data);
+      } catch (error) {
+        console.error("Error refreshing user profile:", error);
+      }
+    };
+
+    if (isAuthenticated && user) {
+      fetchUserProfile();
+    }
+  };
+
   const ensureAbsoluteUrl = (url?: string) => {
     if (!url) return "#";
     return url.startsWith("http://") || url.startsWith("https://")
@@ -542,27 +567,3 @@ const ProfileSettings: React.FC = () => {
 };
 
 export default ProfileSettings;
-function refreshUserProfile() {
-  // Implement the logic to refresh the user profile here
-  // For example, you can make an API call to fetch the updated user data
-  // and update the state accordingly
-
-  // Example implementation:
-  const { isAuthenticated, user, setUser } = useAuth();
-
-  const fetchUserProfile = async () => {
-    try {
-      // Make an API call to fetch the updated user data
-      const response = await axios.get(`${API_URL}/users/me`);
-
-      // Update the user state with the fetched data
-      setUser(response.data);
-    } catch (error) {
-      console.error("Error refreshing user profile:", error);
-    }
-  };
-
-  if (isAuthenticated && user) {
-    fetchUserProfile();
-  }
-}
