@@ -24,17 +24,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-gilroy font-medium">
-        <AuthWrapper>
-          <Background />
-          <FacebookInit />
-          <GoogleOAuthProvider clientId={clientId as string}>
-            <AuthProvider>
+        <GoogleOAuthProvider clientId={clientId as string}>
+          <AuthProvider>
+            <AuthWrapper>
+              <Background />
+              <FacebookInit />
               <main className="w-full h-full overflow-x-hidden text-[#263238]">
                 {children}
               </main>
-            </AuthProvider>
-          </GoogleOAuthProvider>
-        </AuthWrapper>
+            </AuthWrapper>
+          </AuthProvider>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

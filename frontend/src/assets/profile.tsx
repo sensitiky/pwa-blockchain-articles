@@ -195,9 +195,14 @@ const ProfileSettings: React.FC = () => {
   };
 
   const uploadAvatar = async (formData: FormData) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No token found");
+    }
     return await axios.put(`${API_URL}/users/me`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
       },
     });
   };

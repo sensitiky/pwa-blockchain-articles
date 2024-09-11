@@ -25,46 +25,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import DOMPurify from "dompurify";
-
-const Container = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  padding: 1rem;
-  background-color: inherit;
-`;
-
-interface User {
-  firstName?: string;
-  lastName?: string;
-  date?: Date;
-  email?: string;
-  user?: string;
-  country?: string;
-  medium?: string;
-  instagram?: string;
-  facebook?: string;
-  twitter?: string;
-  linkedin?: string;
-  bio?: string;
-  avatar?: string;
-  postCount?: number;
-}
-
-interface Post {
-  id: number;
-  title: string;
-  content: string;
-  description: string;
-  imageUrl: { type: string; data: number[] } | null;
-  imageUrlBase64?: string;
-  category: { name: string };
-  comments: { id: number; content: string }[];
-  favorites: { id: number }[];
-  createdAt: string;
-  tags: { id: number; name: string }[];
-}
+import { User, Post } from "@/interfaces/interfaces2";
 
 const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -118,7 +79,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
 
   if (loading) {
     return (
-      <Container>
+      <div className="flex justify-center align-middle h-screen p-1 bg-inherit">
         <Image
           src="/Logo-blogchain.png"
           width={300}
@@ -126,7 +87,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
           alt="Blogchain Logo"
           className="animate-bounce"
         />
-      </Container>
+      </div>
     );
   }
 
