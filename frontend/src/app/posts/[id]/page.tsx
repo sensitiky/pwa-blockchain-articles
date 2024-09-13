@@ -1,25 +1,25 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import Header from "@/assets/header";
-import Image from "next/image";
-import Footer from "@/assets/footer";
-import axios from "axios";
+'use client';
+import React, { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import Header from '@/assets/header';
+import Image from 'next/image';
+import Footer from '@/assets/footer';
+import axios from 'axios';
 import {
   FaFacebook,
   FaTwitter,
   FaLinkedin,
   FaEdit,
   FaTrash,
-} from "react-icons/fa";
-import { ArrowLeftIcon } from "lucide-react";
-import { useAuth } from "../../../../context/authContext";
-import DeletePostModal from "@/assets/deletepost";
-import styled from "styled-components";
-import parse, { DOMNode, domToReact, Element } from "html-react-parser";
+} from 'react-icons/fa';
+import { ArrowLeftIcon } from 'lucide-react';
+import { useAuth } from '../../../../context/authContext';
+import DeletePostModal from '@/assets/deletepost';
+import styled from 'styled-components';
+import parse, { DOMNode, domToReact, Element } from 'html-react-parser';
 
 const Container = styled.div`
   display: flex;
@@ -84,7 +84,8 @@ const PostPage = () => {
   const { user } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
-  const [commentContent, setCommentContent] = useState("");
+  const [commentContent, setCommentContent] = useState('');
+  const [showBookmarkMessage, setShowBookmarkMessage] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
@@ -103,7 +104,7 @@ const PostPage = () => {
       setComments(postData.comments || []);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching post data:", error);
+      console.error('Error fetching post data:', error);
       setLoading(false);
     }
   };
@@ -115,15 +116,15 @@ const PostPage = () => {
       //console.log("Comments data:", commentsData);
       setComments(commentsData);
     } catch (error) {
-      console.error("Error fetching comments:", error);
+      console.error('Error fetching comments:', error);
     }
   };
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
-      console.error("User is not logged in");
-      alert("You need to be authenticated in order to interact");
+      console.error('User is not logged in');
+      alert('You need to be authenticated in order to interact');
       return;
     }
     try {
@@ -146,16 +147,16 @@ const PostPage = () => {
       };
 
       setComments([...comments, newComment]);
-      setCommentContent("");
+      setCommentContent('');
     } catch (error) {
-      console.error("Error posting comment:", error);
+      console.error('Error posting comment:', error);
     }
   };
 
   const handleFavorite = async (postId: number, commentId?: number) => {
     if (!user) {
-      console.error("User is not logged in");
-      alert("You need to be authenticated in order to interact");
+      console.error('User is not logged in');
+      alert('You need to be authenticated in order to interact');
       return;
     }
     try {
@@ -183,7 +184,7 @@ const PostPage = () => {
         );
       }
     } catch (error) {
-      console.error("Error favoriting post or comment:", error);
+      console.error('Error favoriting post or comment:', error);
     }
   };
 
@@ -192,21 +193,23 @@ const PostPage = () => {
       await handleFavorite(post.id);
     }
     setIsFavorited(true);
+    setShowBookmarkMessage(true);
+    setTimeout(() => setShowBookmarkMessage(false), 10000);
   };
 
   const handleDelete = async () => {
     if (!user) {
-      console.error("User is not logged in");
-      alert("You need to be authenticated to delete the post");
+      console.error('User is not logged in');
+      alert('You need to be authenticated to delete the post');
       return;
     }
     try {
       await axios.delete(`${API_URL}/posts/${id}`);
-      alert("Post deleted successfully!");
-      router.push("/articles");
+      alert('Post deleted successfully!');
+      router.push('/articles');
     } catch (error) {
-      console.error("Error deleting post:", error);
-      alert("Error deleting post");
+      console.error('Error deleting post:', error);
+      alert('Error deleting post');
     }
   };
 
@@ -262,11 +265,11 @@ const PostPage = () => {
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
-      hour: "numeric",
-      minute: "numeric",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
+      hour: 'numeric',
+      minute: 'numeric',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
@@ -279,14 +282,14 @@ const PostPage = () => {
 
           // Estilo general para elementos de bloque
           const blockStyle = {
-            whiteSpace: "pre-wrap", // Mantiene saltos de línea y espacios
-            fontFamily: "Gilroy, sans-serif", // Aplica la fuente Gilroy
-            lineHeight: "1.6", // Asegura un espacio adecuado entre líneas
-            marginBottom: "1rem", // Asegura espacio entre párrafos
+            whiteSpace: 'pre-wrap', // Mantiene saltos de línea y espacios
+            fontFamily: 'Gilroy, sans-serif', // Aplica la fuente Gilroy
+            lineHeight: '1.6', // Asegura un espacio adecuado entre líneas
+            marginBottom: '1rem', // Asegura espacio entre párrafos
           };
 
           // Aplicar estilo para respetar los saltos de línea y espacios a otros elementos de bloque
-          if (["p", "div", "span", "h1", "h2", "h3"].includes(tagName)) {
+          if (['p', 'div', 'span', 'h1', 'h2', 'h3'].includes(tagName)) {
             return (
               <div style={blockStyle} {...attribs}>
                 {domToReact(domNode.children as DOMNode[])}
@@ -295,14 +298,14 @@ const PostPage = () => {
           }
 
           // Especialmente para elementos <br> que deben generar un salto de línea
-          if (tagName === "br") {
+          if (tagName === 'br') {
             return <br />;
           }
 
           // Elementos permitidos
           if (
-            tagName === "iframe" ||
-            ["b", "strong", "i", "em", "a"].includes(tagName)
+            tagName === 'iframe' ||
+            ['b', 'strong', 'i', 'em', 'a'].includes(tagName)
           ) {
             return domToReact([domNode] as DOMNode[]);
           }
@@ -314,17 +317,17 @@ const PostPage = () => {
   const handleGoBack = () => {
     const referrer = document.referrer;
     if (referrer.includes(`/posts/edit/${id}`)) {
-      router.push("/articles");
+      router.push('/articles');
     } else {
       router.back();
     }
   };
 
   const avatarUrl = post.author?.avatar
-    ? post.author.avatar.startsWith("http")
+    ? post.author.avatar.startsWith('http')
       ? post.author.avatar
       : `${API_URL}${post.author.avatar}`
-    : "default-avatar.webp";
+    : 'default-avatar.webp';
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-gray-900">
@@ -352,7 +355,7 @@ const PostPage = () => {
                 </Link>
                 <div className="text-center sm:text-left">
                   <p className="text-base font-medium text-black">
-                    {post.author?.user ?? "Author"}
+                    {post.author?.user ?? 'Author'}
                   </p>
                   <p className="text-base text-gray-500 line-clamp-2">
                     {post.author?.role}
@@ -413,7 +416,7 @@ const PostPage = () => {
             )}
           </div>
           <p className="text-gray-500 mt-4">
-            {formatDate(post.createdAt)} •{" "}
+            {formatDate(post.createdAt)} •{' '}
             {calculateReadingTime(post.description)} min read
           </p>
           <h1 className="text-4xl font-serif font-bold text-center mt-6">
@@ -443,7 +446,7 @@ const PostPage = () => {
                   className="w-4 h-4 mr-2"
                   alt="Category Icon"
                 />
-                {post.category ? post.category.name : "Uncategorized"}
+                {post.category ? post.category.name : 'Uncategorized'}
               </span>
             </div>
           )}
@@ -460,7 +463,7 @@ const PostPage = () => {
                       src="/tag-svgrepo-com.png"
                       alt="Tag icon"
                     />
-                    {tag ? tag.name : "Uncategorized"}
+                    {tag ? tag.name : 'Uncategorized'}
                   </li>
                 ))}
               </ul>
@@ -471,6 +474,11 @@ const PostPage = () => {
               className="w-fit flex items-center space-x-1"
               onClick={handleFavoriteClick}
             >
+              {showBookmarkMessage && (
+                <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 text-xl bg-[#000916] text-[#FFC017] rounded w-fit p-1">
+                  You have bookmarked this item
+                </div>
+              )}
               <svg
                 width="1.5rem"
                 height="1.5rem"
@@ -479,22 +487,19 @@ const PostPage = () => {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <g id="SVGRepo_bgCarrier" stroke-width="0" />
-
                 <g
                   id="SVGRepo_tracerCarrier"
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 />
-
                 <g id="SVGRepo_iconCarrier">
-                  {" "}
                   <path
                     d="M19 19.2674V7.84496C19 5.64147 17.4253 3.74489 15.2391 3.31522C13.1006 2.89493 10.8994 2.89493 8.76089 3.31522C6.57467 3.74489 5 5.64147 5 7.84496V19.2674C5 20.6038 6.46752 21.4355 7.63416 20.7604L10.8211 18.9159C11.5492 18.4945 12.4508 18.4945 13.1789 18.9159L16.3658 20.7604C17.5325 21.4355 19 20.6038 19 19.2674Z"
-                    stroke={isFavorited ? "#007BFF" : "#6b7280"}
+                    stroke={isFavorited ? '#007BFF' : '#6b7280'}
                     stroke-width="1.5"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                  />{" "}
+                  />
                 </g>
               </svg>
             </button>
@@ -509,12 +514,12 @@ const PostPage = () => {
           <div className="mt-8">
             {comments.map((comment) => {
               const author = comment.author || {
-                firstName: "Unknown",
-                lastName: "User",
-                avatar: "default-avatar.webp",
+                firstName: 'Unknown',
+                lastName: 'User',
+                avatar: 'default-avatar.webp',
               };
 
-              const avatarUrl = author.avatar?.startsWith("/")
+              const avatarUrl = author.avatar?.startsWith('/')
                 ? `${API_URL}${author.avatar}`
                 : author.avatar;
 
@@ -565,18 +570,18 @@ const PostPage = () => {
                         />
 
                         <g id="SVGRepo_iconCarrier">
-                          {" "}
+                          {' '}
                           <path
                             d="M15.7 4C18.87 4 21 6.98 21 9.76C21 15.39 12.16 20 12 20C11.84 20 3 15.39 3 9.76C3 6.98 5.13 4 8.3 4C10.12 4 11.31 4.91 12 5.71C12.69 4.91 13.88 4 15.7 4Z"
                             fill={
                               favoriteComments[comment.id]
-                                ? "#D22B2B"
-                                : "#6b7280"
+                                ? '#D22B2B'
+                                : '#6b7280'
                             }
                             stroke-width="2"
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                          />{" "}
+                          />{' '}
                         </g>
                       </svg>
                     </Button>

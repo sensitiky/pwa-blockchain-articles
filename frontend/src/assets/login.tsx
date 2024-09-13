@@ -1,32 +1,33 @@
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import axios from "axios";
-import { useAuth } from "../../context/authContext";
-import useFacebookSDK from "@/hooks/MetaSDK";
+'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import axios from 'axios';
+import { useAuth } from '../../context/authContext';
+import useFacebookSDK from '@/hooks/MetaSDK';
 import {
   GoogleOAuthProvider,
   GoogleLogin,
   CredentialResponse,
-} from "@react-oauth/google";
-import Link from "next/link";
-import { Checkbox } from "@/components/ui/checkbox";
-import "@fortawesome/fontawesome-free/css/all.min.css";
+} from '@react-oauth/google';
+import Link from 'next/link';
+import { Checkbox } from '@/components/ui/checkbox';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
 export default function LoginCard({ onClose }: { onClose: () => void }) {
   const [showRegister, setShowRegister] = useState(false);
-  const [user, setUser] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [verificationCode, setVerificationCode] = useState("");
+  const [user, setUser] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
   const [forgotPassword, setForgotPassword] = useState(false);
-  const [resetCode, setResetCode] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const [resetCode, setResetCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [codeSent, setCodeSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -57,7 +58,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     setPasswordCriteria(criteria);
 
     if (!criteria.length || !criteria.uppercase || !criteria.numberOrSymbol) {
-      setPasswordError("Password does not meet the criteria.");
+      setPasswordError('Password does not meet the criteria.');
       setCodeSent(false);
     } else {
       setPasswordError(null);
@@ -81,11 +82,11 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
         login(response.data);
         onClose();
       } else {
-        setError("Login failed");
+        setError('Login failed');
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data.message || "Login failed");
+        setError(err.response?.data.message || 'Login failed');
       } else {
         setError((err as Error).message);
       }
@@ -104,7 +105,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       !passwordCriteria.uppercase ||
       !passwordCriteria.numberOrSymbol
     ) {
-      setError("Password does not meet the criteria.");
+      setError('Password does not meet the criteria.');
       setLoading(false);
       return;
     }
@@ -119,25 +120,25 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       if (response.status === 200) {
         setAuthUser(response.data.user);
         login(response.data);
-        router.push("/users");
+        router.push('/users');
         onClose();
       } else {
-        setError("Registration failed");
+        setError('Registration failed');
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 400) {
-          setError("Invalid verification code.");
+          setError('Invalid verification code.');
         } else if (err.response?.status === 429) {
-          setError("Too many attempts. Please try again later.");
+          setError('Too many attempts. Please try again later.');
         } else if (err.response?.status ?? 0 >= 500) {
-          setError("Email already in use.");
+          setError('Email already in use.');
         } else {
-          setError(err.response?.data.message || "Registration failed");
+          setError(err.response?.data.message || 'Registration failed');
         }
-      } else if (err instanceof Error && err.message === "Network Error") {
+      } else if (err instanceof Error && err.message === 'Network Error') {
         setError(
-          "Unable to connect to the server. Please check your internet connection."
+          'Unable to connect to the server. Please check your internet connection.'
         );
       } else {
         setError((err as Error).message);
@@ -157,7 +158,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       !passwordCriteria.uppercase ||
       !passwordCriteria.numberOrSymbol
     ) {
-      setError("Password does not meet the criteria.");
+      setError('Password does not meet the criteria.');
       setLoading(false);
       return;
     }
@@ -171,10 +172,10 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       );
 
       if (checkResponse.data.exists) {
-        if (checkResponse.data.field === "email") {
-          setError("An account with this email already exists.");
-        } else if (checkResponse.data.field === "username") {
-          setError("This username is already taken.");
+        if (checkResponse.data.field === 'email') {
+          setError('An account with this email already exists.');
+        } else if (checkResponse.data.field === 'username') {
+          setError('This username is already taken.');
         }
         setLoading(false);
         return;
@@ -189,24 +190,24 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
       if (response.status === 200) {
         setCodeSent(true);
-        setError("Verification code sent to your email");
+        setMessage('Verification code sent to your email');
       } else {
-        setError("Failed to send verification code");
+        setError('Failed to send verification code');
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 429) {
-          setError("Too many attempts. Please try again later.");
+          setError('Too many attempts. Please try again later.');
         } else if (err.response?.status ?? 0 >= 500) {
-          setError("An unexpected error occurred. Please try again later.");
+          setError('An unexpected error occurred. Please try again later.');
         } else {
           setError(
-            err.response?.data.message || "Failed to send verification code"
+            err.response?.data.message || 'Failed to send verification code'
           );
         }
-      } else if (err instanceof Error && err.message === "Network Error") {
+      } else if (err instanceof Error && err.message === 'Network Error') {
         setError(
-          "Unable to connect to the server. Please check your internet connection."
+          'Unable to connect to the server. Please check your internet connection.'
         );
       } else {
         setError((err as Error).message);
@@ -229,14 +230,14 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
       if (response.status === 200) {
         setCodeSent(true);
-        setError("Password reset code sent to your email");
+        setError('Password reset code sent to your email');
       } else {
-        setError("Failed to send password reset code");
+        setError('Failed to send password reset code');
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
         setError(
-          err.response?.data.message || "Failed to send password reset code"
+          err.response?.data.message || 'Failed to send password reset code'
         );
       } else {
         setError((err as Error).message);
@@ -255,7 +256,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
       !passwordCriteria.uppercase ||
       !passwordCriteria.numberOrSymbol
     ) {
-      setError("Password does not meet the criteria.");
+      setError('Password does not meet the criteria.');
       setLoading(false);
       return;
     }
@@ -269,15 +270,15 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
       if (response.status === 200) {
         setError(
-          "Password reset successful, please login with your new password"
+          'Password reset successful, please login with your new password'
         );
         setForgotPassword(false);
       } else {
-        setError("Failed to reset password");
+        setError('Failed to reset password');
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data.message || "Failed to reset password");
+        setError(err.response?.data.message || 'Failed to reset password');
       } else {
         setError((err as Error).message);
       }
@@ -292,7 +293,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
     try {
       const token = credentialResponse.credential;
       if (!token) {
-        console.error("No token provided");
+        console.error('No token provided');
         return;
       }
 
@@ -306,14 +307,14 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
         const { user, token } = response.data;
         setAuthUser(user);
         login(response.data);
-        localStorage.setItem("token", token);
-        router.push("/users");
+        localStorage.setItem('token', token);
+        router.push('/users');
         onClose();
       } else {
-        console.error("Google login failed");
+        console.error('Google login failed');
       }
     } catch (err) {
-      console.error("Google login failed:", err);
+      console.error('Google login failed:', err);
     }
   };
 
@@ -324,10 +325,10 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
           const accessToken = response.authResponse.accessToken;
           handleFacebookResponse(accessToken);
         } else {
-          setError("User cancelled login or did not fully authorize.");
+          setError('User cancelled login or did not fully authorize.');
         }
       },
-      { scope: "public_profile,email" }
+      { scope: 'public_profile,email' }
     );
   };
 
@@ -344,10 +345,10 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
         login(res.data);
         onClose();
       } else {
-        setError("Facebook login failed");
+        setError('Facebook login failed');
       }
     } catch (err) {
-      setError("Facebook login failed");
+      setError('Facebook login failed');
     }
   };
 
@@ -358,7 +359,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
 
   return (
     <GoogleOAuthProvider
-      clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
+      clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}
     >
       <div className="mx-auto max-w-sm space-y-6 z-50">
         {!showRegister && !forgotPassword && (
@@ -403,7 +404,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
               <div className="relative">
                 <Input
                   id="password"
-                  type={passwordVisible ? "text" : "password"}
+                  type={passwordVisible ? 'text' : 'password'}
                   placeholder="Enter your password"
                   value={password}
                   onChange={handlePasswordChange}
@@ -415,7 +416,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   onClick={() => setPasswordVisible(!passwordVisible)}
                 >
                   <i
-                    className={`fas fa-eye${passwordVisible ? "-slash" : ""}`}
+                    className={`fas fa-eye${passwordVisible ? '-slash' : ''}`}
                   ></i>
                 </span>
               </div>
@@ -428,19 +429,19 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                 onClick={handleLogin}
                 disabled={loading}
               >
-                {loading ? "Logging in..." : "Login"}
+                {loading ? 'Logging in...' : 'Login'}
               </Button>
             </div>
 
             <div className="space-y-2 flex flex-col items-center">
               <GoogleLogin
                 onSuccess={handleGoogleLoginSuccess}
-                onError={() => setError("Google login failed")}
+                onError={() => setError('Google login failed')}
               />
             </div>
             <div className="mt-4 text-center text-sm">
               <div>
-                Don't have an account?{" "}
+                Don't have an account?{' '}
                 <button
                   onClick={() => setShowRegister(true)}
                   className="underline"
@@ -480,7 +481,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
               <div className="relative">
                 <Input
                   id="password"
-                  type={passwordVisible ? "text" : "password"}
+                  type={passwordVisible ? 'text' : 'password'}
                   placeholder="Enter your password"
                   value={password}
                   onChange={handlePasswordChange}
@@ -492,7 +493,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   onClick={() => setPasswordVisible(!passwordVisible)}
                 >
                   <i
-                    className={`fas fa-eye${passwordVisible ? "-slash" : ""}`}
+                    className={`fas fa-eye${passwordVisible ? '-slash' : ''}`}
                   ></i>
                 </span>
               </div>
@@ -503,8 +504,8 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                 <li
                   className={
                     passwordCriteria.length
-                      ? "text-green-500"
-                      : "text-muted-foreground"
+                      ? 'text-green-500'
+                      : 'text-muted-foreground'
                   }
                 >
                   💪🏽 At least 8 characters
@@ -512,8 +513,8 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                 <li
                   className={
                     passwordCriteria.uppercase
-                      ? "text-green-500"
-                      : "text-muted-foreground"
+                      ? 'text-green-500'
+                      : 'text-muted-foreground'
                   }
                 >
                   🤳🏽 Lowercase or uppercase letter
@@ -521,8 +522,8 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                 <li
                   className={
                     passwordCriteria.numberOrSymbol
-                      ? "text-green-500"
-                      : "text-muted-foreground"
+                      ? 'text-green-500'
+                      : 'text-muted-foreground'
                   }
                 >
                   👨🏽‍💻 Number or symbol
@@ -538,8 +539,13 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
             ) : null}
             {codeSent && (
               <>
-                <div className="space-y-2">
-                  <Label htmlFor="verification-code">Verification Code</Label>
+                <div className="space-y-2 justify-center">
+                  {message && (
+                    <span className="text-[#FFC017] justify-center flex font-normal">
+                      {message}
+                    </span>
+                  )}
+                  <br />
                   <Input
                     id="verification-code"
                     type="text"
@@ -561,7 +567,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                     onClick={handleRegister}
                     disabled={loading}
                   >
-                    {loading ? "Registering..." : "Register"}
+                    {loading ? 'Registering...' : 'Register'}
                   </Button>
                 </div>
               </>
@@ -574,7 +580,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                   onClick={handleSendVerificationCode}
                   disabled={loading}
                 >
-                  {loading ? "Checking..." : "Send Verification Code"}
+                  {loading ? 'Checking...' : 'Send Verification Code'}
                 </Button>
               </div>
             )}
@@ -584,32 +590,32 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                 htmlFor="terms"
                 className="text-sm text-gray-600 dark:text-gray-400"
               >
-                I confirmed that I have read and agree to the{" "}
+                I confirmed that I have read and agree to the{' '}
                 <Link href="#" className="underline" prefetch={false}>
                   Terms and Conditions
                 </Link>
-                ,{" "}
+                ,{' '}
                 <Link href="#" className="underline" prefetch={false}>
                   Services Terms
                 </Link>
-                ,{" "}
+                ,{' '}
                 <Link href="#" className="underline" prefetch={false}>
                   Earn Terms
                 </Link>
-                ,{" "}
+                ,{' '}
                 <Link href="#" className="underline" prefetch={false}>
                   Exchange Terms
                 </Link>
-                , and{" "}
+                , and{' '}
                 <Link href="#" className="underline" prefetch={false}>
                   Privacy Policy
-                </Link>{" "}
+                </Link>{' '}
                 of Blogchain.
               </Label>
             </div>
             <div className="mt-4 text-center text-sm">
               <div>
-                Already have an account?{" "}
+                Already have an account?{' '}
                 <button
                   onClick={() => setShowRegister(false)}
                   className="underline"
@@ -640,7 +646,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                 onClick={handleForgotPassword}
                 disabled={loading}
               >
-                {loading ? "Sending..." : "Send Reset Code"}
+                {loading ? 'Sending...' : 'Send Reset Code'}
               </Button>
             </div>
             {error && <div className="text-red-500">{error}</div>}
@@ -660,7 +666,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                 <div className="relative">
                   <Input
                     id="new-password"
-                    type={passwordVisible ? "text" : "password"}
+                    type={passwordVisible ? 'text' : 'password'}
                     placeholder="Enter new password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
@@ -672,7 +678,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                     onClick={() => setPasswordVisible(!passwordVisible)}
                   >
                     <i
-                      className={`fas fa-eye${passwordVisible ? "-slash" : ""}`}
+                      className={`fas fa-eye${passwordVisible ? '-slash' : ''}`}
                     ></i>
                   </span>
                 </div>
@@ -684,7 +690,7 @@ export default function LoginCard({ onClose }: { onClose: () => void }) {
                     onClick={handleResetPassword}
                     disabled={loading}
                   >
-                    {loading ? "Resetting..." : "Reset Password"}
+                    {loading ? 'Resetting...' : 'Reset Password'}
                   </Button>
                 </div>
               </div>
