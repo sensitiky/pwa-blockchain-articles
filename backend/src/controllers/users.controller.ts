@@ -12,7 +12,7 @@ import {
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { UsersService } from '../services/users.service';
 import { CurrentUser } from '../decorators/current-user.decorator';
-import { UpdateUserDto, UserDto } from 'src/dto/user.dto';
+import { UpdateUserDto, UserDto } from '../dto/user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';

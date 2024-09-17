@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Favorite } from '../entities/favorite.entity';
@@ -6,6 +6,7 @@ import { CreateFavoriteDto } from '../dto/favorite.dto';
 import { User } from '../entities/user.entity';
 import { Post } from '../entities/post.entity';
 import { Comment } from '../entities/comment.entity';
+import { MetricService } from './metric.service';
 
 @Injectable()
 export class FavoritesService {
@@ -18,6 +19,8 @@ export class FavoritesService {
     private postsRepository: Repository<Post>,
     @InjectRepository(Comment)
     private commentsRepository: Repository<Comment>,
+    @Inject(forwardRef(() => MetricService))
+    private readonly metricService: MetricService,
   ) {}
 
   async create(createFavoriteDto: CreateFavoriteDto): Promise<Favorite> {
@@ -45,7 +48,25 @@ export class FavoritesService {
       post,
       comment,
     });
-    return this.favoritesRepository.save(favorite);
+    await this.favoritesRepository.save(favorite);
+
+    // Log the event data
+    console.log('Tracking Favorite Created event:', {
+      distinct_id: favorite.id,
+      user: user.id,
+      post: post ? post.id : null,
+      comment: comment ? comment.id : null,
+    });
+
+    // Track event with Mixpanel
+    await this.metricService.trackEvent('Favorite Created', {
+      distinct_id: favorite.id,
+      user: user.id,
+      post: post ? post.id : null,
+      comment: comment ? comment.id : null,
+    });
+
+    return favorite;
   }
 
   async findAllByUser(userId: number): Promise<Favorite[]> {

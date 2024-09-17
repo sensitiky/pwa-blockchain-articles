@@ -3,6 +3,7 @@ import {
   Inject,
   NotFoundException,
   InternalServerErrorException,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
@@ -17,6 +18,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { TagDto } from '../dto/tag.dto';
+import { MetricService } from './metric.service';
 
 @Injectable()
 export class PostsService {
@@ -35,8 +37,11 @@ export class PostsService {
     private commentsRepository: Repository<Comment>,
     @InjectRepository(Favorite)
     private favoritesRepository: Repository<Favorite>,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
     private configService: ConfigService,
+    @Inject(forwardRef(() => MetricService))
+    private readonly metricService: MetricService,
   ) {}
 
   private async getCachedData<T>(
@@ -108,6 +113,20 @@ export class PostsService {
       await this.postsRepository.save(post);
       await this.usersRepository.increment({ id: author.id }, 'postCount', 1);
       await this.invalidateCache();
+
+      //Log the event with Mixpanel
+      console.log('Post Created', {
+        distinct_id: post.id,
+        title: post.title,
+        author: author.id,
+      });
+
+      //Track event with Mixpanel
+      await this.metricService.trackEvent('Post Created', {
+        distinct_id: post.id,
+        title: post.title,
+        author: author.id,
+      });
 
       return post;
     } catch (error) {

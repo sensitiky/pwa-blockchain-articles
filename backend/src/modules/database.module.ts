@@ -9,7 +9,7 @@ import { Tag } from '../entities/tag.entity';
 import { Favorite } from '../entities/favorite.entity';
 import { DatabaseService } from '../services/database.service';
 import { CommentSubscriber } from '../services/listenerComment.service';
-import { FavoriteSubscriber } from 'src/services/listenerFavorites.service';
+import { FavoriteSubscriber } from '../services/listenerFavorites.service';
 
 @Module({
   imports: [

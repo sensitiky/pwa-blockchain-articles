@@ -10,6 +10,7 @@ import * as nodemailer from 'nodemailer';
 import * as bcrypt from 'bcryptjs';
 import { CreateUserDto, UserDto } from '../dto/user.dto';
 import { User } from '../entities/user.entity';
+import { MetricService } from './metric.service';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,7 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly metricService: MetricService,
   ) {
     this.googleClient = new OAuth2Client(
       process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
@@ -78,6 +80,19 @@ export class AuthService {
 
     const newUser = await this.usersService.create(createUserDto);
     newUser.postCount = newUser.posts ? newUser.posts.length : 0;
+
+    //Log the event with Mixpanel
+    await this.metricService.trackEvent('User Registered', {
+      distinct_id: newUser.id,
+      email: newUser.email,
+    });
+
+    //Track the event with Mixpanel
+    await this.metricService.trackEvent('User Registered', {
+      distinct_id: newUser.id,
+      email: newUser.email,
+    });
+
     return this.usersService.transformToDto(newUser);
   }
 

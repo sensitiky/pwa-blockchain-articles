@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { AuthController } from '../controllers/auth.controller';
 import { DatabaseModule } from './database.module';
@@ -10,6 +10,7 @@ import { GoogleStrategy } from '../strategies/google.strategy';
 import { JwtStrategy } from '../strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
+import { MetricModule } from './metric.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { CacheModule } from '@nestjs/cache-manager';
         signOptions: { expiresIn: '360m' },
       }),
     }),
+    forwardRef(() => MetricModule),
   ],
   providers: [AuthService, UsersService, GoogleStrategy, JwtStrategy],
   controllers: [AuthController, UsersController],

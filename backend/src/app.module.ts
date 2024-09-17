@@ -1,12 +1,9 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './modules/database.module';
 import { AuthModule } from './modules/auth.module';
 import { PostsModule } from './modules/posts.module';
-import { Category } from './entities/category.entity';
-import { Tag } from './entities/tag.entity';
-import { Repository } from 'typeorm';
 import { CommentsModule } from './modules/comments.module';
 import { FavoritesModule } from './modules/favorites.module';
 import { CategoriesModule } from './modules/category.module';
@@ -16,8 +13,10 @@ import { SearchModule } from './modules/search.module';
 import { MetricModule } from './modules/metric.module';
 import { UpdatePostCountsService } from './updatecount';
 import { ActiveUsersGateway } from './active-users.gateway';
-import { UserActivityService } from './services/user-activity.service';
+import { Category } from './entities/category.entity';
+import { Tag } from './entities/tag.entity';
 import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
 
 @Module({
   imports: [
@@ -34,7 +33,7 @@ import { User } from './entities/user.entity';
     TypeOrmModule.forFeature([Category, Tag, User]),
     MetricModule,
   ],
-  providers: [UpdatePostCountsService, ActiveUsersGateway, UserActivityService],
+  providers: [UpdatePostCountsService, ActiveUsersGateway],
 })
 export class AppModule implements OnModuleInit {
   constructor(

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
 import { PostsService } from '../services/posts.service';
@@ -11,13 +11,17 @@ import { CommentsModule } from './comments.module';
 import { Comment } from '../entities/comment.entity';
 import { FavoritesModule } from './favorites.module';
 import { Favorite } from '../entities/favorite.entity';
+import { ConfigModule } from '@nestjs/config';
+import { MetricModule } from './metric.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Post, User, Tag, Category, Comment, Favorite]),
-    CommentsModule,
-    FavoritesModule,
+    forwardRef(() => CommentsModule),
+    forwardRef(() => FavoritesModule),
     CacheModule.register(),
+    ConfigModule,
+    forwardRef(() => MetricModule),
   ],
   providers: [PostsService],
   controllers: [PostsController],

@@ -1,17 +1,32 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { PostsService } from '../services/posts.service';
 import { FavoritesService } from '../services/favorites.service';
 import { UserActivityService } from '../services/user-activity.service';
+import * as Mixpanel from 'mixpanel';
 
 @Injectable()
 export class MetricService {
+  private mixpanel: Mixpanel.Mixpanel;
+
   constructor(
     private readonly usersService: UsersService,
+    @Inject(forwardRef(() => PostsService))
     private readonly postsService: PostsService,
     private readonly favoritesService: FavoritesService,
     private readonly userActivityService: UserActivityService,
-  ) {}
+  ) {
+    this.mixpanel = Mixpanel.init(process.env.MIXPANEL_TOKEN, {
+      protocol: 'https',
+    });
+  }
+
+  async trackEvent(
+    event: string,
+    properties: Record<string, any> = {},
+  ): Promise<void> {
+    this.mixpanel.track(event, properties);
+  }
 
   async getAllMetrics() {
     const userCount = await this.usersService.countAllUsers();
