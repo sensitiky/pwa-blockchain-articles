@@ -13,7 +13,7 @@ import styled from 'styled-components';
 import { AnimatePresence, motion } from 'framer-motion';
 import RichTextEditor from '@/components/ui/texteditor';
 import { EditPostDto } from '@/interfaces/interfaces';
-
+import LoginCard from '@/assets/login';
 const Container = styled.div`
   display: flex;
   justify-content: center;
@@ -29,7 +29,7 @@ const EditPostPage = () => {
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState('');
   const [showPopup, setShowPopup] = useState(false);
-
+  const [showLoginCard, setShowLoginCard] = useState(false);
   const { id } = useParams();
   const router = useRouter();
   const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
@@ -139,7 +139,9 @@ const EditPostPage = () => {
       alert('Error updating post');
     }
   };
-
+  const handleCloseModal = () => {
+    setShowLoginCard(false);
+  };
   if (loading) {
     return (
       <div>
@@ -264,6 +266,23 @@ const EditPostPage = () => {
         </div>
       </div>
       <Footer setShowLoginModal={setShowLoginCard} />
+      {showLoginCard && (
+        <div className="w-screen fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="relative bg-white p-8 rounded-lg shadow-lg">
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+            >
+              <img
+                src="/close-circle-svgrepo-com.png"
+                alt="Remove"
+                className="size-7 cursor-pointer hover:animate-pulse"
+              />
+            </button>
+            <LoginCard onClose={handleCloseModal} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
