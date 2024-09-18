@@ -4,39 +4,39 @@
 
 @layer base {
   @font-face {
-    font-family: "Gilroy";
-    src: url("/fonts/Gilroy-Light.otf") format("opentype");
+    font-family: 'Gilroy';
+    src: url('/fonts/Gilroy-Light.otf') format('opentype');
     font-weight: 300;
     font-style: normal;
   }
 
   @font-face {
-    font-family: "Gilroy";
-    src: url("/fonts/Gilroy-ExtraBold.otf") format("opentype");
+    font-family: 'Gilroy';
+    src: url('/fonts/Gilroy-ExtraBold.otf') format('opentype');
     font-weight: 800;
     font-style: normal;
   }
   @font-face {
-    font-family: "Gilroy";
-    src: url("/fonts/Gilroy-Bold.ttf") format("opentype");
+    font-family: 'Gilroy';
+    src: url('/fonts/Gilroy-Bold.ttf') format('opentype');
     font-weight: 700;
     font-style: normal;
   }
   @font-face {
-    font-family: "Gilroy";
-    src: url("/fonts/Gilroy-Medium.ttf") format("opentype");
+    font-family: 'Gilroy';
+    src: url('/fonts/Gilroy-Medium.ttf') format('opentype');
     font-weight: 400;
     font-style: normal;
   }
   @font-face {
-    font-family: "Gilroy";
-    src: url("/fonts/Gilroy-Regular.ttf") format("opentype");
+    font-family: 'Gilroy';
+    src: url('/fonts/Gilroy-Regular.ttf') format('opentype');
     font-weight: 500;
     font-style: normal;
   }
   @font-face {
-    font-family: "Gilroy";
-    src: url("/fonts/Gilroy-Heavy.ttf") format("opentype");
+    font-family: 'Gilroy';
+    src: url('/fonts/Gilroy-Heavy.ttf') format('opentype');
     font-weight: 900;
     font-style: normal;
   }
@@ -110,11 +110,11 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: "Gilroy", sans-serif;
+    font-family: 'Gilroy', sans-serif;
   }
 }
 .editor-content {
-  font-family: "Gilroy", sans-serif;
+  font-family: 'Gilroy', sans-serif;
 }
 /* Base styles */
 .perspective-1000 {
@@ -175,7 +175,7 @@
   transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 .custom-dropdown::after {
-  content: "▼";
+  content: '▼';
   position: absolute;
   right: 15px;
   top: 50%;
@@ -386,7 +386,7 @@
 
 /* Tailwind CSS classes */
 .prose {
-  font-family: "Georgia", serif;
+  font-family: 'Georgia', serif;
 }
 
 .prose-lg {
@@ -425,20 +425,20 @@
   }
 }
 /* Default styles for mobile devices */
-[id^="responsive-post-container-"] {
+[id^='responsive-post-container-'] {
   width: 100%;
   max-width: 300px;
 }
 
 /* Styles for tablets and larger screens */
 @media (min-width: 640px) {
-  [id^="responsive-post-container-"] {
+  [id^='responsive-post-container-'] {
     max-width: 640px; /* sm:max-w-screen-md */
   }
 }
 
 @media (min-width: 1024px) {
-  [id^="responsive-post-container-"] {
+  [id^='responsive-post-container-'] {
     max-width: 1024px; /* lg:max-w-screen-lg */
   }
 }
@@ -572,8 +572,8 @@
 }
 
 .custom-editor {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
   font-size: 16px;
   padding: 20px;
   border-radius: 20px;
@@ -586,4 +586,23 @@
 .ql-toolbar {
   border-radius: 20px;
   background-color: transparent;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-fade-in-out {
+  animation: fadeInOut 3s ease-in-out;
 }

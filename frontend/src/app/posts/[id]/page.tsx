@@ -20,6 +20,7 @@ import { useAuth } from '../../../../context/authContext';
 import DeletePostModal from '@/assets/deletepost';
 import styled from 'styled-components';
 import parse, { DOMNode, domToReact, Element } from 'html-react-parser';
+import LoginCard from '@/assets/login';
 
 const Container = styled.div`
   display: flex;
@@ -81,9 +82,10 @@ interface Comment {
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
 const PostPage = () => {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showLoginCard, setShowLoginCard] = useState(false);
   const [commentContent, setCommentContent] = useState('');
   const [showBookmarkMessage, setShowBookmarkMessage] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -210,7 +212,9 @@ const PostPage = () => {
   };
 
   const handleFavoriteClick = async () => {
-    setShowBookmarkMessage(true);
+    if (isAuthenticated) {
+      setShowBookmarkMessage(true);
+    }
     setTimeout(() => setShowBookmarkMessage(false), 10000);
     if (post) {
       await handleFavorite(post.id);
@@ -294,7 +298,9 @@ const PostPage = () => {
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
-
+  const handleCloseModal = () => {
+    setShowLoginCard(false);
+  };
   const parseHtmlContent = (htmlContent: string) => {
     return parse(htmlContent, {
       replace: (domNode) => {
@@ -312,7 +318,7 @@ const PostPage = () => {
           // Aplicar estilo para respetar los saltos de línea y espacios a otros elementos de bloque
           if (['p', 'div', 'span', 'h1', 'h2', 'h3'].includes(tagName)) {
             return (
-              <div style={blockStyle} {...attribs}>
+              <div className="prose" style={blockStyle} {...attribs}>
                 {domToReact(domNode.children as DOMNode[])}
               </div>
             );
@@ -342,6 +348,21 @@ const PostPage = () => {
     } else {
       router.back();
     }
+  };
+
+  const formatTags = (tags: any[]): string => {
+    return (
+      tags
+        .map((tag) => {
+          try {
+            const parsedName = JSON.parse(tag.name);
+            return parsedName.name;
+          } catch (err) {
+            return tag.name;
+          }
+        })
+        .join(', ') || 'No tags'
+    );
   };
 
   const avatarUrl = post.author?.avatar
@@ -440,25 +461,29 @@ const PostPage = () => {
             {formatDate(post.createdAt)} •{' '}
             {calculateReadingTime(post.description)} min read
           </p>
-          <h1 className="text-4xl font-serif font-bold text-center mt-6">
-            {post.title}
-          </h1>
-          {post.imageUrl && (
-            <div className="mt-6 rounded-lg overflow-hidden">
-              <Image
-                src={post.imageUrl}
-                alt="Banner"
-                width={1200}
-                height={300}
-                className="w-full object-cover"
-              />
-            </div>
-          )}
-          <div className="prose prose-lg mx-auto mt-8">
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              {parseHtmlContent(post.description)}
+          {/*Start the render for the article */}
+          <div className="prose prose-slate">
+            <h1 className="text-4xl font-bold text-center mt-6">
+              {post.title}
+            </h1>
+            {post.imageUrl && (
+              <div className="mt-6 rounded-lg overflow-hidden">
+                <Image
+                  src={post.imageUrl}
+                  alt="Banner"
+                  width={1200}
+                  height={300}
+                  className="w-full object-cover"
+                />
+              </div>
+            )}
+            <div className="prose prose-lg mx-auto mt-8">
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                {parseHtmlContent(post.description)}
+              </div>
             </div>
           </div>
+          {/* End of the render */}
           {post.category && (
             <div className="mt-8 w-fit">
               <span className="flex items-center px-2 py-1 bg-[#000916] text-white rounded-full">
@@ -484,7 +509,7 @@ const PostPage = () => {
                       src="/tag-svgrepo-com.png"
                       alt="Tag icon"
                     />
-                    {tag ? tag.name : 'Uncategorized'}
+                    {formatTags([tag]) ? tag.name : 'Uncategorized'}
                   </li>
                 ))}
               </ul>
@@ -496,8 +521,8 @@ const PostPage = () => {
               onClick={handleFavoriteClick}
             >
               {showBookmarkMessage && (
-                <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 text-xl bg-[#000916] text-[#FFC017] rounded w-fit p-1">
-                  You have bookmarked this item
+                <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm bg-green-500 text-white rounded p-2 animate-fade-in-out">
+                  Item bookmarked successfully!
                 </div>
               )}
               <svg
@@ -611,7 +636,6 @@ const PostPage = () => {
               );
             })}
           </div>
-
           <form onSubmit={handleCommentSubmit} className="mt-4">
             <textarea
               className="w-full border rounded-md p-2 resize-none"
@@ -629,7 +653,24 @@ const PostPage = () => {
           </form>
         </div>
       </div>
-      <Footer />
+      <Footer setShowLoginModal={setShowLoginCard} />
+      {showLoginCard && (
+        <div className="w-screen fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="relative bg-white p-8 rounded-lg shadow-lg">
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+            >
+              <img
+                src="/close-circle-svgrepo-com.png"
+                alt="Remove"
+                className="size-7 cursor-pointer hover:animate-pulse"
+              />
+            </button>
+            <LoginCard onClose={handleCloseModal} />
+          </div>
+        </div>
+      )}
       {isModalOpen && (
         <DeletePostModal
           isOpen={isModalOpen}

@@ -1,12 +1,12 @@
-"use client";
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import LoginCard from "@/assets/login";
-import { useAuth } from "../../context/authContext";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+'use client';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
+import LoginCard from '@/assets/login';
+import { useAuth } from '../../context/authContext';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -14,18 +14,18 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import axios from "axios";
+} from '@/components/ui/dropdown-menu';
+import axios from 'axios';
 import {
   AnimatePresence,
   motion,
   useMotionValueEvent,
   useScroll,
-} from "framer-motion";
-import DOMPurify from "dompurify";
-import { CircularProgress } from "@mui/material";
-import Image from "next/image";
-import Search from "@/utils/svg";
+} from 'framer-motion';
+import DOMPurify from 'dompurify';
+import { CircularProgress } from '@mui/material';
+import Image from 'next/image';
+import Search from '@/utils/svg';
 
 interface ImageBuffer {
   type: string;
@@ -46,7 +46,7 @@ const Header = () => {
   const [showLoginCard, setShowLoginCard] = useState(false);
   const { user, setUser, isAuthenticated, login, logout } = useAuth();
   const prevIsAuthenticated = useRef(isAuthenticated);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const { scrollYProgress } = useScroll();
@@ -73,15 +73,15 @@ const Header = () => {
       const fullUrl = `${API_URL}/search?q=${encodeURIComponent(searchQuery)}`;
 
       const response = await axios.get<SearchResult[]>(fullUrl, {
-        headers: { "Cache-Control": "no-cache" },
+        headers: { 'Cache-Control': 'no-cache' },
       });
 
       if (Array.isArray(response.data)) {
         const resultsWithBase64Images = response.data.map((result) => {
-          if (result.imageUrl && result.imageUrl.type === "Buffer") {
+          if (result.imageUrl && result.imageUrl.type === 'Buffer') {
             // Convertir el buffer a una cadena Base64
             const base64String = Buffer.from(result.imageUrl.data).toString(
-              "base64"
+              'base64'
             );
             result.imageUrlBase64 = `data:image/jpeg;base64,${base64String}`;
           }
@@ -91,11 +91,11 @@ const Header = () => {
         setResults(resultsWithBase64Images);
         // console.log(resultsWithBase64Images);
       } else {
-        console.error("Unexpected response format:", response.data);
+        console.error('Unexpected response format:', response.data);
         setResults([]);
       }
     } catch (error: any) {
-      console.error("Error fetching search results:", error.response || error);
+      console.error('Error fetching search results:', error.response || error);
       setResults([]);
     } finally {
       setLoading(false);
@@ -105,11 +105,11 @@ const Header = () => {
   const handleResultClick = (id: string) => {
     router.push(`/posts/${id}`);
     setResults([]);
-    setQuery("");
+    setQuery('');
   };
 
-  useMotionValueEvent(scrollYProgress, "change", (current) => {
-    if (typeof current === "number") {
+  useMotionValueEvent(scrollYProgress, 'change', (current) => {
+    if (typeof current === 'number') {
       let previous = scrollYProgress.getPrevious();
       if (previous !== undefined) {
         let direction = current - previous;
@@ -128,21 +128,21 @@ const Header = () => {
 
   useEffect(() => {
     const handleBeforeUnload = () => {
-      localStorage.setItem("lastVisitedUrl", window.location.pathname);
+      localStorage.setItem('lastVisitedUrl', window.location.pathname);
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener('beforeunload', handleBeforeUnload);
 
     if (isAuthenticated) {
-      const lastVisitedUrl = localStorage.getItem("lastVisitedUrl");
+      const lastVisitedUrl = localStorage.getItem('lastVisitedUrl');
       if (lastVisitedUrl) {
         router.push(lastVisitedUrl);
-        localStorage.removeItem("lastVisitedUrl");
+        localStorage.removeItem('lastVisitedUrl');
       }
     }
 
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [isAuthenticated, router]);
 
@@ -154,7 +154,7 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
-    router.push("/");
+    router.push('/');
   };
 
   const handleCloseModalOnClick = (e: React.MouseEvent) => {
@@ -164,16 +164,16 @@ const Header = () => {
   };
 
   const handleCloseModalOnKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Escape") {
+    if (e.key === 'Escape') {
       setShowLoginCard(false);
     }
   };
 
   const avatarUrl = user?.avatar
-    ? user.avatar.startsWith("http")
+    ? user.avatar.startsWith('http')
       ? user.avatar
       : `${API_URL}${user.avatar}`
-    : "/default-avatar.webp";
+    : '/default-avatar.webp';
 
   return (
     <div id="header" className="bg-[#000916] font-normal">
@@ -236,9 +236,9 @@ const Header = () => {
                       <div
                         className="text-sm text-gray-600 line-clamp-2"
                         dangerouslySetInnerHTML={{
-                          __html: DOMPurify.sanitize(result.description ?? "", {
-                            ALLOWED_TAGS: ["b", "i", "em", "strong", "a", "p"],
-                            ALLOWED_ATTR: ["href"],
+                          __html: DOMPurify.sanitize(result.description ?? '', {
+                            ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p'],
+                            ALLOWED_ATTR: ['href'],
                           }),
                         }}
                       ></div>
@@ -324,9 +324,7 @@ const Header = () => {
             </Link>
             {isAuthenticated ? (
               <DropdownMenu>
-                <p className="text-[#FFC017] font-normal">
-                  Hi, {user?.user}!
-                </p>
+                <p className="text-[#FFC017] font-normal">Hi, {user?.user}!</p>
                 <DropdownMenuTrigger asChild>
                   <Avatar className="rounded-full cursor-pointer shadow-md transition-transform duration-300 hover:scale-105">
                     <AvatarImage
@@ -342,25 +340,25 @@ const Header = () => {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    onClick={() => router.push("/users?section=personal")}
+                    onClick={() => router.push('/users?section=personal')}
                     className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-normal"
                   >
                     Profile
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => router.push("/users?section=articles")}
+                    onClick={() => router.push('/users?section=articles')}
                     className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-normal"
                   >
                     My Articles
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => router.push("/users?section=saved")}
+                    onClick={() => router.push('/users?section=saved')}
                     className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-normal"
                   >
                     Saved Items
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => router.push("/users?section=security")}
+                    onClick={() => router.push('/users?section=security')}
                     className="hover:bg-gray-100 hover:text-white transition-colors duration-300 font-normal"
                   >
                     Security & Socials
@@ -373,7 +371,7 @@ const Header = () => {
                     Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
-                <Link href={"/newarticles"}>
+                <Link href={'/newarticles'}>
                   <Button className="bg-white text-[#000916] font-normal rounded-full hover:bg-white/80">
                     Write a Blog
                   </Button>
@@ -407,7 +405,7 @@ const Header = () => {
               className="text-white focus:outline-none"
               onClick={() => setIsMobileMenuVisible(!isMobileMenuVisible)}
             >
-              {isMobileMenuVisible ? "✕" : "☰"}
+              {isMobileMenuVisible ? '✕' : '☰'}
             </button>
           </div>
           <AnimatePresence>

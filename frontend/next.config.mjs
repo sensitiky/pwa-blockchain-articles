@@ -10,6 +10,12 @@ export default {
         hostname: 'blogchain.onrender.com',
         pathname: '/uploads/**',
       },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '4000',
+        pathname: '/uploads/**',
+      },
     ],
   },
 };

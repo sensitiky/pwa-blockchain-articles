@@ -1,9 +1,18 @@
-import Header from "@/assets/header";
-import Image from "next/image";
-import Link from "next/link";
-import { FC } from "react";
+'use client';
+import Footer from '@/assets/footer';
+import Header from '@/assets/header';
+import LoginCard from '@/assets/login';
+import Image from 'next/image';
+import Link from 'next/link';
+import { FC, useState } from 'react';
 
 const LandingSection: FC = () => {
+  const [showLoginCard, setShowLoginCard] = useState(false);
+
+  const handleCloseModal = () => {
+    setShowLoginCard(false);
+  };
+
   return (
     <div className="h-full">
       <Header />
@@ -11,7 +20,7 @@ const LandingSection: FC = () => {
         <div className="flex-grow grid grid-cols-1 md:grid-cols-2 text-foreground relative">
           {/* Título centrado y grande en el medio */}
           <h1 className="hidden sm:block z-40 absolute text-center w-full text-4xl font-extrabold text-white top-11 transform -translate-y-1/2 ml-2 mt-10">
-            Know, learn{" "}
+            Know, learn{' '}
             <span className="text-[#000916] ml-2">and criticize.</span>
           </h1>
 
@@ -79,11 +88,11 @@ const LandingSection: FC = () => {
             <div className="space-y-2 max-w-lg w-1/2 text-left mb-[1.6em]">
               {/* Texto descriptivo */}
               <p className="text-xl text-[#263238] font-normal">
-                Are you an enthusiast of blockchain{" "}
+                Are you an enthusiast of blockchain{' '}
                 <br className="hidden sm:block" />
-                technology and new opportunities in{" "}
+                technology and new opportunities in{' '}
                 <br className="hidden sm:block" />
-                the web3 world?{" "}
+                the web3 world?{' '}
                 <span className="font-extrabold">Join our community</span> of
                 entrepreneurs, developers, and early adopters and follow us on
                 our social networks so you don't miss a thing.
@@ -120,6 +129,24 @@ const LandingSection: FC = () => {
           </main>
         </div>
       </div>
+      <Footer setShowLoginModal={setShowLoginCard} />
+      {showLoginCard && (
+        <div className="w-screen fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="relative bg-white p-8 rounded-lg shadow-lg">
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+            >
+              <img
+                src="/close-circle-svgrepo-com.png"
+                alt="Remove"
+                className="size-7 cursor-pointer hover:animate-pulse"
+              />
+            </button>
+            <LoginCard onClose={handleCloseModal} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

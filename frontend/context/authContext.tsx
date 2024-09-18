@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, {
   createContext,
   useContext,
@@ -7,9 +7,9 @@ import React, {
   ReactNode,
   useCallback,
   useMemo,
-} from "react";
-import axios from "axios";
-import { UserInfo, User } from "@/interfaces/interfaces";
+} from 'react';
+import axios from 'axios';
+import { UserInfo, User } from '@/interfaces/interfaces';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
@@ -28,15 +28,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
 
 export const getProfile = async () => {
   try {
-    const token = localStorage.getItem("token");
-    if (!token) throw new Error("No token found");
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No token found');
 
     const response = await axios.get(`${API_URL}/users/me`, {
       headers: {
@@ -45,15 +45,15 @@ export const getProfile = async () => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching profile data", error);
+    console.error('Error fetching profile data', error);
     throw error;
   }
 };
 
 export const updateProfile = async (userInfo: UserInfo) => {
   try {
-    const token = localStorage.getItem("token");
-    if (!token) throw new Error("No token found");
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No token found');
 
     const response = await axios.put(`${API_URL}/users/me`, userInfo, {
       headers: {
@@ -62,7 +62,7 @@ export const updateProfile = async (userInfo: UserInfo) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error updating profile", error);
+    console.error('Error updating profile', error);
     throw error;
   }
 };
@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
 
   const login = useCallback((userData: any) => {
-    localStorage.setItem("token", userData.token);
+    localStorage.setItem('token', userData.token);
     setToken(userData.token);
     setUser(userData.user);
   }, []);
@@ -81,19 +81,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await axios.post(`${API_URL}/auth/google`, { token });
       if (response.status === 200) {
-        localStorage.setItem("token", response.data.token);
+        localStorage.setItem('token', response.data.token);
         setToken(response.data.token);
         setUser(response.data.user);
       } else {
-        throw new Error("Google login failed");
+        throw new Error('Google login failed');
       }
     } catch (error) {
-      console.error("Google login failed", error);
+      console.error('Google login failed', error);
     }
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem("token");
+    localStorage.removeItem('token');
     setToken(null);
     setUser(null);
   }, []);
@@ -101,7 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         if (token) {
           setToken(token);
           const response = await axios.get(`${API_URL}/users/me`, {
@@ -112,7 +112,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setUser(response.data);
         }
       } catch (error) {
-        console.error("Error fetching user data", error);
+        console.error('Error fetching user data', error);
         logout();
       }
     };

@@ -1,16 +1,17 @@
-"use client";
-import { useEffect, useState, useCallback, useMemo } from "react";
-import axios from "axios";
-import Header from "@/assets/header";
-import Footer from "@/assets/footer";
-import Link from "next/link";
-import { ClockIcon, TagIcon } from "lucide-react";
-import DOMPurify from "dompurify";
-import Image from "next/image";
-import { useAuth } from "../../../context/authContext";
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { Post, Category, Tag } from "@/interfaces/interface3";
+'use client';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import axios from 'axios';
+import Header from '@/assets/header';
+import Footer from '@/assets/footer';
+import Link from 'next/link';
+import { ClockIcon, TagIcon } from 'lucide-react';
+import DOMPurify from 'dompurify';
+import Image from 'next/image';
+import { useAuth } from '../../../context/authContext';
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Post, Category, Tag } from '@/interfaces/interface3';
+import LoginCard from '@/assets/login';
 
 const POSTS_PER_PAGE = 20;
 
@@ -19,14 +20,15 @@ const Articles = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [showLoginCard, setShowLoginCard] = useState(false);
   const [loading, setLoading] = useState(false);
   const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
   );
   const [selectedTagId, setSelectedTagId] = useState<number | null>(null);
-  const [sortOrder, setSortOrder] = useState<string>("recent");
-  const [sortOrder2, setSortOrder2] = useState<string>("All");
+  const [sortOrder, setSortOrder] = useState<string>('recent');
+  const [sortOrder2, setSortOrder2] = useState<string>('All');
   const { token } = useAuth();
   const [categoryCounts, setCategoryCounts] = useState<
     { categoryId: number; count: number }[]
@@ -42,7 +44,7 @@ const Articles = () => {
       });
       setCategories(response.data);
     } catch (error) {
-      console.error("Error fetching categories", error);
+      console.error('Error fetching categories', error);
     }
   }, [API_URL, token]);
 
@@ -70,17 +72,17 @@ const Articles = () => {
           : response.data.data || [];
 
         // Apply sortOrder2 logic after fetching the posts
-        if (sortOrder2 === "short") {
+        if (sortOrder2 === 'short') {
           postsData = postsData.filter(
             (post: { description: string | any[] }) =>
               post.description.length <= 1000
           );
-        } else if (sortOrder2 === "medium") {
+        } else if (sortOrder2 === 'medium') {
           postsData = postsData.filter(
             (post: { description: string | any[] }) =>
               post.description.length > 1000 && post.description.length <= 3000
           );
-        } else if (sortOrder2 === "long") {
+        } else if (sortOrder2 === 'long') {
           postsData = postsData.filter(
             (post: { description: string | any[] }) =>
               post.description.length > 3000
@@ -93,7 +95,7 @@ const Articles = () => {
         setHasMore(postsData.length > 0);
         setCurrentPage(page);
       } catch (error) {
-        console.error("Error fetching posts", error);
+        console.error('Error fetching posts', error);
       } finally {
         setLoading(false);
       }
@@ -110,7 +112,7 @@ const Articles = () => {
       const result = response.data;
       setCategoryCounts(result);
     } catch (error) {
-      console.error("Error fetching category counts:", error);
+      console.error('Error fetching category counts:', error);
     }
   }, []);
 
@@ -132,7 +134,7 @@ const Articles = () => {
 
       setTags(tags);
     } catch (error: any) {
-      console.error("Error fetching tags:", error.message || error);
+      console.error('Error fetching tags:', error.message || error);
     }
   }, []);
 
@@ -156,9 +158,9 @@ const Articles = () => {
         selectedCategoryId === categoryId ? null : categoryId;
       setSelectedCategoryId(newCategoryId);
       setSelectedTagId(null); // Reset selected tag when category changes
-      setSortOrder("recent"); // Reset sort order to default when category changes
+      setSortOrder('recent'); // Reset sort order to default when category changes
       setPosts([]);
-      fetchPosts(1, "recent", newCategoryId);
+      fetchPosts(1, 'recent', newCategoryId);
       if (newCategoryId !== null) {
         fetchTags(newCategoryId);
       } else {
@@ -167,7 +169,9 @@ const Articles = () => {
     },
     [fetchPosts, fetchTags, selectedCategoryId]
   );
-
+  const handleCloseModal = () => {
+    setShowLoginCard(false);
+  };
   const handleTagChange = useCallback(
     (id: number | null) => {
       // Toggle the selected tag
@@ -185,8 +189,8 @@ const Articles = () => {
         key={tag.id}
         className={`text-white rounded-full border border-white text-base font-normal ${
           selectedTagId === tag.id
-            ? "bg-[#FFC017] text-[#0d0d0d] hover:bg-[#FFC017]"
-            : ""
+            ? 'bg-[#FFC017] text-[#0d0d0d] hover:bg-[#FFC017]'
+            : ''
         }`}
         onClick={() => handleTagChange(tag.id)}
       >
@@ -226,7 +230,7 @@ const Articles = () => {
             return tag.name;
           }
         })
-        .join(", ") || "No tags"
+        .join(', ') || 'No tags'
     );
   };
 
@@ -241,13 +245,13 @@ const Articles = () => {
             return tag.name;
           }
         })
-        .join(", ") || "No tags"
+        .join(', ') || 'No tags'
     );
   };
 
   const calculateReadingTime = useCallback((text: string) => {
     const wordsPerMinute = 200;
-    const cleanText = text.replace(/<[^>]*>/g, "");
+    const cleanText = text.replace(/<[^>]*>/g, '');
     const numberOfWords = cleanText.split(/\s+/).length;
     return Math.ceil(numberOfWords / wordsPerMinute);
   }, []);
@@ -293,10 +297,10 @@ const Articles = () => {
                 <Image
                   src={
                     post.author?.avatar
-                      ? post.author.avatar.startsWith("http")
+                      ? post.author.avatar.startsWith('http')
                         ? post.author.avatar
                         : `${API_URL}${post.author.avatar}`
-                      : "/default-avatar.webp"
+                      : '/default-avatar.webp'
                   }
                   alt="Author image"
                   width={1920}
@@ -306,10 +310,10 @@ const Articles = () => {
               </Link>
               <div className="flex flex-col ml-2 flex-grow">
                 <span className="text-base text-[1.2rem] font-semibold text-[#263238] truncate">
-                  {post.author ? post.author.user : "Unknown Author"}
+                  {post.author ? post.author.user : 'Unknown Author'}
                 </span>
                 <span className="text-xs text-[1.1rem] text-muted-foreground truncate">
-                  {post.author ? post.author.role : "Unknown Author"}
+                  {post.author ? post.author.role : 'Unknown Author'}
                 </span>
               </div>
               <div className="flex flex-col items-end">
@@ -320,7 +324,7 @@ const Articles = () => {
                     alt="Category"
                     width={1920}
                     height={1080}
-                  />{" "}
+                  />{' '}
                   {post.category?.name}
                 </span>
                 <div className="flex items-center text-[#263238] text-[0.95rem] sm:text-sm truncate mt-1">
@@ -340,8 +344,8 @@ const Articles = () => {
               className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-3 break-words"
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(post.description, {
-                  ALLOWED_TAGS: ["b", "i", "em", "strong", "a", "p"],
-                  ALLOWED_ATTR: ["href"],
+                  ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p'],
+                  ALLOWED_ATTR: ['href'],
                 }),
               }}
             ></p>
@@ -412,8 +416,8 @@ const Articles = () => {
                       key={category.id}
                       className={`text-white rounded-full border border-white text-base text-[1.1rem] font-normal ${
                         selectedCategoryId === category.id
-                          ? "bg-[#FFC017] text-[#0d0d0d] hover:bg-[#FFC017]"
-                          : ""
+                          ? 'bg-[#FFC017] text-[#0d0d0d] hover:bg-[#FFC017]'
+                          : ''
                       }`}
                       onClick={() => handleCategoryChange(category.id)}
                     >
@@ -436,8 +440,8 @@ const Articles = () => {
                       key={tag.id}
                       className={`text-white rounded-full border border-white text-base font-normal ${
                         selectedTagId === tag.id
-                          ? "bg-[#FFC017] text-[#0d0d0d] hover:bg-[#FFC017]"
-                          : ""
+                          ? 'bg-[#FFC017] text-[#0d0d0d] hover:bg-[#FFC017]'
+                          : ''
                       }`}
                       onClick={() => handleTagChange(tag.id)}
                     >
@@ -503,7 +507,24 @@ const Articles = () => {
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer setShowLoginModal={setShowLoginCard} />
+      {showLoginCard && (
+        <div className="w-screen fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="relative bg-white p-8 rounded-lg shadow-lg">
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+            >
+              <img
+                src="/close-circle-svgrepo-com.png"
+                alt="Remove"
+                className="size-7 cursor-pointer hover:animate-pulse"
+              />
+            </button>
+            <LoginCard onClose={handleCloseModal} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

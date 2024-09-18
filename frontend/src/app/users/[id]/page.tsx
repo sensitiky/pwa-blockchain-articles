@@ -1,31 +1,31 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState, Suspense } from "react";
-import axios from "axios";
-import Link from "next/link";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import Header from "@/assets/header";
-import Footer from "@/assets/footer";
-import { useParams, useRouter } from "next/navigation";
-import styled from "styled-components";
+import React, { useEffect, useState, Suspense } from 'react';
+import axios from 'axios';
+import Link from 'next/link';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import Header from '@/assets/header';
+import Footer from '@/assets/footer';
+import { useParams, useRouter } from 'next/navigation';
+import styled from 'styled-components';
 import {
   FaFacebook,
   FaHeart,
   FaInstagram,
   FaLinkedin,
   FaTwitter,
-} from "react-icons/fa";
+} from 'react-icons/fa';
 import {
   ArrowLeftIcon,
   ClockIcon,
   MessageCircleIcon,
   TagIcon,
   UserIcon,
-} from "lucide-react";
-import Image from "next/image";
-import DOMPurify from "dompurify";
-import { User, Post } from "@/interfaces/interfaces2";
+} from 'lucide-react';
+import Image from 'next/image';
+import DOMPurify from 'dompurify';
+import { User, Post } from '@/interfaces/interfaces2';
 
 const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -50,9 +50,9 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
 
         //Convert image buffer to base64
         const postsWithBase64Images = postsResponse.data.map((post: Post) => {
-          if (post.imageUrl && post.imageUrl.type === "Buffer") {
+          if (post.imageUrl && post.imageUrl.type === 'Buffer') {
             const base64String = Buffer.from(post.imageUrl.data).toString(
-              "base64"
+              'base64'
             );
             post.imageUrlBase64 = `data:image/jpeg;base64,${base64String}`;
           }
@@ -63,11 +63,11 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
         setPosts(postsWithBase64Images);
       } catch (err) {
         if (axios.isAxiosError(err)) {
-          console.error("Error fetching user data:", err.message);
-          setError("Failed to load data");
+          console.error('Error fetching user data:', err.message);
+          setError('Failed to load data');
         } else {
-          console.error("Unknown error:", err);
-          setError("An unknown error occurred");
+          console.error('Unknown error:', err);
+          setError('An unknown error occurred');
         }
       } finally {
         setLoading(false);
@@ -110,7 +110,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
     );
 
     // Reemplaza tabulaciones con espacios en blanco
-    formattedText = formattedText.replace(/\t/g, "&emsp;");
+    formattedText = formattedText.replace(/\t/g, '&emsp;');
 
     return formattedText;
   };
@@ -132,7 +132,7 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
               src={
                 user?.avatar
                   ? `${API_URL}${user.avatar}`
-                  : "/default-avatar.webp"
+                  : '/default-avatar.webp'
               }
             />
             <AvatarFallback>{user?.user}</AvatarFallback>
@@ -141,8 +141,8 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
             <h2 className="text-2xl font-bold">{user?.user}</h2>
             <p
               className="text-gray-600 text-lg leading-relaxed text-left"
-              style={{ whiteSpace: "pre-wrap" }}
-              dangerouslySetInnerHTML={{ __html: formatBio(user?.bio ?? "") }}
+              style={{ whiteSpace: 'pre-wrap' }}
+              dangerouslySetInnerHTML={{ __html: formatBio(user?.bio ?? '') }}
             ></p>
           </div>
           <div className="flex items-center gap-4">
@@ -228,8 +228,8 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
                   className="text-muted-foreground line-clamp-2"
                   dangerouslySetInnerHTML={{
                     __html: DOMPurify.sanitize(post.description, {
-                      ALLOWED_TAGS: ["b", "i", "em", "strong", "a", "p"],
-                      ALLOWED_ATTR: ["href"],
+                      ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p'],
+                      ALLOWED_ATTR: ['href'],
                     }),
                   }}
                 ></p>
@@ -284,7 +284,7 @@ const OwnerContent: React.FC = () => {
     <>
       <Header />
       <UserContent userId={userId} />
-      <Footer />
+      <Footer setShowLoginModal={setShowLoginCard} />
     </>
   );
 };

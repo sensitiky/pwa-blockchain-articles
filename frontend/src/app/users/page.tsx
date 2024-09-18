@@ -1,36 +1,36 @@
-"use client";
-import { useState, useEffect } from "react";
-import Header from "@/assets/header";
-import Footer from "@/assets/footer";
-import ProfileSettings from "@/assets/profile";
-import SecuritySettings from "@/assets/security";
-import SavedItems from "@/assets/saveditems";
-import Articles from "@/assets/userarticles";
-import { useAuth, getProfile } from "../../../context/authContext";
-import { useRouter, useSearchParams } from "next/navigation";
-import { UserIcon, LockIcon, PencilIcon, BookmarkIcon } from "lucide-react";
-import { motion } from "framer-motion";
+'use client';
+import { useState, useEffect } from 'react';
+import Header from '@/assets/header';
+import Footer from '@/assets/footer';
+import ProfileSettings from '@/assets/profile';
+import SecuritySettings from '@/assets/security';
+import SavedItems from '@/assets/saveditems';
+import Articles from '@/assets/userarticles';
+import { useAuth, getProfile } from '../../../context/authContext';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { UserIcon, LockIcon, PencilIcon, BookmarkIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const Users = () => {
-  const [selectedSection, setSelectedSection] = useState("personal");
+  const [selectedSection, setSelectedSection] = useState('personal');
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const [userInfo, setUserInfo] = useState({
-    firstName: "",
-    lastName: "",
+    firstName: '',
+    lastName: '',
     date: new Date(),
-    email: "",
-    user: "",
-    country: "",
-    medium: "",
-    instagram: "",
-    facebook: "",
-    twitter: "",
-    linkedin: "",
-    bio: "",
-    avatar: "",
+    email: '',
+    user: '',
+    country: '',
+    medium: '',
+    instagram: '',
+    facebook: '',
+    twitter: '',
+    linkedin: '',
+    bio: '',
+    avatar: '',
   });
 
   useEffect(() => {
@@ -39,22 +39,22 @@ const Users = () => {
         try {
           const profile = await getProfile();
           setUserInfo({
-            firstName: profile.firstName || "",
-            lastName: profile.lastName || "",
+            firstName: profile.firstName || '',
+            lastName: profile.lastName || '',
             date: profile.date ? new Date(profile.date) : new Date(),
-            email: profile.email || "",
-            user: profile.user || "",
-            country: profile.country || "",
-            medium: profile.medium || "",
-            instagram: profile.instagram || "",
-            facebook: profile.facebook || "",
-            twitter: profile.twitter || "",
-            linkedin: profile.linkedin || "",
-            bio: profile.bio || "",
-            avatar: profile.avatar || "",
+            email: profile.email || '',
+            user: profile.user || '',
+            country: profile.country || '',
+            medium: profile.medium || '',
+            instagram: profile.instagram || '',
+            facebook: profile.facebook || '',
+            twitter: profile.twitter || '',
+            linkedin: profile.linkedin || '',
+            bio: profile.bio || '',
+            avatar: profile.avatar || '',
           });
         } catch (error) {
-          console.error("Error fetching profile data", error);
+          console.error('Error fetching profile data', error);
         }
       }
     };
@@ -63,7 +63,7 @@ const Users = () => {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    const section = searchParams.get("section");
+    const section = searchParams.get('section');
     if (section) {
       setSelectedSection(section);
     }
@@ -71,19 +71,19 @@ const Users = () => {
 
   const RenderContent = () => {
     if (!isAuthenticated) {
-      router.push("/");
+      router.push('/');
     }
     switch (selectedSection) {
-      case "personal":
+      case 'personal':
         return <ProfileSettings />;
 
-      case "security":
+      case 'security':
         return <SecuritySettings />;
 
-      case "saved":
+      case 'saved':
         return <SavedItems userId={user?.id ?? 0} />;
 
-      case "articles":
+      case 'articles':
         return <Articles />;
 
       default:
@@ -106,20 +106,20 @@ const Users = () => {
         {/* Mobile Menu Button */}
         <motion.div
           className={`fixed block sm:hidden left-0 top-1/2 transform -translate-y-1/2 z-50 bg-[#000916] text-white p-2 rounded-r-full cursor-pointer ${
-            isSidebarVisible ? "translate-x-64" : "translate-x-0"
+            isSidebarVisible ? 'translate-x-64' : 'translate-x-0'
           }`}
           onClick={() => setIsSidebarVisible(!isSidebarVisible)}
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
           onDragEnd={handleDragEnd}
         >
-          {isSidebarVisible ? "✕" : "➔"}
+          {isSidebarVisible ? '✕' : '➔'}
         </motion.div>
 
         {/* Mobile Sidebar */}
         <aside
           className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#000916] p-4 transform ${
-            isSidebarVisible ? "translate-x-0" : "-translate-x-full"
+            isSidebarVisible ? 'translate-x-0' : '-translate-x-full'
           } transition-transform duration-300 md:hidden`}
         >
           <div className="flex flex-col gap-8">
@@ -131,28 +131,28 @@ const Users = () => {
             </div>
             <nav className="space-y-1">
               <button
-                onClick={() => setSelectedSection("personal")}
+                onClick={() => setSelectedSection('personal')}
                 className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white"
               >
                 <UserIcon className="size-8" />
                 <span>Personal Information</span>
               </button>
               <button
-                onClick={() => setSelectedSection("security")}
+                onClick={() => setSelectedSection('security')}
                 className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white"
               >
                 <LockIcon className="size-8" />
                 <span>Security & Social Links</span>
               </button>
               <button
-                onClick={() => setSelectedSection("saved")}
+                onClick={() => setSelectedSection('saved')}
                 className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white"
               >
                 <BookmarkIcon className="size-8" />
                 <span>Saved Articles</span>
               </button>
               <button
-                onClick={() => setSelectedSection("articles")}
+                onClick={() => setSelectedSection('articles')}
                 className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white"
               >
                 <PencilIcon className="size-8" />
@@ -177,7 +177,7 @@ const Users = () => {
             </div>
             <nav className="space-y-1">
               <button
-                onClick={() => setSelectedSection("personal")}
+                onClick={() => setSelectedSection('personal')}
                 className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white hover:underline hover:underline-offset-4 hover:decoration-yellow-500"
               >
                 <UserIcon className="size-8" />
@@ -186,7 +186,7 @@ const Users = () => {
                 </span>
               </button>
               <button
-                onClick={() => setSelectedSection("security")}
+                onClick={() => setSelectedSection('security')}
                 className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white hover:underline hover:underline-offset-4 hover:decoration-yellow-500"
               >
                 <LockIcon className="size-8" />
@@ -195,7 +195,7 @@ const Users = () => {
                 </span>
               </button>
               <button
-                onClick={() => setSelectedSection("saved")}
+                onClick={() => setSelectedSection('saved')}
                 className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white hover:underline hover:underline-offset-4 hover:decoration-yellow-500"
               >
                 <BookmarkIcon className="size-8" />
@@ -204,7 +204,7 @@ const Users = () => {
                 </span>
               </button>
               <button
-                onClick={() => setSelectedSection("articles")}
+                onClick={() => setSelectedSection('articles')}
                 className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white hover:underline hover:underline-offset-4 hover:decoration-yellow-500"
               >
                 <PencilIcon className="size-8" />
@@ -220,7 +220,7 @@ const Users = () => {
           {RenderContent()}
         </main>
       </div>
-      <Footer />
+      <Footer setShowLoginModal={setShowLoginCard} />
     </div>
   );
 };
