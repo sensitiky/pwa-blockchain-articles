@@ -26,6 +26,7 @@ import {
 import Image from 'next/image';
 import DOMPurify from 'dompurify';
 import { User, Post } from '@/interfaces/interfaces2';
+import LoginCard from '@/assets/login';
 
 const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -275,7 +276,9 @@ const Owner: React.FC = () => {
 const OwnerContent: React.FC = () => {
   const { id } = useParams();
   const userId = Array.isArray(id) ? id[0] : id;
+  const [showLoginCard, setShowLoginCard] = useState(false);
 
+  const handleCloseModal = () => setShowLoginCard(false);
   if (!id) {
     return <div>User ID is missing</div>;
   }
@@ -285,6 +288,23 @@ const OwnerContent: React.FC = () => {
       <Header />
       <UserContent userId={userId} />
       <Footer setShowLoginModal={setShowLoginCard} />
+      {showLoginCard && (
+        <div className="w-screen fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="relative bg-white p-8 rounded-lg shadow-lg">
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+            >
+              <img
+                src="/close-circle-svgrepo-com.png"
+                alt="Remove"
+                className="size-7 cursor-pointer hover:animate-pulse"
+              />
+            </button>
+            <LoginCard onClose={handleCloseModal} />
+          </div>
+        </div>
+      )}
     </>
   );
 };

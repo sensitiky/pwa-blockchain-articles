@@ -10,6 +10,7 @@ import { useAuth, getProfile } from '../../../context/authContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { UserIcon, LockIcon, PencilIcon, BookmarkIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
+import LoginCard from '@/assets/login';
 
 const Users = () => {
   const [selectedSection, setSelectedSection] = useState('personal');
@@ -32,7 +33,9 @@ const Users = () => {
     bio: '',
     avatar: '',
   });
+  const [showLoginCard, setShowLoginCard] = useState(false);
 
+  const handleCloseModal = () => setShowLoginCard(false);
   useEffect(() => {
     const fetchProfile = async () => {
       if (isAuthenticated) {
@@ -221,6 +224,23 @@ const Users = () => {
         </main>
       </div>
       <Footer setShowLoginModal={setShowLoginCard} />
+      {showLoginCard && (
+        <div className="w-screen fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="relative bg-white p-8 rounded-lg shadow-lg">
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+            >
+              <img
+                src="/close-circle-svgrepo-com.png"
+                alt="Remove"
+                className="size-7 cursor-pointer hover:animate-pulse"
+              />
+            </button>
+            <LoginCard onClose={handleCloseModal} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
