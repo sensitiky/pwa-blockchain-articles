@@ -127,29 +127,50 @@ const PostPage = () => {
       alert('You need to be authenticated in order to interact');
       return;
     }
+
+    // Crear un nuevo comentario localmente
+    const newComment: Comment = {
+      id: Date.now(), // Usar un ID temporal
+      content: commentContent,
+      author: {
+        id: user.id,
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        user: user.user || '',
+        avatar: user.avatar || '',
+        role: user.role || '',
+      },
+      createdAt: new Date().toISOString(), // Fecha actual
+      favorites: 0, // Inicializar con 0 favoritos
+    };
+
+    // Actualizar el estado de los comentarios inmediatamente
+    setComments([...comments, newComment]);
+    setCommentContent('');
+
     try {
+      // Enviar la solicitud al backend de manera asíncrona
       const response = await axios.post(`${API_URL}/comments`, {
         content: commentContent,
         authorId: user.id,
         postId: post?.id,
       });
 
-      const newComment = {
+      // Actualizar el comentario con los datos reales del backend
+      const updatedComment = {
+        ...newComment,
         ...response.data,
-        author: {
-          id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          user: user.user,
-          avatar: user.avatar,
-          role: user.role,
-        },
       };
 
-      setComments([...comments, newComment]);
-      setCommentContent('');
+      // Reemplazar el comentario temporal con el comentario actualizado
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment.id === newComment.id ? updatedComment : comment
+        )
+      );
     } catch (error) {
       console.error('Error posting comment:', error);
+      // Manejar el error (opcional)
     }
   };
 
@@ -189,12 +210,12 @@ const PostPage = () => {
   };
 
   const handleFavoriteClick = async () => {
+    setShowBookmarkMessage(true);
+    setTimeout(() => setShowBookmarkMessage(false), 10000);
     if (post) {
       await handleFavorite(post.id);
     }
     setIsFavorited(true);
-    setShowBookmarkMessage(true);
-    setTimeout(() => setShowBookmarkMessage(false), 10000);
   };
 
   const handleDelete = async () => {
