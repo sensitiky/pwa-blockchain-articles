@@ -223,10 +223,7 @@ export class UsersService implements IUserActivityService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.userRepository.create(createUserDto);
-    user.postCount = 0;
-    const newUser = await this.userRepository.save(user);
-    newUser.postCount = newUser.posts ? newUser.posts.length : 0;
-    return this.userRepository.save(newUser);
+    return this.userRepository.save(user);
   }
 
   async findByEmail(email: string): Promise<User | undefined> {

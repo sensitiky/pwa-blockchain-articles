@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../services/users.service';
@@ -14,6 +15,7 @@ import { MetricService } from './metric.service';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   private googleClient: OAuth2Client;
   private readonly mailer: nodemailer.Transporter;
   private verificationCodes: Map<string, string> = new Map();
@@ -44,13 +46,20 @@ export class AuthService {
     return lengthCriteria && uppercaseCriteria && numberOrSymbolCriteria;
   }
 
-  async validateUser(email: string, password: string): Promise<UserDto | null> {
+  async validateUser(email: string, password: string): Promise<any> {
+    this.logger.log(`Validating user: ${email}`);
     const user = await this.usersService.findByEmail(email);
-    if (user && (await bcrypt.compare(password, user.password))) {
-      return this.usersService.transformToDto(user);
+    if (user) {
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      this.logger.log(`Password valid: ${isPasswordValid}`);
+      if (isPasswordValid) {
+        const { password, ...result } = user;
+        return result;
+      }
     }
     return null;
   }
+
   async checkUser(user: User): Promise<UserDto> {
     return this.usersService.transformToDto(user);
   }
@@ -127,7 +136,7 @@ export class AuthService {
         firstName: payload?.given_name,
         lastName: payload?.family_name,
         nombre: '',
-        code: '',
+        verificationCode: '',
       });
       user.postCount = user.posts ? user.posts.length : 0;
     } else {
@@ -155,7 +164,7 @@ export class AuthService {
           nombre: firstName + ' ' + lastName,
           user: email,
           password: '',
-          code: '',
+          verificationCode: '',
         };
         user = await this.usersService.create(newUser);
         user.postCount = user.posts ? user.posts.length : 0;
@@ -181,13 +190,14 @@ export class AuthService {
     await this.mailer.sendMail(mailOptions);
   }
 
-  async verifyCode(email: string, code: string): Promise<boolean> {
+  async verifyCode(email: string, verificationCode: string): Promise<boolean> {
     console.log(`Verifying code for email: ${email}`);
 
     const storedCode = this.verificationCodes.get(email);
     console.log(`Stored code: ${storedCode}`);
+    console.log(`Received code ${verificationCode}`);
 
-    if (storedCode === code) {
+    if (storedCode === verificationCode) {
       console.log(`Code verified successfully for email: ${email}`);
       return true;
     }
@@ -259,7 +269,7 @@ export class AuthService {
         nombre: '',
         user: '',
         password: '',
-        code: '',
+        verificationCode: '',
       });
     }
 

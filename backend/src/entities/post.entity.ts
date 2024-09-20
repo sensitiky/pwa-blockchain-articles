@@ -9,6 +9,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  JoinColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Category } from './category.entity';
@@ -34,15 +35,17 @@ export class Post {
   readTime?: number;
 
   @ManyToOne(() => User, (user) => user.posts)
+  @JoinColumn({ name: 'authorId' })
   author: User;
 
   @ManyToOne(() => Category, (category) => category.posts)
+  @JoinColumn({ name: 'categoryId' })
   category: Category;
 
   @OneToMany(() => Comment, (comment) => comment.post)
   comments: Comment[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'createdAt' })
   createdAt: Date;
 
   @ManyToMany(() => Tag, (tag) => tag.posts)

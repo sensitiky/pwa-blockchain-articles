@@ -57,37 +57,20 @@ const Articles = () => {
     ) => {
       setLoading(true);
       try {
-        let url = `${API_URL}/posts?page=${page}&limit=${POSTS_PER_PAGE}&order=${order}`;
+        let url = `${API_URL}/posts?page=${page}&limit=${POSTS_PER_PAGE}&order=${order}&descriptionLength=${sortOrder2}`;
 
         if (categoryId && tagId) {
-          url = `${API_URL}/posts/by-tag?tagId=${tagId}&categoryId=${categoryId}&order=${order}`;
+          url = `${API_URL}/posts/by-tag?tagId=${tagId}&categoryId=${categoryId}&order=${order}&descriptionLength=${sortOrder2}`;
         } else if (categoryId) {
-          url = `${API_URL}/posts/by-category?categoryId=${categoryId}&page=${page}&limit=${POSTS_PER_PAGE}&order=${order}`;
+          url = `${API_URL}/posts/by-category?categoryId=${categoryId}&page=${page}&limit=${POSTS_PER_PAGE}&order=${order}&descriptionLength=${sortOrder2}`;
         } else if (tagId) {
-          url = `${API_URL}/posts/by-tag?tagId=${tagId}&page=${page}&limit=${POSTS_PER_PAGE}&order=${order}`;
+          url = `${API_URL}/posts/by-tag?tagId=${tagId}&page=${page}&limit=${POSTS_PER_PAGE}&order=${order}&descriptionLength=${sortOrder2}`;
         }
+
         const response = await axios.get(url);
-        let postsData = Array.isArray(response.data)
+        const postsData = Array.isArray(response.data)
           ? response.data
           : response.data.data || [];
-
-        // Apply sortOrder2 logic after fetching the posts
-        if (sortOrder2 === 'short') {
-          postsData = postsData.filter(
-            (post: { description: string | any[] }) =>
-              post.description.length <= 1000
-          );
-        } else if (sortOrder2 === 'medium') {
-          postsData = postsData.filter(
-            (post: { description: string | any[] }) =>
-              post.description.length > 1000 && post.description.length <= 3000
-          );
-        } else if (sortOrder2 === 'long') {
-          postsData = postsData.filter(
-            (post: { description: string | any[] }) =>
-              post.description.length > 3000
-          );
-        }
 
         setPosts((prevPosts) =>
           page === 1 ? postsData : [...prevPosts, ...postsData]

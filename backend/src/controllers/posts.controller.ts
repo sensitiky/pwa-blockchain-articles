@@ -24,14 +24,13 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-async findAll(
-  @Query('page') page: number = 1,
-  @Query('limit') limit: number = 5,
-  @Query('order') order: string = 'recent',  
-) {
-  return this.postsService.findAll(page, limit, order);
-}
-
+  async findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 5,
+    @Query('order') order: string = 'recent',
+  ) {
+    return this.postsService.findAll(page, limit, order);
+  }
 
   @Get('count-by-category')
   async countByCategory() {

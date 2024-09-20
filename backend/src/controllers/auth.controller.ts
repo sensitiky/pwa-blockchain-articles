@@ -30,20 +30,18 @@ export class AuthController {
     @Body() loginDto: { email: string; password: string },
     @Res() res: Response,
   ): Promise<void> {
-    this.logger.log(`Login attempt for user: ${loginDto.email}`);
     const user = await this.authService.validateUser(
       loginDto.email,
       loginDto.password,
     );
     if (user) {
       const token = this.authService.generateJwtToken(user);
-      this.logger.log(`Login successful for user: ${loginDto.email}`);
       res.status(200).json({ message: 'Login successful', token, user });
     } else {
-      this.logger.warn(`Login failed for user: ${loginDto.email}`);
       res.status(401).json({ message: 'Login failed' });
     }
   }
+
   @Post('facebook')
   async facebookLogin(
     @Body() body: { accessToken: string },
@@ -86,7 +84,7 @@ export class AuthController {
     }
   }
 
-  @Post("check-user")
+  @Post('check-user')
   async checkUser(@Body() body: { email: string }, @Res() res: Response) {
     try {
       const user = await this.authService.checkUser({
@@ -101,16 +99,16 @@ export class AuthController {
         posts: [],
         comments: [],
         favorites: [],
-        postCount: 0
+        postCount: 0,
       });
       if (user) {
-        res.status(200).json({ message: "User found", user });
+        res.status(200).json({ message: 'User found', user });
       } else {
-        res.status(404).json({ message: "User not found" });
+        res.status(404).json({ message: 'User not found' });
       }
     } catch (error) {
       this.logger.error(`Error checking user: ${error.message}`);
-      res.status(500).json({ message: "Failed to check user" });
+      res.status(500).json({ message: 'Failed to check user' });
     }
   }
 
@@ -160,7 +158,7 @@ export class AuthController {
     try {
       const isVerified = await this.authService.verifyCode(
         registerDto.email,
-        registerDto.code,
+        registerDto.verificationCode,
       );
       if (!isVerified) {
         res.status(400).json({ message: 'Invalid verification code' });
@@ -238,13 +236,11 @@ export class AuthController {
       const userDto = await this.authService.validateGoogleToken(token);
       const jwtToken = this.authService.generateJwtToken(userDto);
 
-      res
-        .status(200)
-        .json({
-          message: 'Google login successful',
-          token: jwtToken,
-          user: userDto,
-        });
+      res.status(200).json({
+        message: 'Google login successful',
+        token: jwtToken,
+        user: userDto,
+      });
     } catch (error) {
       this.logger.error(`Error with Google login: ${error.message}`);
       res.status(401).json({ message: 'Google login failed' });

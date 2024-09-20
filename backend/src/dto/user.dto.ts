@@ -5,7 +5,7 @@ export class CreateUserDto {
   password: string;
   firstName?: string;
   lastName?: string;
-  code: string;
+  verificationCode: string;
   facebookId?: string;
   avatar?: string;
   postCount?: number;
@@ -31,10 +31,10 @@ export class UserDto {
 }
 
 export class UpdateUserDto {
-   firstName?: string;
-   lastName?: string;
-   email?: string;
-   user?: string;
-   bio?: string;
-   avatar?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  user?: string;
+  bio?: string;
+  avatar?: string;
 }
