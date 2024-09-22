@@ -5,6 +5,7 @@ import { AuthProvider } from "../../context/authContext";
 import FacebookInit from "@/assets/FacebookInit";
 import Background from "@/assets/background";
 import AuthWrapper from "@/assets/authwrapper";
+import { Analytics } from "@vercel/analytics/react";
 
 const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 if (!clientId) {
@@ -29,6 +30,7 @@ export default function RootLayout({
             <AuthWrapper>
               <Background />
               <FacebookInit />
+              <Analytics />
               <main className="w-full h-full overflow-x-hidden text-[#263238]">
                 {children}
                 <link rel="icon" href="/favicon.ico" sizes="any" />

@@ -20,8 +20,10 @@ const SupportSection: FC = () => {
       <div className="h-screen grid grid-cols-1 md:grid-cols-2 bg-background text-foreground">
         <aside className="relative flex flex-col justify-center items-center bg-[#000916] px-6 sm:px-12 py-10 sm:py-16 h-screen">
           <div className="absolute inset-0 flex justify-center items-center z-10">
-            <img
+            <Image
               src="/bg-about.gif"
+              width={1920}
+              height={1080}
               className="object-cover w-full h-full opacity-25"
               alt="Background"
             />
@@ -61,7 +63,7 @@ const SupportSection: FC = () => {
                 SEPA Transfers
               </Button>
               <Button className="text-base px-6 py-3 bg-[#000916] text-white rounded-full hover:bg-gray-800 transition duration-300 font-normal">
-                Paypal & Venmo
+                Paypal
               </Button>
             </div>
             <Image
@@ -100,9 +102,11 @@ const SupportSection: FC = () => {
               onClick={handleCloseModal}
               className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
             >
-              <img
+              <Image
                 src="/close-circle-svgrepo-com.png"
                 alt="Remove"
+                width={1920}
+                height={1080}
                 className="size-7 cursor-pointer hover:animate-pulse"
               />
             </button>
