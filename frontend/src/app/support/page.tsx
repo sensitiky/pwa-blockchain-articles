@@ -1,10 +1,10 @@
-'use client';
-import Footer from '@/assets/footer';
-import Header from '@/assets/header';
-import LoginCard from '@/assets/login';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import { FC, useState } from 'react';
+"use client";
+import Footer from "@/assets/footer";
+import Header from "@/assets/header";
+import LoginCard from "@/assets/login";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { FC, useState } from "react";
 
 const SupportSection: FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,7 +27,7 @@ const SupportSection: FC = () => {
             />
           </div>
           <div className="font-medium flex flex-col items-center justify-center z-10 space-y-8 text-center px-6 h-full">
-            <p className="text-justify text-xl sm:text-2xl text-white leading-snug">
+            <p className="text-justify text-xl sm:text-2xl text-white leading-snug font-normal">
               Remember that Blogchain is
               <br /> maintained thanks to the donations of
               <br />
@@ -44,7 +44,7 @@ const SupportSection: FC = () => {
         </aside>
         <main className="flex flex-col justify-center items-center bg-gradient-to-b from-white to-cyan-100 text-black">
           <div className="font-medium space-y-8 text-center px-6 flex flex-col justify-center h-full mb-10">
-            <p className="text-xl sm:text-2xl leading-snug text-[#263238] text-justify justify-center">
+            <p className="text-xl sm:text-2xl leading-snug text-[#263238] text-justify justify-center font-normal">
               We are accepting donations in fiat <br />
               and cryptocurrencies, choose the <br />
               channel that suits you best and <br />

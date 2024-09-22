@@ -171,9 +171,9 @@ const SecuritySettings: React.FC = () => {
     return (
       <Container>
         <Image
-          src="/Logo-blogchain.png"
-          width={300}
-          height={300}
+          src="/BLOGCHAIN.png"
+          width={200}
+          height={200}
           alt="Blogchain Logo"
           className="animate-bounce"
         />
@@ -259,7 +259,7 @@ const SecuritySettings: React.FC = () => {
                   </div>
                 )}
               </FieldContainer>
-            )
+            ),
           )}
         </Section>
         <Section>

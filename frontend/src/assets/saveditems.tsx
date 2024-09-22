@@ -62,7 +62,7 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
           ...favorite,
           imageUrlBase64: favorite.imageUrl
             ? `data:image/jpeg;base64,${Buffer.from(
-                favorite.imageUrl.data
+                favorite.imageUrl.data,
               ).toString("base64")}`
             : null,
           createdAt: new Date(favorite.createdAt),
@@ -87,7 +87,7 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
     try {
       if (!newLiked[index]) {
         await axios.delete(
-          `${API_URL}/users/${userId}/favorites/${favorite.id}`
+          `${API_URL}/users/${userId}/favorites/${favorite.id}`,
         );
 
         const updatedFavorites = favorites.filter((_, i) => i !== index);
@@ -110,11 +110,11 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
     switch (order) {
       case "Date (newest first)":
         return favorites.sort(
-          (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+          (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
         );
       case "Date (oldest first)":
         return favorites.sort(
-          (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+          (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
         );
       case "Title":
         return favorites.sort((a, b) => a.title.localeCompare(b.title));
@@ -130,11 +130,11 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
           You have not saved any articles yet
         </h2>
         <Image
-          src="/Logo-blogchain.png"
-          width={300}
-          height={300}
+          src="/BLOGCHAIN.png"
+          width={200}
+          height={200}
           alt="Blogchain Logo"
-          className="animate-bounce"
+          className="animate-bounce mt-20"
         />
       </div>
     );
@@ -190,9 +190,9 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
           {loading ? (
             <Container>
               <Image
-                src="/Logo-blogchain.png"
-                width={300}
-                height={300}
+                src="/BLOGCHAIN.png"
+                width={200}
+                height={200}
                 alt="Blogchain Logo"
                 className="animate-bounce"
               />

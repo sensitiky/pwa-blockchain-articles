@@ -78,7 +78,7 @@ const Posts: React.FC = () => {
         favorites: post.favorites || 0,
         imageUrlBase64: post.imageUrl
           ? `data:image/jpeg;base64,${Buffer.from(post.imageUrl.data).toString(
-              "base64"
+              "base64",
             )}`
           : null,
       }));
@@ -104,11 +104,11 @@ const Posts: React.FC = () => {
     switch (order) {
       case "Date (newest first)":
         return posts.sort(
-          (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+          (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
         );
       case "Date (oldest first)":
         return posts.sort(
-          (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+          (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
         );
       case "Title":
         return posts.sort((a, b) => a.title.localeCompare(b.title));
@@ -120,7 +120,7 @@ const Posts: React.FC = () => {
   const sortedPosts = sortPosts(posts);
   const paginatedPosts = sortedPosts.slice(
     (page - 1) * POSTS_PER_PAGE,
-    page * POSTS_PER_PAGE
+    page * POSTS_PER_PAGE,
   );
 
   if (posts.length === 0) {
@@ -130,11 +130,11 @@ const Posts: React.FC = () => {
           You have not created any articles yet
         </h2>
         <Image
-          src="/Logo-blogchain.png"
-          width={300}
-          height={300}
+          src="/BLOGCHAIN.png"
+          width={200}
+          height={200}
           alt="Blogchain Logo"
-          className="animate-bounce"
+          className="animate-bounce mt-20"
         />
       </div>
     );
@@ -186,9 +186,9 @@ const Posts: React.FC = () => {
       {loading ? (
         <Container>
           <Image
-            src="/Logo-blogchain.png"
-            width={300}
-            height={300}
+            src="/BLOGCHAIN.png"
+            width={200}
+            height={200}
             alt="Blogchain Logo"
             className="animate-bounce"
           />
@@ -200,9 +200,9 @@ const Posts: React.FC = () => {
               <p className="text-center col-span-3 text-gray-500">
                 No articles were found
                 <Image
-                  src="/Logo-blogchain.png"
-                  width={300}
-                  height={300}
+                  src="/BLOGCHAIN.png"
+                  width={200}
+                  height={200}
                   alt="Blogchain Logo"
                   className="animate-bounce"
                 />

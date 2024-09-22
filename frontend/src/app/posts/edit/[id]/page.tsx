@@ -1,19 +1,19 @@
-'use client';
-import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import axios from 'axios';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '../../../../../context/authContext';
-import { Input } from '@/components/ui/input';
-import Image from 'next/image';
-import Header from '@/assets/header';
-import Footer from '@/assets/footer';
-import { ArrowLeftIcon } from 'lucide-react';
-import styled from 'styled-components';
-import { AnimatePresence, motion } from 'framer-motion';
-import RichTextEditor from '@/components/ui/texteditor';
-import { EditPostDto } from '@/interfaces/interfaces';
-import LoginCard from '@/assets/login';
+"use client";
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "../../../../../context/authContext";
+import { Input } from "@/components/ui/input";
+import Image from "next/image";
+import Header from "@/assets/header";
+import Footer from "@/assets/footer";
+import { ArrowLeftIcon } from "lucide-react";
+import styled from "styled-components";
+import { AnimatePresence, motion } from "framer-motion";
+import RichTextEditor from "@/components/ui/texteditor";
+import { EditPostDto } from "@/interfaces/interfaces";
+import LoginCard from "@/assets/login";
 const Container = styled.div`
   display: flex;
   justify-content: center;
@@ -27,7 +27,7 @@ const EditPostPage = () => {
   const { user } = useAuth();
   const [post, setPost] = useState<EditPostDto | null>(null);
   const [loading, setLoading] = useState(true);
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [showLoginCard, setShowLoginCard] = useState(false);
   const { id } = useParams();
@@ -47,7 +47,7 @@ const EditPostPage = () => {
       });
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching post data:', error);
+      console.error("Error fetching post data:", error);
       setLoading(false);
     }
   };
@@ -59,7 +59,7 @@ const EditPostPage = () => {
   }, [id]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setPost((prevPost) => {
@@ -99,8 +99,8 @@ const EditPostPage = () => {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
-      console.error('User is not logged in');
-      alert('You need to be authenticated to edit the post');
+      console.error("User is not logged in");
+      alert("You need to be authenticated to edit the post");
       return;
     }
 
@@ -111,32 +111,32 @@ const EditPostPage = () => {
 
     const formData = new FormData();
     if (title.length > 140) {
-      alert('Title exceeds the maximum length of 140 characters.');
+      alert("Title exceeds the maximum length of 140 characters.");
       return;
     }
 
     if (/[^a-zA-Z0-9\s?!¡¿&\/\\´']/.test(title)) {
-      alert('Title contains disallowed special characters.');
+      alert("Title contains disallowed special characters.");
       return;
     }
-    formData.append('title', post.title);
-    formData.append('content', post.content);
-    formData.append('description', post.description);
+    formData.append("title", post.title);
+    formData.append("content", post.content);
+    formData.append("description", post.description);
     if (post.imageUrl instanceof File) {
-      formData.append('image', post.imageUrl);
+      formData.append("image", post.imageUrl);
     }
 
     try {
       await axios.patch(`${API_URL}/posts/${id}`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
-      alert('Post updated successfully!');
+      alert("Post updated successfully!");
       router.push(`/posts/${id}`);
     } catch (error) {
-      console.error('Error updating post:', error);
-      alert('Error updating post');
+      console.error("Error updating post:", error);
+      alert("Error updating post");
     }
   };
   const handleCloseModal = () => {
@@ -147,9 +147,9 @@ const EditPostPage = () => {
       <div>
         <Container>
           <Image
-            src="/Logo-blogchain.png"
-            width={300}
-            height={300}
+            src="/BLOGCHAIN.png"
+            width={200}
+            height={200}
             alt="Blogchain Logo"
             className="animate-bounce"
           />

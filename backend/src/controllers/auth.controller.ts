@@ -15,6 +15,7 @@ import * as crypto from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from '../dto/user.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { UsersService } from '../services/users.service';
 
 @Controller('auth')
 export class AuthController {
@@ -23,6 +24,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
   ) {}
 
   @Post('login')
@@ -85,27 +87,26 @@ export class AuthController {
   }
 
   @Post('check-user')
-  async checkUser(@Body() body: { email: string }, @Res() res: Response) {
+  async checkUser(
+    @Body() body: { email?: string; username?: string },
+    @Res() res: Response,
+  ) {
     try {
-      const user = await this.authService.checkUser({
-        email: body.email,
-        id: 0,
-        user: '',
-        lastLogin: undefined,
-        lastActivity: undefined,
-        facebookId: '',
-        role: '',
-        password: '',
-        posts: [],
-        comments: [],
-        favorites: [],
-        postCount: 0,
-      });
-      if (user) {
-        res.status(200).json({ message: 'User found', user });
-      } else {
-        res.status(404).json({ message: 'User not found' });
+      if (body.email) {
+        const existingUser = await this.usersService.findByEmail(body.email);
+        if (existingUser) {
+          return res.status(409).json({ message: 'Email already in use' });
+        }
       }
+
+      if (body.username) {
+        const existingUsername = await this.usersService.findOne(body.username);
+        if (existingUsername) {
+          return res.status(409).json({ message: 'Username already in use' });
+        }
+      }
+
+      res.status(200).json({ message: 'User is available' });
     } catch (error) {
       this.logger.error(`Error checking user: ${error.message}`);
       res.status(500).json({ message: 'Failed to check user' });

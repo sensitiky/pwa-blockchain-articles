@@ -60,24 +60,24 @@ export class AuthService {
     return null;
   }
 
-  async checkUser(user: User): Promise<UserDto> {
-    return this.usersService.transformToDto(user);
-  }
-
-  async registerUser(createUserDto: CreateUserDto): Promise<UserDto> {
+  async checkUser(createuserDto: CreateUserDto): Promise<void> {
     const existingUser = await this.usersService.findByEmail(
-      createUserDto.email,
+      createuserDto.email,
     );
     if (existingUser) {
       throw new ConflictException('Email already in use');
     }
 
     const existingUsername = await this.usersService.findOne(
-      createUserDto.user,
+      createuserDto.user,
     );
     if (existingUsername) {
       throw new ConflictException('Username already in use');
     }
+  }
+
+  async registerUser(createUserDto: CreateUserDto): Promise<UserDto> {
+    await this.checkUser(createUserDto);
 
     if (!this.validatePassword(createUserDto.password)) {
       throw new ConflictException('Password does not meet the criteria');

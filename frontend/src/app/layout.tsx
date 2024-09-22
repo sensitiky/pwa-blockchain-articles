@@ -31,6 +31,7 @@ export default function RootLayout({
               <FacebookInit />
               <main className="w-full h-full overflow-x-hidden text-[#263238]">
                 {children}
+                <link rel="icon" href="/favicon.ico" sizes="any" />
               </main>
             </AuthWrapper>
           </AuthProvider>
