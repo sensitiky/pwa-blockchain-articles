@@ -215,7 +215,7 @@ const PostPage = () => {
     if (isAuthenticated) {
       setShowBookmarkMessage(true);
     }
-    setTimeout(() => setShowBookmarkMessage(false), 1000);
+    setTimeout(() => setShowBookmarkMessage(false), 1500);
     if (post) {
       await handleFavorite(post.id);
     }
