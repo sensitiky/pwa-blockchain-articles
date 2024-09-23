@@ -244,7 +244,7 @@ const Articles = () => {
       return (
         <div className="relative flex flex-col items-center justify-center">
           <Image
-            src="/BLOGCHAIN.png"
+            src="/BLOGCHAIN.gif"
             width={200}
             height={200}
             alt="Blogchain Logo"
@@ -472,7 +472,7 @@ const Articles = () => {
             {loading ? (
               <div className="flex justify-center mt-8">
                 <Image
-                  src="/BLOGCHAIN.png"
+                  src="/BLOGCHAIN.gif"
                   width={200}
                   height={200}
                   alt="Blogchain Logo"

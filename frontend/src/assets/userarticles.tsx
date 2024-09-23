@@ -130,7 +130,7 @@ const Posts: React.FC = () => {
           You have not created any articles yet
         </h2>
         <Image
-          src="/BLOGCHAIN.png"
+          src="/BLOGCHAIN.gif"
           width={200}
           height={200}
           alt="Blogchain Logo"
@@ -186,7 +186,7 @@ const Posts: React.FC = () => {
       {loading ? (
         <Container>
           <Image
-            src="/BLOGCHAIN.png"
+            src="/BLOGCHAIN.gif"
             width={200}
             height={200}
             alt="Blogchain Logo"
@@ -200,7 +200,7 @@ const Posts: React.FC = () => {
               <p className="text-center col-span-3 text-gray-500">
                 No articles were found
                 <Image
-                  src="/BLOGCHAIN.png"
+                  src="/BLOGCHAIN.gif"
                   width={200}
                   height={200}
                   alt="Blogchain Logo"

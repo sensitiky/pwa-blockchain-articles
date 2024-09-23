@@ -250,7 +250,7 @@ const PostPage = () => {
       <div className="flex flex-col space-y-3">
         <Container>
           <Image
-            src="/BLOGCHAIN.png"
+            src="/BLOGCHAIN.gif"
             width={200}
             height={200}
             alt="Blogchain Logo"
@@ -266,7 +266,7 @@ const PostPage = () => {
       <div className="flex flex-col space-y-3">
         <Container>
           <Image
-            src="/BLOGCHAIN.png"
+            src="/BLOGCHAIN.gif"
             width={200}
             height={200}
             alt="Blogchain Logo"

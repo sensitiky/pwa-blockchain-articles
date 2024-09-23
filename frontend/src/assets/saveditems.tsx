@@ -130,7 +130,7 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
           You have not saved any articles yet
         </h2>
         <Image
-          src="/BLOGCHAIN.png"
+          src="/BLOGCHAIN.gif"
           width={200}
           height={200}
           alt="Blogchain Logo"
@@ -190,7 +190,7 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
           {loading ? (
             <Container>
               <Image
-                src="/BLOGCHAIN.png"
+                src="/BLOGCHAIN.gif"
                 width={200}
                 height={200}
                 alt="Blogchain Logo"

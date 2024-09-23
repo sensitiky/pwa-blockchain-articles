@@ -171,7 +171,7 @@ const SecuritySettings: React.FC = () => {
     return (
       <Container>
         <Image
-          src="/BLOGCHAIN.png"
+          src="/BLOGCHAIN.gif"
           width={200}
           height={200}
           alt="Blogchain Logo"
