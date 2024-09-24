@@ -1,11 +1,15 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, useCallback } from "react";
 import {
   TextField,
   Avatar,
   IconButton,
   InputAdornment,
   Tooltip,
+  Modal,
+  Box,
+  Typography,
 } from "@mui/material";
 import { FaEdit, FaCheck, FaEye, FaEyeSlash } from "react-icons/fa";
 import { motion } from "framer-motion";
@@ -87,6 +91,15 @@ const SecuritySettings: React.FC = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [sendingCode, setSendingCode] = useState(false);
+  const [message, setMessage] = useState<{
+    text: string;
+    isError: boolean;
+  } | null>(null);
+  const [codeSent, setCodeSent] = useState(false);
+  const [email, setEmail] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -117,7 +130,63 @@ const SecuritySettings: React.FC = () => {
     }
   };
 
+  const handleSendVerificationCode = async () => {
+    setSendingCode(true);
+    setMessage(null);
+    setOpenModal(true);
+    try {
+      const response = await axios.post(
+        `${API_URL}/auth/send-verification-code`,
+        { email: userInfo.email },
+        { withCredentials: true },
+      );
+
+      if (response.status === 200) {
+        setCodeSent(true);
+        setMessage({
+          text: "Verification code sent to your email",
+          isError: false,
+        });
+      } else {
+        throw new Error("Failed to send verification code");
+      }
+    } catch (err) {
+      setMessage({ text: "Failed to send verification code", isError: true });
+    } finally {
+      setSendingCode(false);
+    }
+  };
+
+  const verifyCode = async (code: string) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/auth/verify-code`,
+        { email: userInfo.email, code },
+        { withCredentials: true },
+      );
+
+      if (response.status === 200) {
+        setMessage({
+          text: "Code verified successfully",
+          isError: false,
+        });
+        setOpenModal(false);
+        return true;
+      } else {
+        throw new Error("Failed to verify code");
+      }
+    } catch (err) {
+      setMessage({ text: "Failed to verify code", isError: true });
+      return false;
+    }
+  };
+
   const handleSaveChanges = async (field: string) => {
+    if (field === "email") {
+      await handleSendVerificationCode();
+      return;
+    }
+
     if (field === "password") {
       if (password !== confirmPassword) {
         setPasswordError("Passwords do not match.");
@@ -151,6 +220,15 @@ const SecuritySettings: React.FC = () => {
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleVerifyAndSaveEmail = async () => {
+    const isVerified = await verifyCode(verificationCode);
+    if (isVerified) {
+      await handleSaveChanges("email");
+      setEditingField(null); // Close the email editing field
+      setOpenModal(false); // Close the modal
+    }
   };
 
   const fieldLabels: Record<keyof UserProfile, string | undefined> = {
@@ -197,7 +275,7 @@ const SecuritySettings: React.FC = () => {
           />
           <div>
             <h1 className="text-4xl font-bold text-[#000916]">
-              Hi, {user?.user}
+              Hi, {user?.firstName}
             </h1>
             <p className="text-xl text-gray-500">
               Manage your security settings.
@@ -273,12 +351,15 @@ const SecuritySettings: React.FC = () => {
                 onChange={handleInputChange}
                 variant="outlined"
                 size="small"
-                onBlur={() => handleSaveChanges("email")}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
                       <Tooltip title="Save">
-                        <IconButton onClick={() => handleSaveChanges("email")}>
+                        <IconButton
+                          onClick={() => {
+                            handleSendVerificationCode();
+                          }}
+                        >
                           <FaCheck color="#28a745" />
                         </IconButton>
                       </Tooltip>
@@ -291,7 +372,11 @@ const SecuritySettings: React.FC = () => {
                 <span className="text-sm text-green-500">{userInfo.email}</span>
                 <ActionIcons>
                   <Tooltip title="Edit">
-                    <IconButton onClick={() => setEditingField("email")}>
+                    <IconButton
+                      onClick={() => {
+                        setEditingField("email");
+                      }}
+                    >
                       <FaEdit color="#007bff" />
                     </IconButton>
                   </Tooltip>
@@ -359,6 +444,57 @@ const SecuritySettings: React.FC = () => {
           </FieldContainer>
         </Section>
       </Card>
+
+      <Modal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            borderRadius: 2,
+            p: 4,
+          }}
+        >
+          <Typography id="modal-title" variant="h6" component="h2">
+            Verify Your Email
+          </Typography>
+          <Typography id="modal-description" sx={{ mt: 2 }}>
+            Please enter the verification code sent to your email.
+          </Typography>
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Verification Code"
+            value={verificationCode}
+            onChange={(e) => setVerificationCode(e.target.value)}
+          />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              mt: 2,
+            }}
+          >
+            <Button
+              color="primary"
+              onClick={handleVerifyAndSaveEmail}
+              className="rounded-full bg-[#000916] hover:bg-[#000916]/80 font-normal"
+            >
+              Verify and Save
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </motion.div>
   );
 };
