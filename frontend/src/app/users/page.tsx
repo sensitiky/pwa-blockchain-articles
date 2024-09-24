@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Header from '@/assets/header';
 import Footer from '@/assets/footer';
 import ProfileSettings from '@/assets/profile';
@@ -12,10 +12,20 @@ import { UserIcon, LockIcon, PencilIcon, BookmarkIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import LoginCard from '@/assets/login';
 
+import { ReactNode } from 'react';
+
+const SearchParamsWrapper = ({
+  children,
+}: {
+  children: (searchParams: URLSearchParams) => ReactNode;
+}) => {
+  const searchParams = useSearchParams();
+  return children(searchParams);
+};
+
 const Users = () => {
   const [selectedSection, setSelectedSection] = useState('personal');
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const [userInfo, setUserInfo] = useState({
@@ -36,6 +46,7 @@ const Users = () => {
   const [showLoginCard, setShowLoginCard] = useState(false);
 
   const handleCloseModal = () => setShowLoginCard(false);
+
   useEffect(() => {
     const fetchProfile = async () => {
       if (isAuthenticated) {
@@ -65,13 +76,6 @@ const Users = () => {
     fetchProfile();
   }, [isAuthenticated]);
 
-  useEffect(() => {
-    const section = searchParams.get('section');
-    if (section) {
-      setSelectedSection(section);
-    }
-  }, [searchParams]);
-
   const RenderContent = () => {
     if (!isAuthenticated) {
       router.push('/');
@@ -79,16 +83,12 @@ const Users = () => {
     switch (selectedSection) {
       case 'personal':
         return <ProfileSettings />;
-
       case 'security':
         return <SecuritySettings />;
-
       case 'saved':
         return <SavedItems userId={user?.id ?? 0} />;
-
       case 'articles':
         return <Articles />;
-
       default:
         return null;
     }
@@ -220,7 +220,20 @@ const Users = () => {
         </aside>
 
         <main className="bg-inherit p-4 md:p-6 lg:p-8 flex-grow">
-          {RenderContent()}
+          <Suspense fallback={<div>Loading...</div>}>
+            <SearchParamsWrapper>
+              {(searchParams: any) => {
+                useEffect(() => {
+                  const section = searchParams.get('section');
+                  if (section) {
+                    setSelectedSection(section);
+                  }
+                }, [searchParams]);
+
+                return <RenderContent />;
+              }}
+            </SearchParamsWrapper>
+          </Suspense>
         </main>
       </div>
       <Footer setShowLoginModal={setShowLoginCard} />
