@@ -8,6 +8,7 @@ export default {
       {
         protocol: 'https',
         hostname: 'blogchain.onrender.com',
+        port: '',
         pathname: '/uploads/**',
       },
       {
@@ -17,5 +18,8 @@ export default {
         pathname: '/uploads/**',
       },
     ],
+  },
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
   },
 };
