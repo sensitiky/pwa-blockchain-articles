@@ -1,8 +1,8 @@
-"use client";
-import React, { useState, useEffect, useCallback } from "react";
-import axios from "axios";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+'use client';
+import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -10,9 +10,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuCheckboxItem,
-} from "@/components/ui/dropdown-menu";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowsUpDown } from "@fortawesome/free-solid-svg-icons";
+} from '@/components/ui/dropdown-menu';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowsUpDown } from '@fortawesome/free-solid-svg-icons';
 import {
   Pagination,
   PaginationContent,
@@ -20,10 +20,10 @@ import {
   PaginationPrevious,
   PaginationLink,
   PaginationNext,
-} from "@/components/ui/pagination";
-import Link from "next/link";
-import styled from "styled-components";
-import Image from "next/image";
+} from '@/components/ui/pagination';
+import Link from 'next/link';
+import styled from 'styled-components';
+import Image from 'next/image';
 
 const POSTS_PER_PAGE = 10;
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
@@ -57,7 +57,7 @@ const Container = styled.div`
 
 const Posts: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [order, setOrder] = useState<string>("Date (newest first)");
+  const [order, setOrder] = useState<string>('Date (newest first)');
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
@@ -67,7 +67,7 @@ const Posts: React.FC = () => {
     try {
       const response = await axios.get(`${API_URL}/users/me/posts`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
 
@@ -78,14 +78,14 @@ const Posts: React.FC = () => {
         favorites: post.favorites || 0,
         imageUrlBase64: post.imageUrl
           ? `data:image/jpeg;base64,${Buffer.from(post.imageUrl.data).toString(
-              "base64",
+              'base64'
             )}`
           : null,
       }));
 
       setPosts(postsData || []);
     } catch (error) {
-      console.error("Error fetching user posts", error);
+      console.error('Error fetching user posts', error);
     } finally {
       setLoading(false);
     }
@@ -102,15 +102,15 @@ const Posts: React.FC = () => {
 
   const sortPosts = (posts: Post[]) => {
     switch (order) {
-      case "Date (newest first)":
+      case 'Date (newest first)':
         return posts.sort(
-          (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+          (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
         );
-      case "Date (oldest first)":
+      case 'Date (oldest first)':
         return posts.sort(
-          (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
+          (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
         );
-      case "Title":
+      case 'Title':
         return posts.sort((a, b) => a.title.localeCompare(b.title));
       default:
         return posts;
@@ -120,7 +120,7 @@ const Posts: React.FC = () => {
   const sortedPosts = sortPosts(posts);
   const paginatedPosts = sortedPosts.slice(
     (page - 1) * POSTS_PER_PAGE,
-    page * POSTS_PER_PAGE,
+    page * POSTS_PER_PAGE
   );
 
   if (posts.length === 0) {
@@ -159,22 +159,22 @@ const Posts: React.FC = () => {
               <DropdownMenuLabel>Order by</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuCheckboxItem
-                checked={order === "Date (newest first)"}
-                onCheckedChange={() => handleOrderChange("Date (newest first)")}
+                checked={order === 'Date (newest first)'}
+                onCheckedChange={() => handleOrderChange('Date (newest first)')}
                 className="rounded-lg"
               >
                 Date (newest first)
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
-                checked={order === "Date (oldest first)"}
-                onCheckedChange={() => handleOrderChange("Date (oldest first)")}
+                checked={order === 'Date (oldest first)'}
+                onCheckedChange={() => handleOrderChange('Date (oldest first)')}
                 className="rounded-lg"
               >
                 Date (oldest first)
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
-                checked={order === "Title"}
-                onCheckedChange={() => handleOrderChange("Title")}
+                checked={order === 'Title'}
+                onCheckedChange={() => handleOrderChange('Title')}
                 className="rounded-lg"
               >
                 Title
@@ -190,7 +190,7 @@ const Posts: React.FC = () => {
             width={200}
             height={200}
             alt="Blogchain Logo"
-            className="animate-bounce"
+            className="animate-bounce rounded-full"
           />
         </Container>
       ) : (

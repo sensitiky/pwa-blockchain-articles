@@ -1,17 +1,17 @@
-"use client";
-import { useEffect, useState, useCallback, useMemo } from "react";
-import axios from "axios";
-import Header from "@/assets/header";
-import Footer from "@/assets/footer";
-import Link from "next/link";
-import { ClockIcon, TagIcon } from "lucide-react";
-import DOMPurify from "dompurify";
-import Image from "next/image";
-import { useAuth } from "../../../context/authContext";
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { Post, Category, Tag } from "@/interfaces/interface3";
-import LoginCard from "@/assets/login";
+'use client';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import axios from 'axios';
+import Header from '@/assets/header';
+import Footer from '@/assets/footer';
+import Link from 'next/link';
+import { ClockIcon, TagIcon } from 'lucide-react';
+import DOMPurify from 'dompurify';
+import Image from 'next/image';
+import { useAuth } from '../../../context/authContext';
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Post, Category, Tag } from '@/interfaces/interface3';
+import LoginCard from '@/assets/login';
 
 const POSTS_PER_PAGE = 20;
 
@@ -24,11 +24,11 @@ const Articles = () => {
   const [loading, setLoading] = useState(false);
   const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
-    null,
+    null
   );
   const [selectedTagId, setSelectedTagId] = useState<number | null>(null);
-  const [sortOrder, setSortOrder] = useState<string>("recent");
-  const [sortOrder2, setSortOrder2] = useState<string>("All");
+  const [sortOrder, setSortOrder] = useState<string>('recent');
+  const [sortOrder2, setSortOrder2] = useState<string>('All');
   const { token } = useAuth();
   const [categoryCounts, setCategoryCounts] = useState<
     { categoryId: number; count: number }[]
@@ -44,7 +44,7 @@ const Articles = () => {
       });
       setCategories(response.data);
     } catch (error) {
-      console.error("Error fetching categories", error);
+      console.error('Error fetching categories', error);
     }
   }, [API_URL, token]);
 
@@ -53,7 +53,7 @@ const Articles = () => {
       page: number,
       order: string,
       categoryId: number | null = null,
-      tagId: number | null = null,
+      tagId: number | null = null
     ) => {
       setLoading(true);
       try {
@@ -73,17 +73,17 @@ const Articles = () => {
           : response.data.data || [];
 
         setPosts((prevPosts) =>
-          page === 1 ? postsData : [...prevPosts, ...postsData],
+          page === 1 ? postsData : [...prevPosts, ...postsData]
         );
         setHasMore(postsData.length > 0);
         setCurrentPage(page);
       } catch (error) {
-        console.error("Error fetching posts", error);
+        console.error('Error fetching posts', error);
       } finally {
         setLoading(false);
       }
     },
-    [API_URL, sortOrder2],
+    [API_URL, sortOrder2]
   );
 
   const fetchCategoryCounts = useCallback(async () => {
@@ -95,14 +95,14 @@ const Articles = () => {
       const result = response.data;
       setCategoryCounts(result);
     } catch (error) {
-      console.error("Error fetching category counts:", error);
+      console.error('Error fetching category counts:', error);
     }
   }, []);
 
   const fetchTags = useCallback(async (categoryId: number) => {
     try {
       const response = await axios.get(
-        `${API_URL}/posts/count-by-tag?categoryId=${categoryId}`,
+        `${API_URL}/posts/count-by-tag?categoryId=${categoryId}`
       );
 
       if (response.status !== 200) {
@@ -110,14 +110,14 @@ const Articles = () => {
       }
 
       const tags = response.data.map((tag: any) => ({
-        id: tag.tagId, // The 'tagId' should now be correctly populated
-        name: tag.name, // The 'name' should now be correctly populated
+        id: tag.tagId, 
+        name: tag.name, 
         count: tag.count,
       }));
 
       setTags(tags);
     } catch (error: any) {
-      console.error("Error fetching tags:", error.message || error);
+      console.error('Error fetching tags:', error.message || error);
     }
   }, []);
 
@@ -136,34 +136,32 @@ const Articles = () => {
 
   const handleCategoryChange = useCallback(
     (categoryId: number | null) => {
-      // Toggle the selected category
       const newCategoryId =
         selectedCategoryId === categoryId ? null : categoryId;
       setSelectedCategoryId(newCategoryId);
-      setSelectedTagId(null); // Reset selected tag when category changes
-      setSortOrder("recent"); // Reset sort order to default when category changes
+      setSelectedTagId(null); 
+      setSortOrder('recent'); 
       setPosts([]);
-      fetchPosts(1, "recent", newCategoryId);
+      fetchPosts(1, 'recent', newCategoryId);
       if (newCategoryId !== null) {
         fetchTags(newCategoryId);
       } else {
         setTags([]);
       }
     },
-    [fetchPosts, fetchTags, selectedCategoryId],
+    [fetchPosts, fetchTags, selectedCategoryId]
   );
   const handleCloseModal = () => {
     setShowLoginCard(false);
   };
   const handleTagChange = useCallback(
     (id: number | null) => {
-      // Toggle the selected tag
       const newTagId = selectedTagId === id ? null : id;
       setSelectedTagId(newTagId);
       setPosts([]);
       fetchPosts(1, sortOrder, selectedCategoryId, newTagId);
     },
-    [fetchPosts, selectedCategoryId, sortOrder, selectedTagId],
+    [fetchPosts, selectedCategoryId, sortOrder, selectedTagId]
   );
 
   const renderTags = () => {
@@ -172,8 +170,8 @@ const Articles = () => {
         key={tag.id}
         className={`text-white rounded-full border border-white text-base font-normal ${
           selectedTagId === tag.id
-            ? "bg-[#FFC017] text-[#0d0d0d] hover:bg-[#FFC017]"
-            : ""
+            ? 'bg-[#FFC017] text-[#0d0d0d] hover:bg-[#FFC017]'
+            : ''
         }`}
         onClick={() => handleTagChange(tag.id)}
       >
@@ -189,17 +187,17 @@ const Articles = () => {
       setPosts([]);
       fetchPosts(1, newSortOrder, selectedCategoryId, selectedTagId);
     },
-    [fetchPosts, selectedCategoryId, selectedTagId],
+    [fetchPosts, selectedCategoryId, selectedTagId]
   );
 
   const handleSortOrder2Change = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const newSortOrder2 = e.target.value;
       setSortOrder2(newSortOrder2);
-      setPosts([]); // Reset posts to refetch based on the new sort order
-      fetchPosts(1, sortOrder, selectedCategoryId, selectedTagId); // Fetch with the updated sortOrder2
+      setPosts([]);  
+      fetchPosts(1, sortOrder, selectedCategoryId, selectedTagId);
     },
-    [fetchPosts, sortOrder, selectedCategoryId, selectedTagId],
+    [fetchPosts, sortOrder, selectedCategoryId, selectedTagId]
   );
 
   const formatTags = (tags: any[]): string => {
@@ -213,7 +211,7 @@ const Articles = () => {
             return tag.name;
           }
         })
-        .join(", ") || "No tags"
+        .join(', ') || 'No tags'
     );
   };
 
@@ -228,13 +226,13 @@ const Articles = () => {
             return tag.name;
           }
         })
-        .join(", ") || "No tags"
+        .join(', ') || 'No tags'
     );
   };
 
   const calculateReadingTime = useCallback((text: string) => {
     const wordsPerMinute = 200;
-    const cleanText = text.replace(/<[^>]*>/g, "");
+    const cleanText = text.replace(/<[^>]*>/g, '');
     const numberOfWords = cleanText.split(/\s+/).length;
     return Math.ceil(numberOfWords / wordsPerMinute);
   }, []);
@@ -242,13 +240,13 @@ const Articles = () => {
   const renderPosts = useMemo(() => {
     if (posts.length === 0 && !loading) {
       return (
-        <div className="relative flex flex-col items-center justify-center">
+        <div className="relative flex flex-col items-center justify-center bg-[#fefefe]">
           <Image
             src="/BLOGCHAIN.gif"
             width={200}
             height={200}
             alt="Blogchain Logo"
-            className="animate-bounce"
+            className="animate-bounce rounded-full"
           />
         </div>
       );
@@ -277,10 +275,10 @@ const Articles = () => {
                 <Image
                   src={
                     post.author?.avatar
-                      ? post.author.avatar.startsWith("http")
+                      ? post.author.avatar.startsWith('http')
                         ? post.author.avatar
                         : `${API_URL}${post.author.avatar}`
-                      : "/default-avatar.webp"
+                      : '/default-avatar.webp'
                   }
                   alt="Author image"
                   width={1920}
@@ -290,10 +288,10 @@ const Articles = () => {
               </Link>
               <div className="flex flex-col ml-2 flex-grow">
                 <span className="text-base text-[1.2rem] font-semibold text-[#263238] truncate">
-                  {post.author ? post.author.user : "Unknown Author"}
+                  {post.author ? post.author.user : 'Unknown Author'}
                 </span>
                 <span className="text-xs text-[1.1rem] text-muted-foreground truncate">
-                  {post.author ? post.author.role : "Unknown Author"}
+                  {post.author ? post.author.role : 'Unknown Author'}
                 </span>
               </div>
               <div className="flex flex-col items-end">
@@ -304,7 +302,7 @@ const Articles = () => {
                     alt="Category"
                     width={1920}
                     height={1080}
-                  />{" "}
+                  />{' '}
                   {post.category?.name}
                 </span>
                 <div className="flex items-center text-[#263238] text-[0.95rem] sm:text-sm truncate mt-1">
@@ -324,8 +322,8 @@ const Articles = () => {
               className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-3 break-words"
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(post.description, {
-                  ALLOWED_TAGS: ["b", "i", "em", "strong", "a", "p"],
-                  ALLOWED_ATTR: ["href"],
+                  ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p'],
+                  ALLOWED_ATTR: ['href'],
                 }),
               }}
             ></p>
@@ -359,10 +357,11 @@ const Articles = () => {
             </div>
           </div>
           <div className="flex justify-end mt-4">
-            <Link href={`/posts/${post.id}`}>
+            <Link href={`/posts/${post.id}`} aria-label="Articles redirection">
               <button className="bg-[#000916] text-white px-3 py-1 sm:px-4 sm:py-2 text-base font-normal sm:text-base rounded-full hover:bg-[#000916]/80">
                 Read More
               </button>
+              <span className="sr-only">Read more about {post.title}</span>
             </Link>
           </div>
         </div>
@@ -389,15 +388,15 @@ const Articles = () => {
                 categories.map((category) => {
                   const categoryCount =
                     categoryCounts.find(
-                      (item) => item.categoryId === category.id,
+                      (item) => item.categoryId === category.id
                     )?.count || 0;
                   return (
                     <Button
                       key={category.id}
                       className={`text-white rounded-full border border-white text-base text-[1.1rem] font-normal ${
                         selectedCategoryId === category.id
-                          ? "bg-[#FFC017] text-[#0d0d0d] hover:bg-[#FFC017]"
-                          : ""
+                          ? 'bg-[#FFC017] text-[#0d0d0d] hover:bg-[#FFC017]'
+                          : ''
                       }`}
                       onClick={() => handleCategoryChange(category.id)}
                     >
@@ -420,8 +419,8 @@ const Articles = () => {
                       key={tag.id}
                       className={`text-white rounded-full border border-white text-base font-normal ${
                         selectedTagId === tag.id
-                          ? "bg-[#FFC017] text-[#0d0d0d] hover:bg-[#FFC017]"
-                          : ""
+                          ? 'bg-[#FFC017] text-[#0d0d0d] hover:bg-[#FFC017]'
+                          : ''
                       }`}
                       onClick={() => handleTagChange(tag.id)}
                     >

@@ -72,10 +72,22 @@ export class UsersService implements IUserActivityService {
     return favoritePosts;
   }
 
-  async removeUserFavorite(userId: number, postId: number): Promise<void> {
-    const favorite = await this.favoriteRepository.findOne({
-      where: { user: { id: userId }, post: { id: postId } },
-    });
+  async removeUserFavorite(
+    userId: number,
+    postId?: number,
+    commentId?: number,
+  ): Promise<void> {
+    let favorite;
+
+    if (postId) {
+      favorite = await this.favoriteRepository.findOne({
+        where: { user: { id: userId }, post: { id: postId } },
+      });
+    } else if (commentId) {
+      favorite = await this.favoriteRepository.findOne({
+        where: { user: { id: userId }, comment: { id: commentId } },
+      });
+    }
 
     if (!favorite) {
       throw new Error('Favorite not found');
@@ -229,6 +241,9 @@ export class UsersService implements IUserActivityService {
   async findByEmail(email: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { email } });
   }
+  async findByUsername(user: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { user } });
+  }
 
   async updateUserInfo(
     userId: number,
@@ -272,21 +287,21 @@ export class UsersService implements IUserActivityService {
     }
 
     try {
-      // Eliminar comentarios relacionados
+      // Delete comments related
       await this.commentRepository.delete({ author: { id: userId } });
     } catch (error) {
       console.warn('Error deleting comments for user:', error);
     }
 
     try {
-      // Eliminar publicaciones relacionadas
+      // Delete posts related
       await this.postRepository.delete({ author: { id: userId } });
     } catch (error) {
       console.warn('Error deleting posts for user:', error);
     }
 
     try {
-      // Eliminar al usuario en sí
+      // Delete the user itself
       await this.userRepository.delete(userId);
     } catch (error) {
       console.warn('Error deleting user:', error);

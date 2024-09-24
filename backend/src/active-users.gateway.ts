@@ -10,7 +10,7 @@ import { Inject } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
-    origin: ['https://www.blogchain.tech','https://blogchain.tech','http://localhost:3000/'], // Permitir cualquier origen en desarrollo
+    origin: ['https://www.blogchain.tech','https://blogchain.tech','http://localhost:3000/'], 
   },
   path: '/socket.io',
 })

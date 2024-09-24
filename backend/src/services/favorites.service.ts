@@ -75,6 +75,25 @@ export class FavoritesService {
       relations: ['post', 'comment'],
     });
   }
+
+  async remove(
+    userId: number,
+    postId?: number,
+    commentId?: number,
+  ): Promise<void> {
+    const favorite = await this.favoritesRepository.findOne({
+      where: {
+        user: { id: userId },
+        post: postId ? { id: postId } : undefined,
+        comment: commentId ? { id: commentId } : undefined,
+      },
+    });
+
+    if (favorite) {
+      await this.favoritesRepository.remove(favorite);
+    }
+  }
+
   async getSavedArticles() {
     return this.favoritesRepository
       .createQueryBuilder('favorite')

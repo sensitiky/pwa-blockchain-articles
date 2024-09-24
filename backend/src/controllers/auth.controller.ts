@@ -88,7 +88,7 @@ export class AuthController {
 
   @Post('check-user')
   async checkUser(
-    @Body() body: { email?: string; username?: string },
+    @Body() body: { email?: string; user?: string },
     @Res() res: Response,
   ) {
     try {
@@ -99,8 +99,10 @@ export class AuthController {
         }
       }
 
-      if (body.username) {
-        const existingUsername = await this.usersService.findOne(body.username);
+      if (body.user) {
+        const existingUsername = await this.usersService.findByUsername(
+          body.user,
+        );
         if (existingUsername) {
           return res.status(409).json({ message: 'Username already in use' });
         }

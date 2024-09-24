@@ -395,6 +395,23 @@ export default function NewArticles() {
                       onChange={setDescription}
                       disabled={!selectedCategory || selectedTags.length < 2}
                     />
+                    <div className="space-x-4 mt-2 flex justify-end">
+                      <motion.button
+                        onClick={() => {
+                          if (!selectedCategory || selectedTags.length < 2) {
+                            setShowPopup(true);
+                          } else {
+                            handleSubmit(true);
+                          }
+                        }}
+                        className="text-white bg-green-600 px-4 py-2 rounded-full hover:bg-green-500 transition-all duration-300"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        disabled={isSubmitting}
+                      >
+                        Publish
+                      </motion.button>
+                    </div>
                   </div>
                 </div>
               </motion.div>

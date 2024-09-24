@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { Button } from "../ui/button";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Checkbox } from "../ui/checkbox";
+import React, { useState, useEffect } from 'react';
+import { Button } from '../ui/button';
+import { Label } from '../ui/label';
+import { Input } from '../ui/input';
+import { Checkbox } from '../ui/checkbox';
 import {
   validatePassword,
   PasswordCriteria,
   handleAxiosError,
-} from "@/utils/authHelper";
-import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+} from '@/utils/authHelper';
+import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
 interface RegisterFormProps {
   onSubmit: (data: {
-    username: string;
+    user: string;
     email: string;
     password: string;
     verificationCode: string;
@@ -34,7 +34,9 @@ const StyledMessage = ({
 }) => {
   return (
     <div
-      className={`text-center text-xl ${isError ? "text-red-500" : "text-[#ffdb15]"}`}
+      className={`text-center text-xl ${
+        isError ? 'text-red-500' : 'text-[#CC9C14]'
+      }`}
     >
       {message}
     </div>
@@ -46,10 +48,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
   loading,
   error,
 }) => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [verificationCode, setVerificationCode] = useState("");
+  const [user, setUser] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordCriteria, setPasswordCriteria] = useState<PasswordCriteria>({
     length: false,
@@ -72,15 +74,15 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
     try {
       const response = await axios.post(
         `${API_URL}/auth/check-user`,
-        { user: username, email },
-        { withCredentials: true },
+        { user, email },
+        { withCredentials: true }
       );
 
       if (response.data.exists) {
-        if (response.data.field === "email") {
-          throw new Error("An account with this email already exists.");
-        } else if (response.data.field === "username") {
-          throw new Error("This username is already taken.");
+        if (response.data.field === 'email') {
+          throw new Error('An account with this email already exists.');
+        } else if (response.data.field === 'user') {
+          throw new Error('This username is already taken.');
         }
       }
     } catch (err) {
@@ -99,17 +101,17 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
       const response = await axios.post(
         `${API_URL}/auth/send-verification-code`,
         { email },
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
       if (response.status === 200) {
         setCodeSent(true);
         setMessage({
-          text: "Verification code sent to your email",
+          text: 'Verification code sent to your email',
           isError: false,
         });
       } else {
-        throw new Error("Failed to send verification code");
+        throw new Error('Failed to send verification code');
       }
     } catch (err) {
       setMessage({ text: handleAxiosError(err), isError: true });
@@ -122,12 +124,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
     e.preventDefault();
     try {
       if (codeSent) {
-        onSubmit({ username, email, password, verificationCode });
+        onSubmit({ user, email, password, verificationCode });
       } else {
         await handleSendVerificationCode();
       }
     } catch (err) {
-      console.error("Error during registration:", err);
+      console.error('Error during registration:', err);
       setMessage({ text: handleAxiosError(err), isError: true });
     }
   };
@@ -135,12 +137,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="username">Username</Label>
+        <Label htmlFor="user">Username</Label>
         <Input
-          id="username"
+          id="user"
           type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={user}
+          onChange={(e) => setUser(e.target.value)}
           required
           disabled={codeSent}
         />
@@ -161,7 +163,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         <div className="relative">
           <Input
             id="password"
-            type={passwordVisible ? "text" : "password"}
+            type={passwordVisible ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -186,8 +188,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
           <li
             className={
               passwordCriteria.length
-                ? "text-green-500"
-                : "text-muted-foreground"
+                ? 'text-green-500'
+                : 'text-muted-foreground'
             }
           >
             💪🏽 At least 8 characters
@@ -195,8 +197,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
           <li
             className={
               passwordCriteria.uppercase
-                ? "text-green-500"
-                : "text-muted-foreground"
+                ? 'text-green-500'
+                : 'text-muted-foreground'
             }
           >
             🤳🏽 Lowercase or uppercase letter
@@ -204,8 +206,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
           <li
             className={
               passwordCriteria.numberOrSymbol
-                ? "text-green-500"
-                : "text-muted-foreground"
+                ? 'text-green-500'
+                : 'text-muted-foreground'
             }
           >
             👨🏽‍💻 Number or symbol
@@ -251,10 +253,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         }
       >
         {loading || sendingCode
-          ? "Processing..."
+          ? 'Processing...'
           : codeSent
-            ? "Register"
-            : "Send Verification Code"}
+          ? 'Register'
+          : 'Send Verification Code'}
       </Button>
     </form>
   );

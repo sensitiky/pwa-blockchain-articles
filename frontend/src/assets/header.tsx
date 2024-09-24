@@ -79,7 +79,7 @@ const Header = () => {
       if (Array.isArray(response.data)) {
         const resultsWithBase64Images = response.data.map((result) => {
           if (result.imageUrl && result.imageUrl.type === 'Buffer') {
-            // Convertir el buffer a una cadena Base64
+            // Convert the image buffer to base64 string
             const base64String = Buffer.from(result.imageUrl.data).toString(
               'base64'
             );

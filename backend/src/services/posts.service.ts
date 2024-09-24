@@ -164,13 +164,18 @@ export class PostsService {
   }
 
   async deletePost(postId: number): Promise<void> {
+    console.log(`Attempting to delete post with ID: ${postId}`);
     const post = await this.postsRepository.findOne({
       where: { id: postId },
-      relations: ['author'],
+      relations: ['author', 'favorites', 'comments'],
     });
 
-    if (!post) throw new NotFoundException('Post not found');
+    if (!post) {
+      console.error(`Post with ID: ${postId} not found`);
+      throw new NotFoundException('Post not found');
+    }
 
+    console.log(`Post found: ${post.title}`);
     await Promise.all([
       this.commentsRepository.delete({ post: { id: postId } }),
       this.favoritesRepository.delete({ post: { id: postId } }),
@@ -178,6 +183,7 @@ export class PostsService {
       this.usersRepository.decrement({ id: post.author.id }, 'postCount', 1),
     ]);
 
+    console.log(`Post with ID: ${postId} deleted successfully`);
     await this.invalidateCache();
   }
 

@@ -1,26 +1,26 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import Header from "@/assets/header";
-import Image from "next/image";
-import Footer from "@/assets/footer";
-import axios from "axios";
+'use client';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import Header from '@/assets/header';
+import Image from 'next/image';
+import Footer from '@/assets/footer';
+import axios from 'axios';
 import {
   FaFacebook,
   FaTwitter,
   FaLinkedin,
   FaEdit,
   FaTrash,
-} from "react-icons/fa";
-import { ArrowLeftIcon } from "lucide-react";
-import { useAuth } from "../../../../context/authContext";
-import DeletePostModal from "@/assets/deletepost";
-import styled from "styled-components";
-import parse, { DOMNode, domToReact, Element } from "html-react-parser";
-import LoginCard from "@/assets/login";
+} from 'react-icons/fa';
+import { ArrowLeftIcon } from 'lucide-react';
+import { useAuth } from '../../../../context/authContext';
+import DeletePostModal from '@/assets/deletepost';
+import styled from 'styled-components';
+import parse, { DOMNode, domToReact, Element } from 'html-react-parser';
+import LoginCard from '@/assets/login';
 
 const Container = styled.div`
   display: flex;
@@ -43,6 +43,7 @@ interface Post {
   tags: Tag[];
   comments: Comment[];
   favorites: number;
+  isFavorited: boolean;
   commentscount: number;
 }
 
@@ -76,167 +77,22 @@ interface Comment {
     avatar?: string;
     role?: string;
   };
-  favorites: number;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
 const PostPage = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [showLoginCard, setShowLoginCard] = useState(false);
-  const [commentContent, setCommentContent] = useState("");
+  const [commentContent, setCommentContent] = useState('');
   const [showBookmarkMessage, setShowBookmarkMessage] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isFavorited, setIsFavorited] = useState(false);
-  const [favoriteComments, setFavoriteComments] = useState<{
-    [key: number]: boolean;
-  }>({});
+  const [isSaved, setIsSaved] = useState(false);
   const router = useRouter();
   const { id } = useParams();
-
-  const fetchPost = async (id: string) => {
-    try {
-      const response = await axios.get(`${API_URL}/posts/${id}`);
-      const postData = response.data;
-      //console.log(response.data);
-      setPost(postData);
-      setComments(postData.comments || []);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching post data:", error);
-      setLoading(false);
-    }
-  };
-
-  const fetchComments = async (postId: string) => {
-    try {
-      const response = await axios.get(`${API_URL}/comments/post/${postId}`);
-      const commentsData: Comment[] = response.data;
-      //console.log("Comments data:", commentsData);
-      setComments(commentsData);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    }
-  };
-
-  const handleCommentSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) {
-      console.error("User is not logged in");
-      alert("You need to be authenticated in order to interact");
-      return;
-    }
-
-    // Crear un nuevo comentario localmente
-    const newComment: Comment = {
-      id: Date.now(), // Usar un ID temporal
-      content: commentContent,
-      author: {
-        id: user.id,
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
-        user: user.user || "",
-        avatar: user.avatar || "",
-        role: user.role || "",
-      },
-      createdAt: new Date().toISOString(), // Fecha actual
-      favorites: 0, // Inicializar con 0 favoritos
-    };
-
-    // Actualizar el estado de los comentarios inmediatamente
-    setComments([...comments, newComment]);
-    setCommentContent("");
-
-    try {
-      // Enviar la solicitud al backend de manera asíncrona
-      const response = await axios.post(`${API_URL}/comments`, {
-        content: commentContent,
-        authorId: user.id,
-        postId: post?.id,
-      });
-
-      // Actualizar el comentario con los datos reales del backend
-      const updatedComment = {
-        ...newComment,
-        ...response.data,
-      };
-
-      // Reemplazar el comentario temporal con el comentario actualizado
-      setComments((prevComments) =>
-        prevComments.map((comment) =>
-          comment.id === newComment.id ? updatedComment : comment,
-        ),
-      );
-    } catch (error) {
-      console.error("Error posting comment:", error);
-      // Manejar el error (opcional)
-    }
-  };
-
-  const handleFavorite = async (postId: number, commentId?: number) => {
-    if (!user) {
-      console.error("User is not logged in");
-      alert("You need to be authenticated in order to interact");
-      return;
-    }
-    try {
-      await axios.post(`${API_URL}/favorites`, {
-        userId: user.id,
-        postId: commentId ? undefined : postId,
-        commentId: commentId || undefined,
-        isFavorite: true,
-      });
-
-      if (commentId) {
-        const updatedComments = comments.map((comment) =>
-          comment.id === commentId
-            ? { ...comment, favorites: comment.favorites + 1 }
-            : comment,
-        );
-        setComments(updatedComments);
-        setFavoriteComments((prev) => ({
-          ...prev,
-          [commentId]: true,
-        }));
-      } else {
-        setPost((prevPost) =>
-          prevPost ? { ...prevPost, favorites: prevPost.favorites + 1 } : null,
-        );
-      }
-    } catch (error) {
-      console.error("Error favoriting post or comment:", error);
-    }
-  };
-
-  const handleFavoriteClick = async () => {
-    if (isAuthenticated) {
-      setShowBookmarkMessage(true);
-    }
-    setTimeout(() => setShowBookmarkMessage(false), 1500);
-    if (post) {
-      await handleFavorite(post.id);
-    }
-    setIsFavorited(true);
-  };
-
-  const handleDelete = async () => {
-    if (!user) {
-      console.error("User is not logged in");
-      alert("You need to be authenticated to delete the post");
-      return;
-    }
-    try {
-      await axios.delete(`${API_URL}/posts/${id}`);
-      alert("Post deleted successfully!");
-      router.push("/articles");
-    } catch (error) {
-      console.error("Error deleting post:", error);
-      alert("Error deleting post");
-    }
-  };
 
   useEffect(() => {
     if (id) {
@@ -245,16 +101,245 @@ const PostPage = () => {
     }
   }, [id]);
 
+  const fetchPost = async (id: string) => {
+    try {
+      const response = await axios.get(`${API_URL}/posts/${id}`);
+      const postData = response.data;
+      setPost(postData);
+      setComments(postData.comments || []);
+      setIsSaved(postData.isFavorited);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching post data:', error);
+      setLoading(false);
+    }
+  };
+
+  const fetchComments = async (postId: string) => {
+    try {
+      const response = await axios.get(`${API_URL}/comments/post/${postId}`);
+      const commentsData: Comment[] = response.data;
+      setComments(commentsData);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    }
+  };
+
+  const handleCommentSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!user) {
+        alert('You need to be authenticated to interact');
+        return;
+      }
+
+      const newComment: Comment = {
+        id: Date.now(),
+        content: commentContent,
+        author: {
+          id: user.id,
+          firstName: user.firstName || '',
+          lastName: user.lastName || '',
+          user: user.user || '',
+          avatar: user.avatar || '',
+          role: user.role || '',
+        },
+        createdAt: new Date().toISOString(),
+      };
+
+      setComments((prev) => [...prev, newComment]);
+      setCommentContent('');
+
+      try {
+        const response = await axios.post(`${API_URL}/comments`, {
+          content: commentContent,
+          authorId: user.id,
+          postId: post?.id,
+        });
+        const updatedComment = { ...newComment, ...response.data };
+        setComments((prevComments) =>
+          prevComments.map((comment) =>
+            comment.id === newComment.id ? updatedComment : comment
+          )
+        );
+      } catch (error) {
+        console.error('Error posting comment:', error);
+      }
+    },
+    [commentContent, user, post]
+  );
+
+  const handleFavorite = async (postId: number) => {
+    if (!user) {
+      console.error('User is not logged in');
+      alert('You need to be authenticated in order to interact');
+      return;
+    }
+
+    try {
+      if (isSaved) {
+        await axios.delete(`${API_URL}/users/${user.id}/favorites`, {
+          params: { postId },
+        });
+
+        setPost((prevPost) =>
+          prevPost
+            ? {
+                ...prevPost,
+                favorites: prevPost.favorites - 1,
+                isFavorited: false,
+              }
+            : null
+        );
+        setIsSaved(false);
+      } else {
+        await axios.post(`${API_URL}/favorites`, {
+          userId: user.id,
+          postId,
+          isFavorite: true,
+        });
+
+        setPost((prevPost) =>
+          prevPost
+            ? {
+                ...prevPost,
+                favorites: prevPost.favorites + 1,
+                isFavorited: true,
+              }
+            : null
+        );
+        setIsSaved(true);
+      }
+    } catch (error) {
+      console.error('Error favoriting post:', error);
+    }
+  };
+
+  const handleFavoriteClick = async () => {
+    if (!isSaved) {
+      setShowBookmarkMessage(true);
+      setTimeout(() => setShowBookmarkMessage(false), 1500);
+    }
+    if (post) {
+      await handleFavorite(post.id);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!user) {
+      console.error('User is not logged in');
+      alert('You need to be authenticated to delete the post');
+      return;
+    }
+    try {
+      await axios.delete(`${API_URL}/posts/${id}`);
+      alert('Post deleted successfully!');
+      router.push('/articles');
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      alert('Error deleting post');
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowLoginCard(false);
+  };
+
+  const handleGoBack = () => {
+    const referrer = document.referrer;
+    if (referrer.includes(`/posts/edit/${id}`)) {
+      router.push('/articles');
+    } else {
+      router.back();
+    }
+  };
+
+  const countWords = (text: string) => {
+    if (!text) return 0;
+    return text.split(/\s+/).filter((word) => word.length > 0).length;
+  };
+
+  const calculateReadingTime = (text: string) => {
+    const wordsPerMinute = 200;
+    const numberOfWords = countWords(text);
+    return Math.ceil(numberOfWords / wordsPerMinute);
+  };
+
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      hour: 'numeric',
+      minute: 'numeric',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const parseHtmlContent = (htmlContent: string) => {
+    return parse(htmlContent, {
+      replace: (domNode) => {
+        if (domNode instanceof Element) {
+          const { tagName, attribs } = domNode;
+
+          const blockStyle = {
+            whiteSpace: 'pre-wrap',
+            fontFamily: 'Gilroy, sans-serif',
+            lineHeight: '1.6',
+            marginBottom: '1rem',
+          };
+
+          if (['p', 'div', 'span', 'h1', 'h2', 'h3'].includes(tagName)) {
+            return (
+              <div className="prose" style={blockStyle} {...attribs}>
+                {domToReact(domNode.children as DOMNode[])}
+              </div>
+            );
+          }
+
+          if (tagName === 'br') {
+            return <br />;
+          }
+
+          if (['iframe', 'b', 'strong', 'i', 'em', 'a'].includes(tagName)) {
+            return domToReact([domNode] as DOMNode[]);
+          }
+        }
+      },
+    });
+  };
+
+  const formatTags = (tags: any[]): string => {
+    return (
+      tags
+        .map((tag) => {
+          try {
+            const parsedName = JSON.parse(tag.name);
+            return parsedName.name;
+          } catch (err) {
+            return tag.name;
+          }
+        })
+        .join(', ') || 'No tags'
+    );
+  };
+
+  const avatarUrl = post?.author?.avatar
+    ? post.author.avatar.startsWith('http')
+      ? post.author.avatar
+      : `${API_URL}${post.author.avatar}`
+    : 'default-avatar.webp';
+
   if (loading) {
     return (
-      <div className="flex flex-col space-y-3">
+      <div className="flex items-center justify-center bg-[#fefefe] w-screen h-screen">
         <Container>
           <Image
             src="/BLOGCHAIN.gif"
             width={200}
             height={200}
             alt="Blogchain Logo"
-            className="animate-bounce"
+            className="animate-bounce rounded-full"
           />
         </Container>
       </div>
@@ -270,107 +355,12 @@ const PostPage = () => {
             width={200}
             height={200}
             alt="Blogchain Logo"
-            className="animate-bounce"
+            className="animate-bounce rounded-full"
           />
         </Container>
       </div>
     );
   }
-
-  const countWords = (text: string) => {
-    if (!text) return 0;
-    return text.split(/\s+/).filter((word) => word.length > 0).length;
-  };
-
-  const calculateReadingTime = (text: string) => {
-    const wordsPerMinute = 200;
-    const numberOfWords = countWords(text);
-    return Math.ceil(numberOfWords / wordsPerMinute);
-  };
-
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = {
-      hour: "numeric",
-      minute: "numeric",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-  const handleCloseModal = () => {
-    setShowLoginCard(false);
-  };
-  const parseHtmlContent = (htmlContent: string) => {
-    return parse(htmlContent, {
-      replace: (domNode) => {
-        if (domNode instanceof Element) {
-          const { tagName, attribs } = domNode;
-
-          // Estilo general para elementos de bloque
-          const blockStyle = {
-            whiteSpace: "pre-wrap", // Mantiene saltos de línea y espacios
-            fontFamily: "Gilroy, sans-serif", // Aplica la fuente Gilroy
-            lineHeight: "1.6", // Asegura un espacio adecuado entre líneas
-            marginBottom: "1rem", // Asegura espacio entre párrafos
-          };
-
-          // Aplicar estilo para respetar los saltos de línea y espacios a otros elementos de bloque
-          if (["p", "div", "span", "h1", "h2", "h3"].includes(tagName)) {
-            return (
-              <div className="prose" style={blockStyle} {...attribs}>
-                {domToReact(domNode.children as DOMNode[])}
-              </div>
-            );
-          }
-
-          // Especialmente para elementos <br> que deben generar un salto de línea
-          if (tagName === "br") {
-            return <br />;
-          }
-
-          // Elementos permitidos
-          if (
-            tagName === "iframe" ||
-            ["b", "strong", "i", "em", "a"].includes(tagName)
-          ) {
-            return domToReact([domNode] as DOMNode[]);
-          }
-        }
-      },
-    });
-  };
-
-  const handleGoBack = () => {
-    const referrer = document.referrer;
-    if (referrer.includes(`/posts/edit/${id}`)) {
-      router.push("/articles");
-    } else {
-      router.back();
-    }
-  };
-
-  const formatTags = (tags: any[]): string => {
-    return (
-      tags
-        .map((tag) => {
-          try {
-            const parsedName = JSON.parse(tag.name);
-            return parsedName.name;
-          } catch (err) {
-            return tag.name;
-          }
-        })
-        .join(", ") || "No tags"
-    );
-  };
-
-  const avatarUrl = post.author?.avatar
-    ? post.author.avatar.startsWith("http")
-      ? post.author.avatar
-      : `${API_URL}${post.author.avatar}`
-    : "default-avatar.webp";
-
   return (
     <div className="flex flex-col min-h-screen bg-white text-gray-900">
       <Header />
@@ -397,7 +387,7 @@ const PostPage = () => {
                 </Link>
                 <div className="text-center sm:text-left">
                   <p className="text-base font-medium text-black">
-                    {post.author?.user ?? "Author"}
+                    {post.author?.user ?? 'Author'}
                   </p>
                   <p className="text-base text-gray-500 line-clamp-2">
                     {post.author?.role}
@@ -458,7 +448,7 @@ const PostPage = () => {
             )}
           </div>
           <p className="text-gray-500 mt-4">
-            {formatDate(post.createdAt)} •{" "}
+            {formatDate(post.createdAt)} •{' '}
             {calculateReadingTime(post.description)} min read
           </p>
           {/*Start the render for the article */}
@@ -492,7 +482,7 @@ const PostPage = () => {
                   className="w-4 h-4 mr-2"
                   alt="Category Icon"
                 />
-                {post.category ? post.category.name : "Uncategorized"}
+                {post.category ? post.category.name : 'Uncategorized'}
               </span>
             </div>
           )}
@@ -509,7 +499,7 @@ const PostPage = () => {
                       src="/tag-svgrepo-com.png"
                       alt="Tag icon"
                     />
-                    {formatTags([tag]) ? tag.name : "Uncategorized"}
+                    {formatTags([tag]) ? tag.name : 'Uncategorized'}
                   </li>
                 ))}
               </ul>
@@ -541,7 +531,7 @@ const PostPage = () => {
                 <g id="SVGRepo_iconCarrier">
                   <path
                     d="M19 19.2674V7.84496C19 5.64147 17.4253 3.74489 15.2391 3.31522C13.1006 2.89493 10.8994 2.89493 8.76089 3.31522C6.57467 3.74489 5 5.64147 5 7.84496V19.2674C5 20.6038 6.46752 21.4355 7.63416 20.7604L10.8211 18.9159C11.5492 18.4945 12.4508 18.4945 13.1789 18.9159L16.3658 20.7604C17.5325 21.4355 19 20.6038 19 19.2674Z"
-                    stroke={isFavorited ? "#007BFF" : "#6b7280"}
+                    stroke={isSaved ? '#007BFF' : '#6b7280'}
                     stroke-width="1.5"
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -560,12 +550,12 @@ const PostPage = () => {
           <div className="mt-8">
             {comments.map((comment) => {
               const author = comment.author || {
-                firstName: "Unknown",
-                lastName: "User",
-                avatar: "default-avatar.webp",
+                firstName: 'Unknown',
+                lastName: 'User',
+                avatar: 'default-avatar.webp',
               };
 
-              const avatarUrl = author.avatar?.startsWith("/")
+              const avatarUrl = author.avatar?.startsWith('/')
                 ? `${API_URL}${author.avatar}`
                 : author.avatar;
 
@@ -594,44 +584,6 @@ const PostPage = () => {
                     </div>
                   </div>
                   <p className="mt-2 ml-5 text-base">{comment.content}</p>
-                  <div className="flex items-center space-x-2 text-xs text-muted-foreground mt-2">
-                    <Button
-                      variant="ghost"
-                      className="flex w-fit items-center rounded-full space-x-1"
-                      onClick={() => handleFavorite(post.id, comment.id)}
-                    >
-                      <svg
-                        width="25px"
-                        height="25px"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <g id="SVGRepo_bgCarrier" stroke-width="0" />
-
-                        <g
-                          id="SVGRepo_tracerCarrier"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-
-                        <g id="SVGRepo_iconCarrier">
-                          {" "}
-                          <path
-                            d="M15.7 4C18.87 4 21 6.98 21 9.76C21 15.39 12.16 20 12 20C11.84 20 3 15.39 3 9.76C3 6.98 5.13 4 8.3 4C10.12 4 11.31 4.91 12 5.71C12.69 4.91 13.88 4 15.7 4Z"
-                            fill={
-                              favoriteComments[comment.id]
-                                ? "#D22B2B"
-                                : "#6b7280"
-                            }
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          />{" "}
-                        </g>
-                      </svg>
-                    </Button>
-                  </div>
                 </div>
               );
             })}

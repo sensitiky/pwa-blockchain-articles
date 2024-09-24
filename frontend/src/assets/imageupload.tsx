@@ -38,7 +38,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ setImage }) => {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: { "image/*": [] },
-    disabled: uploadedImage !== null, // Deshabilitar el área de carga si hay una imagen cargada
+    disabled: uploadedImage !== null, // Disable dropzone when image is uploaded
   });
 
   const removeImage = () => {

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   TextField,
   Avatar,
@@ -10,14 +10,14 @@ import {
   Modal,
   Box,
   Typography,
-} from "@mui/material";
-import { FaEdit, FaCheck, FaEye, FaEyeSlash } from "react-icons/fa";
-import { motion } from "framer-motion";
-import styled from "styled-components";
-import { useAuth } from "../../context/authContext";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import axios from "axios";
+} from '@mui/material';
+import { FaEdit, FaCheck, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { motion } from 'framer-motion';
+import styled from 'styled-components';
+import { useAuth } from '../../context/authContext';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import axios from 'axios';
 
 interface UserProfile {
   id?: number;
@@ -88,22 +88,26 @@ const SecuritySettings: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [sendingCode, setSendingCode] = useState(false);
   const [message, setMessage] = useState<{
     text: string;
     isError: boolean;
   } | null>(null);
   const [codeSent, setCodeSent] = useState(false);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [openModal, setOpenModal] = useState(false);
-  const [verificationCode, setVerificationCode] = useState("");
+  const [verificationCode, setVerificationCode] = useState('');
 
   useEffect(() => {
     if (user) {
-      const avatarUrl = user.avatar ? `${API_URL}${user.avatar}` : "";
+      const avatarUrl = user?.avatar
+        ? user.avatar.startsWith('http')
+          ? user.avatar
+          : `${API_URL}${user.avatar}`
+        : '/default-avatar.webp';
       setUserInfo({
         id: user.id,
         firstName: user.firstName,
@@ -121,9 +125,9 @@ const SecuritySettings: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (name === "password") {
+    if (name === 'password') {
       setPassword(value);
-    } else if (name === "confirmPassword") {
+    } else if (name === 'confirmPassword') {
       setConfirmPassword(value);
     } else {
       setUserInfo({ ...userInfo, [name]: value });
@@ -138,20 +142,20 @@ const SecuritySettings: React.FC = () => {
       const response = await axios.post(
         `${API_URL}/auth/send-verification-code`,
         { email: userInfo.email },
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
       if (response.status === 200) {
         setCodeSent(true);
         setMessage({
-          text: "Verification code sent to your email",
+          text: 'Verification code sent to your email',
           isError: false,
         });
       } else {
-        throw new Error("Failed to send verification code");
+        throw new Error('Failed to send verification code');
       }
     } catch (err) {
-      setMessage({ text: "Failed to send verification code", isError: true });
+      setMessage({ text: 'Failed to send verification code', isError: true });
     } finally {
       setSendingCode(false);
     }
@@ -162,59 +166,63 @@ const SecuritySettings: React.FC = () => {
       const response = await axios.post(
         `${API_URL}/auth/verify-code`,
         { email: userInfo.email, code },
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
       if (response.status === 200) {
         setMessage({
-          text: "Code verified successfully",
+          text: 'Code verified successfully',
           isError: false,
         });
         setOpenModal(false);
         return true;
       } else {
-        throw new Error("Failed to verify code");
+        throw new Error('Failed to verify code');
       }
     } catch (err) {
-      setMessage({ text: "Failed to verify code", isError: true });
+      setMessage({ text: 'Failed to verify code', isError: true });
       return false;
     }
   };
 
   const handleSaveChanges = async (field: string) => {
-    if (field === "email") {
+    if (field === 'email') {
       await handleSendVerificationCode();
       return;
     }
 
-    if (field === "password") {
+    if (field === 'password') {
       if (password !== confirmPassword) {
-        setPasswordError("Passwords do not match.");
+        setPasswordError('Passwords do not match.');
         return;
       }
       if (password.length < 8) {
-        setPasswordError("Password must be at least 8 characters long.");
+        setPasswordError('Password must be at least 8 characters long.');
         return;
       }
-      setPasswordError("");
+      setPasswordError('');
     }
 
     const updatedField: Partial<UserProfile> & { id: number } = {
       id: userInfo.id ?? 0,
       [field]:
-        field === "password" ? password : userInfo[field as keyof UserProfile],
+        field === 'password' ? password : userInfo[field as keyof UserProfile],
     };
 
     try {
-      await axios.put(`${API_URL}/users/me`, updatedField);
+      const token = localStorage.getItem('token');
+      await axios.put(`${API_URL}/users/me`, updatedField, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
       setUser({ ...user, ...updatedField });
       setEditingField(null);
-      if (field === "password") {
-        setPassword("");
-        setConfirmPassword("");
+      if (field === 'password') {
+        setPassword('');
+        setConfirmPassword('');
       }
     } catch (error) {
-      console.error("Error saving profile information:", error);
+      console.error('Error saving profile information:', error);
     }
   };
 
@@ -225,9 +233,9 @@ const SecuritySettings: React.FC = () => {
   const handleVerifyAndSaveEmail = async () => {
     const isVerified = await verifyCode(verificationCode);
     if (isVerified) {
-      await handleSaveChanges("email");
-      setEditingField(null); // Close the email editing field
-      setOpenModal(false); // Close the modal
+      await handleSaveChanges('email');
+      setEditingField(null);
+      setOpenModal(false);
     }
   };
 
@@ -235,14 +243,14 @@ const SecuritySettings: React.FC = () => {
     id: undefined,
     firstName: undefined,
     avatar: undefined,
-    medium: "Medium",
-    instagram: "Instagram",
-    facebook: "Facebook",
-    twitter: "Twitter",
-    linkedin: "LinkedIn",
-    email: "Email",
-    password: "Password",
-    confirmPassword: "Confirm Password",
+    medium: 'Medium',
+    instagram: 'Instagram',
+    facebook: 'Facebook',
+    twitter: 'Twitter',
+    linkedin: 'LinkedIn',
+    email: 'Email',
+    password: 'Password',
+    confirmPassword: 'Confirm Password',
   };
 
   if (loading) {
@@ -284,7 +292,7 @@ const SecuritySettings: React.FC = () => {
         </div>
         <Section>
           <SectionTitle>Social Media</SectionTitle>
-          {["medium", "instagram", "facebook", "twitter", "linkedin"].map(
+          {['medium', 'instagram', 'facebook', 'twitter', 'linkedin'].map(
             (field) => (
               <FieldContainer key={field}>
                 <FieldLabel>
@@ -293,7 +301,7 @@ const SecuritySettings: React.FC = () => {
                 {editingField === field ? (
                   <TextField
                     name={field}
-                    value={userInfo[field as keyof UserProfile] || ""}
+                    value={userInfo[field as keyof UserProfile] || ''}
                     onChange={handleInputChange}
                     variant="outlined"
                     size="small"
@@ -319,13 +327,13 @@ const SecuritySettings: React.FC = () => {
                     <span
                       className={`text-sm ${
                         userInfo[field as keyof UserProfile]
-                          ? "text-green-500"
-                          : "text-gray-500"
+                          ? 'text-green-500'
+                          : 'text-gray-500'
                       }`}
                     >
                       {userInfo[field as keyof UserProfile]
-                        ? "Provided"
-                        : "Not Provided"}
+                        ? 'Provided'
+                        : 'Not Provided'}
                     </span>
                     <ActionIcons>
                       <Tooltip title="Edit">
@@ -337,17 +345,17 @@ const SecuritySettings: React.FC = () => {
                   </div>
                 )}
               </FieldContainer>
-            ),
+            )
           )}
         </Section>
         <Section>
           <SectionTitle>Security</SectionTitle>
           <FieldContainer>
             <FieldLabel>Email</FieldLabel>
-            {editingField === "email" ? (
+            {editingField === 'email' ? (
               <TextField
                 name="email"
-                value={userInfo.email || ""}
+                value={userInfo.email || ''}
                 onChange={handleInputChange}
                 variant="outlined"
                 size="small"
@@ -374,7 +382,7 @@ const SecuritySettings: React.FC = () => {
                   <Tooltip title="Edit">
                     <IconButton
                       onClick={() => {
-                        setEditingField("email");
+                        setEditingField('email');
                       }}
                     >
                       <FaEdit color="#007bff" />
@@ -386,11 +394,11 @@ const SecuritySettings: React.FC = () => {
           </FieldContainer>
           <FieldContainer>
             <FieldLabel>Password</FieldLabel>
-            {editingField === "password" ? (
+            {editingField === 'password' ? (
               <div className="flex flex-col gap-2">
                 <TextField
                   name="password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={handleInputChange}
                   variant="outlined"
@@ -412,7 +420,7 @@ const SecuritySettings: React.FC = () => {
                 />
                 <TextField
                   name="confirmPassword"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={handleInputChange}
                   variant="outlined"
@@ -424,7 +432,7 @@ const SecuritySettings: React.FC = () => {
                 )}
                 <Button
                   className="rounded-full bg-[#000916] hover:bg-[#000916]/80"
-                  onClick={() => handleSaveChanges("password")}
+                  onClick={() => handleSaveChanges('password')}
                 >
                   Save Password
                 </Button>
@@ -434,7 +442,7 @@ const SecuritySettings: React.FC = () => {
                 <span className="text-sm text-green-500">••••••••</span>
                 <ActionIcons>
                   <Tooltip title="Edit">
-                    <IconButton onClick={() => setEditingField("password")}>
+                    <IconButton onClick={() => setEditingField('password')}>
                       <FaEdit color="#007bff" />
                     </IconButton>
                   </Tooltip>
@@ -453,13 +461,13 @@ const SecuritySettings: React.FC = () => {
       >
         <Box
           sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
             width: 400,
-            bgcolor: "background.paper",
-            border: "2px solid #000",
+            bgcolor: 'background.paper',
+            border: '2px solid #000',
             boxShadow: 24,
             borderRadius: 2,
             p: 4,
@@ -480,8 +488,8 @@ const SecuritySettings: React.FC = () => {
           />
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "flex-end",
+              display: 'flex',
+              justifyContent: 'flex-end',
               mt: 2,
             }}
           >

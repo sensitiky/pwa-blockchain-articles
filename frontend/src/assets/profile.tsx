@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
-import { FaCamera } from "react-icons/fa";
-import Select, { SingleValue } from "react-select";
-import countryList from "react-select-country-list";
-import "react-datepicker/dist/react-datepicker.css";
-import { useAuth } from "../../context/authContext";
-import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
-import Link from "next/link";
-import styled from "styled-components";
-import { useRouter } from "next/navigation";
-import ModalUserDelete from "@/assets/userdelete";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
-import Image from "next/image";
-import axios from "axios";
-import { User } from "@/interfaces/interfaces2";
+import React, { useState, useEffect } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { CardBody, CardContainer, CardItem } from '@/components/ui/3d-card';
+import { FaCamera } from 'react-icons/fa';
+import Select, { SingleValue } from 'react-select';
+import countryList from 'react-select-country-list';
+import 'react-datepicker/dist/react-datepicker.css';
+import { useAuth } from '../../context/authContext';
+import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa';
+import Link from 'next/link';
+import styled from 'styled-components';
+import { useRouter } from 'next/navigation';
+import ModalUserDelete from '@/assets/userdelete';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs, { Dayjs } from 'dayjs';
+import Image from 'next/image';
+import axios from 'axios';
+import { User } from '@/interfaces/interfaces2';
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
 const Container = styled.div`
@@ -37,19 +37,19 @@ const ProfileSettings: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [bioEditMode, setBioEditMode] = useState(false);
   const [userInfo, setUserInfo] = useState<User>({});
-  const [profileImage, setProfileImage] = useState<string>("");
-  const [bio, setBio] = useState<string>("");
+  const [profileImage, setProfileImage] = useState<string>('');
+  const [bio, setBio] = useState<string>('');
   const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState<string>("");
+  const [role, setRole] = useState<string>('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const router = useRouter();
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      const avatarUrl = user.avatar ? `${API_URL}${user.avatar}` : "";
-      setProfileImage(avatarUrl ? `${avatarUrl}?${new Date().getTime()}` : "");
-      setBio(user.bio || "");
+      const avatarUrl = user.avatar ? `${API_URL}${user.avatar}` : '';
+      setProfileImage(avatarUrl ? `${avatarUrl}?${new Date().getTime()}` : '');
+      setBio(user.bio || '');
       setLoading(false);
     }
   }, [isAuthenticated, user]);
@@ -64,11 +64,11 @@ const ProfileSettings: React.FC = () => {
   };
 
   const handleCountryChange = (
-    selectedOption: SingleValue<{ label: string; value: string }>,
+    selectedOption: SingleValue<{ label: string; value: string }>
   ) => {
     setUserInfo({
       ...userInfo,
-      country: selectedOption?.value || "",
+      country: selectedOption?.value || '',
       avatar: userInfo.avatar || user?.avatar,
     });
   };
@@ -100,7 +100,7 @@ const ProfileSettings: React.FC = () => {
     if (bioEditMode) {
       const success = await handleBioSave();
       if (!success) {
-        return; // No cambiar el modo de edición si la bio no es válida
+        return; // Do not exit edit mode if the operation failed
       }
     }
     setBioEditMode(!bioEditMode);
@@ -111,12 +111,12 @@ const ProfileSettings: React.FC = () => {
   };
 
   const handleProfileSave = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     if (!token) {
-      throw new Error("No token found");
+      throw new Error('No token found');
     }
 
-    // Actualizar el estado local inmediatamente
+    // Update local state immediately
     setUser({
       ...user,
       ...userInfo,
@@ -125,56 +125,52 @@ const ProfileSettings: React.FC = () => {
     });
 
     try {
-      // Enviar la solicitud al backend de manera asíncrona
+      // Send the request to the backend asynchronously
       await axios.put(`${API_URL}/users/me`, userInfo, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
     } catch (error) {
-      console.error("Error saving profile information:", error);
+      console.error('Error saving profile information:', error);
     }
   };
 
   const formatBio = (bioText: string) => {
     const urlRegex = /((https?:\/\/|www\.)[^\s]+)/g;
 
-    // Reemplaza URLs por enlaces azules
     let formattedText = bioText.replace(urlRegex, (url) => {
       return `<a href="${url}" style="color: blue;" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
 
-    // Reemplaza saltos de línea con <br> y aplica un estilo para añadir margen inferior
     formattedText = formattedText.replace(
       /\n/g,
-      '<br style="margin-bottom: 1rem;">',
+      '<br style="margin-bottom: 1rem;">'
     );
 
-    // Reemplaza tabulaciones con espacios en blanco
-    formattedText = formattedText.replace(/\t/g, "&emsp;");
+    formattedText = formattedText.replace(/\t/g, '&emsp;');
 
     return formattedText;
   };
 
   const handleBioSave = async (): Promise<boolean> => {
     const validBioPattern = /^[a-zA-Z0-9\s.,!?'"\-_:\/?&=]*$/;
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     if (!token) {
-      throw new Error("No token found");
+      throw new Error('No token found');
     }
     if (!validBioPattern.test(bio)) {
       alert(
-        "Bio contains invalid characters. Only letters, numbers, spaces, and common punctuation are allowed.",
+        'Bio contains invalid characters. Only letters, numbers, spaces, and common punctuation are allowed.'
       );
       return false;
     }
 
-    // Actualizar el estado local inmediatamente
+    // Update the local state immediately
     setUserInfo({ ...userInfo, bio });
     setUser({ ...user, id: user?.id || 0, bio });
 
     try {
-      // Enviar la solicitud al backend de manera asíncrona
       await axios.put(
         `${API_URL}/users/me`,
         { ...userInfo, bio },
@@ -182,12 +178,12 @@ const ProfileSettings: React.FC = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
-      return true; // Indica que la operación fue exitosa
+      return true;
     } catch (error) {
-      console.error("Error saving bio:", error);
-      return false; // Indica que la operación falló
+      console.error('Error saving bio:', error);
+      return false;
     }
   };
 
@@ -200,19 +196,19 @@ const ProfileSettings: React.FC = () => {
     const fileSizeInMB = file.size / (1024 * 1024);
 
     if (fileSizeInMB > 5) {
-      alert("The image file size should not exceed 5MB.");
+      alert('The image file size should not exceed 5MB.');
       return;
     }
 
     const formData = new FormData();
-    formData.append("avatar", file);
+    formData.append('avatar', file);
 
     try {
       const response = await uploadAvatar(formData);
       const avatarUrl = formatAvatarUrl(response.data.avatar);
       updateProfileImage(avatarUrl);
 
-      // Actualizar el estado del usuario localmente
+      // Update the user object in the context
       if (user) {
         setUser({
           ...user,
@@ -227,13 +223,13 @@ const ProfileSettings: React.FC = () => {
   };
 
   const uploadAvatar = async (formData: FormData) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     if (!token) {
-      throw new Error("No token found");
+      throw new Error('No token found');
     }
     return await axios.put(`${API_URL}/users/me`, formData, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,
       },
     });
@@ -251,10 +247,10 @@ const ProfileSettings: React.FC = () => {
   };
 
   const handleAvatarUploadError = (error: any) => {
-    console.error("Error uploading avatar:", error);
+    console.error('Error uploading avatar:', error);
     if (error.response && error.response.status === 401) {
-      alert("Unauthorized. Please log in again.");
-      logout(); // Manejar el cierre de sesión o redirección a la página de inicio de sesión
+      alert('Unauthorized. Please log in again.');
+      logout();
     }
   };
 
@@ -263,12 +259,12 @@ const ProfileSettings: React.FC = () => {
       const response = await axios.get(`${API_URL}/users/me`);
       setUser(response.data);
     } catch (error) {
-      console.error("Error refreshing user profile:", error);
+      console.error('Error refreshing user profile:', error);
     }
   };
 
   useEffect(() => {
-    const savedRole = localStorage.getItem("userRole");
+    const savedRole = localStorage.getItem('userRole');
     if (savedRole) {
       setRole(savedRole);
     }
@@ -276,7 +272,7 @@ const ProfileSettings: React.FC = () => {
 
   useEffect(() => {
     if (role) {
-      localStorage.setItem("userRole", role);
+      localStorage.setItem('userRole', role);
     }
   }, [role]);
 
@@ -295,14 +291,14 @@ const ProfileSettings: React.FC = () => {
   }
 
   const avatarUrl = user?.avatar
-    ? user.avatar.startsWith("http")
+    ? user.avatar.startsWith('http')
       ? user.avatar
       : `${API_URL}${user.avatar}`
-    : "/default-avatar.webp";
+    : '/default-avatar.webp';
 
   const handleDeleteProfile = async () => {
-    const token = localStorage.getItem("token");
-    if (deleteConfirmation === "Delete") {
+    const token = localStorage.getItem('token');
+    if (deleteConfirmation === 'Delete') {
       try {
         await axios.delete(`${API_URL}/users/me`, {
           headers: {
@@ -310,16 +306,16 @@ const ProfileSettings: React.FC = () => {
           },
         });
         logout();
-        router.push("/");
+        router.push('/');
       } catch (error) {
-        console.error("Error deleting profile:", error);
+        console.error('Error deleting profile:', error);
       }
     }
   };
 
   const ensureAbsoluteUrl = (url?: string) => {
-    if (!url) return "#";
-    return url.startsWith("http://") || url.startsWith("https://")
+    if (!url) return '#';
+    return url.startsWith('http://') || url.startsWith('https://')
       ? url
       : `https://${url}`;
   };
@@ -462,7 +458,7 @@ const ProfileSettings: React.FC = () => {
                     <h2 className="text-xl text-[#000916]">
                       {user?.date
                         ? new Date(user.date).toDateString()
-                        : "No date available"}
+                        : 'No date available'}
                     </h2>
                   </div>
                 )}
@@ -485,11 +481,11 @@ const ProfileSettings: React.FC = () => {
                   <Select
                     options={countryList().getData()}
                     value={{
-                      label: userInfo.country || "",
-                      value: userInfo.country || "",
+                      label: userInfo.country || '',
+                      value: userInfo.country || '',
                     }}
                     onChange={(
-                      newValue: SingleValue<{ label: string; value: string }>,
+                      newValue: SingleValue<{ label: string; value: string }>
                     ) => handleCountryChange(newValue)}
                     className="w-full text-xl"
                   />
@@ -506,7 +502,7 @@ const ProfileSettings: React.FC = () => {
                 className="hover:text-white w-full bg-[#000916] hover:bg-[#000916]/80 text-white font-semibold py-3 rounded-full transition duration-300 ease-in-out shadow-md hover:shadow-lg mt-6"
                 onClick={handleEditToggle}
               >
-                {editMode ? "Save Changes" : "Edit Information"}
+                {editMode ? 'Save Changes' : 'Edit Information'}
               </Button>
             </div>
             <div className="space-y-4 sm:space-y-6">
@@ -530,7 +526,7 @@ const ProfileSettings: React.FC = () => {
                 ) : (
                   <p
                     className="text-gray-600 text-base sm:text-lg leading-relaxed"
-                    style={{ whiteSpace: "pre-wrap" }}
+                    style={{ whiteSpace: 'pre-wrap' }}
                     dangerouslySetInnerHTML={{ __html: formatBio(bio) }}
                   ></p>
                 )}
@@ -541,7 +537,7 @@ const ProfileSettings: React.FC = () => {
                 className="hover:text-white w-full bg-[#000916] hover:bg-[#000916]/80 text-white font-semibold py-2 sm:py-3 rounded-full transition duration-300 ease-in-out shadow-md hover:shadow-lg text-sm sm:text-base"
                 onClick={handleBioEditToggle}
               >
-                {bioEditMode ? "Save Changes" : "Edit Bio"}
+                {bioEditMode ? 'Save Changes' : 'Edit Bio'}
               </Button>
               <div className="flex items-center justify-center gap-4 sm:gap-6 mt-6 sm:mt-8">
                 {user?.facebook && (

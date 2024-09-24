@@ -37,4 +37,9 @@ export class UpdateUserDto {
   user?: string;
   bio?: string;
   avatar?: string;
+  medium?: string;
+  instagram?: string;
+  facebook?: string;
+  twitter?: string;
+  linkedin?: string;
 }
