@@ -12,20 +12,31 @@ import { UserIcon, LockIcon, PencilIcon, BookmarkIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import LoginCard from '@/assets/login';
 
-import { ReactNode } from 'react';
-
-const SearchParamsWrapper = ({
-  children,
+const SectionContent = ({
+  selectedSection,
+  userId,
 }: {
-  children: (searchParams: URLSearchParams) => ReactNode;
+  selectedSection: string;
+  userId: number;
 }) => {
-  const searchParams = useSearchParams();
-  return children(searchParams);
+  switch (selectedSection) {
+    case 'personal':
+      return <ProfileSettings />;
+    case 'security':
+      return <SecuritySettings />;
+    case 'saved':
+      return <SavedItems userId={userId} />;
+    case 'articles':
+      return <Articles />;
+    default:
+      return null;
+  }
 };
 
 const Users = () => {
   const [selectedSection, setSelectedSection] = useState('personal');
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const [userInfo, setUserInfo] = useState({
@@ -76,23 +87,18 @@ const Users = () => {
     fetchProfile();
   }, [isAuthenticated]);
 
-  const RenderContent = () => {
+  useEffect(() => {
+    const section = searchParams.get('section');
+    if (section) {
+      setSelectedSection(section);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     if (!isAuthenticated) {
       router.push('/');
     }
-    switch (selectedSection) {
-      case 'personal':
-        return <ProfileSettings />;
-      case 'security':
-        return <SecuritySettings />;
-      case 'saved':
-        return <SavedItems userId={user?.id ?? 0} />;
-      case 'articles':
-        return <Articles />;
-      default:
-        return null;
-    }
-  };
+  }, [isAuthenticated, router]);
 
   const handleDragEnd = (event: any, info: { offset: { x: number } }) => {
     if (info.offset.x > 100) {
@@ -101,6 +107,26 @@ const Users = () => {
       setIsSidebarVisible(false);
     }
   };
+
+  const SidebarButton = ({
+    section,
+    icon: Icon,
+    label,
+  }: {
+    section: string;
+    icon: any;
+    label: string;
+  }) => (
+    <button
+      onClick={() => setSelectedSection(section)}
+      className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white hover:underline hover:underline-offset-4 hover:decoration-yellow-500"
+    >
+      <Icon className="size-8" />
+      <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        {label}
+      </span>
+    </button>
+  );
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -133,34 +159,26 @@ const Users = () => {
               </p>
             </div>
             <nav className="space-y-1">
-              <button
-                onClick={() => setSelectedSection('personal')}
-                className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white"
-              >
-                <UserIcon className="size-8" />
-                <span>Personal Information</span>
-              </button>
-              <button
-                onClick={() => setSelectedSection('security')}
-                className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white"
-              >
-                <LockIcon className="size-8" />
-                <span>Security & Social Links</span>
-              </button>
-              <button
-                onClick={() => setSelectedSection('saved')}
-                className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white"
-              >
-                <BookmarkIcon className="size-8" />
-                <span>Saved Articles</span>
-              </button>
-              <button
-                onClick={() => setSelectedSection('articles')}
-                className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white"
-              >
-                <PencilIcon className="size-8" />
-                <span>My Articles</span>
-              </button>
+              <SidebarButton
+                section="personal"
+                icon={UserIcon}
+                label="Personal Information"
+              />
+              <SidebarButton
+                section="security"
+                icon={LockIcon}
+                label="Security & Social Links"
+              />
+              <SidebarButton
+                section="saved"
+                icon={BookmarkIcon}
+                label="Saved Articles"
+              />
+              <SidebarButton
+                section="articles"
+                icon={PencilIcon}
+                label="My Articles"
+              />
             </nav>
           </div>
         </aside>
@@ -179,60 +197,36 @@ const Users = () => {
               </p>
             </div>
             <nav className="space-y-1">
-              <button
-                onClick={() => setSelectedSection('personal')}
-                className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white hover:underline hover:underline-offset-4 hover:decoration-yellow-500"
-              >
-                <UserIcon className="size-8" />
-                <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  Personal Information
-                </span>
-              </button>
-              <button
-                onClick={() => setSelectedSection('security')}
-                className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white hover:underline hover:underline-offset-4 hover:decoration-yellow-500"
-              >
-                <LockIcon className="size-8" />
-                <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  Security & Social Links
-                </span>
-              </button>
-              <button
-                onClick={() => setSelectedSection('saved')}
-                className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white hover:underline hover:underline-offset-4 hover:decoration-yellow-500"
-              >
-                <BookmarkIcon className="size-8" />
-                <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  Saved Articles
-                </span>
-              </button>
-              <button
-                onClick={() => setSelectedSection('articles')}
-                className="text-gray-300 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white hover:underline hover:underline-offset-4 hover:decoration-yellow-500"
-              >
-                <PencilIcon className="size-8" />
-                <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  My Articles
-                </span>
-              </button>
+              <SidebarButton
+                section="personal"
+                icon={UserIcon}
+                label="Personal Information"
+              />
+              <SidebarButton
+                section="security"
+                icon={LockIcon}
+                label="Security & Social Links"
+              />
+              <SidebarButton
+                section="saved"
+                icon={BookmarkIcon}
+                label="Saved Articles"
+              />
+              <SidebarButton
+                section="articles"
+                icon={PencilIcon}
+                label="My Articles"
+              />
             </nav>
           </div>
         </aside>
 
         <main className="bg-inherit p-4 md:p-6 lg:p-8 flex-grow">
           <Suspense fallback={<div>Loading...</div>}>
-            <SearchParamsWrapper>
-              {(searchParams: any) => {
-                useEffect(() => {
-                  const section = searchParams.get('section');
-                  if (section) {
-                    setSelectedSection(section);
-                  }
-                }, [searchParams]);
-
-                return <RenderContent />;
-              }}
-            </SearchParamsWrapper>
+            <SectionContent
+              selectedSection={selectedSection}
+              userId={user?.id ?? 0}
+            />
           </Suspense>
         </main>
       </div>
