@@ -29,6 +29,7 @@ import { FavoriteSubscriber } from '../services/listenerFavorites.service';
         entities: [User, Post, Comment, Category, Tag, Favorite],
         synchronize: true,
         logging: true,
+        //Fix for SSL connection must be removed in development
         ssl: configService.get<boolean>('DB_SSL')
           ? { rejectUnauthorized: false }
           : false,
