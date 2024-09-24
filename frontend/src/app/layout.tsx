@@ -3,7 +3,6 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import './globals.css';
 import { AuthProvider } from '../../context/authContext';
 import FacebookInit from '@/assets/FacebookInit';
-import Background from '@/assets/background';
 import AuthWrapper from '@/assets/authwrapper';
 import { Analytics } from '@vercel/analytics/react';
 
@@ -26,14 +25,16 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-gilroy font-medium">
         <GoogleOAuthProvider clientId={clientId as string}>
-          <AuthProvider>
-            <FacebookInit />
-            <Analytics />
-            <main className="w-full h-full overflow-x-hidden text-[#263238] bg-[#fefefe]">
-              {children}
-              <link rel="icon" href="/favicon.ico" sizes="any" />
-            </main>
-          </AuthProvider>
+          <AuthWrapper>
+            <AuthProvider>
+              <FacebookInit />
+              <Analytics />
+              <main className="w-full h-full overflow-x-hidden text-[#263238] bg-[#fefefe]">
+                {children}
+                <link rel="icon" href="/favicon.ico" sizes="any" />
+              </main>
+            </AuthProvider>
+          </AuthWrapper>
         </GoogleOAuthProvider>
       </body>
     </html>

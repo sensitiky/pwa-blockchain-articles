@@ -1,22 +1,27 @@
-"use client";
-import React, { useState, useEffect } from "react";
+'use client';
+import React, { useState, useEffect } from 'react';
 
-const users = [{ username: "usertester", password: "tester" }];
+const users = [
+  {
+    username: process.env.NEXT_PUBLIC_USER_USERNAME,
+    password: process.env.NEXT_PUBLIC_USER_PASSWORD,
+  },
+];
 
 const AuthWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
 
-  const [username2, setUsername2] = useState("");
+  const [username2, setUsername2] = useState('');
 
-  const [password2, setPassword2] = useState("");
+  const [password2, setPassword2] = useState('');
 
   useEffect(() => {
-    const authState = localStorage.getItem("isAuthenticated");
-    const authUserState = localStorage.getItem("isUserAuthenticated");
-    if (authState === "true") {
+    const authState = localStorage.getItem('isAuthenticated');
+    const authUserState = localStorage.getItem('isUserAuthenticated');
+    if (authState === 'true') {
       setIsAuthenticated(true);
-    } else if (authUserState === "true") {
+    } else if (authUserState === 'true') {
       setIsUserAuthenticated(true);
     }
   }, []);
@@ -27,9 +32,9 @@ const AuthWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     );
     if (user) {
       setIsUserAuthenticated(true);
-      localStorage.setItem("isUserAuthenticated", "true");
+      localStorage.setItem('isUserAuthenticated', 'true');
     } else {
-      alert("Invalid credentials for User");
+      alert('Invalid credentials for User');
     }
   };
 
