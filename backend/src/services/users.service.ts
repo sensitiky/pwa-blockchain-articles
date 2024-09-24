@@ -237,7 +237,11 @@ export class UsersService implements IUserActivityService {
     const user = this.userRepository.create(createUserDto);
     return this.userRepository.save(user);
   }
-
+  async findByEmailOrUsername(identifier: string): Promise<User | undefined> {
+    return this.userRepository.findOne({
+      where: [{ email: identifier }, { user: identifier }],
+    });
+  }
   async findByEmail(email: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { email } });
   }

@@ -141,8 +141,10 @@ export default function NewArticles() {
       return;
     }
 
-    if (/[^a-zA-Z0-9\s.,\-'&?¡¿!:*]/.test(title)) {
-      alert('Title contains disallowed special characters.');
+    if (/[^a-zA-Z0-9\s.,\-'&?´¡¿"!:*áéíóúÁÉÍÓÚñÑ]/.test(title)) {
+      alert(
+        'Title contains disallowed special characters. Allowed characters are: letters, numbers, spaces, and . , - \' & ? ´ ¡ ¿ " ! : * á é í ó ú Á É Í Ó Ú ñ Ñ'
+      );
       return;
     }
 

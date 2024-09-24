@@ -46,9 +46,9 @@ export class AuthService {
     return lengthCriteria && uppercaseCriteria && numberOrSymbolCriteria;
   }
 
-  async validateUser(email: string, password: string): Promise<any> {
-    this.logger.log(`Validating user: ${email}`);
-    const user = await this.usersService.findByEmail(email);
+  async validateUser(identifier: string, password: string): Promise<any> {
+    this.logger.log(`Validating user: ${identifier}`);
+    const user = await this.usersService.findByEmailOrUsername(identifier);
     if (user) {
       const isPasswordValid = await bcrypt.compare(password, user.password);
       this.logger.log(`Password valid: ${isPasswordValid}`);

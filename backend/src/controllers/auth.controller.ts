@@ -29,11 +29,11 @@ export class AuthController {
 
   @Post('login')
   async login(
-    @Body() loginDto: { email: string; password: string },
+    @Body() loginDto: { identifier: string; password: string },
     @Res() res: Response,
   ): Promise<void> {
     const user = await this.authService.validateUser(
-      loginDto.email,
+      loginDto.identifier,
       loginDto.password,
     );
     if (user) {

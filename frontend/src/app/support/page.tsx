@@ -1,18 +1,22 @@
-"use client";
-import Footer from "@/assets/footer";
-import Header from "@/assets/header";
-import LoginCard from "@/assets/login";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { FC, useState } from "react";
+'use client';
+import Footer from '@/assets/footer';
+import Header from '@/assets/header';
+import LoginCard from '@/assets/login';
+import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import Link from 'next/link';
+import { FC, useState } from 'react';
 
 const SupportSection: FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen2, setIsModalOpen2] = useState(false);
   const [showLoginCard, setShowLoginCard] = useState(false);
 
   const handleCloseModal = () => setShowLoginCard(false);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+  const openModal2 = () => setIsModalOpen2(true);
+  const closeModal2 = () => setIsModalOpen2(false);
 
   return (
     <div className="h-screen">
@@ -53,7 +57,10 @@ const SupportSection: FC = () => {
               contribute to keep this forum alive.
             </p>
             <div className="justify-center flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
-              <Button className="text-base px-6 py-3 bg-[#000916] text-white rounded-full hover:bg-gray-800 transition duration-300 font-normal">
+              <Button
+                className="text-base px-6 py-3 bg-[#000916] text-white rounded-full hover:bg-gray-800 transition duration-300 font-normal"
+                onClick={openModal2}
+              >
                 Wallet Address List
               </Button>
               <Button
@@ -62,9 +69,14 @@ const SupportSection: FC = () => {
               >
                 SEPA Transfers
               </Button>
-              <Button className="text-base px-6 py-3 bg-[#000916] text-white rounded-full hover:bg-gray-800 transition duration-300 font-normal">
-                Paypal
-              </Button>
+              <Link
+                href="https://www.paypal.com/pools/c/98g7nR5w4z"
+                target="_blank"
+              >
+                <Button className="text-base px-6 py-3 bg-[#000916] text-white rounded-full hover:bg-gray-800 transition duration-300 font-normal">
+                  Paypal
+                </Button>
+              </Link>
             </div>
             <Image
               src="/support2.svg"
@@ -91,6 +103,55 @@ const SupportSection: FC = () => {
             >
               Close
             </Button>
+          </div>
+        </div>
+      )}
+      {isModalOpen2 && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-lg mx-auto">
+            <h2 className="text-3xl font-bold mb-6 text-center text-[#000916]">
+              USDT Transfer Details
+            </h2>
+            <div className="space-y-6">
+              <div className="flex flex-col items-center">
+                <h3 className="text-xl font-semibold text-[#000916]">
+                  USDT BEP20
+                </h3>
+                <p className="text-lg font-medium text-gray-700 break-all">
+                  0x5d8ce0cf4d34aa8b7a9146efdc51982d1a9d8e83
+                </p>
+              </div>
+              <div className="flex flex-col items-center">
+                <h3 className="text-xl font-semibold text-[#000916]">
+                  USDT TRC20
+                </h3>
+                <p className="text-lg font-medium text-gray-700 break-all">
+                  TKv2pTH6ffRrgaE1wU6KWCdV3ZSqcKA4cc
+                </p>
+              </div>
+              <div className="flex flex-col items-center">
+                <h3 className="text-xl font-semibold text-[#000916]">
+                  USDT MATIC
+                </h3>
+                <p className="text-lg font-medium text-gray-700 break-all">
+                  0x5d8ce0cf4d34aa8b7a9146efdc51982d1a9d8e83
+                </p>
+              </div>
+              <div className="flex flex-col items-center">
+                <h3 className="text-xl font-semibold text-[#000916]">
+                  USDT SOL
+                </h3>
+                <p className="text-lg font-medium text-gray-700 break-all">
+                  8gXVM1wTE2s7uhv7WymCcE4E8TiKHf7p2YoEF11aaH7W
+                </p>
+              </div>
+            </div>
+            <button
+              className="mt-8 px-6 py-3 bg-[#000916] text-white rounded-full hover:bg-[#000916]/80 transition duration-300"
+              onClick={closeModal2}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
