@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 
 const users = [
   {
-    username: 'usertester',
-    password: 'tester',
+    username: 'usuario',
+    password: 'tester123',
   },
 ];
 
