@@ -220,10 +220,40 @@ export class AuthService {
     await this.mailer.sendMail(mailOptions);
   }
 
-  async updatePassword(email: string, newPassword: string): Promise<void> {
+  async updatePassword(email: string, newPassword: string): Promise<string> {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(newPassword, salt);
     await this.usersService.updatePassword(email, hashedPassword);
+
+    const user = await this.usersService.findByEmail(email);
+    return this.generateJwtToken(this.usersService.transformToDto(user));
+  }
+
+  async updateUserProfile(
+    userId: number,
+    updatedFields: Partial<User>,
+  ): Promise<string> {
+    // Fetch the user by ID first
+    const user = await this.usersService.findOneById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // If the password is being updated, hash it before saving
+    if (updatedFields.password) {
+      const salt = await bcrypt.genSalt();
+      updatedFields.password = await bcrypt.hash(updatedFields.password, salt);
+    }
+
+    // Update the user object with the new fields
+    Object.assign(user, updatedFields);
+
+    // Save the updated user
+    await this.usersService.update(user);
+
+    // Fetch the updated user by email
+    const updatedUser = await this.usersService.findOne(user.email);
+    return this.generateJwtToken(this.usersService.transformToDto(updatedUser));
   }
 
   async verifyResetCode(email: string, code: string): Promise<boolean> {

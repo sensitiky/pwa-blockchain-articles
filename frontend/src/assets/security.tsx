@@ -89,18 +89,30 @@ const SecuritySettings: React.FC = () => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
   const [sendingCode, setSendingCode] = useState(false);
   const [message, setMessage] = useState<{
     text: string;
     isError: boolean;
   } | null>(null);
   const [codeSent, setCodeSent] = useState(false);
-  const [email, setEmail] = useState('');
   const [openModal, setOpenModal] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
-
+  const [currentField, setCurrentField] = useState<'email' | 'password'>(
+    'email'
+  );
+  const fieldLabels: Record<keyof UserProfile, string | undefined> = {
+    id: undefined,
+    firstName: undefined,
+    avatar: undefined,
+    medium: 'Medium',
+    instagram: 'Instagram',
+    facebook: 'Facebook',
+    twitter: 'Twitter',
+    linkedin: 'LinkedIn',
+    email: 'Email',
+    password: 'Password',
+    confirmPassword: 'Confirm Password',
+  };
   useEffect(() => {
     if (user) {
       const avatarUrl = user?.avatar
@@ -123,21 +135,11 @@ const SecuritySettings: React.FC = () => {
     }
   }, [user]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    if (name === 'password') {
-      setPassword(value);
-    } else if (name === 'confirmPassword') {
-      setConfirmPassword(value);
-    } else {
-      setUserInfo({ ...userInfo, [name]: value });
-    }
-  };
-
-  const handleSendVerificationCode = async () => {
+  const handleSendVerificationCode = async (field: 'email' | 'password') => {
     setSendingCode(true);
     setMessage(null);
     setOpenModal(true);
+    setCurrentField(field);
     try {
       const response = await axios.post(
         `${API_URL}/auth/send-verification-code`,
@@ -186,71 +188,59 @@ const SecuritySettings: React.FC = () => {
   };
 
   const handleSaveChanges = async (field: string) => {
-    if (field === 'email') {
-      await handleSendVerificationCode();
+    if (field === 'email' || field === 'password') {
+      await handleSendVerificationCode(field);
       return;
-    }
-
-    if (field === 'password') {
-      if (password !== confirmPassword) {
-        setPasswordError('Passwords do not match.');
-        return;
-      }
-      if (password.length < 8) {
-        setPasswordError('Password must be at least 8 characters long.');
-        return;
-      }
-      setPasswordError('');
     }
 
     const updatedField: Partial<UserProfile> & { id: number } = {
       id: userInfo.id ?? 0,
-      [field]:
-        field === 'password' ? password : userInfo[field as keyof UserProfile],
+      [field]: userInfo[field as keyof UserProfile],
     };
 
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`${API_URL}/users/me`, updatedField, {
+      const response = await axios.put(`${API_URL}/users/me`, updatedField, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
+
+      const newToken = response.data.token; // Assuming the new token is returned in the response
+      localStorage.setItem('token', newToken); // Update the token in local storage
       setUser({ ...user, ...updatedField });
       setEditingField(null);
-      if (field === 'password') {
-        setPassword('');
-        setConfirmPassword('');
-      }
     } catch (error) {
       console.error('Error saving profile information:', error);
     }
   };
 
-  const handleTogglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const handleVerifyAndSaveEmail = async () => {
+  const handleVerifyAndSave = async () => {
     const isVerified = await verifyCode(verificationCode);
     if (isVerified) {
-      await handleSaveChanges('email');
-      setEditingField(null);
-      setOpenModal(false);
-    }
-  };
+      const updatedField: Partial<UserProfile> & { id: number } = {
+        id: userInfo.id ?? 0,
+        [currentField]: currentField === 'password' ? password : userInfo.email,
+      };
 
-  const fieldLabels: Record<keyof UserProfile, string | undefined> = {
-    id: undefined,
-    firstName: undefined,
-    avatar: undefined,
-    medium: 'Medium',
-    instagram: 'Instagram',
-    facebook: 'Facebook',
-    twitter: 'Twitter',
-    linkedin: 'LinkedIn',
-    email: 'Email',
-    password: 'Password',
-    confirmPassword: 'Confirm Password',
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.put(`${API_URL}/users/me`, updatedField, {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        });
+
+        const newToken = response.data.token; // Assuming the new token is returned in the response
+        localStorage.setItem('token', newToken); // Update the token in local storage
+        setUser({ ...user, ...updatedField });
+        setEditingField(null);
+        if (currentField === 'password') {
+          setPassword('');
+        }
+        setOpenModal(false);
+      } catch (error) {
+        console.error('Error saving profile information:', error);
+      }
+    }
   };
 
   if (loading) {
@@ -292,61 +282,59 @@ const SecuritySettings: React.FC = () => {
         </div>
         <Section>
           <SectionTitle>Social Media</SectionTitle>
-          {['medium', 'instagram', 'facebook', 'twitter', 'linkedin'].map(
-            (field) => (
-              <FieldContainer key={field}>
-                <FieldLabel>
-                  {fieldLabels[field as keyof UserProfile]}
-                </FieldLabel>
-                {editingField === field ? (
-                  <TextField
-                    name={field}
-                    value={userInfo[field as keyof UserProfile] || ''}
-                    onChange={handleInputChange}
-                    variant="outlined"
-                    size="small"
-                    onBlur={() => handleSaveChanges(field as keyof UserProfile)}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <Tooltip title="Save">
-                            <IconButton
-                              onClick={() =>
-                                handleSaveChanges(field as keyof UserProfile)
-                              }
-                            >
-                              <FaCheck color="#28a745" />
-                            </IconButton>
-                          </Tooltip>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`text-sm ${
-                        userInfo[field as keyof UserProfile]
-                          ? 'text-green-500'
-                          : 'text-gray-500'
-                      }`}
-                    >
-                      {userInfo[field as keyof UserProfile]
-                        ? 'Provided'
-                        : 'Not Provided'}
-                    </span>
-                    <ActionIcons>
-                      <Tooltip title="Edit">
-                        <IconButton onClick={() => setEditingField(field)}>
-                          <FaEdit color="#007bff" />
-                        </IconButton>
-                      </Tooltip>
-                    </ActionIcons>
-                  </div>
-                )}
-              </FieldContainer>
-            )
-          )}
+          {(
+            [
+              'medium',
+              'instagram',
+              'facebook',
+              'twitter',
+              'linkedin',
+            ] as (keyof UserProfile)[]
+          ).map((field) => (
+            <FieldContainer key={field}>
+              <FieldLabel>{fieldLabels[field]}</FieldLabel>
+              {editingField === field ? (
+                <TextField
+                  name={field}
+                  value={userInfo[field] || ''}
+                  onChange={(e) =>
+                    setUserInfo({ ...userInfo, [field]: e.target.value })
+                  }
+                  variant="outlined"
+                  size="small"
+                  onBlur={() => handleSaveChanges(field)}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <Tooltip title="Save">
+                          <IconButton onClick={() => handleSaveChanges(field)}>
+                            <FaCheck color="#28a745" />
+                          </IconButton>
+                        </Tooltip>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`text-sm ${
+                      userInfo[field] ? 'text-green-500' : 'text-gray-500'
+                    }`}
+                  >
+                    {userInfo[field] ? 'Provided' : 'Not Provided'}
+                  </span>
+                  <ActionIcons>
+                    <Tooltip title="Edit">
+                      <IconButton onClick={() => setEditingField(field)}>
+                        <FaEdit color="#007bff" />
+                      </IconButton>
+                    </Tooltip>
+                  </ActionIcons>
+                </div>
+              )}
+            </FieldContainer>
+          ))}
         </Section>
         <Section>
           <SectionTitle>Security</SectionTitle>
@@ -356,7 +344,9 @@ const SecuritySettings: React.FC = () => {
               <TextField
                 name="email"
                 value={userInfo.email || ''}
-                onChange={handleInputChange}
+                onChange={(e) =>
+                  setUserInfo({ ...userInfo, email: e.target.value })
+                }
                 variant="outlined"
                 size="small"
                 InputProps={{
@@ -364,9 +354,7 @@ const SecuritySettings: React.FC = () => {
                     <InputAdornment position="end">
                       <Tooltip title="Save">
                         <IconButton
-                          onClick={() => {
-                            handleSendVerificationCode();
-                          }}
+                          onClick={() => handleSendVerificationCode('email')}
                         >
                           <FaCheck color="#28a745" />
                         </IconButton>
@@ -380,11 +368,7 @@ const SecuritySettings: React.FC = () => {
                 <span className="text-sm text-green-500">{userInfo.email}</span>
                 <ActionIcons>
                   <Tooltip title="Edit">
-                    <IconButton
-                      onClick={() => {
-                        setEditingField('email');
-                      }}
-                    >
+                    <IconButton onClick={() => setEditingField('email')}>
                       <FaEdit color="#007bff" />
                     </IconButton>
                   </Tooltip>
@@ -400,7 +384,7 @@ const SecuritySettings: React.FC = () => {
                   name="password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={handleInputChange}
+                  onChange={(e) => setPassword(e.target.value)}
                   variant="outlined"
                   size="small"
                   placeholder="New password"
@@ -409,7 +393,7 @@ const SecuritySettings: React.FC = () => {
                       <InputAdornment position="end">
                         <IconButton
                           aria-label="toggle password visibility"
-                          onClick={handleTogglePasswordVisibility}
+                          onClick={() => setShowPassword(!showPassword)}
                           edge="end"
                         >
                           {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -418,23 +402,11 @@ const SecuritySettings: React.FC = () => {
                     ),
                   }}
                 />
-                <TextField
-                  name="confirmPassword"
-                  type={showPassword ? 'text' : 'password'}
-                  value={confirmPassword}
-                  onChange={handleInputChange}
-                  variant="outlined"
-                  size="small"
-                  placeholder="Confirm new password"
-                />
-                {passwordError && (
-                  <span className="text-sm text-red-500">{passwordError}</span>
-                )}
                 <Button
                   className="rounded-full bg-[#000916] hover:bg-[#000916]/80"
-                  onClick={() => handleSaveChanges('password')}
+                  onClick={() => handleSendVerificationCode('password')}
                 >
-                  Save Password
+                  Change Password
                 </Button>
               </div>
             ) : (
@@ -477,7 +449,8 @@ const SecuritySettings: React.FC = () => {
             Verify Your Email
           </Typography>
           <Typography id="modal-description" sx={{ mt: 2 }}>
-            Please enter the verification code sent to your email.
+            Please enter the verification code sent to your email to confirm
+            your {currentField} change.
           </Typography>
           <TextField
             fullWidth
@@ -495,7 +468,7 @@ const SecuritySettings: React.FC = () => {
           >
             <Button
               color="primary"
-              onClick={handleVerifyAndSaveEmail}
+              onClick={handleVerifyAndSave}
               className="rounded-full bg-[#000916] hover:bg-[#000916]/80 font-normal"
             >
               Verify and Save

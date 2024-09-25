@@ -8,6 +8,7 @@ import {
   UploadedFile,
   Param,
   Delete,
+  Res,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { UsersService } from '../services/users.service';
@@ -18,10 +19,14 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { User } from '../entities/user.entity';
 import { Post } from '../entities/post.entity';
+import { AuthService } from 'src/services/auth.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
@@ -50,16 +55,23 @@ export class UsersController {
     @CurrentUser() user: User,
     @Body() updateData: UpdateUserDto,
     @UploadedFile() file: Express.Multer.File,
-  ): Promise<UserDto> {
+  ): Promise<{ message: string; token: string; user: UserDto }> {
     if (file) {
       updateData.avatar = `/uploads/avatars/${file.filename}`;
     }
-    const updatedUser = await this.usersService.updateUserInfo(
+    const newToken = await this.authService.updateUserProfile(
       user.id,
       updateData,
     );
+    const updatedUser = await this.usersService.findByEmailOrUsername(
+      user.email || user.user,
+    );
     const userDto = this.usersService.transformToDto(updatedUser);
-    return userDto;
+    return {
+      message: 'Profile updated successfully',
+      token: newToken,
+      user: userDto,
+    };
   }
 
   @Get('me/posts')

@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Favorite } from '../entities/favorite.entity';
@@ -87,11 +92,30 @@ export class FavoritesService {
         post: postId ? { id: postId } : undefined,
         comment: commentId ? { id: commentId } : undefined,
       },
+      relations: ['post', 'comment'],
     });
 
-    if (favorite) {
-      await this.favoritesRepository.remove(favorite);
+    if (!favorite) {
+      throw new NotFoundException('Favorite not found');
     }
+
+    await this.favoritesRepository.remove(favorite);
+
+    // Log the event data
+    console.log('Tracking Favorite Removed event:', {
+      distinct_id: favorite.id,
+      user: userId,
+      post: postId,
+      comment: commentId,
+    });
+
+    // Track event with Mixpanel
+    await this.metricService.trackEvent('Favorite Removed', {
+      distinct_id: favorite.id,
+      user: userId,
+      post: postId,
+      comment: commentId,
+    });
   }
 
   async getSavedArticles() {

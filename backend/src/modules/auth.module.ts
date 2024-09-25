@@ -11,6 +11,7 @@ import { JwtStrategy } from '../strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MetricModule } from './metric.module';
+import { UsersModule } from './user.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { MetricModule } from './metric.module';
       }),
     }),
     forwardRef(() => MetricModule),
+    forwardRef(() => UsersModule),
   ],
   providers: [AuthService, UsersService, GoogleStrategy, JwtStrategy],
   controllers: [AuthController, UsersController],
