@@ -169,7 +169,7 @@ const PostPage = () => {
     [commentContent, user, post]
   );
 
-  const handleFavorite = async (postId: number) => {
+  const toggleFavorite = async (postId: number) => {
     if (!user) {
       console.error('User is not logged in');
       alert('You need to be authenticated in order to interact');
@@ -211,7 +211,7 @@ const PostPage = () => {
         setIsSaved(true);
       }
     } catch (error) {
-      console.error('Error favoriting post:', error);
+      console.error('Error toggling favorite status:', error);
     }
   };
 
@@ -221,7 +221,7 @@ const PostPage = () => {
       setTimeout(() => setShowBookmarkMessage(false), 1500);
     }
     if (post) {
-      await handleFavorite(post.id);
+      await toggleFavorite(post.id);
     }
   };
 
@@ -345,22 +345,6 @@ const PostPage = () => {
       </div>
     );
   }
-
-  if (!post) {
-    return (
-      <div className="flex flex-col space-y-3">
-        <Container>
-          <Image
-            src="/BLOGCHAIN.gif"
-            width={200}
-            height={200}
-            alt="Blogchain Logo"
-            className="animate-bounce rounded-full"
-          />
-        </Container>
-      </div>
-    );
-  }
   return (
     <div className="flex flex-col min-h-screen bg-white text-gray-900">
       <Header />
@@ -376,27 +360,27 @@ const PostPage = () => {
           <div className="flex flex-col sm:flex-row items-center mb-6 space-y-4 sm:space-y-0 justify-between">
             <div className="flex items-center space-y-4 justify-between w-full">
               <div className="flex items-center space-x-4">
-                <Link href={`/users/${post.author?.id}`} target="_blank">
+                <Link href={`/users/${post?.author?.id}`} target="_blank">
                   <Avatar className="size-12">
                     <AvatarImage
                       src={avatarUrl}
-                      alt={`${post.author?.firstName}'s avatar`}
+                      alt={`${post?.author?.firstName}'s avatar`}
                     />
-                    <AvatarFallback>{post.author?.user}</AvatarFallback>
+                    <AvatarFallback>{post?.author?.user}</AvatarFallback>
                   </Avatar>
                 </Link>
                 <div className="text-center sm:text-left">
                   <p className="text-base font-medium text-black">
-                    {post.author?.user ?? 'Author'}
+                    {post?.author?.user ?? 'Author'}
                   </p>
                   <p className="text-base text-gray-500 line-clamp-2">
-                    {post.author?.role}
+                    {post?.author?.role}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center space-x-4">
-                {post.author?.twitter && (
+                {post?.author?.twitter && (
                   <Link
                     href={post.author.twitter}
                     target="_blank"
@@ -406,9 +390,9 @@ const PostPage = () => {
                     <span className="sr-only">Twitter</span>
                   </Link>
                 )}
-                {post.author?.linkedin && (
+                {post?.author?.linkedin && (
                   <Link
-                    href={post.author.linkedin}
+                    href={post?.author.linkedin}
                     target="_blank"
                     className="text-muted-foreground hover:text-foreground"
                   >
@@ -416,9 +400,9 @@ const PostPage = () => {
                     <span className="sr-only">LinkedIn</span>
                   </Link>
                 )}
-                {post.author?.facebook && (
+                {post?.author?.facebook && (
                   <Link
-                    href={post.author.facebook}
+                    href={post?.author.facebook}
                     target="_blank"
                     className="text-muted-foreground hover:text-foreground"
                   >
@@ -428,12 +412,12 @@ const PostPage = () => {
                 )}
               </div>
             </div>
-            {user?.id === post.author?.id && (
+            {user?.id === post?.author?.id && (
               <div className="flex space-x-2">
                 <Button
                   variant="ghost"
                   className="w-fit flex items-center space-x-1 text-gray-500 hover:bg-inherit"
-                  onClick={() => router.push(`/posts/edit/${post.id}`)}
+                  onClick={() => router.push(`/posts/edit/${post?.id}`)}
                 >
                   <FaEdit className="size-5" />
                 </Button>
@@ -448,18 +432,18 @@ const PostPage = () => {
             )}
           </div>
           <p className="text-gray-500 mt-4">
-            {formatDate(post.createdAt)} •{' '}
-            {calculateReadingTime(post.description)} min read
+            {formatDate(post?.createdAt ?? '')} •{' '}
+            {calculateReadingTime(post?.description ?? '')} min read
           </p>
           {/*Start the render for the article */}
           <div className="prose prose-slate">
             <h1 className="text-4xl font-bold text-center mt-6">
-              {post.title}
+              {post?.title}
             </h1>
-            {post.imageUrl && (
+            {post?.imageUrl && (
               <div className="mt-6 rounded-lg overflow-hidden">
                 <Image
-                  src={post.imageUrl}
+                  src={post?.imageUrl}
                   alt="Banner"
                   width={1200}
                   height={300}
@@ -469,12 +453,12 @@ const PostPage = () => {
             )}
             <div className="prose prose-lg mx-auto mt-8">
               <div className="bg-white p-6 rounded-lg shadow-md">
-                {parseHtmlContent(post.description)}
+                {parseHtmlContent(post?.description ?? '')}
               </div>
             </div>
           </div>
           {/* End of the render */}
-          {post.category && (
+          {post?.category && (
             <div className="mt-8 w-fit">
               <span className="flex items-center px-2 py-1 bg-[#000916] text-white rounded-full">
                 <img
@@ -486,7 +470,7 @@ const PostPage = () => {
               </span>
             </div>
           )}
-          {post.tags && (
+          {post?.tags && (
             <div className="mt-8">
               <ul className="flex flex-wrap gap-2">
                 {post.tags.map((tag, index) => (
@@ -541,7 +525,7 @@ const PostPage = () => {
             </button>
             <div className="w-fit flex items-center space-x-1 text-gray-500">
               <img src="/comment.png" alt="Comment" className="w-5 h-5" />
-              <span>{post.commentscount || 0}</span>
+              <span>{post?.commentscount || 0}</span>
             </div>
           </div>
           <div className="flex w-full justify-center">

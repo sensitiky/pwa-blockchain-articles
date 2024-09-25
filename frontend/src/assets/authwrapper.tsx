@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 
 const users = [
   {
-    username: process.env.NEXT_PUBLIC_USER_USERNAME,
-    password: process.env.NEXT_PUBLIC_USER_PASSWORD,
+    username: 'usertester',
+    password: 'tester',
   },
 ];
 
