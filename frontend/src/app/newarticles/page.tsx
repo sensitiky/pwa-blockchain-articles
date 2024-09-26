@@ -317,26 +317,13 @@ export default function NewArticles() {
                 Must select 1 category and 2 to 5 tags.
               </div>
             </div>
-            <div
-              className={`w-full md:w-3/4 pl-0 md:pl-4 bg-white rounded-xl ${
-                !selectedCategory || selectedTags.length < 2
-                  ? 'animate-pulse'
-                  : ''
-              }`}
-            >
+            <div className="w-full md:w-3/4 pl-0 md:pl-4 bg-white rounded-xl">
               {' '}
               <motion.div
-                className={`p-6 text-black rounded-lg ${
-                  !selectedCategory || selectedTags.length < 2 ? '' : ''
-                }`}
+                className="p-6 text-black rounded-lg"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                onClick={() => {
-                  if (!selectedCategory || selectedTags.length < 2) {
-                    setShowPopup(true);
-                  }
-                }}
               >
                 {(!selectedCategory || selectedTags.length < 2) && (
                   <div className="flex justify-between items-center flex-col">
@@ -348,13 +335,7 @@ export default function NewArticles() {
                 <div className="flex justify-end items-center">
                   <div className="space-x-4">
                     <motion.button
-                      onClick={() => {
-                        if (!selectedCategory || selectedTags.length < 2) {
-                          setShowPopup(true);
-                        } else {
-                          handleSubmit(true);
-                        }
-                      }}
+                      onClick={() => handleSubmit(true)}
                       className="text-white bg-green-600 px-4 py-2 rounded-full hover:bg-green-500 transition-all duration-300"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -375,7 +356,6 @@ export default function NewArticles() {
                     onChange={(e) => setTitle(e.target.value)}
                     className="w-full mt-4 p-2 bg-white rounded-lg border border-gray-400 text-black placeholder:text-gray-700"
                     maxLength={140}
-                    disabled={!selectedCategory || selectedTags.length < 2}
                   />
                   <p className="text-right text-gray-500 text-sm mt-1">
                     {title.length}/140
@@ -400,7 +380,6 @@ export default function NewArticles() {
                         type="file"
                         className="absolute inset-0 opacity-0 cursor-pointer"
                         onChange={handleImageUpload}
-                        disabled={!selectedCategory || selectedTags.length < 2}
                       />
                     </div>
                     <span className="text-center flex justify-center text-gray-500">
@@ -408,10 +387,7 @@ export default function NewArticles() {
                     </span>
                   </div>
                   <div className="mt-4">
-                    <RichTextEditor
-                      onChange={setDescription}
-                      disabled={!selectedCategory || selectedTags.length < 2}
-                    />
+                    <RichTextEditor onChange={setDescription} />
                     <div className="space-x-4 mt-2 flex justify-end">
                       <motion.button
                         onClick={() => {
