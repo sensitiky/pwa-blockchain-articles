@@ -87,7 +87,7 @@ const SavedItems: React.FC<{ userId: number }> = ({ userId }) => {
     try {
       if (!newLiked[index]) {
         const url = `${API_URL}/favorites`;
-        console.log('Deleting favorite with URL:', url);
+        //   console.log('Deleting favorite with URL:', url);
 
         await axios.delete(url, {
           params: {

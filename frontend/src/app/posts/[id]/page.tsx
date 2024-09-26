@@ -191,11 +191,11 @@ const PostPage = () => {
         setIsSaved(false);
         setShowBookmarkMessage(false);
         const url = `${API_URL}/favorites`;
-        console.log('Deleting favorite with URL:', url, 'Params:', {
+        /*      console.log('Deleting favorite with URL:', url, 'Params:', {
           userId: user.id,
           postId,
         });
-
+          */
         await axios.delete(url, {
           params: { userId: user.id, postId },
         });
