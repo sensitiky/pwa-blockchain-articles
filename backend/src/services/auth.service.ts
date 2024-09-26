@@ -120,6 +120,8 @@ export class AuthService {
     }
 
     const payload = ticket.getPayload();
+    console.log('Google token payload:', payload);
+
     const email = payload?.email;
 
     if (!email) {
@@ -130,12 +132,13 @@ export class AuthService {
 
     if (!user) {
       user = await this.usersService.create({
-        user: payload?.sub,
+        user: payload?.name,
         email,
         password: '',
         firstName: payload?.given_name,
         lastName: payload?.family_name,
-        nombre: '',
+        nombre: payload?.name,
+        avatar: payload?.picture,
         verificationCode: '',
       });
       user.postCount = user.posts ? user.posts.length : 0;

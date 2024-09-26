@@ -279,7 +279,21 @@ export class UsersService implements IUserActivityService {
 
   transformToDto(user: User): UserDto {
     const userDto: UserDto = {
-      ...user,
+      id: user.id,
+      user: user.user,
+      facebookId: user.facebookId,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      date: user.date,
+      country: user.country,
+      medium: user.medium,
+      instagram: user.instagram,
+      facebook: user.facebook,
+      twitter: user.twitter,
+      linkedin: user.linkedin,
+      bio: user.bio,
+      avatar: user.avatar,
       postCount: user.postCount,
     };
     return userDto;

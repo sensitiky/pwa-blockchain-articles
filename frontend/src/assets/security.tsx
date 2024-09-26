@@ -83,7 +83,7 @@ const ActionIcons = styled.div`
 `;
 
 const SecuritySettings: React.FC = () => {
-  const { user, setUser } = useAuth();
+  const { user, logout, setUser } = useAuth();
   const [userInfo, setUserInfo] = useState<UserProfile>({});
   const [loading, setLoading] = useState(true);
   const [editingField, setEditingField] = useState<string | null>(null);
@@ -100,6 +100,10 @@ const SecuritySettings: React.FC = () => {
   const [currentField, setCurrentField] = useState<'email' | 'password'>(
     'email'
   );
+  const [verificationError, setVerificationError] = useState<string | null>(
+    null
+  );
+
   const fieldLabels: Record<keyof UserProfile, string | undefined> = {
     id: undefined,
     firstName: undefined,
@@ -176,6 +180,7 @@ const SecuritySettings: React.FC = () => {
           text: 'Code verified successfully',
           isError: false,
         });
+        setVerificationError(null);
         setOpenModal(false);
         return true;
       } else {
@@ -183,6 +188,10 @@ const SecuritySettings: React.FC = () => {
       }
     } catch (err) {
       setMessage({ text: 'Failed to verify code', isError: true });
+      setVerificationError('The verification code is incorrect.');
+      setTimeout(() => {
+        setVerificationError(null);
+      }, 2000);
       return false;
     }
   };
@@ -205,8 +214,8 @@ const SecuritySettings: React.FC = () => {
         withCredentials: true,
       });
 
-      const newToken = response.data.token; // Assuming the new token is returned in the response
-      localStorage.setItem('token', newToken); // Update the token in local storage
+      const newToken = response.data.token;
+      localStorage.setItem('token', newToken);
       setUser({ ...user, ...updatedField });
       setEditingField(null);
     } catch (error) {
@@ -229,14 +238,15 @@ const SecuritySettings: React.FC = () => {
           withCredentials: true,
         });
 
-        const newToken = response.data.token; // Assuming the new token is returned in the response
-        localStorage.setItem('token', newToken); // Update the token in local storage
+        const newToken = response.data.token;
+        localStorage.setItem('token', newToken);
         setUser({ ...user, ...updatedField });
         setEditingField(null);
         if (currentField === 'password') {
           setPassword('');
         }
         setOpenModal(false);
+        logout();
       } catch (error) {
         console.error('Error saving profile information:', error);
       }
@@ -445,13 +455,22 @@ const SecuritySettings: React.FC = () => {
             p: 4,
           }}
         >
-          <Typography id="modal-title" variant="h6" component="h2">
+          <Typography id="modal-title" variant="h5" component="h2">
             Verify Your Email
           </Typography>
           <Typography id="modal-description" sx={{ mt: 2 }}>
             Please enter the verification code sent to your email to confirm
             your {currentField} change.
           </Typography>
+          <Typography sx={{ mt: 2, color: 'gray' }}>
+            Note: If you change your e-mail address or password, you will be
+            logged out.
+          </Typography>
+          {verificationError && (
+            <Typography sx={{ mt: 2, color: 'red' }}>
+              {verificationError}
+            </Typography>
+          )}
           <TextField
             fullWidth
             margin="normal"

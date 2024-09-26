@@ -27,11 +27,6 @@ import { CircularProgress } from '@mui/material';
 import Image from 'next/image';
 import Search from '@/utils/svg';
 
-interface ImageBuffer {
-  type: string;
-  data: Uint8Array;
-}
-
 interface SearchResult {
   id: string;
   title?: string;
