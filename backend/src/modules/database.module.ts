@@ -30,9 +30,7 @@ import { FavoriteSubscriber } from '../services/listenerFavorites.service';
         synchronize: true,
         logging: true,
         //Fix for SSL connection must be removed in development
-        ssl: configService.get<boolean>('DB_SSL')
-          ? { rejectUnauthorized: false }
-          : false,
+
         subscribers: [CommentSubscriber, FavoriteSubscriber],
       }),
       inject: [ConfigService],
