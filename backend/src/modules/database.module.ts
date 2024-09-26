@@ -15,7 +15,7 @@ import { FavoriteSubscriber } from '../services/listenerFavorites.service';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env.local',
+      envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
