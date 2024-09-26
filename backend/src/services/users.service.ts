@@ -237,11 +237,7 @@ export class UsersService implements IUserActivityService {
     const user = this.userRepository.create(createUserDto);
     return this.userRepository.save(user);
   }
-  async findByEmailOrUsername(identifier: string): Promise<User | undefined> {
-    return this.userRepository.findOne({
-      where: [{ email: identifier }, { user: identifier }],
-    });
-  }
+
   async findByEmail(email: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { email } });
   }
@@ -249,14 +245,31 @@ export class UsersService implements IUserActivityService {
     return this.userRepository.findOne({ where: { user } });
   }
 
+  async findByEmailOrUsername(identifier: string): Promise<User | undefined> {
+    console.log('findByEmailOrUsername called with identifier:', identifier);
+    const user = await this.userRepository.findOne({
+      where: [{ email: identifier }, { user: identifier }],
+    });
+    console.log('User found:', user);
+    return user;
+  }
+
   async updateUserInfo(
     userId: number,
     updateData: Partial<User>,
   ): Promise<User> {
+    console.log(
+      'updateUserInfo called with userId:',
+      userId,
+      'updateData:',
+      updateData,
+    );
     if (!userId) {
+      console.error('User ID is required for updating user info.');
       throw new Error('User ID is required for updating user info.');
     }
     if (Object.keys(updateData).length === 0) {
+      console.error('Update data cannot be empty.');
       throw new Error('Update data cannot be empty.');
     }
 
@@ -266,18 +279,26 @@ export class UsersService implements IUserActivityService {
     });
 
     if (!updatedUser) {
+      console.error('User not found after update.');
       throw new Error('User not found after update.');
     }
 
     updatedUser.postCount = updatedUser.posts ? updatedUser.posts.length : 0;
+    console.log('Updated user:', updatedUser);
     return this.userRepository.save(updatedUser);
   }
 
   async updatePassword(email: string, newPassword: string): Promise<void> {
+    console.log('updatePassword called with email:', email);
     await this.userRepository.update({ email }, { password: newPassword });
   }
 
   transformToDto(user: User): UserDto {
+    if (!user) {
+      console.error('User is null in transformToDto');
+      throw new Error('User not found');
+    }
+    console.log('transformToDto called with user:', user);
     const userDto: UserDto = {
       id: user.id,
       user: user.user,

@@ -1,6 +1,6 @@
-"use client";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
+'use client';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function NotFound() {
   const router = useRouter();
@@ -28,7 +28,7 @@ export default function NotFound() {
         </div>
         <div className="flex justify-center">
           <button
-            onClick={() => router.push("/")}
+            onClick={() => router.push('/')}
             className="px-6 py-3 bg-yellow-500 text-[#000916] font-semibold rounded-full hover:bg-yellow-400 transition duration-300"
           >
             Go Home

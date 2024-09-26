@@ -63,9 +63,11 @@ export class UsersController {
       user.id,
       updateData,
     );
-    const updatedUser = await this.usersService.findByEmailOrUsername(
-      user.email || user.user,
-    );
+    const updatedUser = await this.usersService.findOneById(user.id);
+    if (!updatedUser) {
+      console.error('User not found after update');
+      throw new Error('User not found');
+    }
     const userDto = this.usersService.transformToDto(updatedUser);
     return {
       message: 'Profile updated successfully',

@@ -140,6 +140,7 @@ const SecuritySettings: React.FC = () => {
   }, [user]);
 
   const handleSendVerificationCode = async (field: 'email' | 'password') => {
+    console.log('handleSendVerificationCode called with field:', field);
     setSendingCode(true);
     setMessage(null);
     setOpenModal(true);
@@ -161,6 +162,7 @@ const SecuritySettings: React.FC = () => {
         throw new Error('Failed to send verification code');
       }
     } catch (err) {
+      console.error('Error sending verification code:', err);
       setMessage({ text: 'Failed to send verification code', isError: true });
     } finally {
       setSendingCode(false);
@@ -168,6 +170,7 @@ const SecuritySettings: React.FC = () => {
   };
 
   const verifyCode = async (code: string) => {
+    console.log('verifyCode called with code:', code);
     try {
       const response = await axios.post(
         `${API_URL}/auth/verify-code`,
@@ -187,6 +190,7 @@ const SecuritySettings: React.FC = () => {
         throw new Error('Failed to verify code');
       }
     } catch (err) {
+      console.error('Error verifying code:', err);
       setMessage({ text: 'Failed to verify code', isError: true });
       setVerificationError('The verification code is incorrect.');
       setTimeout(() => {
@@ -197,6 +201,7 @@ const SecuritySettings: React.FC = () => {
   };
 
   const handleSaveChanges = async (field: string) => {
+    console.log('handleSaveChanges called with field:', field);
     if (field === 'email' || field === 'password') {
       await handleSendVerificationCode(field);
       return;
@@ -224,6 +229,7 @@ const SecuritySettings: React.FC = () => {
   };
 
   const handleVerifyAndSave = async () => {
+    console.log('handleVerifyAndSave called');
     const isVerified = await verifyCode(verificationCode);
     if (isVerified) {
       const updatedField: Partial<UserProfile> & { id: number } = {

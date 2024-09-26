@@ -14,6 +14,8 @@ import {
   FaLinkedin,
   FaEdit,
   FaTrash,
+  FaInstagram,
+  FaMedium,
 } from 'react-icons/fa';
 import { ArrowLeftIcon } from 'lucide-react';
 import { useAuth } from '../../../../context/authContext';
@@ -63,6 +65,8 @@ interface Author {
   facebook?: string;
   avatar?: string;
   role: string;
+  instagram?: string;
+  medium?: string;
 }
 
 interface Comment {
@@ -116,6 +120,7 @@ const PostPage = () => {
     try {
       const response = await axios.get(`${API_URL}/posts/${id}`);
       const postData = response.data;
+      console.table(postData);
       setPost(postData);
       setComments(postData.comments || []);
       setIsSaved(postData.isFavorited);
@@ -442,6 +447,26 @@ const PostPage = () => {
                   >
                     <FaFacebook className="size-6 text-black mr-10" />
                     <span className="sr-only">Facebook</span>
+                  </Link>
+                )}
+                {post.author?.instagram && (
+                  <Link
+                    href={post.author.instagram}
+                    target="_blank"
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <FaInstagram className="size-6 text-black mr-10" />
+                    <span className="sr-only">Instagram</span>
+                  </Link>
+                )}
+                {post.author?.medium && (
+                  <Link
+                    href={post.author.medium}
+                    target="_blank"
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <FaMedium className="size-6 text-black mr-10" />
+                    <span className="sr-only">Instagram</span>
                   </Link>
                 )}
               </div>
