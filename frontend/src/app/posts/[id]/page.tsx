@@ -120,7 +120,7 @@ const PostPage = () => {
     try {
       const response = await axios.get(`${API_URL}/posts/${id}`);
       const postData = response.data;
-      console.table(postData);
+      //console.log(postData);
       setPost(postData);
       setComments(postData.comments || []);
       setIsSaved(postData.isFavorited);

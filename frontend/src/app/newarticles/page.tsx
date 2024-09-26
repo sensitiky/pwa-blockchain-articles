@@ -109,6 +109,21 @@ export default function NewArticles() {
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
+      const fileType = file.type;
+
+      const supportedTypes = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+      ];
+      if (!supportedTypes.includes(fileType)) {
+        alert(
+          'Unsupported image format. Supported formats are: jpg, jpeg, webp, png.'
+        );
+        return;
+      }
+
       setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {

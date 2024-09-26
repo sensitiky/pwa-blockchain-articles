@@ -1,14 +1,14 @@
-"use client";
-import { useState, useCallback, useEffect } from "react";
-import { useEditor, EditorContent, Editor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Image from "@tiptap/extension-image";
-import Placeholder from "@tiptap/extension-placeholder";
-import Link from "@tiptap/extension-link";
-import Underline from "@tiptap/extension-underline";
-import BulletList from "@tiptap/extension-bullet-list";
-import ListItem from "@tiptap/extension-list-item";
-import { Button } from "@/components/ui/button";
+'use client';
+import { useState, useCallback, useEffect } from 'react';
+import { useEditor, EditorContent, Editor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Image from '@tiptap/extension-image';
+import Placeholder from '@tiptap/extension-placeholder';
+import Link from '@tiptap/extension-link';
+import Underline from '@tiptap/extension-underline';
+import BulletList from '@tiptap/extension-bullet-list';
+import ListItem from '@tiptap/extension-list-item';
+import { Button } from '@/components/ui/button';
 import {
   Bold,
   Italic,
@@ -17,19 +17,43 @@ import {
   Code,
   Link as LinkIcon,
   Indent,
-} from "lucide-react";
-import { AiOutlinePicture, AiOutlineVideoCamera } from "react-icons/ai";
-import YouTube from "@tiptap/extension-youtube";
+} from 'lucide-react';
+import { AiOutlinePicture, AiOutlineVideoCamera } from 'react-icons/ai';
+import YouTube from '@tiptap/extension-youtube';
+import { ImageOptions } from '@tiptap/extension-image';
 
 interface RichTextEditorProps {
   onChange: (content: string) => void;
   disabled?: boolean;
   value?: string;
 }
+interface ExtendedImageOptions extends ImageOptions {
+  HTMLAttributes: {
+    'data-svg-content'?: string;
+  };
+}
+const CustomImage = Image.extend<ExtendedImageOptions>({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      'data-svg-content': {
+        default: null,
+        parseHTML: (element) => element.getAttribute('data-svg-content'),
+        renderHTML: (attributes) => {
+          if (attributes['data-svg-content']) {
+            return {
+              'data-svg-content': attributes['data-svg-content'],
+            };
+          }
+        },
+      },
+    };
+  },
+});
 
 export default function RichTextEditor({
   onChange,
-  value = "<p>Introduce your story ...</p>",
+  value = '<p>Introduce your story ...</p>',
   disabled = false,
 }: RichTextEditorProps) {
   const editor = useEditor({
@@ -40,16 +64,16 @@ export default function RichTextEditor({
       }),
       BulletList,
       ListItem,
-      Image,
+      CustomImage,
       Placeholder.configure({
-        placeholder: "Introduce your story ...",
+        placeholder: 'Introduce your story ...',
       }),
       Link.configure({
         openOnClick: true,
         HTMLAttributes: {
-          target: "_blank",
-          rel: "noopener noreferrer",
-          class: "text-blue-500 underline",
+          target: '_blank',
+          rel: 'noopener noreferrer',
+          class: 'text-blue-500 underline',
         },
       }),
       Underline,
@@ -61,14 +85,14 @@ export default function RichTextEditor({
 
   useEffect(() => {
     if (editor) {
-      editor.on("update", () => {
+      editor.on('update', () => {
         const content = editor.getHTML();
         onChange(content);
       });
     }
 
     return () => {
-      editor?.off("update");
+      editor?.off('update');
     };
   }, [editor, onChange]);
 
@@ -83,14 +107,14 @@ export default function RichTextEditor({
       <Toolbar editor={editor} />
       <div
         className={`bg-gray-100 border border-gray-300 rounded-xl p-3 sm:p-6 mt-4 h-[calc(100vh-200px)] cursor-text overflow-y-auto ${
-          disabled ? "cursor-not-allowed" : "cursor-text"
+          disabled ? 'cursor-not-allowed' : 'cursor-text'
         }`}
         onClick={handleEditorClick}
       >
         <EditorContent
           editor={editor}
           className={`text-base sm:text-lg text-gray-700 h-full ${
-            disabled ? "pointer-events-none opacity-60" : ""
+            disabled ? 'pointer-events-none opacity-60' : ''
           } editor-content`}
         />
       </div>
@@ -105,9 +129,9 @@ interface ToolbarProps {
 function Toolbar({ editor }: ToolbarProps) {
   const [videoPopupOpen, setVideoPopupOpen] = useState(false);
   const [linkPopupOpen, setLinkPopupOpen] = useState(false);
-  const [videoUrl, setVideoUrl] = useState("");
-  const [linkLabel, setLinkLabel] = useState("");
-  const [linkUrl, setLinkUrl] = useState("");
+  const [videoUrl, setVideoUrl] = useState('');
+  const [linkLabel, setLinkLabel] = useState('');
+  const [linkUrl, setLinkUrl] = useState('');
 
   const handleImageUpload = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,19 +139,33 @@ function Toolbar({ editor }: ToolbarProps) {
       if (file) {
         const fileType = file.type;
 
-        if (fileType === "image/gif") {
-          alert("GIF images are not allowed. Please upload a different image.");
+        if (fileType === 'image/gif') {
+          alert('GIF images are not allowed. Please upload a different image.');
           return;
         }
 
         const reader = new FileReader();
         reader.onload = () => {
-          const base64 = reader.result?.toString();
-          if (base64 && editor) {
-            editor.chain().focus().setImage({ src: base64 }).run();
+          if (editor) {
+            if (fileType === 'image/svg+xml') {
+              const svgContent = reader.result as string;
+              editor
+                .chain()
+                .focus()
+                .setImage({
+                  src: URL.createObjectURL(file),
+                  'data-svg-content': btoa(svgContent),
+                } as any)
+                .run();
+            } else {
+              const base64 = reader.result?.toString();
+              if (base64) {
+                editor.chain().focus().setImage({ src: base64 }).run();
+              }
+            }
           }
         };
-        reader.readAsDataURL(file);
+        reader.readAsText(file);
       }
     },
     [editor]
@@ -141,16 +179,16 @@ function Toolbar({ editor }: ToolbarProps) {
           .chain()
           .focus()
           .setYoutubeVideo({ src: `https://www.youtube.com/embed/${videoId}` })
-          .insertContent("\n    ")
+          .insertContent('\n    ')
           .run();
 
         // Move the cursor to the end of the content
-        editor.commands.focus("end");
+        editor.commands.focus('end');
 
-        setVideoUrl("");
+        setVideoUrl('');
         setVideoPopupOpen(false);
       } else {
-        alert("Invalid YouTube URL");
+        alert('Invalid YouTube URL');
       }
     }
   }, [videoUrl, editor]);
@@ -160,19 +198,19 @@ function Toolbar({ editor }: ToolbarProps) {
       editor
         .chain()
         .focus()
-        .extendMarkRange("link")
+        .extendMarkRange('link')
         .setLink({ href: linkUrl })
         .insertContent(`<a href="${linkUrl}" target="_blank">${linkLabel}</a>`)
         .run();
-      setLinkLabel("");
-      setLinkUrl("");
+      setLinkLabel('');
+      setLinkUrl('');
       setLinkPopupOpen(false);
     }
   }, [linkLabel, linkUrl, editor]);
 
   const addIndentation = useCallback(() => {
     if (editor) {
-      editor.chain().focus().insertContent("    ").run(); // Insert a tab or 4 spaces
+      editor.chain().focus().insertContent('    ').run(); // Insert a tab or 4 spaces
     }
   }, [editor]);
 
@@ -194,7 +232,7 @@ function Toolbar({ editor }: ToolbarProps) {
         size="icon"
         onClick={() => editor.chain().focus().toggleBold().run()}
         className={`p-1 sm:p-2 rounded-full ${
-          editor.isActive("bold") ? "bg-gray-300" : ""
+          editor.isActive('bold') ? 'bg-gray-300' : ''
         }`}
       >
         <Bold className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
@@ -204,7 +242,7 @@ function Toolbar({ editor }: ToolbarProps) {
         size="icon"
         onClick={() => editor.chain().focus().toggleItalic().run()}
         className={`p-1 sm:p-2 rounded-full ${
-          editor.isActive("italic") ? "bg-gray-300" : ""
+          editor.isActive('italic') ? 'bg-gray-300' : ''
         }`}
       >
         <Italic className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
@@ -214,7 +252,7 @@ function Toolbar({ editor }: ToolbarProps) {
         size="icon"
         onClick={() => editor.chain().focus().toggleUnderline().run()}
         className={`p-1 sm:p-2 rounded-full ${
-          editor.isActive("underline") ? "bg-gray-300" : ""
+          editor.isActive('underline') ? 'bg-gray-300' : ''
         }`}
       >
         <UnderlineIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
@@ -224,7 +262,7 @@ function Toolbar({ editor }: ToolbarProps) {
         size="icon"
         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
         className={`p-1 sm:p-2 rounded-full ${
-          editor.isActive("codeBlock") ? "bg-gray-300" : ""
+          editor.isActive('codeBlock') ? 'bg-gray-300' : ''
         }`}
       >
         <Code className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />

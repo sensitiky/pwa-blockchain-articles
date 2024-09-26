@@ -84,6 +84,21 @@ const EditPostPage = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      const fileType = file.type;
+
+      const supportedTypes = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+      ];
+      if (!supportedTypes.includes(fileType)) {
+        alert(
+          'Unsupported image format. Supported formats are: jpg, jpeg, webp, png.'
+        );
+        return;
+      }
+
       const imagePreviewUrl = URL.createObjectURL(file);
       setPost((prevPost) => {
         if (!prevPost) return null;
@@ -122,7 +137,13 @@ const EditPostPage = () => {
     formData.append('title', post.title);
     formData.append('content', post.content);
     formData.append('description', post.description);
-    if (post.imageUrl instanceof File) {
+    if (typeof post.imageUrl === 'string' && post.imageUrl.startsWith('<svg')) {
+      formData.append(
+        'image',
+        new Blob([post.imageUrl], { type: 'image/svg+xml' }),
+        'image.svg'
+      );
+    } else if (post.imageUrl instanceof File) {
       formData.append('image', post.imageUrl);
     }
 
@@ -139,6 +160,7 @@ const EditPostPage = () => {
       alert('Error updating post');
     }
   };
+
   const handleCloseModal = () => {
     setShowLoginCard(false);
   };
