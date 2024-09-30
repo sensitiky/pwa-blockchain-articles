@@ -13,7 +13,8 @@ if (!clientId) {
 
 export const metadata: Metadata = {
   title: 'Blogchain',
-  description: 'Developer: Mario Correa',
+  description:
+    'Blogchain is an educational space to connect web content and readers interested in blockchain technology and its adoption.',
 };
 
 export default function RootLayout({
