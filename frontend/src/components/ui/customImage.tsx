@@ -1,25 +1,32 @@
-import { Image } from '@tiptap/extension-image';
+import { Node } from '@tiptap/core';
 import { mergeAttributes } from '@tiptap/react';
 
-const CustomImage = Image.extend({
+const CustomImage = Node.create({
+  name: 'customImage',
+
+  group: 'inline',
+
+  inline: true,
+
+  draggable: true,
+
   addAttributes() {
     return {
-      ...this.parent?.(),
+      src: {
+        default: null,
+      },
       'data-svg-content': {
         default: null,
-        parseHTML: (element) => element.getAttribute('data-svg-content'),
-        renderHTML: (attributes) => {
-          const { src, 'data-svg-content': dataSvgContent } = attributes;
-          const attrs: Record<string, string> = { src };
-
-          if (dataSvgContent) {
-            attrs['data-svg-content'] = dataSvgContent;
-          }
-
-          return attrs;
-        },
       },
     };
+  },
+
+  parseHTML() {
+    return [
+      {
+        tag: 'img[src]',
+      },
+    ];
   },
 
   renderHTML({ HTMLAttributes }) {

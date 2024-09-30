@@ -1,13 +1,7 @@
 'use client';
 import { useState, useCallback, useEffect } from 'react';
-import {
-  useEditor,
-  EditorContent,
-  Editor,
-  mergeAttributes,
-} from '@tiptap/react';
+import { useEditor, EditorContent, Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import Link from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
@@ -25,19 +19,13 @@ import {
 } from 'lucide-react';
 import { AiOutlinePicture, AiOutlineVideoCamera } from 'react-icons/ai';
 import YouTube from '@tiptap/extension-youtube';
-import { ImageOptions } from '@tiptap/extension-image';
+import Image from '@tiptap/extension-image';
 import CustomImage from './customImage';
 
 interface RichTextEditorProps {
   onChange: (content: string) => void;
   disabled?: boolean;
   value?: string;
-}
-
-interface ExtendedImageOptions extends ImageOptions {
-  HTMLAttributes: {
-    'data-svg-content'?: string;
-  };
 }
 
 export default function RichTextEditor({
@@ -53,6 +41,7 @@ export default function RichTextEditor({
       }),
       BulletList,
       ListItem,
+      Image,
       CustomImage,
       Placeholder.configure({
         placeholder: 'Introduce your story ...',
@@ -145,7 +134,7 @@ function Toolbar({ editor }: ToolbarProps) {
             }
           }
         };
-        reader.readAsDataURL(file); // Use readAsDataURL for all image types
+        reader.readAsDataURL(file);
       }
     },
     [editor]
