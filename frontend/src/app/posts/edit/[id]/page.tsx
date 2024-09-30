@@ -14,6 +14,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import RichTextEditor from '@/components/ui/texteditor';
 import { EditPostDto } from '@/interfaces/interfaces';
 import LoginCard from '@/assets/login';
+
 const Container = styled.div`
   display: flex;
   justify-content: center;
@@ -38,6 +39,7 @@ const EditPostPage = () => {
     try {
       const response = await axios.get(`${API_URL}/posts/${id}`);
       const postData = response.data;
+      console.log(postData.description);
       setPost({
         title: postData.title,
         content: postData.content,
@@ -164,6 +166,14 @@ const EditPostPage = () => {
   const handleCloseModal = () => {
     setShowLoginCard(false);
   };
+
+  const renderDescription = (description: string) => {
+    const decodedDescription = description
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>');
+    return { __html: decodedDescription };
+  };
+
   if (loading) {
     return (
       <div>
@@ -235,7 +245,6 @@ const EditPostPage = () => {
                 className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-[#000916] file:text-white hover:file:bg-[#000916]/80"
               />
             </div>
-            <div></div>
             {post.imagePreviewUrl && (
               <div className="m-6 rounded-lg overflow-hidden">
                 <Image

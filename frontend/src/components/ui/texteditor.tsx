@@ -1,6 +1,11 @@
 'use client';
 import { useState, useCallback, useEffect } from 'react';
-import { useEditor, EditorContent, Editor } from '@tiptap/react';
+import {
+  useEditor,
+  EditorContent,
+  Editor,
+  mergeAttributes,
+} from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
@@ -21,35 +26,19 @@ import {
 import { AiOutlinePicture, AiOutlineVideoCamera } from 'react-icons/ai';
 import YouTube from '@tiptap/extension-youtube';
 import { ImageOptions } from '@tiptap/extension-image';
+import CustomImage from './customImage';
 
 interface RichTextEditorProps {
   onChange: (content: string) => void;
   disabled?: boolean;
   value?: string;
 }
+
 interface ExtendedImageOptions extends ImageOptions {
   HTMLAttributes: {
     'data-svg-content'?: string;
   };
 }
-const CustomImage = Image.extend<ExtendedImageOptions>({
-  addAttributes() {
-    return {
-      ...this.parent?.(),
-      'data-svg-content': {
-        default: null,
-        parseHTML: (element) => element.getAttribute('data-svg-content'),
-        renderHTML: (attributes) => {
-          if (attributes['data-svg-content']) {
-            return {
-              'data-svg-content': attributes['data-svg-content'],
-            };
-          }
-        },
-      },
-    };
-  },
-});
 
 export default function RichTextEditor({
   onChange,
@@ -79,8 +68,11 @@ export default function RichTextEditor({
       Underline,
       YouTube,
     ],
-    editable: !disabled,
     content: value,
+    editable: !disabled,
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+    },
   });
 
   useEffect(() => {
@@ -147,25 +139,13 @@ function Toolbar({ editor }: ToolbarProps) {
         const reader = new FileReader();
         reader.onload = () => {
           if (editor) {
-            if (fileType === 'image/svg+xml') {
-              const svgContent = reader.result as string;
-              editor
-                .chain()
-                .focus()
-                .setImage({
-                  src: URL.createObjectURL(file),
-                  'data-svg-content': btoa(svgContent),
-                } as any)
-                .run();
-            } else {
-              const base64 = reader.result?.toString();
-              if (base64) {
-                editor.chain().focus().setImage({ src: base64 }).run();
-              }
+            const base64 = reader.result?.toString();
+            if (base64) {
+              editor.chain().focus().setImage({ src: base64 }).run();
             }
           }
         };
-        reader.readAsText(file);
+        reader.readAsDataURL(file); // Use readAsDataURL for all image types
       }
     },
     [editor]
@@ -182,7 +162,6 @@ function Toolbar({ editor }: ToolbarProps) {
           .insertContent('\n    ')
           .run();
 
-        // Move the cursor to the end of the content
         editor.commands.focus('end');
 
         setVideoUrl('');
