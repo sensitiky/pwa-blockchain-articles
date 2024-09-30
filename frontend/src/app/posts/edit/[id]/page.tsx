@@ -39,7 +39,7 @@ const EditPostPage = () => {
     try {
       const response = await axios.get(`${API_URL}/posts/${id}`);
       const postData = response.data;
-      console.log(postData.description);
+      // console.log(postData.description);
       setPost({
         title: postData.title,
         content: postData.content,
