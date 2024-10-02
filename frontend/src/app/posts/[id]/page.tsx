@@ -16,6 +16,9 @@ import {
   FaTrash,
   FaInstagram,
   FaMedium,
+  FaShare,
+  FaComment,
+  FaBookmark,
 } from 'react-icons/fa';
 import { ArrowLeftIcon } from 'lucide-react';
 import { useAuth } from '../../../../context/authContext';
@@ -23,6 +26,7 @@ import DeletePostModal from '@/assets/deletepost';
 import styled from 'styled-components';
 import parse, { DOMNode, domToReact, Element } from 'html-react-parser';
 import LoginCard from '@/assets/login';
+import ShareBar from '@/components/ui/sharebar';
 
 const Container = styled.div`
   display: flex;
@@ -95,17 +99,7 @@ const PostPage = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
-  const [favorites, setFavorites] = useState<
-    {
-      id: number;
-      imageUrlBase64: string | null;
-      title: string;
-      author: string;
-      description: string;
-      comments: { id: number; content: string }[];
-      createdAt: Date;
-    }[]
-  >([]);
+  const [showShareBar, setShowShareBar] = useState(false);
   const router = useRouter();
   const { id } = useParams();
 
@@ -346,6 +340,10 @@ const PostPage = () => {
     );
   };
 
+  const handleShare = () => {
+    setShowShareBar((prev) => !prev);
+  };
+
   const avatarUrl = post?.author?.avatar
     ? post.author.avatar.startsWith('http')
       ? post.author.avatar
@@ -558,34 +556,23 @@ const PostPage = () => {
                   Item bookmarked successfully!
                 </div>
               )}
-              <svg
-                width="1.5rem"
-                height="1.5rem"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g id="SVGRepo_bgCarrier" stroke-width="0" />
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <g id="SVGRepo_iconCarrier">
-                  <path
-                    d="M19 19.2674V7.84496C19 5.64147 17.4253 3.74489 15.2391 3.31522C13.1006 2.89493 10.8994 2.89493 8.76089 3.31522C6.57467 3.74489 5 5.64147 5 7.84496V19.2674C5 20.6038 6.46752 21.4355 7.63416 20.7604L10.8211 18.9159C11.5492 18.4945 12.4508 18.4945 13.1789 18.9159L16.3658 20.7604C17.5325 21.4355 19 20.6038 19 19.2674Z"
-                    stroke={isSaved ? '#007BFF' : '#6b7280'}
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </g>
-              </svg>
+              <FaBookmark
+                className={`size-5 ${
+                  isSaved ? 'text-[#007BFF]' : 'text-gray-500'
+                }`}
+              />
             </button>
             <div className="w-fit flex items-center space-x-1 text-gray-500">
-              <img src="/comment.png" alt="Comment" className="w-5 h-5" />
-              <span>{post.commentscount || 0}</span>
+              <FaComment className="size-5" />
             </div>
+            <div className="w-fit flex items-center space-x-1 text-gray-500">
+              <button onClick={handleShare}>
+                <FaShare className="size-5" />
+              </button>
+            </div>
+          </div>
+          <div className="w-fit justify-start mt-2">
+            {showShareBar && <ShareBar postUrl={window.location.href} />}
           </div>
           <div className="flex w-full justify-center">
             <div className="mt-20 w-[30rem] justify-center bg-[#000916]/20 h-[0.1rem]"></div>

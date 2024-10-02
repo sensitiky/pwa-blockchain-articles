@@ -155,7 +155,7 @@ const ProfileSettings: React.FC = () => {
   };
 
   const handleBioSave = async (): Promise<boolean> => {
-    const validBioPattern = /^[a-zA-Z0-9\s.,!?'"\-_:\/?&=]*$/;
+    const validBioPattern = /^[a-zA-Z0-9\s.,!?'"´\-_:\/?&=áéíóúÁÉÍÓÚñÑüÜ]*$/;
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('No token found');

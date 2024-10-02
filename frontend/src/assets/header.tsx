@@ -30,10 +30,15 @@ import Search from '@/utils/svg';
 interface SearchResult {
   id: string;
   title?: string;
-  imageUrl: { type: string; data: number[] } | null;
-  imageUrlBase64: string;
+  imageUrl?: { type: string; data: number[] } | null;
+  imageUrlBase64?: string;
   name?: string;
   description?: string;
+  avatar?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  user?: string;
 }
 
 const Header = () => {
@@ -84,7 +89,7 @@ const Header = () => {
         });
 
         setResults(resultsWithBase64Images);
-        // console.log(resultsWithBase64Images);
+        console.log(resultsWithBase64Images);
       } else {
         console.error('Unexpected response format:', response.data);
         setResults([]);
@@ -187,7 +192,7 @@ const Header = () => {
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="py-2 pl-10 pr-4 w-[25rem] text-sm text-gray-900 bg-[#01132D] rounded-full shadow transition-all duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-blue-500 focus:scale-105"
+              className="py-2 pl-10 pr-4 w-[25rem] text-sm text-white bg-[#01132D] rounded-full shadow transition-all duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-blue-500 focus:scale-105"
               placeholder="Search"
             />
             {loading && (
@@ -198,6 +203,7 @@ const Header = () => {
                 <CircularProgress />
               </div>
             )}
+            {/*Result of the query */}
             {results.length > 0 && (
               <div
                 id="results-dropdown"
@@ -209,39 +215,73 @@ const Header = () => {
                     className="p-2 border-b last:border-0 cursor-pointer hover:bg-gray-200 flex h-full"
                     onClick={() => handleResultClick(result.id)}
                   >
-                    <div>
-                      <div className="font-semibold">
-                        {result.title || result.name}
-                      </div>
-                      {result.imageUrlBase64 ? (
-                        <div className="w-full h-fit">
-                          <Image
-                            src={result.imageUrlBase64}
-                            alt="Post Image"
-                            width={1920}
-                            height={1080}
-                            layout="responsive"
-                            objectFit="contain"
-                            loading="lazy"
+                    {result.avatar ? (
+                      // User result
+                      <div className="flex items-center">
+                        <Avatar className="rounded-full cursor-pointer shadow-md transition-transform duration-300 hover:scale-105">
+                          <AvatarImage
+                            src={result.avatar}
+                            alt={`${result.user}'s avatar`}
                           />
+                          <AvatarFallback>{result.user}</AvatarFallback>
+                        </Avatar>
+                        <div className="ml-4">
+                          <div className="font-semibold text-black">
+                            {result.user}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {result.email}
+                          </div>
                         </div>
-                      ) : (
-                        <div className="w-full h-48 bg-gray-200 rounded-lg"></div>
-                      )}
-                      <div
-                        className="text-sm text-gray-600 line-clamp-2"
-                        dangerouslySetInnerHTML={{
-                          __html: DOMPurify.sanitize(result.description ?? '', {
-                            ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p'],
-                            ALLOWED_ATTR: ['href'],
-                          }),
-                        }}
-                      ></div>
-                    </div>
+                      </div>
+                    ) : (
+                      // Article result
+                      <div>
+                        <div className="font-semibold text-black">
+                          {result.title || result.name}
+                        </div>
+                        {result.imageUrlBase64 ? (
+                          <div className="w-full h-fit">
+                            <Image
+                              src={result.imageUrlBase64}
+                              alt="Post Image"
+                              width={1920}
+                              height={1080}
+                              layout="responsive"
+                              objectFit="contain"
+                              loading="lazy"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-full h-48 bg-gray-200 rounded-lg"></div>
+                        )}
+                        <div
+                          className="text-sm text-gray-600 line-clamp-2"
+                          dangerouslySetInnerHTML={{
+                            __html: DOMPurify.sanitize(
+                              result.description ?? '',
+                              {
+                                ALLOWED_TAGS: [
+                                  'b',
+                                  'i',
+                                  'em',
+                                  'strong',
+                                  'a',
+                                  'p',
+                                ],
+                                ALLOWED_ATTR: ['href'],
+                              }
+                            ),
+                          }}
+                        ></div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
             )}
+
+            {/*End of query UI*/}
           </div>
 
           <style jsx>{`
@@ -293,12 +333,6 @@ const Header = () => {
             id="nav"
             className="space-x-4 flex items-center p-4 bg-inherit rounded-full font-normal text-[1rem]"
           >
-            <Link
-              href="/"
-              className="text-white hover:text-white/80 transition-colors duration-300"
-            >
-              Home
-            </Link>
             <Link
               href="/articles"
               className="text-white hover:text-white/80 transition-colors duration-300"
