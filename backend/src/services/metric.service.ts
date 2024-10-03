@@ -10,9 +10,11 @@ export class MetricService {
   private mixpanel: Mixpanel.Mixpanel;
 
   constructor(
+    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => PostsService))
     private readonly postsService: PostsService,
+    @Inject(forwardRef(() => FavoritesService))
     private readonly favoritesService: FavoritesService,
     private readonly userActivityService: UserActivityService,
   ) {

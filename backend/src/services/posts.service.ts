@@ -116,16 +116,18 @@ export class PostsService {
 
       //Log the event with Mixpanel
       console.log('Post Created', {
-        distinct_id: post.id,
-        title: post.title,
-        author: author.id,
+        postID: post.id,
+        postTitle: post.title,
+        authorID: author.id,
+        authorName: author.user,
       });
 
       //Track event with Mixpanel
       await this.metricService.trackEvent('Post Created', {
-        distinct_id: post.id,
-        title: post.title,
-        author: author.id,
+        postID: post.id,
+        postTitle: post.title,
+        authorID: author.id,
+        authorName: author.user,
       });
 
       return post;
@@ -176,14 +178,39 @@ export class PostsService {
     }
 
     console.log(`Post found: ${post.title}`);
-    await Promise.all([
-      this.commentsRepository.delete({ post: { id: postId } }),
-      this.favoritesRepository.delete({ post: { id: postId } }),
-      this.postsRepository.remove(post),
-      this.usersRepository.decrement({ id: post.author.id }, 'postCount', 1),
-    ]);
+    //Delete comments
+    await this.commentsRepository.delete({ post: { id: postId } });
 
-    console.log(`Post with ID: ${postId} deleted successfully`);
+    //Delete saved
+    await this.favoritesRepository.delete({ post: { id: postId } });
+
+    // Delete the post
+    await this.postsRepository.remove(post);
+
+    // Downgrade the post counter only god and i know how this works and even i dont know how this works :(
+    await this.usersRepository.decrement(
+      { id: post.author.id },
+      'postCount',
+      1,
+    );
+
+    console.log(`Post deleted ID: ${postId} title ${post.title}`, {
+      postID: postId,
+      title: post.title,
+      authorID: post.author.id,
+      authorUsername: post.author.user,
+    });
+
+    await this.metricService.trackEvent(
+      `Post deleted ID: ${postId} title ${post.title}`,
+      {
+        postID: postId,
+        title: post.title,
+        authorID: post.author.id,
+        authorUsername: post.author.user,
+      },
+    );
+
     await this.invalidateCache();
   }
 
@@ -320,7 +347,18 @@ export class PostsService {
         const mimeType = isGif ? 'image/gif' : 'image/jpeg';
         post.imageUrlBase64 = `data:${mimeType};base64,${post.imageUrl.toString('base64')}`;
       }
-
+      console.log(`Post open. ID: ${id} title: ${post.title}`, {
+        postID: post.id,
+        title: post.title,
+        authorID: post.author.id,
+        authorUsername: post.author.user,
+      });
+      await this.metricService.trackEvent(`Post open ${id}`, {
+        postID: post.id,
+        title: post.title,
+        authorID: post.author.id,
+        authorUsername: post.author.user,
+      });
       return post;
     });
   }

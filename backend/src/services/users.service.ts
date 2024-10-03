@@ -3,9 +3,10 @@ import {
   NotFoundException,
   InternalServerErrorException,
   Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Like, MoreThan, Not, Repository } from 'typeorm';
+import { Like, MoreThan, Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { CreateUserDto, UserDto } from '../dto/user.dto';
 import { Post } from '../entities/post.entity';
@@ -15,6 +16,7 @@ import { IUserActivityService } from '../auth/user-activity.interface';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
+import { MetricService } from './metric.service';
 
 @Injectable()
 export class UsersService implements IUserActivityService {
@@ -29,6 +31,8 @@ export class UsersService implements IUserActivityService {
     private commentRepository: Repository<Comment>,
     @InjectRepository(Favorite)
     private favoriteRepository: Repository<Favorite>,
+    @Inject(forwardRef(() => MetricService))
+    private metricService: MetricService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private configService: ConfigService,
   ) {
@@ -235,7 +239,16 @@ export class UsersService implements IUserActivityService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.userRepository.create(createUserDto);
-    return this.userRepository.save(user);
+    const savedUser = await this.userRepository.save(user);
+    console.log('User Registered', {
+      distinct_id: savedUser.id,
+      email: savedUser.email,
+    });
+    await this.metricService.trackEvent('User Registered', {
+      distinct_id: savedUser.id,
+      email: savedUser.email,
+    });
+    return savedUser;
   }
 
   async findByEmail(email: string): Promise<User | undefined> {

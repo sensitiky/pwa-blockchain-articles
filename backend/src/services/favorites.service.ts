@@ -57,18 +57,20 @@ export class FavoritesService {
 
     // Log the event data
     console.log('Tracking Favorite Created event:', {
-      distinct_id: favorite.id,
+      favoriteID: favorite.id,
       user: user.id,
+      userUsername: user.user,
       post: post ? post.id : null,
-      comment: comment ? comment.id : null,
+      postTitle: post ? post.title : null,
     });
 
     // Track event with Mixpanel
     await this.metricService.trackEvent('Favorite Created', {
-      distinct_id: favorite.id,
+      favoriteID: favorite.id,
       user: user.id,
+      userUsername: user.user,
       post: post ? post.id : null,
-      comment: comment ? comment.id : null,
+      postTitle: post ? post.title : null,
     });
 
     return favorite;
@@ -94,7 +96,18 @@ export class FavoritesService {
       },
       relations: ['post', 'comment'],
     });
-
+    let post = null;
+    if (postId) {
+      post = await this.postsRepository.findOne({
+        where: { id: postId },
+      });
+    }
+    let user = null;
+    if (userId) {
+      user = await this.usersRepository.findOne({
+        where: { id: userId },
+      });
+    }
     if (!favorite) {
       throw new NotFoundException('Favorite not found');
     }
@@ -103,18 +116,19 @@ export class FavoritesService {
 
     // Log the event data
     console.log('Tracking Favorite Removed event:', {
-      distinct_id: favorite.id,
-      user: userId,
+      favoriteID: favorite.id,
+      userID: userId,
+      username: user.user,
       post: postId,
-      comment: commentId,
+      posTitle: post ? post.title : null,
     });
 
     // Track event with Mixpanel
     await this.metricService.trackEvent('Favorite Removed', {
-      distinct_id: favorite.id,
+      favoriteID: favorite.id,
       user: userId,
       post: postId,
-      comment: commentId,
+      posTitle: post ? post.title : null,
     });
   }
 

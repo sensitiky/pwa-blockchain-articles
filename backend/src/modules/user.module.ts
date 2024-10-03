@@ -8,12 +8,14 @@ import { Post } from '../entities/post.entity';
 import { Comment } from '../entities/comment.entity';
 import { Favorite } from '../entities/favorite.entity';
 import { AuthModule } from './auth.module';
+import { MetricModule } from './metric.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Post, Comment, Favorite]),
     CacheModule.register(),
     forwardRef(() => AuthModule),
+    forwardRef(() => MetricModule),
   ],
   controllers: [UsersController],
   providers: [
