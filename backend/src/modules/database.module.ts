@@ -41,7 +41,7 @@ import { FavoriteSubscriber } from '../services/listenerFavorites.service';
           database: dbName,
           entities: [User, Post, Comment, Category, Tag, Favorite],
           synchronize: true,
-          logging: true,
+          logging: false,
           // Fix for SSL connection must be removed in development
           subscribers: [CommentSubscriber, FavoriteSubscriber],
         };

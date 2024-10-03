@@ -39,6 +39,7 @@ interface SearchResult {
   firstName?: string;
   lastName?: string;
   user?: string;
+  type?: string;
 }
 
 const Header = () => {
@@ -70,8 +71,11 @@ const Header = () => {
   const performSearch = async (searchQuery: string) => {
     setLoading(true);
     try {
-      const fullUrl = `${API_URL}/search?q=${encodeURIComponent(searchQuery)}`;
-
+      const normalizedQuery = searchQuery.toLowerCase();
+      const fullUrl = `${API_URL}/search?q=${encodeURIComponent(
+        normalizedQuery
+      )}`;
+      console.log(fullUrl);
       const response = await axios.get<SearchResult[]>(fullUrl, {
         headers: { 'Cache-Control': 'no-cache' },
       });
@@ -102,8 +106,12 @@ const Header = () => {
     }
   };
 
-  const handleResultClick = (id: string) => {
-    router.push(`/posts/${id}`);
+  const handleResultClick = (id: string, type: string) => {
+    if (type === 'user') {
+      router.push(`/users/${id}`);
+    } else if (type === 'post') {
+      router.push(`/posts/${id}`);
+    }
     setResults([]);
     setQuery('');
   };
@@ -213,7 +221,9 @@ const Header = () => {
                   <div
                     key={result.id}
                     className="p-2 border-b last:border-0 cursor-pointer hover:bg-gray-200 flex h-full"
-                    onClick={() => handleResultClick(result.id)}
+                    onClick={() =>
+                      handleResultClick(result.id, result.type || 'post')
+                    }
                   >
                     {result.avatar ? (
                       // User result
@@ -236,24 +246,24 @@ const Header = () => {
                       </div>
                     ) : (
                       // Article result
-                      <div>
-                        <div className="font-semibold text-black">
-                          {result.title || result.name}
+                      <div className="w-full p-4 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow duration-300 ease-in-out cursor-pointer">
+                        <div className="flex items-center mb-4">
+                          <div className="font-semibold text-lg text-black">
+                            {result.title || result.name}
+                          </div>
                         </div>
                         {result.imageUrlBase64 ? (
-                          <div className="w-full h-fit">
-                            <Image
-                              src={result.imageUrlBase64}
-                              alt="Post Image"
-                              width={1920}
-                              height={1080}
-                              layout="responsive"
-                              objectFit="contain"
-                              loading="lazy"
-                            />
-                          </div>
+                          <Image
+                            src={result.imageUrlBase64}
+                            alt="Post Image"
+                            width={1920}
+                            height={1080}
+                            objectFit="cover"
+                            className="rounded-lg w-full h-48"
+                            loading="lazy"
+                          />
                         ) : (
-                          <div className="w-full h-48 bg-gray-200 rounded-lg"></div>
+                          <div className="w-full h-48 bg-gray-200 rounded-lg mb-4"></div>
                         )}
                         <div
                           className="text-sm text-gray-600 line-clamp-2"

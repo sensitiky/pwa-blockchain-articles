@@ -10,8 +10,8 @@ export class SearchController {
     if (!query) {
       return { message: 'Query parameter "q" is required.' };
     }
-
-    const results = await this.searchService.search(query, type);
+    const normalizedQuery = query.toLowerCase();
+    const results = await this.searchService.search(normalizedQuery, type);
     return results;
   }
 
@@ -20,7 +20,6 @@ export class SearchController {
     if (!id) {
       return { message: 'ID parameter is required.' };
     }
-
     const result = await this.searchService.searchById(id);
     if (!result) {
       return { message: 'No result found for the given ID.' };

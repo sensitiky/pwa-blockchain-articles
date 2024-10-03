@@ -214,11 +214,13 @@ export class UsersService implements IUserActivityService {
       return cachedResult;
     }
 
-    const users = await this.userRepository.find({
-      where: { user: Like(`%${query}%`) },
-    });
+    const normalizedQuery = `%${query.toLowerCase()}%`;
+    const users = await this.userRepository.query(
+      `SELECT * FROM "user" WHERE LOWER(user) LIKE $1 OR LOWER("email") LIKE $1`,
+      [normalizedQuery],
+    );
 
-    await this.redisCache.set(cacheKey, users, 1800); // Cache for 30 minutes
+    await this.redisCache.set(cacheKey, users, 1800);
 
     return users;
   }

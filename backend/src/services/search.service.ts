@@ -11,15 +11,18 @@ export class SearchService {
 
   async search(query: string, type: string) {
     let results = [];
+    const normalizedQuery = query.toLowerCase();
 
     if (type === 'posts' || type === 'all') {
-      const posts = await this.postsService.searchPosts(query);
-      results = results.concat(posts);
+      const posts = await this.postsService.searchPosts(normalizedQuery);
+      const postsWithType = posts.map((post) => ({ ...post, type: 'post' }));
+      results = results.concat(postsWithType);
     }
 
     if (type === 'users' || type === 'all') {
-      const users = await this.usersService.searchUsers(query);
-      results = results.concat(users);
+      const users = await this.usersService.searchUsers(normalizedQuery);
+      const usersWithType = users.map((user) => ({ ...user, type: 'user' }));
+      results = results.concat(usersWithType);
     }
 
     return results;

@@ -365,9 +365,11 @@ export class PostsService {
 
   async searchPosts(query: string): Promise<Post[]> {
     return this.getCachedData(`posts:search:${query}`, () =>
-      this.postsRepository.find({
-        where: { title: `LIKE '%${query}%'` },
-      }),
+      this.postsRepository
+        .createQueryBuilder('post')
+        .where('LOWER(post.title) LIKE :query', { query: `%${query}%` })
+        .orWhere('LOWER(post.content) LIKE :query', { query: `%${query}%` })
+        .getMany(),
     );
   }
 

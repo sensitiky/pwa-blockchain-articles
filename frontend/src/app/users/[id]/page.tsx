@@ -1,32 +1,32 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState, Suspense } from "react";
-import axios from "axios";
-import Link from "next/link";
-import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
-import DOMPurify from "dompurify";
+import React, { useEffect, useState, Suspense } from 'react';
+import axios from 'axios';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
+import DOMPurify from 'dompurify';
 import {
   FaFacebook,
   FaHeart,
   FaInstagram,
   FaLinkedin,
   FaTwitter,
-} from "react-icons/fa";
+} from 'react-icons/fa';
 import {
   ArrowLeftIcon,
   ClockIcon,
   MessageCircleIcon,
   TagIcon,
   UserIcon,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import Header from "@/assets/header";
-import Footer from "@/assets/footer";
-import LoginCard from "@/assets/login";
-import { User, Post } from "@/interfaces/interfaces2";
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import Header from '@/assets/header';
+import Footer from '@/assets/footer';
+import LoginCard from '@/assets/login';
+import { User, Post } from '@/interfaces/interfaces2';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 
@@ -60,8 +60,8 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
 
   const convertImageBuffersToBase64 = (posts: Post[]) => {
     return posts.map((post) => {
-      if (post.imageUrl?.type === "Buffer") {
-        const base64String = Buffer.from(post.imageUrl.data).toString("base64");
+      if (post.imageUrl?.type === 'Buffer') {
+        const base64String = Buffer.from(post.imageUrl.data).toString('base64');
         post.imageUrlBase64 = `data:image/jpeg;base64,${base64String}`;
       }
       return post;
@@ -70,11 +70,11 @@ const UserContent: React.FC<{ userId: string }> = ({ userId }) => {
 
   const handleFetchError = (err: unknown) => {
     if (axios.isAxiosError(err)) {
-      console.error("Error fetching user data:", err.message);
-      setError("Failed to load data");
+      console.error('Error fetching user data:', err.message);
+      setError('Failed to load data');
     } else {
-      console.error("Unknown error:", err);
-      setError("An unknown error occurred");
+      console.error('Unknown error:', err);
+      setError('An unknown error occurred');
     }
   };
 
@@ -107,23 +107,28 @@ const LoadingSpinner: React.FC = () => (
 const ErrorMessage: React.FC<{ message: string }> = ({ message }) => (
   <div className="text-red-500">{message}</div>
 );
-
 const UserProfile: React.FC<{ user: User | null; router: any }> = ({
   user,
   router,
-}) => (
-  <div className="rounded-2xl p-6 flex flex-col items-center gap-4 col-span-1 bg-inherit mt-2">
-    <BackButton onClick={() => router.back()} />
-    <Avatar className="w-32 h-32 border-4 border-gray-300">
-      <AvatarImage
-        src={user?.avatar ? `${API_URL}${user.avatar}` : "/default-avatar.webp"}
-      />
-      <AvatarFallback>{user?.user}</AvatarFallback>
-    </Avatar>
-    <UserInfo user={user} />
-    <SocialLinks user={user} />
-  </div>
-);
+}) => {
+  const avatarUrl = user?.avatar
+    ? user.avatar.startsWith('http')
+      ? user.avatar
+      : `${API_URL}${user.avatar}`
+    : 'default-avatar.webp';
+
+  return (
+    <div className="rounded-2xl p-6 flex flex-col items-center gap-4 col-span-1 bg-inherit mt-2">
+      <BackButton onClick={() => router.back()} />
+      <Avatar className="w-32 h-32 border-4 border-gray-300">
+        <AvatarImage src={avatarUrl} />
+        <AvatarFallback>{user?.user}</AvatarFallback>
+      </Avatar>
+      <UserInfo user={user} />
+      <SocialLinks user={user} />
+    </div>
+  );
+};
 
 const BackButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   <button
@@ -140,8 +145,8 @@ const UserInfo: React.FC<{ user: User | null }> = ({ user }) => (
     <h2 className="text-2xl font-bold">{user?.user}</h2>
     <p
       className="text-gray-600 text-lg leading-relaxed text-left"
-      style={{ whiteSpace: "pre-wrap" }}
-      dangerouslySetInnerHTML={{ __html: formatBio(user?.bio ?? "") }}
+      style={{ whiteSpace: 'pre-wrap' }}
+      dangerouslySetInnerHTML={{ __html: formatBio(user?.bio ?? '') }}
     />
   </div>
 );
@@ -256,8 +261,8 @@ const PostDescription: React.FC<{ description: string }> = ({
     className="text-muted-foreground line-clamp-2"
     dangerouslySetInnerHTML={{
       __html: DOMPurify.sanitize(description, {
-        ALLOWED_TAGS: ["b", "i", "em", "strong", "a", "p"],
-        ALLOWED_ATTR: ["href"],
+        ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p'],
+        ALLOWED_ATTR: ['href'],
       }),
     }}
   />
@@ -296,13 +301,13 @@ const formatBio = (bioText: string) => {
   let formattedText = bioText.replace(
     urlRegex,
     (url) =>
-      `<a href="${url}" style="color: blue;" target="_blank" rel="noopener noreferrer">${url}</a>`,
+      `<a href="${url}" style="color: blue;" target="_blank" rel="noopener noreferrer">${url}</a>`
   );
   formattedText = formattedText.replace(
     /\n/g,
-    '<br style="margin-bottom: 1rem;">',
+    '<br style="margin-bottom: 1rem;">'
   );
-  return formattedText.replace(/\t/g, "&emsp;");
+  return formattedText.replace(/\t/g, '&emsp;');
 };
 
 const Owner: React.FC = () => {
