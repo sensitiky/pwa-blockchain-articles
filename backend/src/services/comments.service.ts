@@ -52,9 +52,8 @@ export class CommentsService {
       post_id: post ? post.id : null,
       user_ID: 'user_' + author.id,
       username: author.user,
-      commentContent: savedComment.content,
       timestamp: timestamp,
-      commentary: comment.content,
+      commentContent: savedComment.content,
       commentLength: commentLength,
     });
 
