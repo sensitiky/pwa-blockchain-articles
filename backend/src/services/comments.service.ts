@@ -1,4 +1,10 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Comment } from '../entities/comment.entity';
@@ -6,7 +12,6 @@ import { CreateCommentDto } from 'src/dto/comment.dto';
 import { User } from '../entities/user.entity';
 import { Post } from '../entities/post.entity';
 import { MetricService } from './metric.service';
-import { timeStamp } from 'console';
 
 @Injectable()
 export class CommentsService {
@@ -41,33 +46,65 @@ export class CommentsService {
       replies: [],
     });
 
-    // Guardar el comentario para obtener el ID generado
     const savedComment = await this.commentsRepository.save(comment);
 
     const timestamp = new Date().toISOString();
     const commentLength = savedComment.content.length;
 
     console.log('Comment created', {
-      comment_id: savedComment.id,
-      post_id: post ? post.id : null,
-      user_ID: 'user_' + author.id,
+      comment_id: 'comment_' + savedComment.id,
+      post_id: 'post_' + post ? post.id : null,
+      user_id: 'user_' + author.id,
       username: author.user,
       timestamp: timestamp,
-      commentContent: savedComment.content,
-      commentLength: commentLength,
+      comment_content: savedComment.content,
+      comment_length: commentLength,
     });
 
     await this.metricService.trackEvent('Comment Created', {
-      comment_id: savedComment.id,
-      post_id: post ? post.id : null,
-      user_ID: 'user_' + author.id,
+      comment_id: 'comment_' + savedComment.id,
+      post_id: 'post_' + post ? post.id : null,
+      user_id: 'user_' + author.id,
       username: author.user,
       timestamp: timestamp,
-      commentContent: savedComment.content,
-      commentLength: commentLength,
+      comment_content: savedComment.content,
+      comment_length: commentLength,
     });
 
     return savedComment;
+  }
+
+  async delete(commentId: number, userId: number): Promise<void> {
+    const comment = await this.commentsRepository.findOne({
+      where: { id: commentId },
+      relations: ['author'],
+    });
+
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
+    }
+
+    if (comment.author.id !== userId) {
+      throw new ForbiddenException(
+        'You are not allowed to delete this comment',
+      );
+    }
+
+    await this.commentsRepository.remove(comment);
+
+    const timestamp = new Date().toISOString();
+
+    console.log('Comment removed', {
+      comment_id: comment.id,
+      user_id: 'user_' + userId,
+      timestamp: timestamp,
+    });
+
+    await this.metricService.trackEvent('Comment Removed', {
+      comment_id: 'comment_' + comment.id,
+      user_id: 'user_' + userId,
+      timestamp: timestamp,
+    });
   }
 
   async findAllByPost(postId: number): Promise<Comment[]> {

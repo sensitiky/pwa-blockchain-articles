@@ -305,12 +305,12 @@ export class UsersService implements IUserActivityService {
     const timestamp = new Date().toISOString();
     const updatedFields = Object.keys(updateData);
     await this.metricService.trackEvent('User Profile Updated', {
-      user_id: userId,
+      user_id: 'user_' + userId,
       timestamp: timestamp,
       updated_fields: updatedFields,
     });
     console.log('User Profile Updated Event Tracked', {
-      user_id: userId,
+      user_id: 'user_' + userId,
       timestamp: timestamp,
       updated_fields: updatedFields,
     });
