@@ -54,6 +54,15 @@ export class AuthService {
       this.logger.log(`Password valid: ${isPasswordValid}`);
       if (isPasswordValid) {
         const { password, ...result } = user;
+        await this.registerUser(
+          {
+            ...result,
+            nombre: result.firstName + ' ' + result.lastName,
+            password: '',
+            verificationCode: '',
+          },
+          'email/password',
+        );
         return result;
       }
     }
@@ -76,38 +85,51 @@ export class AuthService {
     }
   }
 
-  async registerUser(createUserDto: CreateUserDto): Promise<UserDto> {
-    await this.checkUser(createUserDto);
+  async registerUser(
+    userDetails: CreateUserDto,
+    type: string,
+  ): Promise<UserDto> {
+    let user = await this.usersService.findByEmail(userDetails.email);
 
-    if (!this.validatePassword(createUserDto.password)) {
-      throw new ConflictException('Password does not meet the criteria');
+    if (!user) {
+      user = await this.usersService.create(userDetails);
+      user.postCount = user.posts ? user.posts.length : 0;
+    } else {
+      user.postCount = user.posts ? user.posts.length : 0;
     }
 
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
-    createUserDto.password = hashedPassword;
+    const userDto = this.usersService.transformToDto(user);
+    const timestamp = new Date().toISOString();
 
-    const newUser = await this.usersService.create(createUserDto);
-    newUser.postCount = newUser.posts ? newUser.posts.length : 0;
+    console.log('User DTO:', userDto);
+    console.log('Timestamp:', timestamp);
 
-    //Log the event with Mixpanel
-    await this.metricService.trackEvent('User Registered', {
-      distinct_id: newUser.id,
-      email: newUser.email,
+    console.log(
+      `User Registered with ${type} ID: ${userDto.id} Email: ${userDto.email}`,
+      { userID: userDto.id, email: userDto.email, timestamp: timestamp },
+    );
+
+    await this.metricService.trackEvent(
+      `User Registered with ${type} ID: ${userDto.id} Email: ${userDto.email}`,
+      {
+        userID: userDto.id,
+        email: userDto.email,
+        timestamp: timestamp,
+        registrationType: type,
+      },
+    );
+
+    // Set user properties
+    await this.metricService.setUserProperties(userDto.id.toString(), {
+      email: userDto.email,
+      userType: 'default',
+      registrationTimestamp: timestamp,
     });
 
-    //Track the event with Mixpanel
-    await this.metricService.trackEvent('User Registered', {
-      distinct_id: newUser.id,
-      email: newUser.email,
-    });
-
-    return this.usersService.transformToDto(newUser);
+    return userDto;
   }
 
   async validateGoogleToken(token: string): Promise<UserDto> {
-    console.log(`Validating Google token: ${token}`);
-
     let ticket;
     try {
       ticket = await this.googleClient.verifyIdToken({
@@ -120,33 +142,24 @@ export class AuthService {
     }
 
     const payload = ticket.getPayload();
-    console.log('Google token payload:', payload);
-
     const email = payload?.email;
 
     if (!email) {
       throw new UnauthorizedException('Email not found in token payload');
     }
 
-    let user = await this.usersService.findByEmail(email);
+    const userDetails = {
+      user: payload?.name,
+      email,
+      password: '',
+      firstName: payload?.given_name,
+      lastName: payload?.family_name,
+      nombre: payload?.name,
+      avatar: payload?.picture,
+      verificationCode: '',
+    };
 
-    if (!user) {
-      user = await this.usersService.create({
-        user: payload?.name,
-        email,
-        password: '',
-        firstName: payload?.given_name,
-        lastName: payload?.family_name,
-        nombre: payload?.name,
-        avatar: payload?.picture,
-        verificationCode: '',
-      });
-      user.postCount = user.posts ? user.posts.length : 0;
-    } else {
-      user.postCount = user.posts ? user.posts.length : 0;
-    }
-
-    return this.usersService.transformToDto(user);
+    return this.registerUser(userDetails, 'Google');
   }
 
   async findOrCreateFacebookUser(
@@ -314,6 +327,24 @@ export class AuthService {
 
     const userDto = this.usersService.transformToDto(user);
     const token = this.generateJwtToken(userDto);
+    const timestamp = new Date().toISOString();
+
+    console.log('User DTO:', userDto);
+    console.log('Timestamp:', timestamp);
+
+    console.log(
+      `User Registered with Google ID: ${userDto.id} Email: ${userDto.email}`,
+      { userID: userDto.id, email: userDto.email, timestamp: timestamp },
+    );
+
+    await this.metricService.trackEvent(
+      `User Registered with Google ID: ${userDto.id} Email: ${userDto.email}`,
+      {
+        userID: userDto.id,
+        email: userDto.email,
+        timestamp: timestamp,
+      },
+    );
 
     return {
       message: 'User information from Google',

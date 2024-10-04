@@ -2,6 +2,7 @@ import Image from 'next/image';
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../context/authContext';
+import mixpanel from 'mixpanel-browser';
 
 interface FooterProps {
   setShowLoginModal?: (show: boolean) => void;
@@ -15,8 +16,33 @@ const Footer: React.FC<FooterProps> = ({ setShowLoginModal }) => {
       e.preventDefault();
       if (setShowLoginModal) {
         setShowLoginModal(true);
+        const timestamp = new Date().toISOString();
+        mixpanel.track('Sign Up Pop-up Displayed', {
+          event: 'Sign Up Pop-up Displayed',
+          timestamp: timestamp,
+          source: 'Write a blog button',
+        });
+        console.log('Sign Up Pop-up Displayed', {
+          event: 'Sign Up Pop-up Displayed',
+          timestamp: timestamp,
+          source: 'Write a blog button/Footer',
+        });
       }
     }
+  };
+
+  const handleHomeButtonClick = () => {
+    const timestamp = new Date().toISOString();
+    mixpanel.track('Home Button Clicked', {
+      event: 'Home Button Clicked',
+      timestamp: timestamp,
+      source: 'Footer',
+    });
+    console.log('Home Button Clicked', {
+      event: 'Home Button Clicked',
+      timestamp: timestamp,
+      source: 'Footer',
+    });
   };
 
   return (
@@ -46,7 +72,11 @@ const Footer: React.FC<FooterProps> = ({ setShowLoginModal }) => {
           </div>
           <div className="flex flex-col lg:flex-row text-white w-full lg:w-auto space-y-4 lg:space-y-0 lg:space-x-8">
             <div className="flex flex-col m-4 lg:m-0">
-              <Link href="/" className="text-[16px] mb-2 hover:text-gray-300">
+              <Link
+                href="/"
+                className="text-[16px] mb-2 hover:text-gray-300"
+                onClick={handleHomeButtonClick}
+              >
                 Blogchain
               </Link>
               <Link
@@ -91,7 +121,11 @@ const Footer: React.FC<FooterProps> = ({ setShowLoginModal }) => {
                   Write a blog
                 </Link>
               )}
-              <Link href="/" className="text-[14px] mb-2 hover:text-gray-300">
+              <Link
+                href="/"
+                className="text-[14px] mb-2 hover:text-gray-300"
+                onClick={handleHomeButtonClick}
+              >
                 Home of <br />
                 content
               </Link>

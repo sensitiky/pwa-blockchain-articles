@@ -26,6 +26,7 @@ import DOMPurify from 'dompurify';
 import { CircularProgress } from '@mui/material';
 import Image from 'next/image';
 import Search from '@/utils/svg';
+import mixpanel from 'mixpanel-browser';
 
 interface SearchResult {
   id: string;
@@ -75,7 +76,7 @@ const Header = () => {
       const fullUrl = `${API_URL}/search?q=${encodeURIComponent(
         normalizedQuery
       )}`;
-      console.log(fullUrl);
+      //console.log(fullUrl);
       const response = await axios.get<SearchResult[]>(fullUrl, {
         headers: { 'Cache-Control': 'no-cache' },
       });
@@ -93,7 +94,7 @@ const Header = () => {
         });
 
         setResults(resultsWithBase64Images);
-        console.log(resultsWithBase64Images);
+        // console.log(resultsWithBase64Images);
       } else {
         console.error('Unexpected response format:', response.data);
         setResults([]);
@@ -157,6 +158,17 @@ const Header = () => {
   const handleStartNewCampaign = () => {
     if (!isAuthenticated) {
       setShowLoginCard(true);
+      const timestamp = new Date().toISOString();
+      mixpanel.track('Sign Up Attempts', {
+        event: 'Sign Up Pop-up Displayed',
+        timestamp: timestamp,
+        source: 'Header',
+      });
+      /*  console.log('Sign Up Pop-up Displayed', {
+        event: 'Sign Up Pop-up Displayed',
+        timestamp: timestamp,
+        source: 'Header',
+      });*/
     }
   };
 
@@ -188,7 +200,24 @@ const Header = () => {
       {/* Desktop Header */}
       <header id="desktop-header" className="p-4 hidden lg:block">
         <div className="container mx-auto flex justify-between items-center">
-          <div id="logo" className="text-white text-xl font-bold">
+          <div
+            id="logo"
+            className="text-white text-xl font-bold"
+            onClick={() => {
+              router.push('/');
+              const timestamp = new Date().toISOString();
+              mixpanel.track('Home Button Clicked', {
+                event: 'Home Button Clicked',
+                timestamp: timestamp,
+                source: 'Header',
+              });
+              /* console.log('Home Button Clicked', {
+                event: 'Home Button Clicked',
+                timestamp: timestamp,
+                source: 'Header',
+              });*/
+            }}
+          >
             <Link href="/">Blogchain</Link>
           </div>
           <div
@@ -437,7 +466,24 @@ const Header = () => {
           className=" top-0 left-0 w-screen z-50 p-4 backdrop-blur-xl bg-[#000916] lg:hidden md:block"
         >
           <div className="container mx-auto flex justify-between items-center">
-            <div id="mobile-logo" className="text-lg text-white font-semibold">
+            <div
+              id="mobile-logo"
+              className="text-lg text-white font-semibold"
+              onClick={() => {
+                router.push('/');
+                const timestamp = new Date().toISOString();
+                mixpanel.track('Home Button Clicked', {
+                  event: 'Home Button Clicked',
+                  timestamp: timestamp,
+                  source: 'Header',
+                });
+                /*console.log('Home Button Clicked', {
+                  event: 'Home Button Clicked',
+                  timestamp: timestamp,
+                  source: 'Header',
+                });*/
+              }}
+            >
               <Link href="/">Blogchain</Link>
             </div>
             <button

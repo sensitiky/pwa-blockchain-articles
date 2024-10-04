@@ -30,6 +30,13 @@ export class MetricService {
     this.mixpanel.track(event, properties);
   }
 
+  async setUserProperties(
+    distinctId: string,
+    properties: Record<string, any>,
+  ): Promise<void> {
+    this.mixpanel.people.set(distinctId, properties);
+  }
+
   async getAllMetrics() {
     const userCount = await this.usersService.countAllUsers();
     const contentCreatorCount = await this.usersService.countContentCreators();

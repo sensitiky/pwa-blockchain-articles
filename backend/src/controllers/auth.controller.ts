@@ -167,7 +167,10 @@ export class AuthController {
         res.status(400).json({ message: 'Invalid verification code' });
         return;
       }
-      const userDto = await this.authService.registerUser(registerDto);
+      const userDto = await this.authService.registerUser(
+        registerDto,
+        'email/password',
+      );
       this.authService.deleteVerificationCode(registerDto.email);
       res
         .status(200)
@@ -227,7 +230,7 @@ export class AuthController {
     @Body() body: { token: string },
     @Res() res: Response,
   ): Promise<void> {
-    this.logger.log(`Received Google token: ${body.token}`);
+    //this.logger.log(`Received Google token: ${body.token}`);
     try {
       const token = body.token;
       if (!token || typeof token !== 'string') {

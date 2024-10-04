@@ -313,7 +313,7 @@ export class UsersService implements IUserActivityService {
       console.error('User is null in transformToDto');
       throw new Error('User not found');
     }
-    console.log('transformToDto called with user:', user);
+    //  console.log('transformToDto called with user:', user);
     const userDto: UserDto = {
       id: user.id,
       user: user.user,

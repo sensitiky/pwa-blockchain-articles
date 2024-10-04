@@ -5,6 +5,7 @@ import { AuthProvider } from '../../context/authContext';
 import FacebookInit from '@/assets/FacebookInit';
 import AuthWrapper from '@/assets/authwrapper';
 import { Analytics } from '@vercel/analytics/react';
+import MixPanel from '@/components/layout/mixpanel';
 
 const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 if (!clientId) {
@@ -30,6 +31,7 @@ export default function RootLayout({
             <AuthProvider>
               <FacebookInit />
               <Analytics />
+              <MixPanel />
               <main className="w-full h-full overflow-x-hidden text-[#263238] bg-[#fefefe]">
                 {children}
                 <link rel="icon" href="/favicon.ico" sizes="any" />
