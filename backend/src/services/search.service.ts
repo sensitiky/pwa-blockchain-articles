@@ -1,15 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { PostsService } from '../services/posts.service';
 import { UsersService } from '../services/users.service';
+import { MetricService } from './metric.service';
 
 @Injectable()
 export class SearchService {
   constructor(
     private readonly postsService: PostsService,
     private readonly usersService: UsersService,
+    @Inject(forwardRef(() => MetricService))
+    private readonly metricService: MetricService,
   ) {}
 
-  async search(query: string, type: string) {
+  async search(query: string, type: string, userID?: number) {
     let results = [];
     const normalizedQuery = query.toLowerCase();
 
@@ -24,6 +27,25 @@ export class SearchService {
       const usersWithType = users.map((user) => ({ ...user, type: 'user' }));
       results = results.concat(usersWithType);
     }
+
+    const timestamp = new Date().toISOString();
+    const resultsCount = results.length;
+
+    await this.metricService.trackEvent('Search Performed', {
+      event: 'Search Performed',
+      query: query,
+      user_id: userID ?? 'anonymous',
+      timestamp: timestamp,
+      results_count: resultsCount,
+    });
+
+    console.log('Search Performed Event Tracked', {
+      event: 'Search Performed',
+      query: query,
+      user_id: userID ?? 'anonymous',
+      timestamp: timestamp,
+      results_count: resultsCount,
+    });
 
     return results;
   }

@@ -60,7 +60,7 @@ export default function MixPanel() {
       networkProvider,
     });
 
-    if (mixpanel.people) {
+    /* if (mixpanel.people) {
       mixpanel.people.set({
         $os: navigator.platform,
         $browser: userAgent,
@@ -78,7 +78,7 @@ export default function MixPanel() {
       });
     } else {
       console.error('mixpanel.people is undefined');
-    }
+    }*/
 
     mixpanel.track('Session Started', {
       session_id: sessionIdRef.current,

@@ -47,7 +47,7 @@ export class CommentsService {
       post: post ? post.id : null,
       postTitle: post ? post.title : null,
     });
-    await this.metricService.trackEvent('Favorite Created', {
+    await this.metricService.trackEvent('Comment Created', {
       distinct_id: comment.id,
       commentContent: comment.content,
       authorID: author.id,

@@ -1,17 +1,27 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, Req } from '@nestjs/common';
 import { SearchService } from '../services/search.service';
+import { Request } from 'express';
 
 @Controller('search')
 export class SearchController {
   constructor(private readonly searchService: SearchService) {}
 
   @Get()
-  async search(@Query('q') query: string, @Query('type') type: string = 'all') {
+  async search(
+    @Query('q') query: string,
+    @Query('type') type: string = 'all',
+    @Req() request: Request,
+  ) {
     if (!query) {
       return { message: 'Query parameter "q" is required.' };
     }
     const normalizedQuery = query.toLowerCase();
-    const results = await this.searchService.search(normalizedQuery, type);
+    const userID = request.user?.id;
+    const results = await this.searchService.search(
+      normalizedQuery,
+      type,
+      userID,
+    );
     return results;
   }
 
