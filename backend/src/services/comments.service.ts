@@ -6,6 +6,7 @@ import { CreateCommentDto } from 'src/dto/comment.dto';
 import { User } from '../entities/user.entity';
 import { Post } from '../entities/post.entity';
 import { MetricService } from './metric.service';
+import { timeStamp } from 'console';
 
 @Injectable()
 export class CommentsService {
@@ -39,24 +40,35 @@ export class CommentsService {
       post,
       replies: [],
     });
+
+    // Guardar el comentario para obtener el ID generado
+    const savedComment = await this.commentsRepository.save(comment);
+
+    const timestamp = new Date().toISOString();
+    const commentLength = savedComment.content.length;
+
     console.log('Comment created', {
-      commentID: comment.id,
-      commentContent: comment.content,
-      authorID: author.id,
-      authorUsername: author.user,
-      post: post ? post.id : null,
-      postTitle: post ? post.title : null,
-    });
-    await this.metricService.trackEvent('Comment Created', {
-      distinct_id: comment.id,
-      commentContent: comment.content,
-      authorID: author.id,
-      authorUsername: author.user,
-      post: post ? post.id : null,
-      postTitle: post ? post.title : null,
+      comment_id: savedComment.id,
+      post_id: post ? post.id : null,
+      user_ID: 'user_' + author.id,
+      username: author.user,
+      commentContent: savedComment.content,
+      timestamp: timestamp,
+      commentary: comment.content,
+      commentLength: commentLength,
     });
 
-    return this.commentsRepository.save(comment);
+    await this.metricService.trackEvent('Comment Created', {
+      comment_id: savedComment.id,
+      post_id: post ? post.id : null,
+      user_ID: 'user_' + author.id,
+      username: author.user,
+      timestamp: timestamp,
+      commentContent: savedComment.content,
+      commentLength: commentLength,
+    });
+
+    return savedComment;
   }
 
   async findAllByPost(postId: number): Promise<Comment[]> {
