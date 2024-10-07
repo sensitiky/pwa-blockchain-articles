@@ -273,12 +273,12 @@ export class UsersService implements IUserActivityService {
     userId: number,
     updateData: Partial<User>,
   ): Promise<User> {
-    console.log(
+    /*console.log(
       'updateUserInfo called with userId:',
       userId,
       'updateData:',
       updateData,
-    );
+    );*/
     if (!userId) {
       console.error('User ID is required for updating user info.');
       throw new Error('User ID is required for updating user info.');
@@ -299,7 +299,7 @@ export class UsersService implements IUserActivityService {
     }
 
     updatedUser.postCount = updatedUser.posts ? updatedUser.posts.length : 0;
-    console.log('Updated user:', updatedUser);
+    //  console.log('Updated user:', updatedUser);
 
     // Mixpanel tracking
     const timestamp = new Date().toISOString();

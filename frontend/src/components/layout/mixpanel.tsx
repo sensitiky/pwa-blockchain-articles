@@ -28,19 +28,6 @@ export default function MixPanel() {
 
     let locationData: LocationData = {};
 
-    try {
-      const response = await fetch(
-        'https://ipinfo.io/json?token=51d01c84bf637b'
-      );
-      if (response.ok) {
-        locationData = await response.json();
-      } else {
-        console.error('Failed to fetch location data:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error fetching location data:', error);
-    }
-
     const {
       country = '',
       city = '',
@@ -48,7 +35,7 @@ export default function MixPanel() {
       org: networkProvider = '',
     } = locationData || {};
 
-    console.log('User Properties:', {
+    /*console.log('User Properties:', {
       userAgent,
       connectionType: connection.effectiveType || 'unknown',
       screenResolution,
@@ -58,7 +45,7 @@ export default function MixPanel() {
       city,
       region,
       networkProvider,
-    });
+    });*/
 
     /* if (mixpanel.people) {
       mixpanel.people.set({
@@ -97,7 +84,7 @@ export default function MixPanel() {
       // Add more properties as needed
     });
 
-    console.log('Session Started Event Tracked');
+    // console.log('Session Started Event Tracked');
   }
 
   const MILLISECONDS_TO_SECONDS = 1000;

@@ -252,12 +252,6 @@ export class AuthService {
     userId: number,
     updatedFields: Partial<User>,
   ): Promise<string> {
-    console.log(
-      'updateUserProfile called with userId:',
-      userId,
-      'updatedFields:',
-      updatedFields,
-    );
     const user = await this.usersService.findOneById(userId);
     if (!user) {
       console.error('User not found');
@@ -274,10 +268,28 @@ export class AuthService {
     await this.usersService.update(user);
 
     const updatedUser = await this.usersService.findOne(user.email);
-    console.log('Updated user:', updatedUser);
+    const timestamp = new Date().toISOString();
+    const updatedSection = Object.keys(updatedFields);
+    const updatedField = Object.entries(updatedFields)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join(', ');
+
+    await this.metricService.trackEvent('User Profile Updated', {
+      user_id: 'user_' + userId,
+      timestamp: timestamp,
+      updated_section: updatedSection,
+      updated_field: updatedField,
+    });
+
+    console.log('User Profile Updated', {
+      user_id: 'user_' + userId,
+      timestamp: timestamp,
+      updated_section: updatedSection,
+      updated_field: updatedField,
+    });
+
     return this.generateJwtToken(this.usersService.transformToDto(updatedUser));
   }
-
   async verifyResetCode(email: string, code: string): Promise<boolean> {
     return this.verifyCode(email, code);
   }

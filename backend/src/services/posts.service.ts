@@ -193,23 +193,19 @@ export class PostsService {
       'postCount',
       1,
     );
+    const timestamp = new Date().toISOString();
 
-    console.log(`Post deleted ID: ${postId} title ${post.title}`, {
-      postID: postId,
-      title: post.title,
-      authorID: post.author.id,
-      authorUsername: post.author.user,
+    console.log(`Post Removed`, {
+      post_id: 'post_' + postId,
+      user_id: 'user_' + post.author.id,
+      timestamp: timestamp,
     });
 
-    await this.metricService.trackEvent(
-      `Post deleted ID: ${postId} title ${post.title}`,
-      {
-        postID: postId,
-        title: post.title,
-        authorID: post.author.id,
-        authorUsername: post.author.user,
-      },
-    );
+    await this.metricService.trackEvent(`Post Removed`, {
+      post_id: 'post_' + postId,
+      user_id: 'user_' + post.author.id,
+      timestamp: timestamp,
+    });
 
     await this.invalidateCache();
   }

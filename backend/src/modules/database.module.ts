@@ -26,11 +26,13 @@ import { FavoriteSubscriber } from '../services/listenerFavorites.service';
         const dbPassword = configService.get<string>('DB_PASSWORD');
         const dbName = configService.get<string>('DB_DATABASE');
 
+        /*
         console.log('DB_HOST:', dbHost);
         console.log('DB_PORT:', dbPort);
         console.log('DB_USERNAME:', dbUsername);
         console.log('DB_PASSWORD:', dbPassword);
         console.log('DB_DATABASE:', dbName);
+        */
 
         return {
           type: 'postgres',
@@ -41,7 +43,7 @@ import { FavoriteSubscriber } from '../services/listenerFavorites.service';
           database: dbName,
           entities: [User, Post, Comment, Category, Tag, Favorite],
           synchronize: true,
-          logging: true,
+          logging: false,
           // Fix for SSL connection must be removed in development
           subscribers: [CommentSubscriber, FavoriteSubscriber],
         };

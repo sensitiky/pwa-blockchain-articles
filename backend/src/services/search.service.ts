@@ -32,7 +32,6 @@ export class SearchService {
     const resultsCount = results.length;
 
     await this.metricService.trackEvent('Search Performed', {
-      event: 'Search Performed',
       query: query,
       user_id: userID ?? 'anonymous',
       timestamp: timestamp,
@@ -40,7 +39,6 @@ export class SearchService {
     });
 
     console.log('Search Performed Event Tracked', {
-      event: 'Search Performed',
       query: query,
       user_id: userID ?? 'anonymous',
       timestamp: timestamp,

@@ -54,23 +54,24 @@ export class FavoritesService {
       comment,
     });
     await this.favoritesRepository.save(favorite);
+    const timestamp = new Date().toISOString();
 
     // Log the event data
     console.log('Tracking Favorite Created event:', {
-      favoriteID: favorite.id,
-      user: user.id,
-      userUsername: user.user,
-      post: post ? post.id : null,
-      postTitle: post ? post.title : null,
+      favoriteID: 'favorite_' + favorite.id,
+      user: 'user_' + user.id,
+      post: 'post_' + post ? post.id : null,
+      timestamp: timestamp,
+      //TODO add bookmarked counter
     });
 
     // Track event with Mixpanel
     await this.metricService.trackEvent('Favorite Created', {
-      favoriteID: favorite.id,
-      user: user.id,
-      userUsername: user.user,
-      post: post ? post.id : null,
-      postTitle: post ? post.title : null,
+      favoriteID: 'favorite_' + favorite.id,
+      user: 'user_' + user.id,
+      post: 'post_' + post ? post.id : null,
+      timestamp: timestamp,
+      //TODO add bookmarked counter
     });
 
     return favorite;
@@ -113,22 +114,24 @@ export class FavoritesService {
     }
 
     await this.favoritesRepository.remove(favorite);
+    const timestamp = new Date().toISOString();
 
     // Log the event data
     console.log('Tracking Favorite Removed event:', {
-      favoriteID: favorite.id,
-      userID: userId,
-      username: user.user,
-      post: postId,
-      posTitle: post ? post.title : null,
+      favoriteID: 'favorite_' + favorite.id,
+      post_id: 'post_' + postId,
+      user_id: 'user_' + userId,
+      timestamp: timestamp,
+      //TODO add bookmark removed counter
     });
 
     // Track event with Mixpanel
     await this.metricService.trackEvent('Favorite Removed', {
-      favoriteID: favorite.id,
-      user: userId,
-      post: postId,
-      posTitle: post ? post.title : null,
+      favoriteID: 'favorite_' + favorite.id,
+      post_id: 'post_' + postId,
+      user_id: 'user_' + userId,
+      timestamp: timestamp,
+      //TODO add bookmark removed counter
     });
   }
 
