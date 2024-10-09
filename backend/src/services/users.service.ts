@@ -252,6 +252,7 @@ export class UsersService implements IUserActivityService {
       'User Registered',
       {
         distinct_id: savedUser.id,
+        email: savedUser.email,
         timestamp: timestamp,
         registration_method: 'email',
       },

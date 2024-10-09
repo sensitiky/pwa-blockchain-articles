@@ -55,17 +55,18 @@ export class AuthService {
           timestamp: timestamp,
           login_method: 'email/password',
         });
-        await this.metricService.trackEvent(`User Login`, {
-          user_id: user.id,
-          timestamp: timestamp,
-          login_method: 'email/password',
-        });
-
-        await this.metricService.setUserProperties(user.id.toString(), {
-          last_login: timestamp,
-          username: user.user,
-        });
-
+        await this.metricService.trackEvent(
+          'User Login',
+          {
+            distinct_id: user.id,
+            timestamp: timestamp,
+            login_method: 'email/password',
+          },
+          {
+            last_login: timestamp,
+            username: user.user,
+          },
+        );
         return result;
       }
     }
@@ -331,19 +332,30 @@ export class AuthService {
     console.log('Timestamp:', timestamp);
 
     console.log(
-      `User Registered with Google ID: ${userDto.id} Email: ${userDto.email}`,
-      { userID: userDto.id, email: userDto.email, timestamp: timestamp },
-    );
-
-    await this.metricService.trackEvent(
-      `User Registered with Google ID: ${userDto.id} Email: ${userDto.email}`,
+      'User Login',
       {
-        userID: userDto.id,
-        email: userDto.email,
+        distinct_id: userDto.id,
         timestamp: timestamp,
+        login_method: 'google',
+      },
+      {
+        last_login: timestamp,
+        username: user.user,
       },
     );
 
+    await this.metricService.trackEvent(
+      'User Login',
+      {
+        distinct_id: userDto.id,
+        timestamp: timestamp,
+        login_method: 'google',
+      },
+      {
+        last_login: timestamp,
+        username: user.user,
+      },
+    );
     return {
       message: 'User information from Google',
       user: userDto,

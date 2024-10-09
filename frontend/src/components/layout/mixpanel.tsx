@@ -37,7 +37,7 @@ export default function MixPanel() {
       org: networkProvider = '',
     } = locationData || {};
 
-    console.log('User Properties:', {
+    /*console.log('User Properties:', {
       userAgent,
       connectionType: connection.effectiveType || 'unknown',
       screenResolution,
@@ -47,7 +47,7 @@ export default function MixPanel() {
       city,
       region,
       networkProvider,
-    });
+    });*/
 
     if (mixpanel.people) {
       mixpanel.people.set({
@@ -81,7 +81,7 @@ export default function MixPanel() {
     const sessionEndTime = Date.now();
     const sessionDuration =
       (sessionEndTime - sessionStartTimeRef.current) / MILLISECONDS_TO_SECONDS;
-    console.log(sessionDuration);
+    //console.log(sessionDuration);
     const timestamp = new Date().toISOString();
 
     mixpanel.track('Session Ended', {
