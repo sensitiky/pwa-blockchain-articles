@@ -96,6 +96,13 @@ export class AuthService {
     let user = await this.usersService.findByEmail(userDetails.email);
 
     if (!user) {
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(
+        userDetails.password,
+        saltRounds,
+      );
+      userDetails.password = hashedPassword;
+
       user = await this.usersService.create(userDetails);
       user.postCount = user.posts ? user.posts.length : 0;
     } else {

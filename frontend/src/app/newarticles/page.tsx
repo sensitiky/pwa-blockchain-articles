@@ -168,7 +168,7 @@ export default function NewArticles() {
     formData.append('authorId', user.id.toString());
     formData.append('publish', JSON.stringify(publish));
     formData.append('categoryId', selectedCategory.id.toString());
-    formData.append('tags', JSON.stringify(tags));
+    formData.append('tags', JSON.stringify(tags)); // Ensure tags are sent as JSON string
     if (imageFile) {
       formData.append('image', imageFile);
     }

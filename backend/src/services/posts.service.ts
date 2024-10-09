@@ -92,23 +92,30 @@ export class PostsService {
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
     try {
-      const [author, category, tags] = await Promise.all([
+      // Parse tags if they are in JSON string format
+      const tags =
+        typeof createPostDto.tags === 'string'
+          ? JSON.parse(createPostDto.tags)
+          : createPostDto.tags;
+
+      const [author, category, processedTags] = await Promise.all([
         this.usersRepository.findOne({ where: { id: createPostDto.authorId } }),
         createPostDto.categoryId
           ? this.categoriesRepository.findOne({
               where: { id: createPostDto.categoryId },
             })
           : null,
-        this.processTags(createPostDto.tags),
+        this.processTags(tags),
       ]);
 
       if (!author) throw new NotFoundException('Author not found');
+      if (!category) throw new NotFoundException('Category not found');
 
       const post = this.postsRepository.create({
         ...createPostDto,
         author,
         category,
-        tags,
+        tags: processedTags,
       });
 
       await this.postsRepository.save(post);
@@ -117,17 +124,17 @@ export class PostsService {
       const postLength = post.content.length;
       const timestamp = new Date().toISOString();
 
-      //Log the event with Mixpanel
+      // Log the event with Mixpanel
       console.log('Post Created', {
         postID: 'post_' + post.id,
-        postTitle: 'user_' + post.title,
+        postTitle: post.title,
         timestamp: timestamp,
         category: post.category,
         tags: post.tags,
         content_length: postLength,
       });
 
-      //Track event with Mixpanel
+      // Track event with Mixpanel
       await this.metricService.trackEvent('Post Created', {
         post_id: 'post_' + post.id,
         distinct_id: post.author.id,
@@ -139,6 +146,7 @@ export class PostsService {
 
       return post;
     } catch (error) {
+      console.error('Error creating post:', error);
       throw new InternalServerErrorException('Failed to create post');
     }
   }
