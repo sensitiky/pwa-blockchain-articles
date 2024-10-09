@@ -59,7 +59,7 @@ export class CommentsService {
     await this.metricService.trackEvent('Comment Created', {
       comment_id: 'comment_' + savedComment.id,
       post_id: 'post_' + (post ? post.id : null),
-      user_id: 'user_' + author.id,
+      distinct_id: author.id,
       username: author.user,
       timestamp: timestamp,
       comment_content: savedComment.content,
@@ -112,7 +112,7 @@ export class CommentsService {
 
     await this.metricService.trackEvent('Comment Removed', {
       comment_id: 'comment_' + commentId,
-      user_id: 'user_' + userId,
+      distinct_id: userId,
       timestamp: timestamp,
     });
     await this.commentsRepository.remove(comment);

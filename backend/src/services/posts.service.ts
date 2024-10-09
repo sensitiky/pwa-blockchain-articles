@@ -129,8 +129,8 @@ export class PostsService {
 
       //Track event with Mixpanel
       await this.metricService.trackEvent('Post Created', {
-        distinct_id: post.id,
-        postTitle: 'user_' + post.title,
+        post_id: 'post_' + post.id,
+        distinct_id: post.author.id,
         timestamp: timestamp,
         category: post.category,
         tags: post.tags,
@@ -210,7 +210,7 @@ export class PostsService {
 
     await this.metricService.trackEvent(`Post Removed`, {
       post_id: 'post_' + postId,
-      user_id: 'user_' + post.author.id,
+      distinct_id: post.author.id,
       timestamp: timestamp,
     });
 
