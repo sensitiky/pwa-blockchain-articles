@@ -22,11 +22,11 @@ const Footer: React.FC<FooterProps> = ({ setShowLoginModal }) => {
           timestamp: timestamp,
           source: 'Write a blog button',
         });
-        console.log('Sign Up Pop-up Displayed', {
+        /*console.log('Sign Up Pop-up Displayed', {
           event: 'Sign Up Pop-up Displayed',
           timestamp: timestamp,
           source: 'Write a blog button/Footer',
-        });
+        });*/
       }
     }
   };
@@ -38,11 +38,11 @@ const Footer: React.FC<FooterProps> = ({ setShowLoginModal }) => {
       timestamp: timestamp,
       source: 'Footer',
     });
-    console.log('Home Button Clicked', {
+    /* console.log('Home Button Clicked', {
       event: 'Home Button Clicked',
       timestamp: timestamp,
       source: 'Footer',
-    });
+    });*/
   };
 
   return (

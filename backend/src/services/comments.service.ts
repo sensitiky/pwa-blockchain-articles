@@ -33,11 +33,6 @@ export class CommentsService {
     const post = await this.postsRepository.findOne({
       where: { id: createCommentDto.postId },
     });
-    const parentComment = createCommentDto.parentCommentId
-      ? await this.commentsRepository.findOne({
-          where: { id: createCommentDto.parentCommentId },
-        })
-      : null;
 
     const comment = this.commentsRepository.create({
       ...createCommentDto,
@@ -53,7 +48,7 @@ export class CommentsService {
 
     console.log('Comment created', {
       comment_id: 'comment_' + savedComment.id,
-      post_id: 'post_' + post ? post.id : null,
+      post_id: 'post_' + (post ? post.id : null),
       user_id: 'user_' + author.id,
       username: author.user,
       timestamp: timestamp,
@@ -63,7 +58,7 @@ export class CommentsService {
 
     await this.metricService.trackEvent('Comment Created', {
       comment_id: 'comment_' + savedComment.id,
-      post_id: 'post_' + post ? post.id : null,
+      post_id: 'post_' + (post ? post.id : null),
       user_id: 'user_' + author.id,
       username: author.user,
       timestamp: timestamp,
@@ -75,36 +70,52 @@ export class CommentsService {
   }
 
   async delete(commentId: number, userId: number): Promise<void> {
+    console.log('Attempting to delete comment', { commentId, userId });
+
     const comment = await this.commentsRepository.findOne({
       where: { id: commentId },
       relations: ['author'],
     });
 
     if (!comment) {
+      console.error('Comment not found');
       throw new NotFoundException('Comment not found');
     }
 
+    console.log('Comment found', { comment });
+
+    console.log('Comparing author ID and user ID', {
+      commentAuthorId: comment.author.id,
+      userId,
+      types: {
+        commentAuthorId: typeof comment.author.id,
+        userId: typeof userId,
+      },
+    });
+
     if (comment.author.id !== userId) {
+      console.error('User not allowed to delete this comment', {
+        commentAuthorId: comment.author.id,
+        userId,
+      });
       throw new ForbiddenException(
         'You are not allowed to delete this comment',
       );
     }
-
-    await this.commentsRepository.remove(comment);
-
     const timestamp = new Date().toISOString();
 
     console.log('Comment removed', {
-      comment_id: comment.id,
+      comment_id: 'comment_' + comment.id,
       user_id: 'user_' + userId,
       timestamp: timestamp,
     });
 
     await this.metricService.trackEvent('Comment Removed', {
-      comment_id: 'comment_' + comment.id,
+      comment_id: 'comment_' + commentId,
       user_id: 'user_' + userId,
       timestamp: timestamp,
     });
+    await this.commentsRepository.remove(comment);
   }
 
   async findAllByPost(postId: number): Promise<Comment[]> {

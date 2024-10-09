@@ -27,6 +27,8 @@ import styled from 'styled-components';
 import parse, { DOMNode, domToReact, Element } from 'html-react-parser';
 import LoginCard from '@/assets/login';
 import ShareBar from '@/components/ui/sharebar';
+import { v4 as uuidv4 } from 'uuid';
+import mixpanel from 'mixpanel-browser';
 
 const Container = styled.div`
   display: flex;
@@ -143,41 +145,65 @@ const PostPage = () => {
         return;
       }
 
-      const newComment: Comment = {
-        id: Date.now(),
-        content: commentContent,
-        author: {
-          id: user.id,
-          firstName: user.firstName || '',
-          lastName: user.lastName || '',
-          user: user.user || '',
-          avatar: user.avatar || '',
-          role: user.role || '',
-        },
-        createdAt: new Date().toISOString(),
-      };
-
-      setComments((prev) => [...prev, newComment]);
-      setCommentContent('');
-
       try {
         const response = await axios.post(`${API_URL}/comments`, {
           content: commentContent,
           authorId: user.id,
           postId: post?.id,
         });
-        const updatedComment = { ...newComment, ...response.data };
-        setComments((prevComments) =>
-          prevComments.map((comment) =>
-            comment.id === newComment.id ? updatedComment : comment
-          )
-        );
+
+        const newComment: Comment = {
+          id: response.data.id,
+          content: response.data.content,
+          author: {
+            id: user.id,
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            user: user.user || '',
+            avatar: user.avatar || '',
+            role: user.role || '',
+          },
+          createdAt: response.data.createdAt,
+        };
+        // console.log(newComment);
+        setComments((prev) => [...prev, newComment]);
+        setCommentContent('');
       } catch (error) {
         console.error('Error posting comment:', error);
       }
     },
     [commentContent, user, post]
   );
+
+  const handleDeleteComment = async (commentId: number, authorId: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No token found');
+        alert('You need to be authenticated to delete the comment');
+        return;
+      }
+
+      //  console.log('Attempting to delete comment', { commentId, authorId });
+
+      const response = await axios.delete(`${API_URL}/comments/${commentId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: { userId: Number(authorId) },
+      });
+
+      //console.log('Delete response:', response);
+
+      setComments((prevComments) =>
+        prevComments.filter((comment) => comment.id !== commentId)
+      );
+      alert('Comment deleted successfully!');
+    } catch (error: any) {
+      console.error('Error deleting comment:', error);
+      alert('Error deleting comment');
+    }
+  };
 
   const handleFavorite = async (postId: number) => {
     if (!user) {
@@ -344,6 +370,26 @@ const PostPage = () => {
     setShowShareBar((prev) => !prev);
   };
 
+  const handleSocialLinkClick = (event: any) => {
+    const linkType = event.currentTarget.getAttribute('data-link-type');
+    const linkUrl = event.currentTarget.href;
+    const timestamp = new Date().toISOString();
+    /*console.log('External Profile Link Clicked', {
+      event: 'External Profile Link Clicked',
+      link_url: linkUrl,
+      user_id: 'user_' + post?.author?.id,
+      timestamp: timestamp,
+      link_type: linkType,
+    });*/
+    mixpanel.track('External Profile Link Clicked', {
+      event: 'External Profile Link Clicked',
+      link_url: linkUrl,
+      user_id: 'user_' + post?.author?.id,
+      timestamp: timestamp,
+      link_type: linkType,
+    });
+  };
+
   const avatarUrl = post?.author?.avatar
     ? post.author.avatar.startsWith('http')
       ? post.author.avatar
@@ -384,8 +430,10 @@ const PostPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-gray-900">
-      <Header />
-      <div className="px-4 py-20 md:px-6 lg:py-2">
+      <header>
+        <Header />
+      </header>
+      <main className="px-4 py-20 md:px-6 lg:py-2">
         <div className="mx-auto max-w-4xl">
           <button
             className="hover:underline bg-inherit mt-10 mb-10 text-black inline-flex h-8 items-start justify-center rounded-md px-4 text-sm font-medium transition-colors hover:bg-inherit focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
@@ -394,7 +442,7 @@ const PostPage = () => {
             <ArrowLeftIcon className="mr-2 h-4 w-4" />
             Go Back
           </button>
-          <div className="flex flex-col sm:flex-row items-center mb-6 space-y-4 sm:space-y-0 justify-between">
+          <article className="flex flex-col sm:flex-row items-center mb-6 space-y-4 sm:space-y-0 justify-between">
             <div className="flex items-center space-y-4 justify-between w-full">
               <div className="flex items-center space-x-4">
                 <Link href={`/users/${post.author?.id}`} target="_blank">
@@ -415,13 +463,14 @@ const PostPage = () => {
                   </p>
                 </div>
               </div>
-
               <div className="flex items-center space-x-4">
                 {post.author?.twitter && (
                   <Link
                     href={post.author.twitter}
                     target="_blank"
                     className="text-muted-foreground hover:text-foreground"
+                    data-link-type="Twitter"
+                    onClick={handleSocialLinkClick}
                   >
                     <FaTwitter className="size-6 text-black mr-10" />
                     <span className="sr-only">Twitter</span>
@@ -432,6 +481,8 @@ const PostPage = () => {
                     href={post.author.linkedin}
                     target="_blank"
                     className="text-muted-foreground hover:text-foreground"
+                    data-link-type="LinkedIn"
+                    onClick={handleSocialLinkClick}
                   >
                     <FaLinkedin className="size-6 text-black mr-10" />
                     <span className="sr-only">LinkedIn</span>
@@ -442,6 +493,8 @@ const PostPage = () => {
                     href={post.author.facebook}
                     target="_blank"
                     className="text-muted-foreground hover:text-foreground"
+                    data-link-type="Facebook"
+                    onClick={handleSocialLinkClick}
                   >
                     <FaFacebook className="size-6 text-black mr-10" />
                     <span className="sr-only">Facebook</span>
@@ -452,6 +505,8 @@ const PostPage = () => {
                     href={post.author.instagram}
                     target="_blank"
                     className="text-muted-foreground hover:text-foreground"
+                    data-link-type="Instagram"
+                    onClick={handleSocialLinkClick}
                   >
                     <FaInstagram className="size-6 text-black mr-10" />
                     <span className="sr-only">Instagram</span>
@@ -462,9 +517,11 @@ const PostPage = () => {
                     href={post.author.medium}
                     target="_blank"
                     className="text-muted-foreground hover:text-foreground"
+                    data-link-type="Medium"
+                    onClick={handleSocialLinkClick}
                   >
                     <FaMedium className="size-6 text-black mr-10" />
-                    <span className="sr-only">Instagram</span>
+                    <span className="sr-only">Medium</span>
                   </Link>
                 )}
               </div>
@@ -487,13 +544,12 @@ const PostPage = () => {
                 </Button>
               </div>
             )}
-          </div>
+          </article>
           <p className="text-gray-500 mt-4">
             {formatDate(post.createdAt)} •{' '}
             {calculateReadingTime(post.description)} min read
           </p>
-          {/*Start the render for the article */}
-          <div className="prose prose-slate">
+          <section className="prose prose-slate">
             <h1 className="text-4xl font-bold text-center mt-6">
               {post.title}
             </h1>
@@ -513,8 +569,7 @@ const PostPage = () => {
                 {parseHtmlContent(post.description)}
               </div>
             </div>
-          </div>
-          {/* End of the render */}
+          </section>
           {post.category && (
             <div className="mt-8 w-fit">
               <span className="flex items-center px-2 py-1 bg-[#000916] text-white rounded-full">
@@ -547,28 +602,30 @@ const PostPage = () => {
             </div>
           )}
           <div className="flex flex-col sm:flex-row items-start mt-8 space-y-4 sm:space-y-0 sm:space-x-4">
-            <button
-              className="w-fit flex items-center space-x-1"
-              onClick={handleFavoriteClick}
-            >
-              {showBookmarkMessage && (
-                <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm bg-green-500 text-white rounded p-2 animate-fade-in-out">
-                  Item bookmarked successfully!
-                </div>
-              )}
-              <FaBookmark
-                className={`size-5 ${
-                  isSaved ? 'text-[#007BFF]' : 'text-gray-500'
-                }`}
-              />
-            </button>
-            <div className="w-fit flex items-center space-x-1 text-gray-500">
-              <FaComment className="size-5" />
-            </div>
-            <div className="w-fit flex items-center space-x-1 text-gray-500">
-              <button onClick={handleShare}>
-                <FaShare className="size-5" />
+            <div className="flex flex-row gap-4">
+              <button
+                className="w-fit flex items-center space-x-1"
+                onClick={handleFavoriteClick}
+              >
+                {showBookmarkMessage && (
+                  <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm bg-green-500 text-white rounded p-2 animate-fade-in-out">
+                    Item bookmarked successfully!
+                  </div>
+                )}
+                <FaBookmark
+                  className={`size-5 ${
+                    isSaved ? 'text-[#007BFF]' : 'text-gray-500'
+                  }`}
+                />
               </button>
+              <div className="w-fit flex items-center space-x-1 text-gray-500">
+                <FaComment className="size-5" />
+              </div>
+              <div className="w-fit flex items-center space-x-1 text-gray-500">
+                <button onClick={handleShare}>
+                  <FaShare className="size-5" />
+                </button>
+              </div>
             </div>
           </div>
           <div className="w-fit justify-start mt-2">
@@ -577,7 +634,7 @@ const PostPage = () => {
           <div className="flex w-full justify-center">
             <div className="mt-20 w-[30rem] justify-center bg-[#000916]/20 h-[0.1rem]"></div>
           </div>
-          <div className="mt-8">
+          <section className="mt-8">
             {comments.map((comment) => {
               const author = comment.author || {
                 firstName: 'Unknown',
@@ -592,32 +649,47 @@ const PostPage = () => {
               const authorName = `${author.user} `;
 
               return (
-                <div
+                <article
                   key={comment.id}
-                  className="border rounded-md p-4 my-4 bg-gray-100"
+                  className="border rounded-md p-4 my-4 bg-gray-100 flex flex-col"
                 >
-                  <div className="flex items-center space-x-4">
-                    <Link href={`/users/${comment.author?.id}`} target="_blank">
-                      <Avatar className="size-10">
-                        <AvatarImage src={avatarUrl} alt="Author avatar" />
-                        <AvatarFallback>{author.user}</AvatarFallback>
-                      </Avatar>
-                    </Link>
-                    <div>
-                      <p className="text-base font-normal">{authorName}</p>
-                      <p className="text-base text-gray-500 font-light">
-                        {author.role}
-                      </p>
-                      <div className="text-sm text-gray-500">
-                        {formatDate(comment.createdAt)}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <Link
+                        href={`/users/${comment.author?.id}`}
+                        target="_blank"
+                      >
+                        <Avatar className="size-10">
+                          <AvatarImage src={avatarUrl} alt="Author avatar" />
+                          <AvatarFallback>{author.user}</AvatarFallback>
+                        </Avatar>
+                      </Link>
+                      <div>
+                        <p className="text-base font-normal">{authorName}</p>
+                        <p className="text-base text-gray-500 font-light">
+                          {author.role}
+                        </p>
+                        <div className="text-sm text-gray-500">
+                          {formatDate(comment.createdAt)}
+                        </div>
                       </div>
                     </div>
+                    {author?.id === comment.author.id && (
+                      <button
+                        onClick={() =>
+                          handleDeleteComment(comment.id, comment.author.id)
+                        }
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        <FaTrash />
+                      </button>
+                    )}
                   </div>
-                  <p className="mt-2 ml-5 text-base">{comment.content}</p>
-                </div>
+                  <p className="mt-2 text-base">{comment.content}</p>
+                </article>
               );
             })}
-          </div>
+          </section>
           <form onSubmit={handleCommentSubmit} className="mt-4">
             <textarea
               className="w-full border rounded-md p-2 resize-none"
@@ -634,8 +706,10 @@ const PostPage = () => {
             </Button>
           </form>
         </div>
-      </div>
-      <Footer setShowLoginModal={setShowLoginCard} />
+      </main>
+      <footer>
+        <Footer setShowLoginModal={setShowLoginCard} />
+      </footer>
       {showLoginCard && (
         <div className="w-screen fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="relative bg-white p-8 rounded-lg shadow-lg">

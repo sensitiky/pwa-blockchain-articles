@@ -94,11 +94,11 @@ export default function MixPanel() {
       (sessionEndTime - sessionStartTimeRef.current) / MILLISECONDS_TO_SECONDS;
     const timestamp = new Date().toISOString();
 
-    console.log('Session Ended:', {
+    /*  console.log('Session Ended:', {
       session_id: sessionIdRef.current,
       timestamp: timestamp,
       session_duration: sessionDuration,
-    });
+    });*/
 
     mixpanel.track('Session Ended', {
       session_id: sessionIdRef.current,
@@ -106,7 +106,7 @@ export default function MixPanel() {
       session_duration: sessionDuration,
     });
 
-    console.log('Session Ended Event Tracked');
+    // console.log('Session Ended Event Tracked');
   }
 
   useEffect(() => {

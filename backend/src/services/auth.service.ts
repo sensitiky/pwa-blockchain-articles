@@ -3,6 +3,8 @@ import {
   UnauthorizedException,
   ConflictException,
   Logger,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../services/users.service';
@@ -23,6 +25,7 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    @Inject(forwardRef(() => MetricService))
     private readonly metricService: MetricService,
   ) {
     this.googleClient = new OAuth2Client(
@@ -38,14 +41,6 @@ export class AuthService {
     });
   }
 
-  private validatePassword(password: string): boolean {
-    const lengthCriteria = password.length >= 8;
-    const uppercaseCriteria = /[A-Z]/.test(password);
-    const numberOrSymbolCriteria = /[0-9!@#$%^&*]/.test(password);
-
-    return lengthCriteria && uppercaseCriteria && numberOrSymbolCriteria;
-  }
-
   async validateUser(identifier: string, password: string): Promise<any> {
     this.logger.log(`Validating user: ${identifier}`);
     const user = await this.usersService.findByEmailOrUsername(identifier);
@@ -54,15 +49,23 @@ export class AuthService {
       this.logger.log(`Password valid: ${isPasswordValid}`);
       if (isPasswordValid) {
         const { password, ...result } = user;
-        await this.registerUser(
-          {
-            ...result,
-            nombre: result.firstName + ' ' + result.lastName,
-            password: '',
-            verificationCode: '',
-          },
-          'email/password',
-        );
+        const timestamp = new Date().toISOString();
+        console.log('User Login', {
+          user_id: user.id,
+          timestamp: timestamp,
+          login_method: 'email/password',
+        });
+        await this.metricService.trackEvent(`User Login`, {
+          user_id: user.id,
+          timestamp: timestamp,
+          login_method: 'email/password',
+        });
+
+        await this.metricService.setUserProperties(user.id.toString(), {
+          last_login: timestamp,
+          username: user.user,
+        });
+
         return result;
       }
     }
@@ -112,7 +115,7 @@ export class AuthService {
     await this.metricService.trackEvent(
       `User Registered with ${type} ID: ${userDto.id} Email: ${userDto.email}`,
       {
-        userID: userDto.id,
+        user_id: 'user_' + userDto.id,
         email: userDto.email,
         timestamp: timestamp,
         registrationType: type,

@@ -6,11 +6,10 @@ import {
   Param,
   Delete,
   UnauthorizedException,
-  Req,
+  Query,
 } from '@nestjs/common';
 import { CommentsService } from '../services/comments.service';
 import { CreateCommentDto } from '../dto/comment.dto';
-import { Request } from 'express';
 
 @Controller('comments')
 export class CommentsController {
@@ -32,11 +31,19 @@ export class CommentsController {
   }
 
   @Delete(':commentId')
-  delete(@Param('commentId') commentId: number, @Req() request: Request) {
-    const userId = request.user?.id;
-    if (!userId) {
-      throw new UnauthorizedException('User not authenticated');
+  delete(
+    @Param('commentId') commentId: number,
+    @Query('userId') userId: string,
+  ) {
+    console.log('Delete request received', { commentId, userId });
+
+    const numericUserId = Number(userId);
+
+    if (isNaN(numericUserId)) {
+      console.error('Invalid userId');
+      throw new UnauthorizedException('Invalid userId');
     }
-    return this.commentsService.delete(commentId, userId);
+
+    return this.commentsService.delete(commentId, numericUserId);
   }
 }
