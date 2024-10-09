@@ -117,7 +117,6 @@ export class FavoritesService {
       throw new NotFoundException('Favorite not found');
     }
 
-    await this.favoritesRepository.remove(favorite);
     const timestamp = new Date().toISOString();
     const bookmarksCount = await this.favoritesRepository.count({
       where: { user: { id: userId } },
@@ -141,6 +140,7 @@ export class FavoritesService {
       bookmark_removed_count: bookmarksCount,
       //TODO add bookmark removed counter
     });
+    await this.favoritesRepository.remove(favorite);
   }
 
   async getSavedArticles() {
