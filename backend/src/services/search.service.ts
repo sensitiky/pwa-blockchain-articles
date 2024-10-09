@@ -28,22 +28,24 @@ export class SearchService {
       results = results.concat(usersWithType);
     }
 
-    const timestamp = new Date().toISOString();
-    const resultsCount = results.length;
+    if (results.length > 0) {
+      const timestamp = new Date().toISOString();
+      const resultsCount = results.length;
 
-    await this.metricService.trackEvent('Search Performed', {
-      query: query,
-      user_id: userID ?? 'anonymous',
-      timestamp: timestamp,
-      results_count: resultsCount,
-    });
+      await this.metricService.trackEvent('Search Performed', {
+        query: query,
+        user_id: userID ?? 'anonymous',
+        timestamp: timestamp,
+        results_count: resultsCount,
+      });
 
-    console.log('Search Performed Event Tracked', {
-      query: query,
-      user_id: userID ?? 'anonymous',
-      timestamp: timestamp,
-      results_count: resultsCount,
-    });
+      console.log('Search Performed Event Tracked', {
+        query: query,
+        user_id: userID ?? 'anonymous',
+        timestamp: timestamp,
+        results_count: resultsCount,
+      });
+    }
 
     return results;
   }
