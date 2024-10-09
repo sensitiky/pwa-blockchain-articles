@@ -54,7 +54,9 @@ const Header = () => {
   const { scrollYProgress } = useScroll();
   const [visible, setVisible] = useState(false);
   const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
+  const MIX_URL = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
 
+  mixpanel.init(MIX_URL || '', { track_pageview: true });
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (query.trim().length > 2) {

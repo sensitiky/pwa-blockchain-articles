@@ -27,7 +27,6 @@ import styled from 'styled-components';
 import parse, { DOMNode, domToReact, Element } from 'html-react-parser';
 import LoginCard from '@/assets/login';
 import ShareBar from '@/components/ui/sharebar';
-import { v4 as uuidv4 } from 'uuid';
 import mixpanel from 'mixpanel-browser';
 
 const Container = styled.div`
@@ -90,7 +89,7 @@ interface Comment {
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
-
+const MIX_URL = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
 const PostPage = () => {
   const { user } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
@@ -105,6 +104,7 @@ const PostPage = () => {
   const router = useRouter();
   const { id } = useParams();
 
+  mixpanel.init(MIX_URL || '', { track_pageview: true });
   useEffect(() => {
     if (id) {
       fetchPost(id as string);
@@ -321,7 +321,7 @@ const PostPage = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const parseHtmlContent = (htmlContent: string) => {
+  const parseHtmlContent = (htmlContent: string, post: any) => {
     return parse(htmlContent, {
       replace: (domNode) => {
         if (domNode instanceof Element) {
@@ -347,6 +347,28 @@ const PostPage = () => {
           }
 
           if (['iframe', 'b', 'strong', 'i', 'em', 'a'].includes(tagName)) {
+            if (tagName === 'a') {
+              const linkType = 'External Post Link';
+              const linkUrl = attribs.href;
+              const timestamp = new Date().toISOString();
+
+              const handleClick = () => {
+                mixpanel.track('External Post Link Clicked', {
+                  event: 'External Post Link Clicked',
+                  link_url: linkUrl,
+                  post_id: 'user_' + post?.author?.id,
+                  timestamp: timestamp,
+                  link_type: linkType,
+                });
+              };
+
+              return (
+                <a {...attribs} onClick={handleClick}>
+                  {domToReact(domNode.children as DOMNode[])}
+                </a>
+              );
+            }
+
             return domToReact([domNode] as DOMNode[]);
           }
         }
@@ -570,7 +592,7 @@ const PostPage = () => {
             <div className="prose prose-lg mx-auto mt-8">
               <div className="bg-white p-6 rounded-lg shadow-md overflow-hidden">
                 <div className="truncate break-words">
-                  {parseHtmlContent(post.description)}
+                  {parseHtmlContent(post.description, post)}
                 </div>
               </div>
             </div>

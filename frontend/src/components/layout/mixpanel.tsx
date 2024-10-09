@@ -4,7 +4,9 @@ import mixpanel from 'mixpanel-browser';
 import { v4 as uuidv4 } from 'uuid';
 
 export default function MixPanel() {
-  mixpanel.init(process.env.NEXT_PUBLIC_MIXPANEL_TOKEN || '');
+  const MIX_URL = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
+
+  mixpanel.init(MIX_URL || '', { track_pageview: true });
 
   const sessionIdRef = useRef<string>(uuidv4());
   const sessionStartTimeRef = useRef<number>(Date.now());
@@ -35,7 +37,7 @@ export default function MixPanel() {
       org: networkProvider = '',
     } = locationData || {};
 
-    /*console.log('User Properties:', {
+    console.log('User Properties:', {
       userAgent,
       connectionType: connection.effectiveType || 'unknown',
       screenResolution,
@@ -45,9 +47,9 @@ export default function MixPanel() {
       city,
       region,
       networkProvider,
-    });*/
+    });
 
-    /* if (mixpanel.people) {
+    if (mixpanel.people) {
       mixpanel.people.set({
         $os: navigator.platform,
         $browser: userAgent,
@@ -65,26 +67,13 @@ export default function MixPanel() {
       });
     } else {
       console.error('mixpanel.people is undefined');
-    }*/
+    }
 
     mixpanel.track('Session Started', {
       session_id: sessionIdRef.current,
       timestamp: timestamp,
       device_type: userAgent,
-      os: navigator.platform,
-      browser_name: userAgent,
-      browser_version: navigator.appVersion,
-      screen_resolution: screenResolution,
-      connection_type: connection ? connection.effectiveType : 'unknown',
-      country,
-      city,
-      region,
-      network_provider: networkProvider,
-      language: navigator.language,
-      // Add more properties as needed
     });
-
-    // console.log('Session Started Event Tracked');
   }
 
   const MILLISECONDS_TO_SECONDS = 1000;
@@ -92,21 +81,14 @@ export default function MixPanel() {
     const sessionEndTime = Date.now();
     const sessionDuration =
       (sessionEndTime - sessionStartTimeRef.current) / MILLISECONDS_TO_SECONDS;
+    console.log(sessionDuration);
     const timestamp = new Date().toISOString();
-
-    /*  console.log('Session Ended:', {
-      session_id: sessionIdRef.current,
-      timestamp: timestamp,
-      session_duration: sessionDuration,
-    });*/
 
     mixpanel.track('Session Ended', {
       session_id: sessionIdRef.current,
       timestamp: timestamp,
       session_duration: sessionDuration,
     });
-
-    // console.log('Session Ended Event Tracked');
   }
 
   useEffect(() => {

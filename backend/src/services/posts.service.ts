@@ -113,21 +113,27 @@ export class PostsService {
       await this.postsRepository.save(post);
       await this.usersRepository.increment({ id: author.id }, 'postCount', 1);
       await this.invalidateCache();
+      const postLength = post.content.length;
+      const timestamp = new Date().toISOString();
 
       //Log the event with Mixpanel
       console.log('Post Created', {
-        postID: post.id,
-        postTitle: post.title,
-        authorID: author.id,
-        authorName: author.user,
+        postID: 'post_' + post.id,
+        postTitle: 'user_' + post.title,
+        timestamp: timestamp,
+        category: post.category,
+        tags: post.tags,
+        content_length: postLength,
       });
 
       //Track event with Mixpanel
       await this.metricService.trackEvent('Post Created', {
-        postID: post.id,
-        postTitle: post.title,
-        authorID: author.id,
-        authorName: author.user,
+        postID: 'post_' + post.id,
+        postTitle: 'user_' + post.title,
+        timestamp: timestamp,
+        category: post.category,
+        tags: post.tags,
+        content_length: postLength,
       });
 
       return post;
@@ -343,17 +349,19 @@ export class PostsService {
         const mimeType = isGif ? 'image/gif' : 'image/jpeg';
         post.imageUrlBase64 = `data:${mimeType};base64,${post.imageUrl.toString('base64')}`;
       }
+      const timestamp = new Date().toISOString();
+
       console.log(`Post open. ID: ${id} title: ${post.title}`, {
         postID: post.id,
         title: post.title,
         authorID: post.author.id,
         authorUsername: post.author.user,
       });
-      await this.metricService.trackEvent(`Post open ${id}`, {
-        postID: post.id,
-        title: post.title,
-        authorID: post.author.id,
-        authorUsername: post.author.user,
+      await this.metricService.trackEvent(`Post open`, {
+        post_id: 'post_' + post.id,
+        user_id: 'user_' + post.author.id,
+        timestamp: timestamp,
+        //TODO added viewsource & post_count
       });
       return post;
     });

@@ -31,7 +31,6 @@ const ShareBar = ({ postUrl }: { postUrl: string }) => {
     linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${postUrl}`,
     medium: `https://medium.com/p/import?url=${postUrl}`,
   };
-
   return (
     <ShareBarContainer>
       <a href={shareLinks.facebook} target="_blank" rel="noopener noreferrer">

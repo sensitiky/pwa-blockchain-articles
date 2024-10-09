@@ -67,10 +67,11 @@ export class FavoritesService {
 
     // Track event with Mixpanel
     await this.metricService.trackEvent('Favorite Created', {
-      favoriteID: 'favorite_' + favorite.id,
+      bookmark_id: 'bookmark_' + favorite.id,
       user: 'user_' + user.id,
       post: 'post_' + post ? post.id : null,
       timestamp: timestamp,
+      bookmarks_removed_count: user.favorites.length,
       //TODO add bookmarked counter
     });
 
@@ -127,7 +128,7 @@ export class FavoritesService {
 
     // Track event with Mixpanel
     await this.metricService.trackEvent('Favorite Removed', {
-      favoriteID: 'favorite_' + favorite.id,
+      favorite_id: 'favorite_' + favorite.id,
       post_id: 'post_' + postId,
       user_id: 'user_' + userId,
       timestamp: timestamp,
