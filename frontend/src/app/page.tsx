@@ -390,14 +390,14 @@ const HomePage: React.FC = () => {
                     </div>
                     <div>
                       <Link href={`/posts/${post.id}`}>
-                        <h3 className="text-xl font-bold mb-2 text-[#263238] line-clamp-2">
+                        <h3 className="text-xl font-bold mb-2 text-[#263238] line-clamp-2 break-words">
                           {post.title}
                         </h3>
                       </Link>
                       {!post.imageUrlBase64 &&
                         typeof post.description === 'string' &&
                         !post.description.includes('<iframe') && (
-                          <p className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-3">
+                          <p className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-3 break-words">
                             {typeof post.description === 'string'
                               ? parse(post.description.replace(/<img.*?>/g, ''))
                               : JSON.stringify(post.description)}

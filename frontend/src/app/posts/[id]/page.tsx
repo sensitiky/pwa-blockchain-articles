@@ -553,7 +553,7 @@ const PostPage = () => {
             {calculateReadingTime(post.description)} min read
           </p>
           <section className="prose prose-slate">
-            <h1 className="text-4xl font-bold text-center mt-6 flex-wrap">
+            <h1 className="text-4xl font-bold text-center mt-6 flex-wrap break-words">
               {post.title}
             </h1>
             {post.imageUrl && (
@@ -569,7 +569,7 @@ const PostPage = () => {
             )}
             <div className="prose prose-lg mx-auto mt-8">
               <div className="bg-white p-6 rounded-lg shadow-md overflow-hidden">
-                <div className="truncate">
+                <div className="truncate break-words">
                   {parseHtmlContent(post.description)}
                 </div>
               </div>
