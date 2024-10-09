@@ -125,7 +125,7 @@ export class FavoritesService {
     console.log('Tracking Favorite Removed event:', {
       bookmark_id: 'bookmark_' + favorite.id,
       post_id: 'post_' + postId,
-      user_id: 'user_' + userId,
+      distinct_id: userId,
       timestamp: timestamp,
       bookmark_removed_count: bookmarksCount,
       //TODO add bookmark removed counter
@@ -135,7 +135,7 @@ export class FavoritesService {
     await this.metricService.trackEvent('Favorite Removed', {
       bookmark_id: 'bookmark_' + favorite.id,
       post_id: 'post_' + postId,
-      distinct_id: 'user_' + userId,
+      distinct_id: userId,
       timestamp: timestamp,
       bookmark_removed_count: bookmarksCount,
       //TODO add bookmark removed counter

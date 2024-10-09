@@ -76,7 +76,7 @@ export class CommentsService {
       where: { id: commentId },
       relations: ['author'],
     });
-
+    const post = comment.post;
     if (!comment) {
       console.error('Comment not found');
       throw new NotFoundException('Comment not found');
@@ -103,7 +103,7 @@ export class CommentsService {
       );
     }
     const timestamp = new Date().toISOString();
-
+    const commentLength = comment.content.length;
     console.log('Comment removed', {
       comment_id: 'comment_' + comment.id,
       user_id: 'user_' + userId,
@@ -114,6 +114,10 @@ export class CommentsService {
       comment_id: 'comment_' + commentId,
       distinct_id: userId,
       timestamp: timestamp,
+      username: comment.author,
+      post_id: 'post_' + (post ? post.id : null),
+      comment_content: comment.content,
+      comment_length: commentLength,
     });
     await this.commentsRepository.remove(comment);
   }
