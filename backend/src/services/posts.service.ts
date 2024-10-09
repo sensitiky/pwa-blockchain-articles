@@ -121,7 +121,7 @@ export class PostsService {
       await this.postsRepository.save(post);
       await this.usersRepository.increment({ id: author.id }, 'postCount', 1);
       await this.invalidateCache();
-      const postLength = post.content.length;
+      const postLength = post.content ? post.content.length : 0;
       const timestamp = new Date().toISOString();
 
       // Log the event with Mixpanel
