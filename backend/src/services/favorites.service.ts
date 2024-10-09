@@ -55,14 +55,16 @@ export class FavoritesService {
     });
     await this.favoritesRepository.save(favorite);
     const timestamp = new Date().toISOString();
-
+    const bookmarksCount = await this.favoritesRepository.count({
+      where: { user: { id: user.id } },
+    });
     // Log the event data
     console.log('Tracking Favorite Created event:', {
       bookmark_id: 'bookmark_' + favorite.id,
       user: 'user_' + user.id,
       post: 'post_' + post ? post.id : null,
       timestamp: timestamp,
-      bookmarks_removed_count: user.favorites,
+      bookmarks_count: bookmarksCount,
       //TODO add bookmarked counter
     });
 
@@ -72,7 +74,7 @@ export class FavoritesService {
       user: 'user_' + user.id,
       post: 'post_' + post ? post.id : null,
       timestamp: timestamp,
-      bookmarks_removed_count: user.favorites,
+      bookmarks_count: bookmarksCount,
       //TODO add bookmarked counter
     });
 
@@ -117,22 +119,26 @@ export class FavoritesService {
 
     await this.favoritesRepository.remove(favorite);
     const timestamp = new Date().toISOString();
-
+    const bookmarksCount = await this.favoritesRepository.count({
+      where: { user: { id: userId } },
+    });
     // Log the event data
     console.log('Tracking Favorite Removed event:', {
-      favoriteID: 'favorite_' + favorite.id,
+      bookmark_id: 'bookmark_' + favorite.id,
       post_id: 'post_' + postId,
       user_id: 'user_' + userId,
       timestamp: timestamp,
+      bookmark_removed_count: bookmarksCount,
       //TODO add bookmark removed counter
     });
 
     // Track event with Mixpanel
     await this.metricService.trackEvent('Favorite Removed', {
-      favorite_id: 'favorite_' + favorite.id,
+      bookmark_id: 'bookmark_' + favorite.id,
       post_id: 'post_' + postId,
       user_id: 'user_' + userId,
       timestamp: timestamp,
+      bookmark_removed_count: bookmarksCount,
       //TODO add bookmark removed counter
     });
   }
