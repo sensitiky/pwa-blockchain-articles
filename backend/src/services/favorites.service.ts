@@ -58,10 +58,11 @@ export class FavoritesService {
 
     // Log the event data
     console.log('Tracking Favorite Created event:', {
-      favoriteID: 'favorite_' + favorite.id,
+      bookmark_id: 'bookmark_' + favorite.id,
       user: 'user_' + user.id,
       post: 'post_' + post ? post.id : null,
       timestamp: timestamp,
+      bookmarks_removed_count: user.favorites,
       //TODO add bookmarked counter
     });
 
