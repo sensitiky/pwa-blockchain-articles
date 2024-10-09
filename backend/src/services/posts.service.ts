@@ -92,7 +92,6 @@ export class PostsService {
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
     try {
-      // Parse tags if they are in JSON string format
       const tags =
         typeof createPostDto.tags === 'string'
           ? JSON.parse(createPostDto.tags)
@@ -142,6 +141,7 @@ export class PostsService {
         category: post.category,
         tags: post.tags,
         content_length: postLength,
+        post_count: post.author.postCount,
       });
 
       return post;
