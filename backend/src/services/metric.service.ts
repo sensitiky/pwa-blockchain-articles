@@ -26,8 +26,10 @@ export class MetricService {
   async trackEvent(
     event: string,
     properties: Record<string, any> = {},
+    userProperties: Record<string, any> = {},
   ): Promise<void> {
-    this.mixpanel.track(event, properties);
+    const mergedProperties = { ...properties, ...userProperties };
+    this.mixpanel.track(event, mergedProperties);
   }
 
   async setUserProperties(

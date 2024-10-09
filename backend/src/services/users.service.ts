@@ -248,15 +248,18 @@ export class UsersService implements IUserActivityService {
       distinct_id: savedUser.id,
       email: savedUser.email,
     });
-    await this.metricService.trackEvent('User Registered', {
-      distinct_id: savedUser.id,
-      timestamp: timestamp,
-      registration_method: 'email',
-    });
-    await this.metricService.setUserProperties('User Registered', {
-      user_type: 'default',
-      registration_date: timestamp,
-    });
+    await this.metricService.trackEvent(
+      'User Registered',
+      {
+        distinct_id: savedUser.id,
+        timestamp: timestamp,
+        registration_method: 'email',
+      },
+      {
+        user_type: 'default',
+        registration_date: timestamp,
+      },
+    );
     return savedUser;
   }
 
