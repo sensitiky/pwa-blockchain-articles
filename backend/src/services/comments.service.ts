@@ -114,7 +114,7 @@ export class CommentsService {
       comment_id: 'comment_' + commentId,
       distinct_id: userId,
       timestamp: timestamp,
-      username: comment.author,
+      username: comment.author.user,
       post_id: 'post_' + (post ? post.id : null),
       comment_content: comment.content,
       comment_length: commentLength,
