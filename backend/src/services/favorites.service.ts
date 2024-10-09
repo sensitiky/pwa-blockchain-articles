@@ -71,8 +71,8 @@ export class FavoritesService {
     // Track event with Mixpanel
     await this.metricService.trackEvent('Favorite Created', {
       bookmark_id: 'bookmark_' + favorite.id,
-      user: 'user_' + user.id,
-      post: 'post_' + post ? post.id : null,
+      user_id: 'user_' + user.id,
+      post_id: 'post_' + post ? post.id : null,
       timestamp: timestamp,
       bookmarks_count: bookmarksCount,
       //TODO add bookmarked counter

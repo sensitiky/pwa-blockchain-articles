@@ -242,13 +242,20 @@ export class UsersService implements IUserActivityService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.userRepository.create(createUserDto);
     const savedUser = await this.userRepository.save(user);
+    const timestamp = new Date().toISOString();
+
     console.log('User Registered', {
       distinct_id: savedUser.id,
       email: savedUser.email,
     });
     await this.metricService.trackEvent('User Registered', {
       distinct_id: savedUser.id,
-      email: savedUser.email,
+      timestamp: timestamp,
+      registration_method: 'email',
+    });
+    await this.metricService.setUserProperties('User Registered', {
+      user_type: 'default',
+      registration_date: timestamp,
     });
     return savedUser;
   }

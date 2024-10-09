@@ -19,6 +19,7 @@ import { Cache } from 'cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { TagDto } from '../dto/tag.dto';
 import { MetricService } from './metric.service';
+import { distinct } from 'rxjs';
 
 @Injectable()
 export class PostsService {
@@ -128,7 +129,7 @@ export class PostsService {
 
       //Track event with Mixpanel
       await this.metricService.trackEvent('Post Created', {
-        postID: 'post_' + post.id,
+        distinct_id: post.id,
         postTitle: 'user_' + post.title,
         timestamp: timestamp,
         category: post.category,

@@ -112,23 +112,6 @@ export class AuthService {
       { userID: userDto.id, email: userDto.email, timestamp: timestamp },
     );
 
-    await this.metricService.trackEvent(
-      `User Registered with ${type} ID: ${userDto.id} Email: ${userDto.email}`,
-      {
-        user_id: 'user_' + userDto.id,
-        email: userDto.email,
-        timestamp: timestamp,
-        registrationType: type,
-      },
-    );
-
-    // Set user properties
-    await this.metricService.setUserProperties(userDto.id.toString(), {
-      email: userDto.email,
-      userType: 'default',
-      registrationTimestamp: timestamp,
-    });
-
     return userDto;
   }
 
