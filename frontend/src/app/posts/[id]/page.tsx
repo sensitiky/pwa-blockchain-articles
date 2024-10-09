@@ -144,7 +144,10 @@ const PostPage = () => {
         alert('You need to be authenticated to interact');
         return;
       }
-
+      if (commentContent.length > 300) {
+        alert('Title exceeds the maximum length of 140 characters.');
+        return;
+      }
       try {
         const response = await axios.post(`${API_URL}/comments`, {
           content: commentContent,
@@ -455,10 +458,10 @@ const PostPage = () => {
                   </Avatar>
                 </Link>
                 <div className="text-center sm:text-left">
-                  <p className="text-base font-medium text-black">
+                  <p className="text-base font-medium text-black truncate">
                     {post.author?.user ?? 'Author'}
                   </p>
-                  <p className="text-base text-gray-500 line-clamp-2">
+                  <p className="text-base text-gray-500 line-clamp-2 truncate">
                     {post.author?.role}
                   </p>
                 </div>
@@ -550,7 +553,7 @@ const PostPage = () => {
             {calculateReadingTime(post.description)} min read
           </p>
           <section className="prose prose-slate">
-            <h1 className="text-4xl font-bold text-center mt-6">
+            <h1 className="text-4xl font-bold text-center mt-6 flex-wrap">
               {post.title}
             </h1>
             {post.imageUrl && (
@@ -565,8 +568,10 @@ const PostPage = () => {
               </div>
             )}
             <div className="prose prose-lg mx-auto mt-8">
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                {parseHtmlContent(post.description)}
+              <div className="bg-white p-6 rounded-lg shadow-md overflow-hidden">
+                <div className="truncate">
+                  {parseHtmlContent(post.description)}
+                </div>
               </div>
             </div>
           </section>
@@ -665,8 +670,10 @@ const PostPage = () => {
                         </Avatar>
                       </Link>
                       <div>
-                        <p className="text-base font-normal">{authorName}</p>
-                        <p className="text-base text-gray-500 font-light">
+                        <p className="text-base font-normal truncate">
+                          {authorName}
+                        </p>
+                        <p className="text-base text-gray-500 font-light truncate">
                           {author.role}
                         </p>
                         <div className="text-sm text-gray-500">
@@ -685,17 +692,21 @@ const PostPage = () => {
                       </button>
                     )}
                   </div>
-                  <p className="mt-2 text-base">{comment.content}</p>
+                  <p className="mt-2 text-base truncate">{comment.content}</p>
                 </article>
               );
             })}
           </section>
           <form onSubmit={handleCommentSubmit} className="mt-4">
+            <p className="text-gray-500 flex justify-end">
+              {commentContent.length}/300
+            </p>
             <textarea
               className="w-full border rounded-md p-2 resize-none"
               placeholder="Add a comment"
               rows={5}
               value={commentContent}
+              maxLength={300}
               onChange={(e) => setCommentContent(e.target.value)}
             />
             <Button

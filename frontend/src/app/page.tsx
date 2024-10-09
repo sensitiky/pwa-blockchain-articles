@@ -390,7 +390,7 @@ const HomePage: React.FC = () => {
                     </div>
                     <div>
                       <Link href={`/posts/${post.id}`}>
-                        <h3 className="text-xl font-bold mb-2 text-[#263238]">
+                        <h3 className="text-xl font-bold mb-2 text-[#263238] line-clamp-2">
                           {post.title}
                         </h3>
                       </Link>
