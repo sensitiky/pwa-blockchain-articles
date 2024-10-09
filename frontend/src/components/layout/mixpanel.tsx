@@ -92,7 +92,11 @@ export default function MixPanel() {
   }
 
   useEffect(() => {
-    trackUserProperties();
+    try {
+      trackUserProperties();
+    } catch (error) {
+      console.error('Error tracking user properties:', error);
+    }
 
     window.addEventListener('beforeunload', trackSessionEnd);
 
