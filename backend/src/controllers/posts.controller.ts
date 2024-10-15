@@ -11,6 +11,7 @@ import {
   BadRequestException,
   Delete,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PostsService } from '../services/posts.service';
@@ -18,6 +19,7 @@ import { CreatePostDto } from '../dto/posts.dto';
 import { Request } from 'express';
 import { Express } from 'express';
 import { Post } from '../entities/post.entity';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -94,9 +96,11 @@ export class PostsController {
     return postDto;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(@Param('id') id: number) {
-    await this.postsService.deletePost(id);
+  async remove(@Param('id') id: number, @Req() req: any) {
+    const userEmail = req.user.email;
+    await this.postsService.deletePost(id, userEmail);
     return { message: 'Post deleted successfully' };
   }
 

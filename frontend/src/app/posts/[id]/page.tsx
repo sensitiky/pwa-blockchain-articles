@@ -91,7 +91,7 @@ interface Comment {
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 const MIX_URL = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
 const PostPage = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [showLoginCard, setShowLoginCard] = useState(false);
@@ -271,13 +271,18 @@ const PostPage = () => {
   };
 
   const handleDelete = async () => {
-    if (!user) {
+    if (!user || !token) {
       console.error('User is not logged in');
       alert('You need to be authenticated to delete the post');
       return;
     }
+    console.log(token);
     try {
-      await axios.delete(`${API_URL}/posts/${id}`);
+      await axios.delete(`${API_URL}/posts/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       alert('Post deleted successfully!');
       router.push('/articles');
     } catch (error) {
@@ -370,6 +375,10 @@ const PostPage = () => {
             }
 
             return domToReact([domNode] as DOMNode[]);
+          }
+
+          if (tagName === 'img') {
+            return <img {...attribs} alt="" />;
           }
         }
       },
@@ -551,7 +560,8 @@ const PostPage = () => {
                 )}
               </div>
             </div>
-            {user?.id === post.author?.id && (
+            {(user?.id === post.author?.id ||
+              user?.email === 'mariomcorrea3@gmail.com') && (
               <div className="flex space-x-2">
                 <Button
                   variant="ghost"

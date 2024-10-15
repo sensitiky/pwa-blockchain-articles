@@ -1,14 +1,15 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import Slider from "react-slick";
-import Image from "next/image";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import axios from "axios";
-import parse, { DOMNode, Element } from "html-react-parser";
-import { useAuth } from "../../context/authContext";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+'use client';
+import React, { useState, useEffect } from 'react';
+import Slider from 'react-slick';
+import Image from 'next/image';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import axios from 'axios';
+import { parseDocument, DomUtils } from 'htmlparser2';
+import { useAuth } from '../../context/authContext';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import parse from 'html-react-parser';
 
 type Category = {
   id: number;
@@ -92,15 +93,14 @@ const calculateReadingTime = (text: string) => {
   return Math.ceil(numberOfWords / wordsPerMinute);
 };
 
-// Function to filter out iframes from the content
 const removeIframes = (htmlString: string) => {
-  return parse(htmlString, {
-    replace: (domNode: DOMNode) => {
-      if (domNode instanceof Element && domNode.name === "iframe") {
-        return null;
-      }
-    },
-  });
+  const document = parseDocument(htmlString);
+  const iframes = DomUtils.findAll(
+    (elem) => elem.name === 'iframe',
+    document.children
+  );
+  iframes.forEach((iframe) => DomUtils.removeElement(iframe));
+  return DomUtils.getOuterHTML(document);
 };
 
 const ArticleCarousel = () => {
@@ -110,7 +110,7 @@ const ArticleCarousel = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [comments, setComments] = useState<Comment[]>([]);
   const [post, setPost] = useState<Post | null>(null);
-  const [sortOrder, setSortOrder] = useState<string>("recent");
+  const [sortOrder, setSortOrder] = useState<string>('recent');
 
   const fetchPosts = async (page: number, categoryId?: number) => {
     try {
@@ -122,14 +122,14 @@ const ArticleCarousel = () => {
       setPosts(postsData || []);
       setTotalPages(response.data.totalPages || 1);
     } catch (error) {
-      console.error("Error fetching posts", error);
+      console.error('Error fetching posts', error);
     }
   };
 
   const handleFavorite = async (postId: number, commentId?: number) => {
     if (!user) {
-      console.error("User is not logged in");
-      alert("You need to be authenticated in order to interact");
+      console.error('User is not logged in');
+      alert('You need to be authenticated in order to interact');
       return;
     }
     try {
@@ -153,7 +153,7 @@ const ArticleCarousel = () => {
         );
       }
     } catch (error) {
-      console.error("Error favoriting post or comment:", error);
+      console.error('Error favoriting post or comment:', error);
     }
   };
 
@@ -198,7 +198,7 @@ const ArticleCarousel = () => {
                 </div>
                 <div className="overflow-hidden">
                   <div className="text-sm text-gray-900 line-clamp-3">
-                    {removeIframes(post.description)}
+                    {parse(removeIframes(post.description))}
                   </div>
                 </div>
                 <div className="flex-grow"></div>
@@ -237,14 +237,14 @@ const ArticleCarousel = () => {
                           />
 
                           <g id="SVGRepo_iconCarrier">
-                            {" "}
+                            {' '}
                             <path
                               d="M19 19.2674V7.84496C19 5.64147 17.4253 3.74489 15.2391 3.31522C13.1006 2.89493 10.8994 2.89493 8.76089 3.31522C6.57467 3.74489 5 5.64147 5 7.84496V19.2674C5 20.6038 6.46752 21.4355 7.63416 20.7604L10.8211 18.9159C11.5492 18.4945 12.4508 18.4945 13.1789 18.9159L16.3658 20.7604C17.5325 21.4355 19 20.6038 19 19.2674Z"
                               stroke="#6b7280"
                               stroke-width="1.5"
                               stroke-linecap="round"
                               stroke-linejoin="round"
-                            />{" "}
+                            />{' '}
                           </g>
                         </svg>
                         <span>{post.favoritescount || 0}</span>

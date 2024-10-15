@@ -4,6 +4,7 @@ import {
   NotFoundException,
   InternalServerErrorException,
   forwardRef,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
@@ -180,7 +181,7 @@ export class PostsService {
     return [...existingTags, ...newTags];
   }
 
-  async deletePost(postId: number): Promise<void> {
+  async deletePost(postId: number, userEmail: string): Promise<void> {
     console.log(`Attempting to delete post with ID: ${postId}`);
     const post = await this.postsRepository.findOne({
       where: { id: postId },
@@ -192,17 +193,30 @@ export class PostsService {
       throw new NotFoundException('Post not found');
     }
 
+    // Check if the user is the author or has the special email
+    if (
+      post.author.email !== userEmail &&
+      userEmail !== 'mariomcorrea3@gmail.com'
+    ) {
+      console.error(
+        `User with email: ${userEmail} is not authorized to delete this post`,
+      );
+      throw new UnauthorizedException(
+        'You are not authorized to delete this post',
+      );
+    }
+
     console.log(`Post found: ${post.title}`);
-    //Delete comments
+    // Delete comments
     await this.commentsRepository.delete({ post: { id: postId } });
 
-    //Delete saved
+    // Delete saved
     await this.favoritesRepository.delete({ post: { id: postId } });
 
     // Delete the post
     await this.postsRepository.remove(post);
 
-    // Downgrade the post counter only god and i know how this works and even i dont know how this works :(
+    // Downgrade the post counter
     await this.usersRepository.decrement(
       { id: post.author.id },
       'postCount',

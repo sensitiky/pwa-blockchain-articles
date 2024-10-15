@@ -30,6 +30,7 @@ export interface User {
   avatar?: string;
   postCount?: number;
   role?: string;
+  token?: string;
 }
 
 export interface Post {
