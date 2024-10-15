@@ -656,7 +656,9 @@ const PostPage = () => {
             </div>
           </div>
           <div className="w-fit justify-start mt-2">
-            {showShareBar && <ShareBar postUrl={window.location.href} />}
+            {showShareBar && (
+              <ShareBar postUrl={window.location.href} title={post.title} />
+            )}
           </div>
           <div className="flex w-full justify-center">
             <div className="mt-20 w-[30rem] justify-center bg-[#000916]/20 h-[0.1rem]"></div>

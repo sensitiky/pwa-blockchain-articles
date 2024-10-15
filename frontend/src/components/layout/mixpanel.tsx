@@ -6,7 +6,10 @@ import { v4 as uuidv4 } from 'uuid';
 export default function MixPanel() {
   const MIX_URL = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
 
-  mixpanel.init(MIX_URL || '', { track_pageview: true });
+  mixpanel.init(MIX_URL || '', {
+    debug: true,
+    ignore_dnt: true,
+  });
 
   const sessionIdRef = useRef<string>(uuidv4());
   const sessionStartTimeRef = useRef<number>(Date.now());
@@ -49,7 +52,7 @@ export default function MixPanel() {
       networkProvider,
     });*/
 
-    if (mixpanel.people) {
+    /*if (mixpanel.people) {
       mixpanel.people.set({
         $os: navigator.platform,
         $browser: userAgent,
@@ -67,13 +70,9 @@ export default function MixPanel() {
       });
     } else {
       console.error('mixpanel.people is undefined');
-    }
+    }*/
 
-    mixpanel.track('Session Started', {
-      session_id: sessionIdRef.current,
-      timestamp: timestamp,
-      device_type: userAgent,
-    });
+    mixpanel.track('Session started');
   }
 
   const MILLISECONDS_TO_SECONDS = 1000;

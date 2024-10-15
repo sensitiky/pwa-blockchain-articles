@@ -24,11 +24,13 @@ const ShareBarContainer = styled.div`
   }
 `;
 
-const ShareBar = ({ postUrl }: { postUrl: string }) => {
+const ShareBar = ({ postUrl, title }: { postUrl: string; title: string }) => {
+  const message = `I want to share with you this interesting article "${title}" so you can read and learn the same as me`;
+  const encodedMessage = encodeURIComponent(message);
   const shareLinks = {
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${postUrl}`,
-    twitter: `https://twitter.com/intent/tweet?url=${postUrl}`,
-    linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${postUrl}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${postUrl}&quote=${encodedMessage}`,
+    twitter: `https://twitter.com/intent/tweet?url=${postUrl}&text=${encodedMessage}`,
+    linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${postUrl}&summary=${encodedMessage}`,
     medium: `https://medium.com/p/import?url=${postUrl}`,
   };
   return (
