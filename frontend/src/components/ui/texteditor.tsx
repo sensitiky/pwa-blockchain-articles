@@ -55,7 +55,7 @@ export default function RichTextEditor({
     editable: !disabled,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
-      console.log(editor.getHTML());
+      //console.log(editor.getHTML());
     },
   });
 
@@ -93,12 +93,6 @@ export default function RichTextEditor({
             disabled ? 'pointer-events-none opacity-60' : ''
           } editor-content`}
         />
-      </div>
-      <div className="mt-4">
-        <h3 className="text-lg font-medium mb-2">HTML Output:</h3>
-        <pre className="bg-gray-100 p-4 rounded-lg border border-gray-300">
-          {editor?.getHTML()}
-        </pre>
       </div>
     </div>
   );

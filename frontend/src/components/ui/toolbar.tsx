@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Editor } from '@tiptap/react';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,10 +17,25 @@ interface ToolbarProps {
 }
 
 export default function Toolbar({ editor }: ToolbarProps) {
+  const toolbarRef = useRef<HTMLDivElement>(null);
   const [videoPopupOpen, setVideoPopupOpen] = useState(false);
   const [linkPopupOpen, setLinkPopupOpen] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
   const [linkUrl, setLinkUrl] = useState('');
+
+  useEffect(() => {
+    const toolbarElement = toolbarRef.current;
+    if (toolbarElement) {
+      const handleClick = (event: MouseEvent) => {
+        event.stopPropagation();
+        event.preventDefault(); // Prevent default form submission behavior
+      };
+      toolbarElement.addEventListener('click', handleClick);
+      return () => {
+        toolbarElement.removeEventListener('click', handleClick);
+      };
+    }
+  }, []);
 
   const handleImageUpload = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,11 +114,17 @@ export default function Toolbar({ editor }: ToolbarProps) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2 sm:gap-4 p-2 sm:p-4 bg-gray-200 rounded-lg shadow-md">
+    <div
+      ref={toolbarRef}
+      className="flex flex-wrap items-center gap-2 sm:gap-4 p-2 sm:p-4 bg-gray-200 rounded-lg shadow-md"
+    >
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => editor.chain().focus().toggleBold().run()}
+        onClick={(e) => {
+          e.preventDefault();
+          editor.chain().focus().toggleBold().run();
+        }}
         className={`p-1 sm:p-2 rounded-full ${
           editor.isActive('bold') ? 'bg-gray-300' : ''
         }`}
@@ -113,7 +134,10 @@ export default function Toolbar({ editor }: ToolbarProps) {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => editor.chain().focus().toggleItalic().run()}
+        onClick={(e) => {
+          e.preventDefault();
+          editor.chain().focus().toggleItalic().run();
+        }}
         className={`p-1 sm:p-2 rounded-full ${
           editor.isActive('italic') ? 'bg-gray-300' : ''
         }`}
@@ -123,7 +147,10 @@ export default function Toolbar({ editor }: ToolbarProps) {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => editor.chain().focus().toggleUnderline().run()}
+        onClick={(e) => {
+          e.preventDefault();
+          editor.chain().focus().toggleUnderline().run();
+        }}
         className={`p-1 sm:p-2 rounded-full ${
           editor.isActive('underline') ? 'bg-gray-300' : ''
         }`}
@@ -133,7 +160,10 @@ export default function Toolbar({ editor }: ToolbarProps) {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+        onClick={(e) => {
+          e.preventDefault();
+          editor.chain().focus().toggleCodeBlock().run();
+        }}
         className={`p-1 sm:p-2 rounded-full ${
           editor.isActive('codeBlock') ? 'bg-gray-300' : ''
         }`}
@@ -143,7 +173,10 @@ export default function Toolbar({ editor }: ToolbarProps) {
       <Button
         variant="ghost"
         size="icon"
-        onClick={addIndentation}
+        onClick={(e) => {
+          e.preventDefault();
+          addIndentation();
+        }}
         className="p-1 sm:p-2 rounded-full bg-gray-300 hover:bg-[#F1F5F9]"
       >
         <Indent className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
@@ -160,7 +193,10 @@ export default function Toolbar({ editor }: ToolbarProps) {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => setVideoPopupOpen(true)}
+        onClick={(e) => {
+          e.preventDefault();
+          setVideoPopupOpen(true);
+        }}
         className="p-1 sm:p-2 rounded-full bg-gray-300 hover:bg-[#F1F5F9]"
       >
         <AiOutlineVideoCamera className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
@@ -168,7 +204,10 @@ export default function Toolbar({ editor }: ToolbarProps) {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => setLinkPopupOpen(true)}
+        onClick={(e) => {
+          e.preventDefault();
+          setLinkPopupOpen(true);
+        }}
         className="p-1 sm:p-2 rounded-full bg-gray-300 hover:bg-[#F1F5F9]"
       >
         <LinkIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />

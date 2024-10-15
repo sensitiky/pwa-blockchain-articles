@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
@@ -34,12 +34,12 @@ const EditPostPage = () => {
   const { id } = useParams();
   const router = useRouter();
   const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
+  const formRef = useRef<HTMLFormElement>(null);
 
   const fetchPost = async (id: string) => {
     try {
       const response = await axios.get(`${API_URL}/posts/${id}`);
       const postData = response.data;
-      // console.log(postData.description);
       setPost({
         title: postData.title,
         content: postData.content,
@@ -59,6 +59,21 @@ const EditPostPage = () => {
       fetchPost(id as string);
     }
   }, [id]);
+
+  useEffect(() => {
+    const formElement = formRef.current;
+    if (formElement) {
+      const handleClick = (event: MouseEvent) => {
+        if ((event.target as HTMLElement).closest('.toolbar')) {
+          event.preventDefault();
+        }
+      };
+      formElement.addEventListener('click', handleClick);
+      return () => {
+        formElement.removeEventListener('click', handleClick);
+      };
+    }
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -200,6 +215,7 @@ const EditPostPage = () => {
       <div className="container mx-auto p-8">
         <div className="flex flex-col items-center">
           <form
+            ref={formRef}
             onSubmit={handleFormSubmit}
             className="space-y-4 w-full max-w-3xl shadow-2xl bg-gray-300 rounded-lg"
           >
@@ -267,7 +283,7 @@ const EditPostPage = () => {
             </div>
             <div className="w-full justify-end flex">
               <Button
-                type="submit"
+                onClick={handleFormSubmit}
                 className="p-10 mr-4 mb-4 bg-[#000916] text-white px-4 py-2 rounded-full shadow-md hover:bg-[#000916]/80"
               >
                 Update Post
