@@ -104,7 +104,6 @@ const HomePage: React.FC = () => {
       console.error("Error fetching category counts:", error);
     }
   }, []);
-  console.log("Hi!");
   const fetchPosts = async () => {
     try {
       const url = selectedTagId
