@@ -141,7 +141,7 @@ const HomePage: React.FC = () => {
   };
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
-
+  console.log("Only god knows how to fix this TSX");
   return (
     <div className="h-full">
       <Header />
