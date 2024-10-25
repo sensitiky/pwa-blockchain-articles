@@ -276,7 +276,7 @@ const PostPage = () => {
       alert('You need to be authenticated to delete the post');
       return;
     }
-    console.log(token);
+    // console.log(token);
     try {
       await axios.delete(`${API_URL}/posts/${id}`, {
         headers: {

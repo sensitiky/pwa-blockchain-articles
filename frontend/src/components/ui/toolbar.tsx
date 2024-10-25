@@ -1,7 +1,7 @@
-'use client';
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { Editor } from '@tiptap/react';
-import { Button } from '@/components/ui/button';
+"use client";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { Editor } from "@tiptap/react";
+import { Button } from "@/components/ui/button";
 import {
   Bold,
   Italic,
@@ -9,8 +9,8 @@ import {
   Code,
   Link as LinkIcon,
   Indent,
-} from 'lucide-react';
-import { AiOutlinePicture, AiOutlineVideoCamera } from 'react-icons/ai';
+} from "lucide-react";
+import { AiOutlinePicture, AiOutlineVideoCamera } from "react-icons/ai";
 
 interface ToolbarProps {
   editor: Editor | null;
@@ -20,8 +20,9 @@ export default function Toolbar({ editor }: ToolbarProps) {
   const toolbarRef = useRef<HTMLDivElement>(null);
   const [videoPopupOpen, setVideoPopupOpen] = useState(false);
   const [linkPopupOpen, setLinkPopupOpen] = useState(false);
-  const [videoUrl, setVideoUrl] = useState('');
-  const [linkUrl, setLinkUrl] = useState('');
+  const [videoUrl, setVideoUrl] = useState("");
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkLabel, setLinkLabel] = useState("");
 
   useEffect(() => {
     const toolbarElement = toolbarRef.current;
@@ -30,9 +31,9 @@ export default function Toolbar({ editor }: ToolbarProps) {
         event.stopPropagation();
         event.preventDefault(); // Prevent default form submission behavior
       };
-      toolbarElement.addEventListener('click', handleClick);
+      toolbarElement.addEventListener("click", handleClick);
       return () => {
-        toolbarElement.removeEventListener('click', handleClick);
+        toolbarElement.removeEventListener("click", handleClick);
       };
     }
   }, []);
@@ -43,8 +44,8 @@ export default function Toolbar({ editor }: ToolbarProps) {
       if (file) {
         const fileType = file.type;
 
-        if (fileType === 'image/gif') {
-          alert('GIF images are not allowed. Please upload a different image.');
+        if (fileType === "image/gif") {
+          alert("GIF images are not allowed. Please upload a different image.");
           return;
         }
 
@@ -73,32 +74,35 @@ export default function Toolbar({ editor }: ToolbarProps) {
           .setYoutubeVideo({ src: `https://www.youtube.com/embed/${videoId}` })
           .run();
 
-        editor.commands.focus('end');
+        editor.commands.focus("end");
 
-        setVideoUrl('');
+        setVideoUrl("");
         setVideoPopupOpen(false);
       } else {
-        alert('Invalid YouTube URL');
+        alert("Invalid YouTube URL");
       }
     }
   }, [videoUrl, editor]);
 
   const insertLink = useCallback(() => {
-    if (linkUrl && editor) {
+    if (linkUrl && linkLabel && editor) {
       editor
         .chain()
         .focus()
-        .extendMarkRange('link')
+        .extendMarkRange("link")
         .setLink({ href: linkUrl })
         .run();
-      setLinkUrl('');
+      setLinkUrl("");
+      setLinkLabel("");
       setLinkPopupOpen(false);
+    } else {
+      alert("Both URL and label are required.");
     }
-  }, [linkUrl, editor]);
+  }, [linkUrl, linkLabel, editor]);
 
   const addIndentation = useCallback(() => {
     if (editor) {
-      editor.chain().focus().insertContent('    ').run(); // Insert a tab or 4 spaces
+      editor.chain().focus().insertContent("    ").run();
     }
   }, [editor]);
 
@@ -126,7 +130,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
           editor.chain().focus().toggleBold().run();
         }}
         className={`p-1 sm:p-2 rounded-full ${
-          editor.isActive('bold') ? 'bg-gray-300' : ''
+          editor.isActive("bold") ? "bg-gray-300" : ""
         }`}
       >
         <Bold className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
@@ -139,7 +143,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
           editor.chain().focus().toggleItalic().run();
         }}
         className={`p-1 sm:p-2 rounded-full ${
-          editor.isActive('italic') ? 'bg-gray-300' : ''
+          editor.isActive("italic") ? "bg-gray-300" : ""
         }`}
       >
         <Italic className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
@@ -152,7 +156,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
           editor.chain().focus().toggleUnderline().run();
         }}
         className={`p-1 sm:p-2 rounded-full ${
-          editor.isActive('underline') ? 'bg-gray-300' : ''
+          editor.isActive("underline") ? "bg-gray-300" : ""
         }`}
       >
         <UnderlineIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
@@ -165,7 +169,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
           editor.chain().focus().toggleCodeBlock().run();
         }}
         className={`p-1 sm:p-2 rounded-full ${
-          editor.isActive('codeBlock') ? 'bg-gray-300' : ''
+          editor.isActive("codeBlock") ? "bg-gray-300" : ""
         }`}
       >
         <Code className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
@@ -213,7 +217,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
         <LinkIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
       </Button>
 
-      {/* Popup para el video */}
+      {/* Popup for video */}
       {videoPopupOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -244,7 +248,7 @@ export default function Toolbar({ editor }: ToolbarProps) {
         </div>
       )}
 
-      {/* Popup para el link */}
+      {/* Popup for link */}
       {linkPopupOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -254,6 +258,13 @@ export default function Toolbar({ editor }: ToolbarProps) {
               placeholder="URL"
               value={linkUrl}
               onChange={(e) => setLinkUrl(e.target.value)}
+              className="border border-gray-300 p-2 rounded-lg w-full mb-4"
+            />
+            <input
+              type="text"
+              placeholder="Label"
+              value={linkLabel}
+              onChange={(e) => setLinkLabel(e.target.value)}
               className="border border-gray-300 p-2 rounded-lg w-full mb-4"
             />
             <div className="flex justify-end">

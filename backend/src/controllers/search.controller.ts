@@ -1,11 +1,13 @@
-import { Controller, Get, Param, Query, Req } from '@nestjs/common';
+import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { SearchService } from '../services/search.service';
 import { Request } from 'express';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
 @Controller('search')
 export class SearchController {
   constructor(private readonly searchService: SearchService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async search(
     @Query('q') query: string,
@@ -15,8 +17,10 @@ export class SearchController {
     if (!query) {
       return { message: 'Query parameter "q" is required.' };
     }
+
     const normalizedQuery = query.toLowerCase();
     const userID = request.user?.id;
+
     const results = await this.searchService.search(
       normalizedQuery,
       type,

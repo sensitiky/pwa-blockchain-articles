@@ -27,17 +27,15 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-gilroy font-medium">
         <GoogleOAuthProvider clientId={clientId as string}>
-          <AuthWrapper>
-            <AuthProvider>
-              <FacebookInit />
-              <Analytics />
-              <MixPanel />
-              <main className="w-full h-full overflow-x-hidden text-[#263238] bg-[#fefefe]">
-                {children}
-                <link rel="icon" href="/favicon.ico" sizes="any" />
-              </main>
-            </AuthProvider>
-          </AuthWrapper>
+          <AuthProvider>
+            <FacebookInit />
+            <Analytics />
+            <MixPanel />
+            <main className="w-full h-full overflow-x-hidden text-[#263238] bg-[#fefefe]">
+              {children}
+              <link rel="icon" href="/favicon.ico" sizes="any" />
+            </main>
+          </AuthProvider>
         </GoogleOAuthProvider>
       </body>
     </html>

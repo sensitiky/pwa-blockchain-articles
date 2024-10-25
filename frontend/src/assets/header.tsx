@@ -46,7 +46,7 @@ interface SearchResult {
 const Header = () => {
   const router = useRouter();
   const [showLoginCard, setShowLoginCard] = useState(false);
-  const { user, setUser, isAuthenticated, login, logout } = useAuth();
+  const { user, setUser, isAuthenticated, login, logout, token } = useAuth();
   const prevIsAuthenticated = useRef(isAuthenticated);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -78,9 +78,13 @@ const Header = () => {
       const fullUrl = `${API_URL}/search?q=${encodeURIComponent(
         normalizedQuery
       )}`;
+
       //console.log(fullUrl);
       const response = await axios.get<SearchResult[]>(fullUrl, {
-        headers: { 'Cache-Control': 'no-cache' },
+        headers: {
+          'Cache-Control': 'no-cache',
+          Authorization: token ? `Bearer ${token}` : '',
+        },
       });
 
       if (Array.isArray(response.data)) {

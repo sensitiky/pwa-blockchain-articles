@@ -48,7 +48,7 @@ const Footer: React.FC<FooterProps> = ({ setShowLoginModal }) => {
   return (
     <footer className="bg-[#000916] w-full font-normal text-white py-6 border-t border-gray-200 backdrop-blur-md">
       <div className="mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
-        <div className="flex flex-col lg:flex-row justify-between items-center w-full mb-6 space-y-6 lg:space-y-0">
+        <div className="flex-col lg:flex-row justify-between items-center w-full mb-6 space-y-6 lg:space-y-0 grid-cols-1 md:grid-cols-3 grid">
           <div className="flex flex-col lg:flex-row items-center text-center lg:text-left mx-4 mb-4 lg:mb-0">
             <span className="text-xl font-bold text-white flex items-center">
               Blogchain <span className="font-light mx-2">By</span>
@@ -60,7 +60,7 @@ const Footer: React.FC<FooterProps> = ({ setShowLoginModal }) => {
               height={24}
             />
           </div>
-          <div className="flex w-full lg:w-1/2 justify-center lg:justify-start mb-4 lg:mb-0">
+          <div className="flex w-full px-4 justify-center lg:justify-start mb-4 lg:mb-0">
             <p className="text-white text-center lg:text-left">
               Blogchain is a community forum where enthusiasts, professionals
               and influencers write and share educational and informative
@@ -70,7 +70,7 @@ const Footer: React.FC<FooterProps> = ({ setShowLoginModal }) => {
               line.
             </p>
           </div>
-          <div className="flex flex-col lg:flex-row text-white w-full lg:w-auto space-y-4 lg:space-y-0 lg:space-x-8">
+          <div className="flex-col lg:flex-row text-white w-full lg:w-auto space-y-4 lg:space-y-0 lg:space-x-8 grid-cols-3 md:grid-cols-3 grid">
             <div className="flex flex-col m-4 lg:m-0">
               <Link
                 href="/"

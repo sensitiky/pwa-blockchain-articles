@@ -14,6 +14,7 @@ import Footer from '@/assets/footer';
 import axios from 'axios';
 import parse from 'html-react-parser';
 import { Tag, Category, Post } from '@/interfaces/interfaces';
+import { useAuth } from '../../context/authContext';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 const cookies = new Cookie();
@@ -23,10 +24,7 @@ const POSTS_PER_PAGE = 6;
 const HomePage: React.FC = () => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<{ username: string; id: number } | null>(
-    null
-  );
+  const { user, isAuthenticated } = useAuth();
   const [showLoginCard, setShowLoginCard] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,11 +41,6 @@ const HomePage: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const token = cookies.get('token');
-    if (token) {
-      fetchUserSession(token);
-    }
-
     AOS.init({
       duration: 1000,
       easing: 'ease-in-out',
@@ -126,27 +119,6 @@ const HomePage: React.FC = () => {
     } catch (error) {
       console.error('Error fetching posts:', error);
       setLoading(false);
-    }
-  };
-
-  const fetchUserSession = async (token: string) => {
-    try {
-      const response = await fetch(`${API_URL}/users/session`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data.user);
-        setIsAuthenticated(true);
-      } else {
-        console.error('Failed to fetch user session');
-      }
-    } catch (error) {
-      console.error('Error fetching user session:', error);
     }
   };
 

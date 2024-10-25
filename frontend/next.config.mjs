@@ -1,27 +1,24 @@
 export default {
-  i18n: {
-    locales: ['en'],
-    defaultLocale: 'en',
-  },
+  output: "export",
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'blogchain.onrender.com',
-        port: '',
-        pathname: '/uploads/**',
+        protocol: "https",
+        hostname: "blogchain.onrender.com",
+        port: "",
+        pathname: "/uploads/**",
       },
       {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '4000',
-        pathname: '/uploads/**',
+        protocol: "http",
+        hostname: "localhost",
+        port: "4000",
+        pathname: "/uploads/**",
       },
       {
-        protocol: 'https',
-        hostname: 'lh3.googleusercontent.com',
-        port: '',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        port: "",
+        pathname: "/**",
       },
     ],
   },

@@ -7,6 +7,7 @@ import { Post } from '../entities/post.entity';
 import { PostsModule } from './posts.module';
 import { UsersModule } from '../modules/user.module';
 import { MetricModule } from './metric.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -14,6 +15,10 @@ import { MetricModule } from './metric.module';
     forwardRef(() => PostsModule),
     forwardRef(() => UsersModule),
     forwardRef(() => MetricModule),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '360m' },
+    }),
   ],
   controllers: [SearchController],
   providers: [SearchService],
