@@ -1,20 +1,20 @@
-'use client';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import Cookie from 'universal-cookie';
-import Header from '@/assets/header';
-import Image from 'next/image';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
-import ArticleCarousel from '@/assets/carousel';
-import LoginCard from '@/assets/login';
-import Footer from '@/assets/footer';
-import axios from 'axios';
-import parse from 'html-react-parser';
-import { Tag, Category, Post } from '@/interfaces/interfaces';
-import { useAuth } from '../../context/authContext';
+"use client";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import Cookie from "universal-cookie";
+import Header from "@/assets/header";
+import Image from "next/image";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import ArticleCarousel from "@/assets/carousel";
+import LoginCard from "@/assets/login";
+import Footer from "@/assets/footer";
+import axios from "axios";
+import parse from "html-react-parser";
+import { Tag, Category, Post } from "@/interfaces/interfaces";
+import { useAuth } from "../../context/authContext";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_DEV;
 const cookies = new Cookie();
@@ -43,7 +43,7 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     AOS.init({
       duration: 1000,
-      easing: 'ease-in-out',
+      easing: "ease-in-out",
       once: true,
       mirror: false,
     });
@@ -64,9 +64,9 @@ const HomePage: React.FC = () => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -79,7 +79,7 @@ const HomePage: React.FC = () => {
       const response = await axios.get(`${API_URL}/tags`);
       setTags(response.data);
     } catch (error) {
-      console.error('Error fetching tags', error);
+      console.error("Error fetching tags", error);
     }
   };
 
@@ -88,7 +88,7 @@ const HomePage: React.FC = () => {
       const response = await axios.get(`${API_URL}/categories`);
       setCategories(response.data);
     } catch (error) {
-      console.error('Error fetching categories', error);
+      console.error("Error fetching categories", error);
     }
   };
 
@@ -101,10 +101,10 @@ const HomePage: React.FC = () => {
       const result = response.data;
       setCategoryCounts(result);
     } catch (error) {
-      console.error('Error fetching category counts:', error);
+      console.error("Error fetching category counts:", error);
     }
   }, []);
-
+  console.log("Hi!");
   const fetchPosts = async () => {
     try {
       const url = selectedTagId
@@ -117,7 +117,7 @@ const HomePage: React.FC = () => {
       setPosts(postsData || []);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching posts:', error);
+      console.error("Error fetching posts:", error);
       setLoading(false);
     }
   };
@@ -128,9 +128,9 @@ const HomePage: React.FC = () => {
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
@@ -297,7 +297,7 @@ const HomePage: React.FC = () => {
                   ? categories.find(
                       (category) => category.id === selectedCategoryId
                     )?.name
-                  : 'Category'}
+                  : "Category"}
               </div>
               {isDropdownOpen && (
                 <div className="custom-options mt-2 bg-inherit rounded-none shadow-none">
@@ -341,10 +341,10 @@ const HomePage: React.FC = () => {
                           <img
                             src={
                               post.author?.avatar
-                                ? post.author.avatar.startsWith('http')
+                                ? post.author.avatar.startsWith("http")
                                   ? post.author.avatar
                                   : `${API_URL}${post.author.avatar}`
-                                : '/default-avatar.webp'
+                                : "/default-avatar.webp"
                             }
                             alt="Author image"
                             className="w-10 h-10 rounded-full"
@@ -366,17 +366,17 @@ const HomePage: React.FC = () => {
                       </h3>
                     </Link>
                     {!post.imageUrlBase64 &&
-                      typeof post.description === 'string' &&
-                      !post.description.includes('<iframe') && (
+                      typeof post.description === "string" &&
+                      !post.description.includes("<iframe") && (
                         <p className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-3 break-all">
-                          {typeof post.description === 'string'
-                            ? parse(post.description.replace(/<img.*?>/g, ''))
+                          {typeof post.description === "string"
+                            ? parse(post.description.replace(/<img.*?>/g, ""))
                             : JSON.stringify(post.description)}
                         </p>
                       )}
                   </div>
                 </div>
-                <div className="flex-grow"></div>{' '}
+                <div className="flex-grow"></div>{" "}
                 <div className="flex justify-end relative">
                   <Link href={`/posts/${post.id}`}>
                     <Button className="text-base rounded-full">
