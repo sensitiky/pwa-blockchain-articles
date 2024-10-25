@@ -44,7 +44,7 @@ import { FavoriteSubscriber } from '../services/listenerFavorites.service';
           entities: [User, Post, Comment, Category, Tag, Favorite],
           synchronize: true,
           logging: false,
-          // Fix for SSL connection must be removed in development
+          ssl: { rejectUnauthorized: false },
           subscribers: [CommentSubscriber, FavoriteSubscriber],
         };
       },
