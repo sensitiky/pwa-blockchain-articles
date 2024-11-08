@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
-import { FaCamera } from "react-icons/fa";
+import { FaCamera, FaHackerNews } from "react-icons/fa";
 import Select, { SingleValue } from "react-select";
 import countryList from "react-select-country-list";
 import "react-datepicker/dist/react-datepicker.css";
@@ -575,6 +575,15 @@ const ProfileSettings: React.FC = () => {
                     prefetch={false}
                   >
                     <FaLinkedin className="w-6 h-6 sm:w-8 sm:h-8" />
+                  </Link>
+                )}
+                {user?.stackernews && (
+                  <Link
+                    href={ensureAbsoluteUrl(user?.stackernews)}
+                    className="text-primary hover:text-primary-dark transition duration-300 ease-in-out"
+                    prefetch={false}
+                  >
+                    <FaHackerNews className="w-6 h-6 sm:w-8 sm:h-8" />
                   </Link>
                 )}
               </div>

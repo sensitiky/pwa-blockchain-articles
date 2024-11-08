@@ -1,15 +1,15 @@
-'use client';
-import { useEffect, useState, ChangeEvent } from 'react';
-import { Button } from '@/components/ui/button';
-import Footer from '@/assets/footer';
-import Header from '@/assets/header';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import { Input } from '@/components/ui/input';
-import { FaUpload } from 'react-icons/fa';
-import { useAuth } from '../../../context/authContext';
-import { motion, AnimatePresence } from 'framer-motion';
-import RichTextEditor from '@/components/ui/texteditor';
+"use client";
+import { useEffect, useState, ChangeEvent } from "react";
+import { Button } from "@/components/ui/button";
+import Footer from "@/assets/footer";
+import Header from "@/assets/header";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { FaUpload } from "react-icons/fa";
+import { useAuth } from "../../../context/authContext";
+import { motion, AnimatePresence } from "framer-motion";
+import RichTextEditor from "@/components/ui/texteditor";
 
 interface Category {
   id: number;
@@ -22,13 +22,13 @@ interface Tag {
 }
 
 const categoryDescriptions: { [key: number]: string } = {
-  1: 'In-depth analysis of Web3 projects, trends and technologies. Get expert opinions, critical reviews and thought-provoking perspectives.',
-  2: 'Step-by-step guides and instructions to help you navigate the Web3 world. Learn how to use tools, platforms, and protocols, and acquire new skills.',
-  3: 'Evaluations of Web3 products, services, and platforms. Get the information you need to make informed decisions about your investments and interactions.',
-  4: 'Real-world examples of Web3 applications across various industries. Learn how blockchain, cryptocurrencies, and NFTs are transforming businesses and solving problems.',
-  5: 'Stay up-to-date with the latest developments in the Web3 space. Get breaking news, project updates, regulatory changes, and market trends.',
-  6: 'Discover essential tools, platforms, and educational resources for navigating the Web3 ecosystem.',
-  7: 'Exclusive conversations with Web3 leaders, innovators, and influencers. Gain unique insights into their journeys, visions, and the future of the decentralized web.',
+  1: "In-depth analysis of Web3 projects, trends and technologies. Get expert opinions, critical reviews and thought-provoking perspectives.",
+  2: "Step-by-step guides and instructions to help you navigate the Web3 world. Learn how to use tools, platforms, and protocols, and acquire new skills.",
+  3: "Evaluations of Web3 products, services, and platforms. Get the information you need to make informed decisions about your investments and interactions.",
+  4: "Real-world examples of Web3 applications across various industries. Learn how blockchain, cryptocurrencies, and NFTs are transforming businesses and solving problems.",
+  5: "Stay up-to-date with the latest developments in the Web3 space. Get breaking news, project updates, regulatory changes, and market trends.",
+  6: "Discover essential tools, platforms, and educational resources for navigating the Web3 ecosystem.",
+  7: "Exclusive conversations with Web3 leaders, innovators, and influencers. Gain unique insights into their journeys, visions, and the future of the decentralized web.",
 };
 
 export default function NewArticles() {
@@ -39,12 +39,12 @@ export default function NewArticles() {
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [gifFile, setGifFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [newTag, setNewTag] = useState<string>('');
+  const [newTag, setNewTag] = useState<string>("");
   const [showPopup, setShowPopup] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -62,7 +62,7 @@ export default function NewArticles() {
         setCategories(categoriesResponse.data);
         setTags(tagsResponse.data);
       } catch (error) {
-        console.error('Error fetching categories and tags', error);
+        console.error("Error fetching categories and tags", error);
       }
     };
     fetchCategoriesAndTags();
@@ -83,7 +83,7 @@ export default function NewArticles() {
       } else if (prevTags.length < 5) {
         return [...prevTags, tag];
       } else {
-        alert('You can select up to 5 tags.');
+        alert("You can select up to 5 tags.");
         return prevTags;
       }
     });
@@ -95,14 +95,14 @@ export default function NewArticles() {
 
   const handleAddNewTag = () => {
     if (
-      newTag.trim() !== '' &&
+      newTag.trim() !== "" &&
       newTag.length <= 24 &&
       selectedTags.length < 5
     ) {
       const newTagObject = { id: tags.length + 1, name: newTag };
       setTags((prevTags) => [...prevTags, newTagObject]);
       setSelectedTags((prevTags) => [...prevTags, newTagObject]);
-      setNewTag('');
+      setNewTag("");
     }
   };
 
@@ -112,14 +112,14 @@ export default function NewArticles() {
       const fileType = file.type;
 
       const supportedTypes = [
-        'image/jpeg',
-        'image/jpg',
-        'image/png',
-        'image/webp',
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
       ];
       if (!supportedTypes.includes(fileType)) {
         alert(
-          'Unsupported image format. Supported formats are: jpg, jpeg, webp, png.'
+          "Unsupported image format. Supported formats are: jpg, jpeg, webp, png."
         );
         return;
       }
@@ -135,7 +135,7 @@ export default function NewArticles() {
 
   const handleSubmit = async (publish: boolean) => {
     if (!user) {
-      alert('User not authenticated');
+      alert("User not authenticated");
       return;
     }
     if (!selectedCategory || selectedTags.length < 2) {
@@ -144,58 +144,70 @@ export default function NewArticles() {
     }
 
     if (!description) {
-      alert('Description is empty');
+      alert("Description is empty");
       return;
     }
-
+    if (description.length > 10000) {
+      alert("Description exceeds the maximum length of 10000 characters.");
+      return;
+    }
     const tags = selectedTags.map((tag) => tag.name);
 
     const formData = new FormData();
     if (title.length > 140) {
-      alert('Title exceeds the maximum length of 140 characters.');
+      alert("Title exceeds the maximum length of 140 characters.");
       return;
     }
 
     if (/[^a-zA-Z0-9\s.,\-'&?´¡¿"!:*áéíóúÁÉÍÓÚñÑ]/.test(title)) {
       alert(
-        'Title contains disallowed special characters. Allowed characters are: letters, numbers, spaces, and . , - \' & ? ´ ¡ ¿ " ! : * á é í ó ú Á É Í Ó Ú ñ Ñ'
+        "Title contains disallowed special characters. Allowed characters are: letters, numbers, spaces, and . , - ' & ? ´ ¡ ¿ \" ! : * á é í ó ú Á É Í Ó Ú ñ Ñ"
       );
       return;
     }
 
-    formData.append('title', title);
-    formData.append('description', description);
-    formData.append('authorId', user.id.toString());
-    formData.append('publish', JSON.stringify(publish));
-    formData.append('categoryId', selectedCategory.id.toString());
-    formData.append('tags', JSON.stringify(tags)); // Ensure tags are sent as JSON string
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("authorId", user.id.toString());
+    formData.append("publish", JSON.stringify(publish));
+    formData.append("categoryId", selectedCategory.id.toString());
+    formData.append("tags", JSON.stringify(tags)); // Ensure tags are sent as JSON string
     if (imageFile) {
-      formData.append('image', imageFile);
+      formData.append("image", imageFile);
     }
     if (gifFile) {
-      formData.append('gifFile', gifFile);
+      formData.append("gifFile", gifFile);
     }
-    formData.append('created_at', new Date().toISOString());
+    formData.append("created_at", new Date().toISOString());
 
     setIsSubmitting(true);
 
     try {
       const response = await axios.post(`${API_URL}/posts`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
-      router.push('/articles');
+      router.push("/articles");
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error('Axios error:', error.response?.data || error.message);
+        console.error("Axios error:", error.response?.data || error.message);
       } else {
-        console.error('Error creating post:', error);
+        console.error("Error creating post:", error);
       }
       setIsSubmitting(false);
     }
   };
+  const countWords = (text: string) => {
+    if (!text) return 0;
+    return text.split(/\s+/).filter((word) => word.length > 0).length;
+  };
 
+  const calculateReadingTime = (text: string) => {
+    const wordsPerMinute = 200;
+    const numberOfWords = countWords(text);
+    return Math.ceil(numberOfWords / wordsPerMinute);
+  };
   return (
     <div className="max-h-screen">
       <Header />
@@ -215,7 +227,7 @@ export default function NewArticles() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         className={`text-lg hover:bg-gray-300 rounded-full w-fit p-1 font-normal ${
-                          selectedCategory === category ? 'bg-gray-300' : ''
+                          selectedCategory === category ? "bg-gray-300" : ""
                         }`}
                         onClick={() => handleCategorySelect(category)}
                       >
@@ -268,8 +280,8 @@ export default function NewArticles() {
                         whileTap={{ scale: 0.95 }}
                         className={`text-lg hover:bg-gray-300 rounded-full border-gray-300 w-fit font-normal p-1 ${
                           selectedTags.some((t) => t.id === tag.id)
-                            ? 'bg-gray-300'
-                            : ''
+                            ? "bg-gray-300"
+                            : ""
                         }`}
                         onClick={() => handleTagSelect(tag)}
                       >
@@ -318,7 +330,7 @@ export default function NewArticles() {
               </div>
             </div>
             <div className="w-full md:w-3/4 pl-0 md:pl-4 bg-white rounded-xl">
-              {' '}
+              {" "}
               <motion.div
                 className="p-6 text-black rounded-lg"
                 initial={{ opacity: 0 }}
@@ -388,7 +400,14 @@ export default function NewArticles() {
                   </div>
                   <div className="mt-4">
                     <RichTextEditor onChange={setDescription} />
-                    <div className="space-x-4 mt-2 flex justify-end">
+                    <div className="space-x-4 mt-2 flex justify-end items-center">
+                      <span className="text-gray-500">
+                        {" "}
+                        {calculateReadingTime(description)} min read
+                      </span>
+                      <span className="text-gray-500">
+                        {description.length}/10000
+                      </span>
                       <motion.button
                         onClick={() => {
                           if (!selectedCategory || selectedTags.length < 2) {
@@ -397,7 +416,7 @@ export default function NewArticles() {
                             handleSubmit(true);
                           }
                         }}
-                        className="text-white bg-green-600 px-4 py-2 rounded-full hover:bg-green-500 transition-all duration-300"
+                        className="text-white bg-green-600 px-4 py-2 rounded-full hover:bg-green-500 transition-all duration-300 m-2"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         disabled={isSubmitting}

@@ -26,6 +26,7 @@ export interface User {
   facebook?: string;
   twitter?: string;
   linkedin?: string;
+  stackernews?: string;
   bio?: string;
   avatar?: string;
   postCount?: number;

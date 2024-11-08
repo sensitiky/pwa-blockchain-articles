@@ -10,6 +10,7 @@ import { Favorite } from '../entities/favorite.entity';
 import { DatabaseService } from '../services/database.service';
 import { CommentSubscriber } from '../services/listenerComment.service';
 import { FavoriteSubscriber } from '../services/listenerFavorites.service';
+import { Reports } from 'src/entities/report.entity';
 
 @Module({
   imports: [
@@ -41,16 +42,24 @@ import { FavoriteSubscriber } from '../services/listenerFavorites.service';
           username: dbUsername,
           password: dbPassword,
           database: dbName,
-          entities: [User, Post, Comment, Category, Tag, Favorite],
+          entities: [User, Post, Comment, Category, Tag, Favorite, Reports],
           synchronize: true,
           logging: false,
-          ssl: { rejectUnauthorized: false },
+          //ssl: { rejectUnauthorized: false },
           subscribers: [CommentSubscriber, FavoriteSubscriber],
         };
       },
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, Post, Comment, Category, Tag, Favorite]),
+    TypeOrmModule.forFeature([
+      User,
+      Post,
+      Comment,
+      Category,
+      Tag,
+      Favorite,
+      Reports,
+    ]),
   ],
   providers: [DatabaseService],
   exports: [TypeOrmModule, DatabaseService],

@@ -16,6 +16,7 @@ import { Category } from './category.entity';
 import { Comment } from './comment.entity';
 import { Tag } from './tag.entity';
 import { Favorite } from './favorite.entity';
+import { Reports } from './report.entity';
 
 @Entity()
 export class Post {
@@ -72,6 +73,9 @@ export class Post {
 
   @Column({ type: 'int', default: 0 })
   favoritescount: number;
+
+  @ManyToOne(() => Reports, (reports) => reports.posts)
+  reports: Reports;
 
   imageUrlBase64: string;
 }

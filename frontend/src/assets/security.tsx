@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 import {
   TextField,
   Avatar,
@@ -10,14 +10,14 @@ import {
   Modal,
   Box,
   Typography,
-} from '@mui/material';
-import { FaEdit, FaCheck, FaEye, FaEyeSlash } from 'react-icons/fa';
-import { motion } from 'framer-motion';
-import styled from 'styled-components';
-import { useAuth } from '../../context/authContext';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import axios from 'axios';
+} from "@mui/material";
+import { FaEdit, FaCheck, FaEye, FaEyeSlash } from "react-icons/fa";
+import { motion } from "framer-motion";
+import styled from "styled-components";
+import { useAuth } from "../../context/authContext";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import axios from "axios";
 
 interface UserProfile {
   id?: number;
@@ -28,6 +28,7 @@ interface UserProfile {
   facebook?: string;
   twitter?: string;
   linkedin?: string;
+  stackernews?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
@@ -83,12 +84,12 @@ const ActionIcons = styled.div`
 `;
 
 const SecuritySettings: React.FC = () => {
-  const { user, logout, setUser } = useAuth();
+  const { user, token, logout, setUser } = useAuth();
   const [userInfo, setUserInfo] = useState<UserProfile>({});
   const [loading, setLoading] = useState(true);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState("");
   const [sendingCode, setSendingCode] = useState(false);
   const [message, setMessage] = useState<{
     text: string;
@@ -96,9 +97,9 @@ const SecuritySettings: React.FC = () => {
   } | null>(null);
   const [codeSent, setCodeSent] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const [verificationCode, setVerificationCode] = useState('');
-  const [currentField, setCurrentField] = useState<'email' | 'password'>(
-    'email'
+  const [verificationCode, setVerificationCode] = useState("");
+  const [currentField, setCurrentField] = useState<"email" | "password">(
+    "email"
   );
   const [verificationError, setVerificationError] = useState<string | null>(
     null
@@ -108,22 +109,24 @@ const SecuritySettings: React.FC = () => {
     id: undefined,
     firstName: undefined,
     avatar: undefined,
-    medium: 'Medium',
-    instagram: 'Instagram',
-    facebook: 'Facebook',
-    twitter: 'Twitter',
-    linkedin: 'LinkedIn',
-    email: 'Email',
-    password: 'Password',
-    confirmPassword: 'Confirm Password',
+    medium: "Medium",
+    instagram: "Instagram",
+    facebook: "Facebook",
+    twitter: "Twitter",
+    linkedin: "LinkedIn",
+    stackernews: "Stacker News",
+    email: "Email",
+    password: "Password",
+    confirmPassword: "Confirm Password",
   };
+
   useEffect(() => {
     if (user) {
       const avatarUrl = user?.avatar
-        ? user.avatar.startsWith('http')
+        ? user.avatar.startsWith("http")
           ? user.avatar
           : `${API_URL}${user.avatar}`
-        : '/default-avatar.webp';
+        : "/default-avatar.webp";
       setUserInfo({
         id: user.id,
         firstName: user.firstName,
@@ -133,14 +136,14 @@ const SecuritySettings: React.FC = () => {
         facebook: user.facebook,
         twitter: user.twitter,
         linkedin: user.linkedin,
+        stackernews: user.stackernews,
         email: user.email,
       });
       setLoading(false);
     }
   }, [user]);
 
-  const handleSendVerificationCode = async (field: 'email' | 'password') => {
-    //   console.log('handleSendVerificationCode called with field:', field);
+  const handleSendVerificationCode = async (field: "email" | "password") => {
     setSendingCode(true);
     setMessage(null);
     setOpenModal(true);
@@ -155,22 +158,21 @@ const SecuritySettings: React.FC = () => {
       if (response.status === 200) {
         setCodeSent(true);
         setMessage({
-          text: 'Verification code sent to your email',
+          text: "Verification code sent to your email",
           isError: false,
         });
       } else {
-        throw new Error('Failed to send verification code');
+        throw new Error("Failed to send verification code");
       }
     } catch (err) {
-      console.error('Error sending verification code:', err);
-      setMessage({ text: 'Failed to send verification code', isError: true });
+      console.error("Error sending verification code:", err);
+      setMessage({ text: "Failed to send verification code", isError: true });
     } finally {
       setSendingCode(false);
     }
   };
 
   const verifyCode = async (code: string) => {
-    // console.log('verifyCode called with code:', code);
     try {
       const response = await axios.post(
         `${API_URL}/auth/verify-code`,
@@ -180,19 +182,19 @@ const SecuritySettings: React.FC = () => {
 
       if (response.status === 200) {
         setMessage({
-          text: 'Code verified successfully',
+          text: "Code verified successfully",
           isError: false,
         });
         setVerificationError(null);
         setOpenModal(false);
         return true;
       } else {
-        throw new Error('Failed to verify code');
+        throw new Error("Failed to verify code");
       }
     } catch (err) {
-      console.error('Error verifying code:', err);
-      setMessage({ text: 'Failed to verify code', isError: true });
-      setVerificationError('The verification code is incorrect.');
+      console.error("Error verifying code:", err);
+      setMessage({ text: "Failed to verify code", isError: true });
+      setVerificationError("The verification code is incorrect.");
       setTimeout(() => {
         setVerificationError(null);
       }, 2000);
@@ -201,8 +203,7 @@ const SecuritySettings: React.FC = () => {
   };
 
   const handleSaveChanges = async (field: string) => {
-    //console.log('handleSaveChanges called with field:', field);
-    if (field === 'email' || field === 'password') {
+    if (field === "email" || field === "password") {
       await handleSendVerificationCode(field);
       return;
     }
@@ -213,48 +214,46 @@ const SecuritySettings: React.FC = () => {
     };
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await axios.put(`${API_URL}/users/me`, updatedField, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
 
       const newToken = response.data.token;
-      localStorage.setItem('token', newToken);
+      localStorage.setItem("token", newToken);
       setUser({ ...user, ...updatedField });
       setEditingField(null);
     } catch (error) {
-      console.error('Error saving profile information:', error);
+      console.error("Error saving profile information:", error);
     }
   };
 
   const handleVerifyAndSave = async () => {
-    // console.log('handleVerifyAndSave called');
     const isVerified = await verifyCode(verificationCode);
     if (isVerified) {
       const updatedField: Partial<UserProfile> & { id: number } = {
         id: userInfo.id ?? 0,
-        [currentField]: currentField === 'password' ? password : userInfo.email,
+        [currentField]: currentField === "password" ? password : userInfo.email,
       };
 
       try {
-        const token = localStorage.getItem('token');
         const response = await axios.put(`${API_URL}/users/me`, updatedField, {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         });
 
         const newToken = response.data.token;
-        localStorage.setItem('token', newToken);
+        localStorage.setItem("token", newToken);
         setUser({ ...user, ...updatedField });
         setEditingField(null);
-        if (currentField === 'password') {
-          setPassword('');
+        if (currentField === "password") {
+          setPassword("");
         }
         setOpenModal(false);
         logout();
       } catch (error) {
-        console.error('Error saving profile information:', error);
+        console.error("Error saving profile information:", error);
       }
     }
   };
@@ -300,11 +299,12 @@ const SecuritySettings: React.FC = () => {
           <SectionTitle>Social Media</SectionTitle>
           {(
             [
-              'medium',
-              'instagram',
-              'facebook',
-              'twitter',
-              'linkedin',
+              "medium",
+              "instagram",
+              "facebook",
+              "twitter",
+              "linkedin",
+              "stackernews",
             ] as (keyof UserProfile)[]
           ).map((field) => (
             <FieldContainer key={field}>
@@ -312,7 +312,7 @@ const SecuritySettings: React.FC = () => {
               {editingField === field ? (
                 <TextField
                   name={field}
-                  value={userInfo[field] || ''}
+                  value={userInfo[field] || ""}
                   onChange={(e) =>
                     setUserInfo({ ...userInfo, [field]: e.target.value })
                   }
@@ -335,10 +335,10 @@ const SecuritySettings: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <span
                     className={`text-sm ${
-                      userInfo[field] ? 'text-green-500' : 'text-gray-500'
+                      userInfo[field] ? "text-green-500" : "text-gray-500"
                     }`}
                   >
-                    {userInfo[field] ? 'Provided' : 'Not Provided'}
+                    {userInfo[field] ? "Provided" : "Not Provided"}
                   </span>
                   <ActionIcons>
                     <Tooltip title="Edit">
@@ -356,10 +356,10 @@ const SecuritySettings: React.FC = () => {
           <SectionTitle>Security</SectionTitle>
           <FieldContainer>
             <FieldLabel>Email</FieldLabel>
-            {editingField === 'email' ? (
+            {editingField === "email" ? (
               <TextField
                 name="email"
-                value={userInfo.email || ''}
+                value={userInfo.email || ""}
                 onChange={(e) =>
                   setUserInfo({ ...userInfo, email: e.target.value })
                 }
@@ -370,7 +370,7 @@ const SecuritySettings: React.FC = () => {
                     <InputAdornment position="end">
                       <Tooltip title="Save">
                         <IconButton
-                          onClick={() => handleSendVerificationCode('email')}
+                          onClick={() => handleSendVerificationCode("email")}
                         >
                           <FaCheck color="#28a745" />
                         </IconButton>
@@ -384,7 +384,7 @@ const SecuritySettings: React.FC = () => {
                 <span className="text-sm text-green-500">{userInfo.email}</span>
                 <ActionIcons>
                   <Tooltip title="Edit">
-                    <IconButton onClick={() => setEditingField('email')}>
+                    <IconButton onClick={() => setEditingField("email")}>
                       <FaEdit color="#007bff" />
                     </IconButton>
                   </Tooltip>
@@ -394,11 +394,11 @@ const SecuritySettings: React.FC = () => {
           </FieldContainer>
           <FieldContainer>
             <FieldLabel>Password</FieldLabel>
-            {editingField === 'password' ? (
+            {editingField === "password" ? (
               <div className="flex flex-col gap-2">
                 <TextField
                   name="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   variant="outlined"
@@ -420,7 +420,7 @@ const SecuritySettings: React.FC = () => {
                 />
                 <Button
                   className="rounded-full bg-[#000916] hover:bg-[#000916]/80"
-                  onClick={() => handleSendVerificationCode('password')}
+                  onClick={() => handleSendVerificationCode("password")}
                 >
                   Change Password
                 </Button>
@@ -430,7 +430,7 @@ const SecuritySettings: React.FC = () => {
                 <span className="text-sm text-green-500">••••••••</span>
                 <ActionIcons>
                   <Tooltip title="Edit">
-                    <IconButton onClick={() => setEditingField('password')}>
+                    <IconButton onClick={() => setEditingField("password")}>
                       <FaEdit color="#007bff" />
                     </IconButton>
                   </Tooltip>
@@ -449,13 +449,13 @@ const SecuritySettings: React.FC = () => {
       >
         <Box
           sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
             width: 400,
-            bgcolor: 'background.paper',
-            border: '2px solid #000',
+            bgcolor: "background.paper",
+            border: "2px solid #000",
             boxShadow: 24,
             borderRadius: 2,
             p: 4,
@@ -468,12 +468,12 @@ const SecuritySettings: React.FC = () => {
             Please enter the verification code sent to your email to confirm
             your {currentField} change.
           </Typography>
-          <Typography sx={{ mt: 2, color: 'gray' }}>
+          <Typography sx={{ mt: 2, color: "gray" }}>
             Note: If you change your e-mail address or password, you will be
             logged out.
           </Typography>
           {verificationError && (
-            <Typography sx={{ mt: 2, color: 'red' }}>
+            <Typography sx={{ mt: 2, color: "red" }}>
               {verificationError}
             </Typography>
           )}
@@ -486,8 +486,8 @@ const SecuritySettings: React.FC = () => {
           />
           <Box
             sx={{
-              display: 'flex',
-              justifyContent: 'flex-end',
+              display: "flex",
+              justifyContent: "flex-end",
               mt: 2,
             }}
           >
