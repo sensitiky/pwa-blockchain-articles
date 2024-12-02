@@ -45,7 +45,7 @@ import { Reports } from 'src/entities/report.entity';
           entities: [User, Post, Comment, Category, Tag, Favorite, Reports],
           synchronize: true,
           logging: false,
-          //ssl: { rejectUnauthorized: false },
+          ssl: { rejectUnauthorized: false },
           subscribers: [CommentSubscriber, FavoriteSubscriber],
         };
       },
