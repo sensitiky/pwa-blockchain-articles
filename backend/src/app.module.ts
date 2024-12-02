@@ -17,8 +17,10 @@ import { Category } from './entities/category.entity';
 import { Tag } from './entities/tag.entity';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { HealthController } from './controllers/health.controller';
 
 @Module({
+  controllers:[HealthController],
   imports: [
     ConfigModule.forRoot(),
     DatabaseModule,
