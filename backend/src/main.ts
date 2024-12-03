@@ -17,6 +17,7 @@ async function bootstrap() {
       'https://localhost:3001',
       'https://www.blogchain.tech',
       'https://blogchain.tech',
+      '*',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
