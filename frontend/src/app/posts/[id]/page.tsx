@@ -726,6 +726,7 @@ const PostPage = () => {
                         </div>
                       </div>
                     </div>
+                  </div>
                   <p className="mt-2 text-base truncate">{comment.content}</p>
                 </article>
               );
