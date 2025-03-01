@@ -1,13 +1,13 @@
-"use client";
-import React, { useEffect, useState, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import Header from "@/assets/header";
-import Image from "next/image";
-import Footer from "@/assets/footer";
-import axios from "axios";
+'use client';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import Header from '@/assets/header';
+import Image from 'next/image';
+import Footer from '@/assets/footer';
+import axios from 'axios';
 import {
   FaFacebook,
   FaTwitter,
@@ -20,15 +20,15 @@ import {
   FaComment,
   FaBookmark,
   FaTags,
-} from "react-icons/fa";
-import { ArrowLeftIcon } from "lucide-react";
-import { useAuth } from "../../../../context/authContext";
-import DeletePostModal from "@/assets/deletepost";
-import styled from "styled-components";
-import parse, { DOMNode, domToReact, Element } from "html-react-parser";
-import LoginCard from "@/assets/login";
-import ShareBar from "@/components/ui/sharebar";
-import mixpanel from "mixpanel-browser";
+} from 'react-icons/fa';
+import { ArrowLeftIcon } from 'lucide-react';
+import { useAuth } from '../../../../context/authContext';
+import DeletePostModal from '@/assets/deletepost';
+import styled from 'styled-components';
+import parse, { DOMNode, domToReact, Element } from 'html-react-parser';
+import LoginCard from '@/assets/login';
+import ShareBar from '@/components/ui/sharebar';
+import mixpanel from 'mixpanel-browser';
 
 const Container = styled.div`
   display: flex;
@@ -97,7 +97,7 @@ const PostPage = () => {
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [showLoginCard, setShowLoginCard] = useState(false);
-  const [commentContent, setCommentContent] = useState("");
+  const [commentContent, setCommentContent] = useState('');
   const [showBookmarkMessage, setShowBookmarkMessage] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -106,7 +106,7 @@ const PostPage = () => {
   const router = useRouter();
   const { id } = useParams();
 
-  mixpanel.init(MIX_URL || "", { track_pageview: true });
+  mixpanel.init(MIX_URL || '', { track_pageview: true });
   useEffect(() => {
     if (id) {
       fetchPost(id as string);
@@ -124,7 +124,7 @@ const PostPage = () => {
       setIsSaved(postData.isFavorited);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching post data:", error);
+      console.error('Error fetching post data:', error);
       setLoading(false);
     }
   };
@@ -135,7 +135,7 @@ const PostPage = () => {
       const commentsData: Comment[] = response.data;
       setComments(commentsData);
     } catch (error) {
-      console.error("Error fetching comments:", error);
+      console.error('Error fetching comments:', error);
     }
   };
 
@@ -143,11 +143,11 @@ const PostPage = () => {
     async (e: React.FormEvent) => {
       e.preventDefault();
       if (!user) {
-        alert("You need to be authenticated to interact");
+        alert('You need to be authenticated to interact');
         return;
       }
       if (commentContent.length > 800) {
-        alert("Comment exceeds the maximum length of 800 characters.");
+        alert('Comment exceeds the maximum length of 800 characters.');
         return;
       }
       try {
@@ -162,19 +162,19 @@ const PostPage = () => {
           content: response.data.content,
           author: {
             id: user.id,
-            firstName: user.firstName || "",
-            lastName: user.lastName || "",
-            user: user.user || "",
-            avatar: user.avatar || "",
-            role: user.role || "",
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            user: user.user || '',
+            avatar: user.avatar || '',
+            role: user.role || '',
           },
           createdAt: response.data.createdAt,
         };
         // console.log(newComment);
         setComments((prev) => [...prev, newComment]);
-        setCommentContent("");
+        setCommentContent('');
       } catch (error) {
-        console.error("Error posting comment:", error);
+        console.error('Error posting comment:', error);
       }
     },
     [commentContent, user, post]
@@ -182,10 +182,10 @@ const PostPage = () => {
 
   const handleDeleteComment = async (commentId: number, authorId: number) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       if (!token) {
-        console.error("No token found");
-        alert("You need to be authenticated to delete the comment");
+        console.error('No token found');
+        alert('You need to be authenticated to delete the comment');
         return;
       }
 
@@ -203,17 +203,17 @@ const PostPage = () => {
       setComments((prevComments) =>
         prevComments.filter((comment) => comment.id !== commentId)
       );
-      alert("Comment deleted successfully!");
+      alert('Comment deleted successfully!');
     } catch (error: any) {
-      console.error("Error deleting comment:", error);
-      alert("Error deleting comment");
+      console.error('Error deleting comment:', error);
+      alert('Error deleting comment');
     }
   };
 
   const handleFavorite = async (postId: number) => {
     if (!user) {
-      console.error("User is not logged in");
-      alert("You need to be authenticated in order to interact");
+      console.error('User is not logged in');
+      alert('You need to be authenticated in order to interact');
       return;
     }
     try {
@@ -258,7 +258,7 @@ const PostPage = () => {
         setIsSaved(true);
       }
     } catch (error) {
-      console.error("Error favoriting post:", error);
+      console.error('Error favoriting post:', error);
     }
   };
 
@@ -274,8 +274,8 @@ const PostPage = () => {
 
   const handleDelete = async () => {
     if (!user || !token) {
-      console.error("User is not logged in");
-      alert("You need to be authenticated to delete the post");
+      console.error('User is not logged in');
+      alert('You need to be authenticated to delete the post');
       return;
     }
     // console.log(token);
@@ -285,11 +285,11 @@ const PostPage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      alert("Post deleted successfully!");
-      router.push("/articles");
+      alert('Post deleted successfully!');
+      router.push('/articles');
     } catch (error) {
-      console.error("Error deleting post:", error);
-      alert("Error deleting post");
+      console.error('Error deleting post:', error);
+      alert('Error deleting post');
     }
   };
 
@@ -300,7 +300,7 @@ const PostPage = () => {
   const handleGoBack = () => {
     const referrer = document.referrer;
     if (referrer.includes(`/posts/edit/${id}`)) {
-      router.push("/articles");
+      router.push('/articles');
     } else {
       router.back();
     }
@@ -319,11 +319,11 @@ const PostPage = () => {
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
-      hour: "numeric",
-      minute: "numeric",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
+      hour: 'numeric',
+      minute: 'numeric',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
@@ -335,13 +335,13 @@ const PostPage = () => {
           const { tagName, attribs } = domNode;
 
           const blockStyle = {
-            whiteSpace: "pre-wrap",
-            fontFamily: "Gilroy, sans-serif",
-            lineHeight: "1.6",
-            marginBottom: "1rem",
+            whiteSpace: 'pre-wrap',
+            fontFamily: 'Gilroy, sans-serif',
+            lineHeight: '1.6',
+            marginBottom: '1rem',
           };
 
-          if (["p", "div", "span", "h1", "h2", "h3"].includes(tagName)) {
+          if (['p', 'div', 'span', 'h1', 'h2', 'h3'].includes(tagName)) {
             return (
               <div className="prose" style={blockStyle} {...attribs}>
                 {domToReact(domNode.children as DOMNode[])}
@@ -349,21 +349,21 @@ const PostPage = () => {
             );
           }
 
-          if (tagName === "br") {
+          if (tagName === 'br') {
             return <br />;
           }
 
-          if (["iframe", "b", "strong", "i", "em", "a"].includes(tagName)) {
-            if (tagName === "a") {
-              const linkType = "External Post Link";
+          if (['iframe', 'b', 'strong', 'i', 'em', 'a'].includes(tagName)) {
+            if (tagName === 'a') {
+              const linkType = 'External Post Link';
               const linkUrl = attribs.href;
               const timestamp = new Date().toISOString();
 
               const handleClick = () => {
-                mixpanel.track("External Post Link Clicked", {
-                  event: "External Post Link Clicked",
+                mixpanel.track('External Post Link Clicked', {
+                  event: 'External Post Link Clicked',
                   link_url: linkUrl,
-                  post_id: "user_" + post?.author?.id,
+                  post_id: 'user_' + post?.author?.id,
                   timestamp: timestamp,
                   link_type: linkType,
                 });
@@ -379,7 +379,7 @@ const PostPage = () => {
             return domToReact([domNode] as DOMNode[]);
           }
 
-          if (tagName === "img") {
+          if (tagName === 'img') {
             return <img {...attribs} alt="" />;
           }
         }
@@ -398,7 +398,7 @@ const PostPage = () => {
             return tag.name;
           }
         })
-        .join(", ") || "No tags"
+        .join(', ') || 'No tags'
     );
   };
 
@@ -407,7 +407,7 @@ const PostPage = () => {
   };
 
   const handleSocialLinkClick = (event: any) => {
-    const linkType = event.currentTarget.getAttribute("data-link-type");
+    const linkType = event.currentTarget.getAttribute('data-link-type');
     const linkUrl = event.currentTarget.href;
     const timestamp = new Date().toISOString();
     /*console.log('External Profile Link Clicked', {
@@ -417,20 +417,20 @@ const PostPage = () => {
       timestamp: timestamp,
       link_type: linkType,
     });*/
-    mixpanel.track("External Profile Link Clicked", {
-      event: "External Profile Link Clicked",
+    mixpanel.track('External Profile Link Clicked', {
+      event: 'External Profile Link Clicked',
       link_url: linkUrl,
-      user_id: "user_" + post?.author?.id,
+      user_id: 'user_' + post?.author?.id,
       timestamp: timestamp,
       link_type: linkType,
     });
   };
 
   const avatarUrl = post?.author?.avatar
-    ? post.author.avatar.startsWith("http")
+    ? post.author.avatar.startsWith('http')
       ? post.author.avatar
       : `${API_URL}${post.author.avatar}`
-    : "default-avatar.webp";
+    : 'default-avatar.webp';
 
   if (loading) {
     return (
@@ -492,7 +492,7 @@ const PostPage = () => {
                 </Link>
                 <div className="text-center sm:text-left">
                   <p className="text-base font-medium text-black truncate">
-                    {post.author?.user ?? "Author"}
+                    {post.author?.user ?? 'Author'}
                   </p>
                   <p className="text-base text-gray-500 line-clamp-2 truncate">
                     {post.author?.role}
@@ -574,8 +574,7 @@ const PostPage = () => {
                 )}
               </div>
             </div>
-            {(user?.id === post.author?.id ||
-              user?.email === "mariomcorrea3@gmail.com") && (
+            {user?.id === post.author?.id && (
               <div className="flex space-x-2">
                 <Button
                   variant="ghost"
@@ -595,7 +594,7 @@ const PostPage = () => {
             )}
           </article>
           <p className="text-gray-500 mt-4">
-            {formatDate(post.createdAt)} •{" "}
+            {formatDate(post.createdAt)} •{' '}
             {calculateReadingTime(post.description)} min read
           </p>
           <section className="prose prose-slate">
@@ -629,7 +628,7 @@ const PostPage = () => {
                   className="w-4 h-4 mr-2"
                   alt="Category Icon"
                 />
-                {post.category ? post.category.name : "Uncategorized"}
+                {post.category ? post.category.name : 'Uncategorized'}
               </span>
             </div>
           )}
@@ -642,7 +641,7 @@ const PostPage = () => {
                     className="flex items-center px-2 py-1 bg-[#000916] text-white rounded-full"
                   >
                     <FaTags className="mr-2" />
-                    {formatTags([tag]) ? tag.name : "Uncategorized"}
+                    {formatTags([tag]) ? tag.name : 'Uncategorized'}
                   </li>
                 ))}
               </ul>
@@ -661,7 +660,7 @@ const PostPage = () => {
                 )}
                 <FaBookmark
                   className={`size-5 ${
-                    isSaved ? "text-[#007BFF]" : "text-gray-500"
+                    isSaved ? 'text-[#007BFF]' : 'text-gray-500'
                   }`}
                 />
               </button>
@@ -688,12 +687,12 @@ const PostPage = () => {
           <section className="mt-8">
             {comments.map((comment) => {
               const author = comment.author || {
-                firstName: "Unknown",
-                lastName: "User",
-                avatar: "default-avatar.webp",
+                firstName: 'Unknown',
+                lastName: 'User',
+                avatar: 'default-avatar.webp',
               };
 
-              const avatarUrl = author.avatar?.startsWith("/")
+              const avatarUrl = author.avatar?.startsWith('/')
                 ? `${API_URL}${author.avatar}`
                 : author.avatar;
 
