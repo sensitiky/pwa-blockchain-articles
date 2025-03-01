@@ -726,17 +726,6 @@ const PostPage = () => {
                         </div>
                       </div>
                     </div>
-                    {author?.id === comment.author.id && (
-                      <button
-                        onClick={() =>
-                          handleDeleteComment(comment.id, comment.author.id)
-                        }
-                        className="text-gray-500 hover:text-gray-700"
-                      >
-                        <FaTrash />
-                      </button>
-                    )}
-                  </div>
                   <p className="mt-2 text-base truncate">{comment.content}</p>
                 </article>
               );
